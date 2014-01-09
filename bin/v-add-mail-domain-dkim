@@ -48,7 +48,13 @@ chmod 660 $USER_DATA/mail/$domain.*
 
 # Adding dkim to config
 cp $USER_DATA/mail/$domain.pem $HOMEDIR/$user/conf/mail/$domain/dkim.pem
-chown exim:mail $HOMEDIR/$user/conf/mail/$domain/dkim.pem
+if [ "$MAIL_SYSTEM" = 'exim' ]; then
+    mail_user=exim
+fi
+if [ "$MAIL_SYSTEM" = 'exim4' ]; then
+    mail_user=Debian-exim
+fi
+chown $mail_user:mail $HOMEDIR/$user/conf/mail/$domain/dkim.pem
 chmod 660 $HOMEDIR/$user/conf/mail/$domain/dkim.pem
 
 # Checking dns domain
@@ -60,7 +66,7 @@ if [ "$?" -eq 0 ]; then
     policy="\"t=y; o=~;\""
     $BIN/v-add-dns-record $user $domain $record TXT "$policy"
 
-    record='mail._domainkey'
+    record='vmail._domainkey'
     selector="\"k=rsa\; p=$p\""
     $BIN/v-add-dns-record $user $domain $record TXT "$selector"
 fi
