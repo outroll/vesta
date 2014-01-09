@@ -18,7 +18,7 @@ domain_idn=$(idn -t --quiet -a "$domain")
 antispam=${3-yes}
 antivirus=${4-yes}
 dkim=${5-yes}
-dkim_size=${6-512}
+dkim_size=${6-1024}
 
 # Includes
 source $VESTA/func/main.sh
@@ -79,7 +79,7 @@ if [ "$dkim" = 'yes' ]; then
         policy="\"t=y; o=~;\""
         $BIN/v-add-dns-record $user $domain $record TXT "$policy"
 
-        record='mail._domainkey'
+        record='vmail._domainkey'
         selector="\"k=rsa\; p=$p\""
         $BIN/v-add-dns-record $user $domain $record TXT "$selector"
     fi
