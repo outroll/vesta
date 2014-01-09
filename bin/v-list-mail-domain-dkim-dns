@@ -24,7 +24,7 @@ json_list_dkim_dns() {
     echo "        \"TTL\": \"3600\","
     echo "        \"TXT\": \"'t=y; o=~;'\""
     echo -e "\t},"
-    echo -e "\n\t\"mail._domainkey\": {"
+    echo -e "\n\t\"vmail._domainkey\": {"
     echo "        \"TTL\": \"3600\","
     echo "        \"TXT\": \"'$pub'\""
     echo -e "\t}\n}"
@@ -34,7 +34,7 @@ json_list_dkim_dns() {
 # Shell function
 shell_list_dkim_dns() {
     echo "_domainkey      3600    IN    TXT    \"t=y; o=~;\""
-    echo "mail._domainkey 3600    IN    TXT    \"k=rsa; p=$pub\""
+    echo "vmail._domainkey 3600    IN    TXT    \"k=rsa; p=$pub\""
 }
 
 
