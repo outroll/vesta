@@ -78,7 +78,7 @@ group="$user"
 email="info@$domain"
 docroot="$HOMEDIR/$user/web/$domain/public_html"
 tpl_file="$WEBTPL/$WEB_SYSTEM/$template.tpl"
-conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
+conf="$VESTA/data/users/$user/conf/web/$WEB_SYSTEM.conf"
 
 # Adding web config
 add_web_config

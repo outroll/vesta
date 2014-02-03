@@ -51,7 +51,7 @@ fi
 
 # Deleting domain in named.conf
 sed -i "/\/$user\/conf\/dns\/$domain.db\"/d" $dns_conf
-rm -f $HOMEDIR/$user/conf/dns/$domain.db
+rm -f $VESTA/data/users/$user/conf/dns/$domain.db
 
 # dns-cluster
 if [ ! -z "$DNS_CLUSTER" ]; then

@@ -48,10 +48,10 @@ fi
 #----------------------------------------------------------#
 
 # Adding account to fwd_only
-touch $HOMEDIR/$user/conf/mail/$domain/fwd_only
-check_fwd=$(grep "^$account$" $HOMEDIR/$user/conf/mail/$domain/fwd_only)
+touch $VESTA/data/users/$user/conf/mail/$domain/fwd_only
+check_fwd=$(grep "^$account$" $VESTA/data/users/$user/conf/mail/$domain/fwd_only)
 if [ -z "$check_fwd" ]; then
-    echo "$account" > $HOMEDIR/$user/conf/mail/$domain/fwd_only
+    echo "$account" > $VESTA/data/users/$user/conf/mail/$domain/fwd_only
 fi
 
 # Set ownership
@@ -61,7 +61,7 @@ fi
 if [ "$MAIL_SYSTEM" = 'exim4' ]; then
     mail_user=Debian-exim
 fi
-chown -R $mail_user:mail $HOMEDIR/$user/conf/mail/$domain/fwd_only
+chown -R $mail_user:mail $VESTA/data/users/$user/conf/mail/$domain/fwd_only
 
 
 #----------------------------------------------------------#

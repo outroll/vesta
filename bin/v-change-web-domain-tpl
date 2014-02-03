@@ -49,13 +49,13 @@ ip=$(get_real_ip $IP)
 # Deleting domain
 tpl_file="$WEBTPL/$WEB_SYSTEM/$TPL.tpl"
 old_tpl=$TPL
-conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
+conf="$VESTA/data/users/$user/conf/web/$WEB_SYSTEM.conf"
 del_web_config
 
 # Deleting ssl vhost
 if [ "$SSL" = 'yes' ]; then
     tpl_file="$WEBTPL/$WEB_SYSTEM/$TPL.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/s$WEB_SYSTEM.conf"
     del_web_config
 fi
 
@@ -73,7 +73,7 @@ fi
 
 # Checking SSL
 if [ "$SSL" = 'yes' ]; then
-    conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/s$WEB_SYSTEM.conf"
     tpl_file="$WEBTPL/$WEB_SYSTEM/$template.stpl"
 
     add_web_config

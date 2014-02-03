@@ -50,7 +50,7 @@ is_proxy_template_valid
 get_domain_values 'web'
 tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
 old_tpl=$PROXY
-conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
+conf="$VESTA/data/users/$user/conf/web/$PROXY_SYSTEM.conf"
 ip=$(get_real_ip $IP)
 
 # Delete old vhost
@@ -68,7 +68,7 @@ chmod 640 $conf
 # Checking SSL
 if [ "$SSL" = 'yes' ]; then
     tpl_file="$WEBTPL/$PROXY_SYSTEM/$old_tpl.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/s$PROXY_SYSTEM.conf"
     del_web_config
 
     tpl_file="$WEBTPL/$PROXY_SYSTEM/$template.stpl"

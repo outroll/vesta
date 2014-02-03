@@ -36,7 +36,6 @@ source $VESTA/conf/vesta.conf
 check_args '3' "$#" 'USER DOMAIN SSL_DIR [SSL_HOME] [RESTART]'
 validate_format 'user' 'domain' 'ssl_dir'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
-is_system_enabled "$WEB_SSL" 'SSL_SUPPORT'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
@@ -62,7 +61,7 @@ chmod 660 $USER_DATA/ssl/$domain.*
 
 # Parsing domain values
 get_domain_values 'web'
-conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
+conf="$VESTA/data/users/$user/conf/web/s$WEB_SYSTEM.conf"
 tpl_file="$WEBTPL/$WEB_SYSTEM/$TPL.stpl"
 SSL_HOME="$ssl_home"
 ip=$(get_real_ip $IP)
@@ -77,11 +76,11 @@ chown root:$user $conf
 chmod 640 $conf
 
 # Adding certificate to user dir
-cp -f $USER_DATA/ssl/$domain.crt $HOMEDIR/$user/conf/web/ssl.$domain.crt
-cp -f $USER_DATA/ssl/$domain.key $HOMEDIR/$user/conf/web/ssl.$domain.key
-cp -f $USER_DATA/ssl/$domain.pem $HOMEDIR/$user/conf/web/ssl.$domain.pem
+cp -f $USER_DATA/ssl/$domain.crt $VESTA/data/users/$user/conf/web/ssl.$domain.crt
+cp -f $USER_DATA/ssl/$domain.key $VESTA/data/users/$user/conf/web/ssl.$domain.key
+cp -f $USER_DATA/ssl/$domain.pem $VESTA/data/users/$user/conf/web/ssl.$domain.pem
 if [ -e "$USER_DATA/ssl/$domain.ca" ]; then
-    cp -f $USER_DATA/ssl/$domain.ca $HOMEDIR/$user/conf/web/ssl.$domain.ca
+    cp -f $USER_DATA/ssl/$domain.ca $VESTA/data/users/$user/conf/web/ssl.$domain.ca
 fi
 
 # Running template trigger
@@ -97,7 +96,7 @@ fi
 
 # Checking proxy
 if [ ! -z "$PROXY" ]; then
-    conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/s$PROXY_SYSTEM.conf"
     tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
     add_web_config
 

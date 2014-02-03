@@ -42,7 +42,7 @@ is_object_unsuspended "mail/$domain" 'ACCOUNT' "$account"
 #----------------------------------------------------------#
 
 # Deleting account from fwd_only
-sed -i "/^$account$/d" $HOMEDIR/$user/conf/mail/$domain/fwd_only
+sed -i "/^$account$/d" $VESTA/data/users/$user/conf/mail/$domain/fwd_only
 
 
 #----------------------------------------------------------#

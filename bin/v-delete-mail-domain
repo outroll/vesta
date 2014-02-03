@@ -43,7 +43,7 @@ get_domain_values 'mail'
 accounts=$(wc -l $USER_DATA/mail/$domain.conf|cut -f 1 -d ' ')
 
 rm -f /etc/$MAIL_SYSTEM/domains/$domain_idn
-rm -rf $HOMEDIR/$user/conf/mail/$domain
+rm -rf $VESTA/data/users/$user/conf/mail/$domain
 rm -rf $HOMEDIR/$user/mail/$domain_idn
 
 

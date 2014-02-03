@@ -73,13 +73,13 @@ fi
 echo "$user:$password" | /usr/sbin/chpasswd
 
 # Building directory tree
-mkdir $HOMEDIR/$user/conf
+#mkdir $HOMEDIR/$user/conf
 
 if [ ! -z "$WEB_SYSTEM" ]; then
-    mkdir $HOMEDIR/$user/conf/web
+    mkdir $VESTA/data/users/$user/conf/web
     mkdir $HOMEDIR/$user/web
     mkdir $HOMEDIR/$user/tmp
-    chmod 751 $HOMEDIR/$user/conf/web
+    chmod 751 $VESTA/data/users/$user/conf/web
     chmod 751 $HOMEDIR/$user/web
     chmod 771 $HOMEDIR/$user/tmp
     chown $user:$user $HOMEDIR/$user/web
@@ -87,21 +87,21 @@ if [ ! -z "$WEB_SYSTEM" ]; then
 fi
 
 if [ ! -z "$MAIL_SYSTEM" ]; then
-    mkdir $HOMEDIR/$user/conf/mail
+    mkdir $VESTA/data/users/$user/conf/mail
     mkdir $HOMEDIR/$user/mail
     chmod 751 $HOMEDIR/$user/mail
-    chmod 751 $HOMEDIR/$user/conf/mail
+    chmod 751 $VESTA/data/users/$user/conf/mail
 fi
 
 if [ ! -z "$DNS_SYSTEM" ]; then
-    mkdir $HOMEDIR/$user/conf/dns
-    chmod 751 $HOMEDIR/$user/conf/dns
+    mkdir $VESTA/data/users/$user/conf/dns
+    chmod 751 $VESTA/data/users/$user/conf/dns
 fi 
 
 
 # Set permissions
-chmod a+x $HOMEDIR/$user
-chattr +i $HOMEDIR/$user/conf
+#chmod a+x $HOMEDIR/$user
+#chattr +i $HOMEDIR/$user/conf
 
 # Checking quota
 if [ ! -z "$DISK_QUOTA" ]; then

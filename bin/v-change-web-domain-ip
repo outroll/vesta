@@ -46,7 +46,7 @@ is_ip_avalable
 get_domain_values 'web'
 ip=$(get_real_ip $ip)
 tpl_file="$WEBTPL/$WEB_SYSTEM/$TPL.tpl"
-conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
+conf="$VESTA/data/users/$user/conf/web/$WEB_SYSTEM.conf"
 old=$(get_real_ip $IP)
 new=$ip
 replace_web_config
@@ -54,21 +54,21 @@ replace_web_config
 # Checking SSL
 if [ "$SSL" = 'yes' ]; then
     tpl_file="$WEBTPL/$WEB_SYSTEM/$TPL.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/s$WEB_SYSTEM.conf"
     replace_web_config
 fi
 
 # Checking proxy
 if [ ! -z "$PROXY" ]; then
     tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
-    conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/$PROXY_SYSTEM.conf"
     replace_web_config
 fi
 
 # Checking SSL proxy
 if [ "$SSL" = 'yes' ] && [ ! -z "$PROXY" ]; then 
     tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/s$PROXY_SYSTEM.conf"
     replace_web_config
 fi
 

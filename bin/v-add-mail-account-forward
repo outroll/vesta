@@ -55,8 +55,8 @@ else
     fwd="$fwd,$forward"
 fi
 
-sed -i "/^$account@$domain:/ d" $HOMEDIR/$user/conf/mail/$domain/aliases
-echo "$account@$domain:$fwd" >> $HOMEDIR/$user/conf/mail/$domain/aliases
+sed -i "/^$account@$domain:/ d" $VESTA/data/users/$user/conf/mail/$domain/aliases
+echo "$account@$domain:$fwd" >> $VESTA/data/users/$user/conf/mail/$domain/aliases
 
 
 #----------------------------------------------------------#

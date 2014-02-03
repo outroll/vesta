@@ -48,7 +48,7 @@ fi
 #                       Action                             #
 #----------------------------------------------------------#
 
-sed -i "/^$malias@$domain:$account/d" $HOMEDIR/$user/conf/mail/$domain/aliases
+sed -i "/^$malias@$domain:$account/d" $VESTA/data/users/$user/conf/mail/$domain/aliases
 aliases=$(echo "$aliases" |\
     sed "s/,/\n/g"|\
     sed "s/^$malias$//g"|\

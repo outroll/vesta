@@ -50,8 +50,8 @@ is_backup_valid() {
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-args_usage='USER BACKUP [WEB] [DNS] [MAIL] [DB] [CRON] [UDIR] [NOTIFY]'
-check_args '2' "$#" "$args_usage"
+args='USER BACKUP [WEB] [DNS] [MAIL] [DB] [CRON] [UDIR] [NOTIFY]'
+check_args '2' "$#" "$args"
 validate_format 'user' 'backup'
 is_backup_valid
 is_backup_available
@@ -302,8 +302,8 @@ if [ "$web" != 'no' ]; then
 
             # Adding vhost
             web_conf="/etc/$WEB_SYSTEM/conf.d/vesta.conf"
-            tmp_conf="$HOMEDIR/$user/conf/web/tmp_$WEB_SYSTEM.conf"
-            conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
+            tmp_conf="$VESTA/data/users/$user/conf/web/tmp_$WEB_SYSTEM.conf"
+            conf="$VESTA/data/users/$user/conf/web/$WEB_SYSTEM.conf"
             cat $tmp_conf >> $conf
             rm -f $tmp_conf
             web_include=$(grep "$conf" $web_conf)
@@ -313,8 +313,8 @@ if [ "$web" != 'no' ]; then
 
             # Adding SSL vhost
             if [ "$SSL" = 'yes' ]; then
-                tmp_conf="$HOMEDIR/$user/conf/web/tmp_s$WEB_SYSTEM.conf"
-                conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
+                tmp_conf="$VESTA/data/users/$user/conf/web/tmp_s$WEB_SYSTEM.conf"
+                conf="$VESTA/data/users/$user/conf/web/s$WEB_SYSTEM.conf"
                 cat $tmp_conf >> $conf
                 rm -f $tmp_conf
             fi
@@ -328,8 +328,8 @@ if [ "$web" != 'no' ]; then
                 # Adding proxy vhost
                 proxy_conf="/etc/$PROXY_SYSTEM/conf.d/vesta.conf"
                 if [ ! -z "$PROXY" ]; then
-                    tmp_conf="$HOMEDIR/$user/conf/web/tmp_$PROXY_SYSTEM.conf"
-                    conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
+                    tmp_conf="$VESTA/data/users/$user/conf/web/tmp_$PROXY_SYSTEM.conf"
+                    conf="$VESTA/data/users/$user/conf/web/$PROXY_SYSTEM.conf"
                     cat $tmp_conf >> $conf
                     rm -f $tmp_conf
                 fi
@@ -340,8 +340,8 @@ if [ "$web" != 'no' ]; then
 
                 # Adding SSL proxy vhost
                 if [ ! -z "$PROXY" ] && [ "$SSL" = 'yes' ]; then
-                    tmp_conf="$HOMEDIR/$user/conf/web/tmp_s$PROXY_SYSTEM.conf"
-                    conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
+                    tmp_conf="$VESTA/data/users/$user/conf/web/tmp_s$PROXY_SYSTEM.conf"
+                    conf="$VESTA/data/users/$user/conf/web/s$PROXY_SYSTEM.conf"
                     cat $tmp_conf >> $conf
                     rm -f $tmp_conf
                     proxy_include=$(grep "$conf" $proxy_conf)

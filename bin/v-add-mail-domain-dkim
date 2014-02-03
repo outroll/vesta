@@ -47,9 +47,9 @@ openssl rsa -pubout -in $USER_DATA/mail/$domain.pem \
 chmod 660 $USER_DATA/mail/$domain.*
 
 # Adding dkim to config
-cp $USER_DATA/mail/$domain.pem $HOMEDIR/$user/conf/mail/$domain/dkim.pem
-chown exim:mail $HOMEDIR/$user/conf/mail/$domain/dkim.pem
-chmod 660 $HOMEDIR/$user/conf/mail/$domain/dkim.pem
+cp $USER_DATA/mail/$domain.pem $VESTA/data/users/$user/conf/mail/$domain/dkim.pem
+chown exim:mail $VESTA/data/users/$user/conf/mail/$domain/dkim.pem
+chmod 660 $VESTA/data/users/$user/conf/mail/$domain/dkim.pem
 
 # Checking dns domain
 check_dns_domain=$(is_object_valid 'dns' 'DOMAIN' "$domain")

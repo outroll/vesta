@@ -41,8 +41,8 @@ is_object_value_empty 'mail' 'DOMAIN' "$domain" '$CATCHALL'
 #----------------------------------------------------------#
 
 # Adding catchall alias
-sed -i "/*@$domain:/d" $HOMEDIR/$user/conf/mail/$domain/aliases
-echo "*@$domain:$email" >> $HOMEDIR/$user/conf/mail/$domain/aliases
+sed -i "/*@$domain:/d" $VESTA/data/users/$user/conf/mail/$domain/aliases
+echo "*@$domain:$email" >> $VESTA/data/users/$user/conf/mail/$domain/aliases
 
 
 #----------------------------------------------------------#
