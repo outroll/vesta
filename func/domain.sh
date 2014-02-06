@@ -445,10 +445,10 @@ upd_web_domain_values() {
         cgi_option='+ExecCGI'
     fi
 
-    ssl_crt="$HOMEDIR/$user/conf/web/ssl.$domain.crt"
-    ssl_key="$HOMEDIR/$user/conf/web/ssl.$domain.key"
-    ssl_pem="$HOMEDIR/$user/conf/web/ssl.$domain.pem"
-    ssl_ca="$HOMEDIR/$user/conf/web/ssl.$domain.ca"
+    ssl_crt="$USER_DATA/ssl/$domain.crt"
+    ssl_key="$USER_DATA/ssl/$domain.key"
+    ssl_pem="$USER_DATA/ssl/$domain.pem"
+    ssl_ca="$USER_DATA/ssl/$domain.ca"
     if [ ! -e "$USER_DATA/ssl/$domain.ca" ]; then
         ssl_ca_str='#'
     fi
