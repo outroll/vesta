@@ -31,6 +31,5 @@
     <Directory %home%/%user%/web/%domain%/stats>
         AllowOverride All
     </Directory>
-    Include /usr/local/vesta/data/users/%user%/conf/web/%web_system%.%domain%.conf*
 
 </VirtualHost>
