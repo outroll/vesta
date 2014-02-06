@@ -40,7 +40,7 @@ is_object_value_empty 'mail' 'DOMAIN' "$domain" '$ANTISPAM'
 #----------------------------------------------------------#
 
 # Adding antispam flag
-touch $HOMEDIR/$user/conf/mail/$domain/antispam
+touch $VESTA/data/users/$user/conf/mail/$domain/antispam
 
 
 #----------------------------------------------------------#

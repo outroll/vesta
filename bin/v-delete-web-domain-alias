@@ -56,7 +56,7 @@ ALIAS=$(echo "$ALIAS" |\
     sed -e "/^$/d"|\
     sed -e ':a;N;$!ba;s/\n/,/g')
 tpl_file="$WEBTPL/$WEB_SYSTEM/$TPL.tpl"
-conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
+conf="$VESTA/data/users/$user/conf/web/$WEB_SYSTEM.conf"
 
 # Preparing domain values for the template substitution
 upd_web_domain_values
@@ -67,7 +67,7 @@ add_web_config
 
 if [ "$SSL" = 'yes' ]; then
     tpl_file="$WEBTPL/$WEB_SYSTEM/$TPL.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/s$WEB_SYSTEM.conf"
     del_web_config
     add_web_config
 fi
@@ -75,13 +75,13 @@ fi
 # Checking proxy
 if [ ! -z "$PROXY" ]; then
     tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
-    conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/$PROXY_SYSTEM.conf"
     del_web_config
     add_web_config
 
     if [ "$SSL" = 'yes' ]; then
         tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
-        conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
+        conf="$VESTA/data/users/$user/conf/web/s$PROXY_SYSTEM.conf"
         del_web_config
         add_web_config
     fi

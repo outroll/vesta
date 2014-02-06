@@ -42,11 +42,11 @@ is_object_unsuspended "mail/$domain" 'ACCOUNT' "$account"
 #----------------------------------------------------------#
 aliases=$(get_object_value "mail/$domain" 'ACCOUNT' "$account" '$ALIAS')
 for al in ${aliases//,/ }; do
-    sed -i "/^$al@$domain:$account/d" $HOMEDIR/$user/conf/mail/$domain/aliases
+    sed -i "/^$al@$domain:$account/d" $VESTA/data/users/$user/conf/mail/$domain/aliases
 done
 
-sed -i "/^$account@$domain:/d" $HOMEDIR/$user/conf/mail/$domain/aliases
-sed -i "/^$account:/d" $HOMEDIR/$user/conf/mail/$domain/passwd
+sed -i "/^$account@$domain:/d" $VESTA/data/users/$user/conf/mail/$domain/aliases
+sed -i "/^$account:/d" $VESTA/data/users/$user/conf/mail/$domain/passwd
 rm -rf $HOMEDIR/$user/mail/$domain/$account
 
 

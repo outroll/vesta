@@ -128,7 +128,7 @@ fi
 
 # Adding zone in named.conf
 named="zone \"$domain_idn\" {type master; file"
-named="$named \"$HOMEDIR/$user/conf/dns/$domain.db\";};"
+named="$named \"$VESTA/data/users/$user/conf/dns/$domain.db\";};"
 echo "$named" >> $dns_conf
 
 # Updating domain dns zone

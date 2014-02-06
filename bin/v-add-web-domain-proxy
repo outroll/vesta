@@ -54,7 +54,7 @@ get_domain_values 'web'
 PROXY="$template"
 PROXY_EXT="$extentions"
 tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
-conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
+conf="$VESTA/data/users/$user/conf/web/$PROXY_SYSTEM.conf"
 ip=$(get_real_ip $IP)
 
 # Preparing domain values for the template substitution
@@ -74,7 +74,7 @@ fi
 # Checking ssl
 if [ "$SSL" = 'yes' ]; then
     tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
+    conf="$VESTA/data/users/$user/conf/web/s$PROXY_SYSTEM.conf"
     add_web_config
 
     chown root:$user $conf

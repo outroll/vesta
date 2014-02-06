@@ -43,7 +43,7 @@ is_object_value_exist "mail/$domain" 'ACCOUNT' "$account" '$AUTOREPLY'
 #                       Action                             #
 #----------------------------------------------------------#
 
-rm -f $HOMEDIR/$user/conf/mail/$domain/autoreply.$account.msg
+rm -f $VESTA/data/users/$user/conf/mail/$domain/autoreply.$account.msg
 rm -f $USER_DATA/mail/$domain/$account@$domain.msg
 
 

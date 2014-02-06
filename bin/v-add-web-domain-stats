@@ -66,11 +66,11 @@ cat $WEBTPL/$type/$type.tpl |\
         -e "s/%home%/${HOMEDIR////\/}/g" \
         -e "s/%alias%/${aliases//,/ }/g" \
         -e "s/%alias_idn%/${aliases_idn//,/ }/g" \
-    > $HOMEDIR/$user/conf/web/$type.$domain.conf
+    > $VESTA/data/users/$user/conf/web/$type.$domain.conf
 
 if [ "$type" == 'awstats' ]; then
     rm -f /etc/awstats/$type.$domain_idn.conf
-    ln -s $HOMEDIR/$user/conf/web/$type.$domain.conf \
+    ln -s $VESTA/data/users/$user/conf/web/$type.$domain.conf \
         /etc/awstats/$type.$domain_idn.conf
 else
     mkdir -p /var/lib/webalizer
