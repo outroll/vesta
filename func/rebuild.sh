@@ -455,7 +455,7 @@ rebuild_mail_domain_conf() {
         U_MAIL_DKMI=$((U_MAIL_DKMI + 1))
         pem="$USER_DATA/mail/$domain.pem"
         pub="$USER_DATA/mail/$domain.pub"
-        openssl genrsa -out $pem 512 &>/dev/null
+        openssl genrsa -out $pem 1024 &>/dev/null
         openssl rsa -pubout -in $pem -out $pub &>/dev/null
         cp $pem $HOMEDIR/$user/conf/mail/$domain/dkim.pem
 
@@ -473,10 +473,18 @@ rebuild_mail_domain_conf() {
             policy="\"t=y; o=~;\""
             $BIN/v-add-dns-record $user $domain $record TXT "$policy"
 
-            record='mail._domainkey'
+            record='vmail._domainkey'
             p=$(cat $pub|grep -v ' KEY---'|tr -d '\n')
             slct="\"k=rsa\; p=$p\""
             $BIN/v-add-dns-record $user $domain $record TXT "$slct"
+            
+            if [ "$($BIN/v-list-dns-records $user $domain plain|grep -c '@ MX 10 mx.yandex.ru.')" = "1" ]; then
+                record='mail._domainkey'
+                slct=$(host -t TXT mail._domainkey.$domain dns1.yandex.net|grep v\=DKIM1|cut -d\" -f2)
+                if [ -n "$slct" ]; then
+                    $BIN/v-add-dns-record $user $domain $record TXT "\"$slct\""
+                fi
+            fi
         fi
     fi
 
