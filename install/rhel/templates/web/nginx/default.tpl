@@ -3,9 +3,6 @@ server {
     server_name %domain_idn% %alias_idn%;
     index index.html index.htm;
     root %docroot%;
-    ssl on;
-    ssl_certificate      %ssl_pem%;
-    ssl_certificate_key  %ssl_key%;
     error_log  /var/log/httpd/domains/%domain%.error.log error;
     location / {try_files $uri @backend;}
     location ~ .*\.(php|jsp|cgi|pl|py|php4|php5)?$ {
