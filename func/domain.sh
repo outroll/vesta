@@ -518,3 +518,32 @@ is_dns_nameserver_valid() {
         fi
     fi
 }
+
+# Add mail domain DKIM DNS record
+add_mail_domain_dkim_dns() {
+    user=$1
+    domain=$2
+
+    dkim_selector=$(grep "^$domain:" $VESTA/data/dkim_selectors|cut -d\: -f2)
+    if [ -z $dkim_selector ]; then
+        dkim_selector=$(grep "^\*:" $VESTA/data/dkim_selectors|cut -d\: -f2)
+        if [ -z $dkim_selector ]; then dkim_selector=mail; fi
+    fi
+
+    p=$(cat $USER_DATA/mail/$domain.pub|grep -v ' KEY---'|tr -d '\n')
+    record='_domainkey'
+    policy="\"t=y; o=~;\""
+    $BIN/v-add-dns-record $user $domain $record TXT "$policy"
+
+    record="$dkim_selector._domainkey"
+    selector="\"k=rsa\; p=$p\""
+    $BIN/v-add-dns-record $user $domain $record TXT "$selector"
+
+    if [ "$($BIN/v-list-dns-records $user $domain plain|grep -c '@ MX 10 mx.yandex.ru.')" == "1" ]; then
+        record='mail._domainkey'
+        selector=$(host -t TXT $record.$domain dns1.yandex.net|grep v\=DKIM1|cut -d\" -f2)
+        if [ -n "$selector" ]; then
+            $BIN/v-add-dns-record $user $domain $record TXT "\"$selector\""
+        fi
+    fi
+}
