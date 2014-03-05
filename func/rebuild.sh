@@ -455,7 +455,7 @@ rebuild_mail_domain_conf() {
         U_MAIL_DKMI=$((U_MAIL_DKMI + 1))
         pem="$USER_DATA/mail/$domain.pem"
         pub="$USER_DATA/mail/$domain.pub"
-        openssl genrsa -out $pem 512 &>/dev/null
+        openssl genrsa -out $pem 1024 &>/dev/null
         openssl rsa -pubout -in $pem -out $pub &>/dev/null
         cp $pem $HOMEDIR/$user/conf/mail/$domain/dkim.pem
 
@@ -469,14 +469,7 @@ rebuild_mail_domain_conf() {
         # Adding new dkim dns records
         check_dns_domain=$(is_object_valid 'dns' 'DOMAIN' "$domain")
         if [ "$?" -eq 0 ]; then
-            record='_domainkey'
-            policy="\"t=y; o=~;\""
-            $BIN/v-add-dns-record $user $domain $record TXT "$policy"
-
-            record='mail._domainkey'
-            p=$(cat $pub|grep -v ' KEY---'|tr -d '\n')
-            slct="\"k=rsa\; p=$p\""
-            $BIN/v-add-dns-record $user $domain $record TXT "$slct"
+            add_mail_domain_dkim_dns $user $domain
         fi
     fi
 

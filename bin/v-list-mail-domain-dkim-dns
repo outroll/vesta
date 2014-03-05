@@ -24,7 +24,7 @@ json_list_dkim_dns() {
     echo "        \"TTL\": \"3600\","
     echo "        \"TXT\": \"'t=y; o=~;'\""
     echo -e "\t},"
-    echo -e "\n\t\"mail._domainkey\": {"
+    echo -e "\n\t\"$selector._domainkey\": {"
     echo "        \"TTL\": \"3600\","
     echo "        \"TXT\": \"'$pub'\""
     echo -e "\t}\n}"
@@ -34,7 +34,7 @@ json_list_dkim_dns() {
 # Shell function
 shell_list_dkim_dns() {
     echo "_domainkey      3600    IN    TXT    \"t=y; o=~;\""
-    echo "mail._domainkey 3600    IN    TXT    \"k=rsa; p=$pub\""
+    echo "$selector._domainkey 3600    IN    TXT    \"k=rsa; p=$pub\""
 }
 
 
@@ -50,6 +50,13 @@ is_object_valid 'mail' 'DOMAIN' "$domain"
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
+
+# Get DKIM selector for domain
+selector=$(grep "^$domain:" $VESTA/data/dkim_selectors|cut -d\: -f2)
+if [ -z $selector ]; then
+    selector=$(grep "^\*:" $VESTA/data/dkim_selectors|cut -d\: -f2)
+    if [ -z $selector ]; then selector=mail; fi
+fi
 
 # Check pub key
 if [ -e "$USER_DATA/mail/$domain.pub" ]; then

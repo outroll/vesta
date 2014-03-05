@@ -40,6 +40,9 @@ if [ $1 -ge 2 ]; then
     if [ -e /usr/local/vesta/upd/add_fwd_only.sh ]; then
         /usr/local/vesta/upd/add_fwd_only.sh
     fi
+    if [ -e /usr/local/vesta/upd/exim_dkim.sh ]; then
+        /usr/local/vesta/upd/exim_dkim.sh
+    fi
 fi
 
 %files

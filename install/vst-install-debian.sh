@@ -644,6 +644,7 @@ mkdir -p $VESTA/data
 mkdir -p $VESTA/data/ips
 mkdir -p $VESTA/data/queue
 mkdir -p $VESTA/data/users
+echo '*:mail' > $VESTA/data/dkim_selectors
 touch $VESTA/data/queue/backup.pipe
 touch $VESTA/data/queue/disk.pipe
 touch $VESTA/data/queue/webstats.pipe
