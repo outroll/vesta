@@ -41,7 +41,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
         if (!empty( $data['config']['LANGUAGE'])) {
             $_SESSION['language'] = $data['config']['LANGUAGE'];
         } else {
-            $_SESSION['language'] = 'en';
+            $_SESSION['language'] = 'de';
         }
 
         require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n/'.$_SESSION['language'].'.php');
@@ -52,7 +52,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
         exec (VESTA_CMD . "v-list-user ".$v_user." json", $output, $return_var);
         $data = json_decode(implode('', $output), true);
         $_SESSION['language'] = $data[$_POST['user']]['LANGUAGE'];
-        if (empty($_SESSION['language'])) $_SESSION['language'] = 'en';
+        if (empty($_SESSION['language'])) $_SESSION['language'] = 'de';
         $_SESSION['user'] = $_POST['user'];
         if ($_POST['user'] == 'root') $_SESSION['user'] = 'admin';
         if (!empty($_SESSION['request_uri'])) {
@@ -71,7 +71,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
     if (!empty( $data['config']['LANGUAGE'])) {
         $_SESSION['language'] = $data['config']['LANGUAGE'];
     } else {
-        $_SESSION['language'] = 'en';
+        $_SESSION['language'] = 'de';
     }
 
     require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n/'.$_SESSION['language'].'.php');
