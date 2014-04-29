@@ -763,19 +763,19 @@ $VESTA/bin/v-add-dns-domain admin default.domain $vst_ip
 $VESTA/bin/v-add-mail-domain admin default.domain
 
 # Configuring crond
-command='sudo /usr/local/vesta/bin/v-update-sys-queue disk'
+command='sudo /usr/local/vesta/bin/v-update-sys-queue disk > /dev/null 2>&1'
 $VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-sys-queue traffic'
+command='sudo /usr/local/vesta/bin/v-update-sys-queue traffic > /dev/null 2>&1'
 $VESTA/bin/v-add-cron-job 'admin' '10' '00' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-sys-queue webstats'
+command='sudo /usr/local/vesta/bin/v-update-sys-queue webstats > /dev/null 2>&1'
 $VESTA/bin/v-add-cron-job 'admin' '30' '03' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-sys-queue backup'
+command='sudo /usr/local/vesta/bin/v-update-sys-queue backup > /dev/null 2>&1'
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-backup-users'
+command='sudo /usr/local/vesta/bin/v-backup-users > /dev/null 2>&1'
 $VESTA/bin/v-add-cron-job 'admin' '10' '05' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-user-stats'
+command='sudo /usr/local/vesta/bin/v-update-user-stats > /dev/null 2>&1'
 $VESTA/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
-command='sudo /usr/local/vesta/bin/v-update-sys-rrd'
+command='sudo /usr/local/vesta/bin/v-update-sys-rrd > /dev/null 2>&1'
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
 
 # Build inititall rrd images
