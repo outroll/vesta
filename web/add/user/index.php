@@ -53,6 +53,20 @@ if ($_SESSION['user'] == 'admin') {
             $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
         }
 
+        // Check username length
+        if (empty($_SESSION['error_msg'])) {
+            $username_len = strlen($_POST['v_username']);
+            exec (VESTA_CMD."v-list-database-types", $output, $return_var);
+            check_error($return_var);
+            if (strpos($output, "mysql") !== false)
+                $username_maxlen = 16 - 2;
+            elseif (strpos($output, "postgresql") !== false)
+                $username_maxlen = 63 - 2;
+            else
+                $username_maxlen = true; // Allow any length by default
+            if ($username_len > $username_maxlen ) $_SESSION['error_msg'] = __('Username is too long.',$error_msg);
+        }
+
         // Check password length
         if (empty($_SESSION['error_msg'])) {
             $pw_len = strlen($_POST['v_password']);

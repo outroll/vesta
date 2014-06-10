@@ -5,7 +5,7 @@
                 } else {
                     $back = "location.href='".$back."'";
                 }
-            ?> 
+            ?>
             <table class="submenu">
                 <tr>
                     <td style="padding: 20px 10px;" ><a class="name"><b><?php print __('Adding User');?></b></a>
@@ -17,7 +17,7 @@
                                     echo "<span class=\"vst-ok\"> → ".$_SESSION['ok_msg']."</span>";
                                 }
                             }
-                        ?> 
+                        ?>
                     </td>
                 </tr>
             </table>
@@ -59,7 +59,14 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_username" <?php if (!empty($v_username)) echo "value=".$v_username;  ?> >
+                                    <?php
+                                        exec (VESTA_CMD."v-list-database-types", $output);
+                                        if (strpos($output, "mysql") !== false)
+                                            $username_maxlength = 16 - 2;
+                                        elseif (strpos($output, "postgresql") !== false)
+                                            $username_maxlength = 63 - 2;
+                                    ?>
+                                    <input type="text" size="20" class="vst-input" name="v_username" maxlength="14" <?php if (!empty($username_maxlength)) echo "value=".$username_maxlength; if (!empty($v_username)) echo "value=".$v_username; ?> >
                                 </td>
                             </tr>
                             <tr>
@@ -102,7 +109,7 @@
                                                 }
                                                 echo ">".$key."</option>\n";
                                             }
-                                        ?> 
+                                        ?>
                                     </select>
                                 </td>
                             </tr>
