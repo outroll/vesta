@@ -51,6 +51,30 @@ if (!empty($_POST['ok'])) {
     $v_host = $_POST['v_host'];
     $v_db_email = $_POST['v_db_email'];
 
+    // Check database length
+    if (empty($_SESSION['error_msg'])) {
+        $db_len = strlen($user."_".$_POST['v_database']);
+        if ($_POST['v_type'] == 'pgsql')
+            $db_maxlen = 63;
+        elseif ($_POST['v_type'] == 'mysql')
+            $db_maxlen = 64;
+        else
+            $db_maxlen = true; // Allow any length by default
+        if ($db_len > $db_maxlen) $_SESSION['error_msg'] = __('Database is too long.',$error_msg);
+    }
+
+    // Check user length
+    if (empty($_SESSION['error_msg'])) {
+        $dbusr_len = strlen($user."_".$_POST['v_dbuser']);
+        if ($_POST['v_type'] == 'mysql')
+            $dbuser_maxlen = 16;
+        elseif ($_POST['v_type'] == 'pgsql')
+            $dbuser_maxlen = 63;
+        else
+            $dbuser_maxlen = true; // Allow any length by default
+        if ($dbusr_len > $dbuser_maxlen ) $_SESSION['error_msg'] = __('User is too long.',$error_msg);
+    }
+
     // Check password length
     if (empty($_SESSION['error_msg'])) {
         $pw_len = strlen($_POST['v_password']);
