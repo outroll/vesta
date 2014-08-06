@@ -10,7 +10,7 @@ export DEBIAN_FRONTEND=noninteractive
 RHOST='apt.vestacp.com'
 CHOST='c.vestacp.com'
 VERSION='0.9.8/ubuntu'
-software="nginx apache2 apache2-utils apache2-suexec-custom
+software="nginx apache2 apache2-utils apache2-suexec-custom bsdutils
     libapache2-mod-ruid2 libapache2-mod-rpaf libapache2-mod-fcgid bind9 idn
     mysql-server mysql-common mysql-client php5-common php5-cgi php5-mysql
     php5-curl libapache2-mod-php5 vsftpd mc exim4 exim4-daemon-heavy
@@ -230,9 +230,6 @@ if [ -z $email ]; then
     # Define server hostname
     if [ -z "$servername" ]; then
         read -p "Please enter hostname [$(hostname)]: " servername
-    fi
-    if [ -z "$servername" ]; then
-        servername=$(hostname)
     fi
 fi
 
@@ -462,6 +459,9 @@ if [ "$srv_type" = 'micro' ] ||  [ "$srv_type" = 'small' ]; then
 fi
 
 # Set server hostname
+if [ -z "$servername" ]; then
+    servername=$(hostname)
+fi
 /usr/local/vesta/bin/v-change-sys-hostname $servername 2>/dev/null
 
 # Templates
@@ -482,6 +482,11 @@ cp templates/web/skel/public_html/index.html /var/www/
 sed -i 's/%domain%/It worked!/g' /var/www/index.html
 if [ "$srv_type" = 'micro' ]; then
     rm -f /usr/local/vesta/data/templates/web/apache2/phpfcgid.*
+fi
+
+# Removing CGI templates
+if [ "$codename" = 'trusty' ]; then
+    rm -f /usr/local/vesta/data/templates/web/apache2/phpcgi.*
 fi
 
 # Generating SSL certificate
@@ -634,9 +639,9 @@ fi
 
 # Exim
 wget $CHOST/$VERSION/exim4.conf.template -O /etc/exim4/exim4.conf.template
-if [ "$srv_type" = 'micro' ] ||  [ "$srv_type" = 'small' ]; then
-    sed -i "s/^SPAMASSASSIN/#SPAMASSASSIN/g" /etc/exim4/exim4.conf.template
-    sed -i "s/^CLAMD/#CLAMD/g" /etc/exim4/exim4.conf.template
+if [ "$srv_type" != 'micro' ] &&  [ "$srv_type" != 'small' ]; then
+    sed -i "s/#SPAM/SPAM/g" /etc/exim4/exim4.conf.template
+    sed -i "s/#CLAMD/CLAMD/g" /etc/exim4/exim4.conf.template
 fi
 wget $CHOST/$VERSION/dnsbl.conf -O /etc/exim4/dnsbl.conf
 wget $CHOST/$VERSION/spam-blocks.conf -O /etc/exim4/spam-blocks.conf
