@@ -327,15 +327,9 @@ is_web_domain_cert_valid() {
     fi
 
     if [ -e "$ssl_dir/$domain.ca" ]; then
-        ca_vrf=$(openssl verify $ssl_dir/$domain.ca 2>/dev/null |grep 'OK')
-        if [ -z "$ca_vrf" ]; then
-            echo "Error: ssl certificate authority is not valid"
-            log_event "$E_INVALID" "$EVENT"
-            exit $E_INVALID
-        fi
-
-        crt_vrf=$(openssl verify -untrusted $ssl_dir/$domain.ca \
-            $ssl_dir/$domain.crt 2>/dev/null |grep 'OK')
+        crt_vrf=$(openssl verify -purpose sslserver \
+            -CAfile $ssl_dir/$domain.ca $ssl_dir/$domain.crt 2>/dev/null |\
+            grep 'OK')
         if [ -z "$crt_vrf" ]; then
             echo "Error: root or/and intermediate cerificate not found"
             log_event "$E_NOTEXIST" "$EVENT"
@@ -491,9 +485,9 @@ is_dns_nameserver_valid() {
         if [ ! -z "$remote" ]; then
             zone=$USER_DATA/dns/$d.conf
             a_record=$(echo $r |cut -f 1 -d '.')
-            record=$(grep "RECORD='$a_record'" $zone| grep "TYPE='A'")
-            if [ -z "$record" ]; then
-                echo "Error: corresponding A record $a_record.$d is not exist"
+            n_record=$(grep "RECORD='$a_record'" $zone| grep "TYPE='A'")
+            if [ -z "$n_record" ]; then
+                echo "Error: corresponding A record $a_record.$d does not exist"
                 log_event "$E_NOTEXIST" "$EVENT"
                 exit $E_NOTEXIST
             fi

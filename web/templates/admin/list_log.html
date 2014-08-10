@@ -1,6 +1,6 @@
             <table class="submenu">
                 <tr>
-                    <td style="padding: 14px 10px">
+                    <td class="wrapper">
                         <div class="submenu-search-block">
                             <form action="/search/" method="get">
                             <input type="text" name="q" class="submenu-search-field">
@@ -46,18 +46,13 @@
 
         </table>
 
-        <table class="data-count">
-            <tr>
-                <td width="174px"></td>
-                <td>
-                    <?php
-                        if ( $i == 1) {
-                            echo __('one log record');
-                        } else {
-                            echo __('%s log records',$i);
-                        }
-                    ?>
-                </td>
-            </tr>
-        </table>
+        <div class="data-count">
+            <?php
+                if ( $i == 1) {
+                    echo __('one log record');
+                } else {
+                    echo __('%s log records',$i);
+                }
+            ?>
+        </div>
     </div>

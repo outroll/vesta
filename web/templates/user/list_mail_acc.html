@@ -1,6 +1,6 @@
            <table class="submenu">
                 <tr>
-                    <td style="padding: 14px 10px">
+                    <td class="wrapper">
                         <div class="submenu-button-block">
                             <button class="submenu-button-main" onclick="location.href='/add/mail/?domain=<?php echo $_GET['domain'] ?>'"> <?php print __('Add Mail Account');?> </button>
                         </div>
@@ -81,7 +81,7 @@
                                         <tr>
                                             <td class="chart1" style="padding: 4px 0 0 0">
                                                 <?php print __('Disk');?>: <?php echo humanize_usage($data[$key]['U_DISK']) ?> 
-                                                <div style="width:160px; height:6px; font-size:0;background-color:#c7d5b3;">
+                                                <div style="width:160px; height:6px; font-size:0;background-color:#ddd;">
                                                     <div style="width:<?php echo get_percentage($data[$key]['U_DISK'],$data[$key]['QUOTA']) ?>%; height:6px; background-color:#9bbb62; border-right:1px #9bbb62 solid;"></div>
                                                 </div>
                                             </td>
@@ -130,18 +130,13 @@
             </table>
             </form>
 
-            <table class="data-count">
-                <tr>
-                    <td width="174px"></td>
-                    <td>
-                        <?php
-                            if ( $i == 1) {
-                                echo __('1 mail account');
-                            } else {
-                                echo __('%s mail accounts',$i);
-                            }
-                        ?> 
-                    </td>
-                </tr>
-            </table>
+            <div class="data-count">
+                <?php
+                    if ( $i == 1) {
+                        echo __('1 mail account');
+                    } else {
+                        echo __('%s mail accounts',$i);
+                    }
+                ?> 
+            </div>
         </div>

@@ -10,12 +10,13 @@ export DEBIAN_FRONTEND=noninteractive
 RHOST='apt.vestacp.com'
 CHOST='c.vestacp.com'
 VERSION='0.9.8/debian'
-software="nginx apache2 apache2-utils apache2.2-common apache2-suexec-custom
-    libapache2-mod-ruid2 libapache2-mod-rpaf libapache2-mod-fcgid bind9 idn
-    mysql-server mysql-common mysql-client php5-common php5-cgi php5-mysql
-    php5-curl libapache2-mod-php5 vsftpd mc exim4 exim4-daemon-heavy
-    clamav-daemon flex dovecot-imapd dovecot-pop3d phpMyAdmin awstats
-    webalizer jwhois rssh git spamassassin roundcube roundcube-mysql
+software="nginx apache2 apache2-utils apache2.2-common bsdutils
+    apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
+    libapache2-mod-fcgid bind9 idn mysql-server mysql-common
+    mysql-client php5-common php5-cgi php5-mysql php5-curl
+    libapache2-mod-php5 vsftpd mc exim4 exim4-daemon-heavy clamav-daemon
+    flex dovecot-imapd dovecot-pop3d phpMyAdmin awstats webalizer
+    jwhois rssh git spamassassin roundcube roundcube-mysql
     roundcube-plugins sudo bc ftp lsof ntpdate rrdtool quota e2fslibs
     dnsutils vesta vesta-nginx vesta-php"
 
@@ -24,7 +25,7 @@ help() {
    -e, --email                Set email address
    -f, --force                Force installation
    -h, --help                 Print this help and exit
-   -n, --noupdate             Do not run yum update command
+   -n, --noupdate             Do not run apt-get upgrade command
    -m, --mysql-password       Set MySQL password instead of generating it
    -p, --password             Set admin password instead of generating it
    -s, --hostname             Set server hostname
@@ -72,7 +73,7 @@ while getopts "dhfnqe:m:p:s:" Option; do
         h) help ;;                        # Help
         e) email=$OPTARG ;;               # Set email
         f) force='yes' ;;                 # Force install
-        n) noupdate='yes' ;;              # Disable yum update
+        n) noupdate='yes' ;;              # Disable apt-get upgrade
         m) mpass=$OPTARG ;;               # MySQL pasword
         p) vpass=$OPTARG ;;               # Admin password
         s) servername=$OPTARG ;;          # Server hostname
@@ -89,7 +90,7 @@ fi
 
 # Check supported version
 if [ -e '/etc/redhat-release' ] || [ -e '/etc/lsb-release' ]; then
-    echo 'Error: sorry, this installer can work only on Debian 7'
+    echo 'Error: sorry, this installer works only on Debian 7'
     exit 1
 fi
 
@@ -232,9 +233,6 @@ if [ -z $email ]; then
     # Define server hostname
     if [ -z "$servername" ]; then
         read -p "Please enter hostname [$(hostname)]: " servername
-    fi
-    if [ -z "$servername" ]; then
-        servername=$(hostname)
     fi
 fi
 
@@ -464,6 +462,9 @@ if [ "$srv_type" = 'micro' ] ||  [ "$srv_type" = 'small' ]; then
 fi
 
 # Set server hostname
+if [ -z "$servername" ]; then
+    servername=$(hostname)
+fi
 /usr/local/vesta/bin/v-change-sys-hostname $servername 2>/dev/null
 
 # Templates
@@ -499,7 +500,7 @@ chown root:mail /usr/local/vesta/ssl/*
 chmod 660 /usr/local/vesta/ssl/*
 rm /tmp/vst.pem
 
-# Enable password auth
+# Enable SSH password auth
 sed -i "s/rdAuthentication no/rdAuthentication yes/g" /etc/ssh/sshd_config
 service ssh restart
 
@@ -554,9 +555,9 @@ wget $CHOST/$VERSION/apache2-status.conf \
 wget $CHOST/$VERSION/apache2.log -O /etc/logrotate.d/apache2
 rm -f /etc/apache2/conf.d/vesta.conf
 echo > /etc/apache2/conf.d/vesta.conf
-echo "# Powever by vesta" > /etc/apache2/sites-available/default
-echo "# Powever by vestas" > /etc/apache2/sites-available/default-ssl
-echo "# Powever by vestas" > /etc/apache2/ports.conf
+echo "# Powered by vesta" > /etc/apache2/sites-available/default
+echo "# Powered by vesta" > /etc/apache2/sites-available/default-ssl
+echo "# Powered by vesta" > /etc/apache2/ports.conf
 touch /var/log/apache2/access.log
 touch /var/log/apache2/error.log
 mkdir -p /var/log/apache2/domains
@@ -627,9 +628,9 @@ fi
 
 # Exim
 wget $CHOST/$VERSION/exim4.conf.template -O /etc/exim4/exim4.conf.template
-if [ "$srv_type" = 'micro' ] ||  [ "$srv_type" = 'small' ]; then
-    sed -i "s/^SPAMASSASSIN/#SPAMASSASSIN/g" /etc/exim4/exim4.conf.template
-    sed -i "s/^CLAMD/#CLAMD/g" /etc/exim4/exim4.conf.template
+if [ "$srv_type" != 'micro' ] &&  [ "$srv_type" != 'small' ]; then
+    sed -i "s/#SPAM/SPAM/g" /etc/exim4/exim4.conf.template
+    sed -i "s/#CLAMD/CLAMD/g" /etc/exim4/exim4.conf.template
 fi
 wget $CHOST/$VERSION/dnsbl.conf -O /etc/exim4/dnsbl.conf
 wget $CHOST/$VERSION/spam-blocks.conf -O /etc/exim4/spam-blocks.conf
@@ -665,12 +666,6 @@ tar -xzf dovecot-conf.d.tar.gz
 rm -f dovecot-conf.d.tar.gz
 chown -R root:root /etc/dovecot
 gpasswd -a dovecot mail
-if [ "$codename" = 'precise' ]; then
-    dovecot_ssl_conf="/etc/dovecot/conf.d/10-ssl.conf"
-    echo "ssl = yes" > $dovecot_ssl_conf
-    echo "ssl_cert = </etc/ssl/certs/dovecot.pem" >> $dovecot_ssl_conf
-    echo "ssl_key = </etc/ssl/private/dovecot.pem" >> $dovecot_ssl_conf
-fi
 update-rc.d dovecot defaults
 service dovecot stop > /dev/null 2>&1
 service dovecot start
@@ -715,6 +710,7 @@ wget $CHOST/$VERSION/apache2-pma.conf -O /etc/phpmyadmin/apache.conf
 wget $CHOST/$VERSION/pma.conf -O /etc/phpmyadmin/config.inc.php
 ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
 mv -f /etc/phpmyadmin/config-db.php /etc/phpmyadmin/config-db.php_
+chmod 777 /var/lib/phpmyadmin/tmp
 
 # Roundcube configuration
 wget $CHOST/$VERSION/apache2-webmail.conf -O /etc/roundcube/apache.conf
@@ -733,7 +729,7 @@ mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
 mkdir -p /var/log/roundcube/error
 chmod -R 777 /var/log/roundcube
 
-# Adding admin user
+# Deleting old admin user account if exists
 if [ ! -z "$(grep ^admin: /etc/passwd)" ] && [ "$force" = 'yes' ]; then
     chattr -i /home/admin/conf > /dev/null 2>&1
     userdel -f admin
@@ -750,7 +746,7 @@ if [ -z "$vpass" ]; then
     vpass=$(gen_pass)
 fi
 
-# Adding vesta account
+# Adding admin account
 $VESTA/bin/v-add-user admin $vpass $email default System Administrator
 if [ $? -ne 0 ]; then
     echo "Error: can't create admin user"
@@ -789,7 +785,7 @@ $VESTA/bin/v-add-dns-domain admin default.domain $vst_ip
 # Add default mail domain
 $VESTA/bin/v-add-mail-domain admin default.domain
 
-# Configuring crond
+# Configuring cron jobs
 command='sudo /usr/local/vesta/bin/v-update-sys-queue disk'
 $VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command"
 command='sudo /usr/local/vesta/bin/v-update-sys-queue traffic'
@@ -805,7 +801,7 @@ $VESTA/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
 command='sudo /usr/local/vesta/bin/v-update-sys-rrd'
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
 
-# Build inititall rrd images
+# Building inititall rrd images
 $VESTA/bin/v-update-sys-rrd
 
 # Enable file system quota

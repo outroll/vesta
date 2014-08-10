@@ -1,6 +1,6 @@
             <table class="submenu">
                 <tr>
-                    <td style="padding: 14px 10px">
+                    <td class="wrapper">
                         <div class="submenu-button-block">
                             <button class="submenu-button-main" onclick="location.href='/add/ip/'"> <?php print __('Add IP');?> </button>
                         </div>
@@ -135,18 +135,13 @@
             </table>
             </form>
 
-            <table class="data-count">
-                <tr>
-                    <td width="174px"></td>
-                    <td>
-                        <?php
-                            if ( $i == 1) {
-                                echo __('1 IP address');
-                            } else {
-                                echo __('%s IP addresses',$i);
-                            }
-                        ?> 
-                    </td>
-                </tr>
-            </table>
+            <div class="data-count">
+                <?php
+                    if ( $i == 1) {
+                        echo __('1 IP address');
+                    } else {
+                        echo __('%s IP addresses',$i);
+                    }
+                ?> 
+            </div>
         </div>
