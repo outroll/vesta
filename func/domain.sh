@@ -367,7 +367,7 @@ del_web_config() {
 # Update web domain values
 upd_web_domain_values() {
     group="$user"
-    email="info@$domain"
+    email="info@$domain_idn"
     docroot="$HOMEDIR/$user/web/$domain/public_html"
     sdocroot=$docroot
     if [ "$SSL_HOME" = 'single' ]; then
