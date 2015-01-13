@@ -1,0 +1,91 @@
+#!/bin/bash
+# info: Deletes a key for given user
+# options: USER KEY [FORMAT]
+#
+# This function removes a key for a givin user
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Includes
+source $VESTA/func/main.sh
+
+# Argument defenition
+user=$1
+key=$2
+keys='/usr/local/vesta/data/keys/'
+format=${3-shell}
+
+json_delete_key(){
+    if [ -e ${keys}${key} ]; then
+        echo "{"
+        echo -e "\t\"1\": {"
+        echo -e "\t\t\"key\":" \"${key}\"\,
+        echo -e "\t\t\"msg\":" \"Removed\"
+        echo -e "\t}"
+        echo "}"
+        echo
+        rm -f ${keys}${key}
+    else
+        echo "{"
+        echo -e "\t\"1\": {"
+        echo -e "\t\t\"msg\":" \"The key doesn\'t exist.\"
+        echo -e "\t}"
+        echo "}"
+        echo
+    fi
+}
+
+plain_delete_key(){
+    if [ -e ${keys}${key} ]; then
+        echo "$key  Removed"
+        echo
+        rm -f ${keys}${key}
+    else
+        echo "The key doesn't exist."
+        echo
+    fi
+}
+
+shell_delete_key(){
+    if [ -e ${keys}${key} ]; then
+        echo "API KEY                           ACTION"
+        echo "--------------------------------  --------"
+        echo ${key}"  "Removed
+        echo
+        rm -f ${keys}${key}
+    else
+        echo "The key doesn't exist."
+        echo
+    fi
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER KEY [FORMAT]'
+validate_format 'user'
+is_object_valid 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+case ${format} in
+    json)   json_delete_key ;;
+    plain)  plain_delete_key ;;
+    shell)  shell_delete_key ;;
+    *)      check_args '2' '0' 'USER KEY [FORMAT]'
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

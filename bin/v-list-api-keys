@@ -1,0 +1,121 @@
+#!/bin/bash
+# info: list keys for a given user
+# options: USER [FORMAT]
+#
+# This function finds any keys related to a given user and
+# displays them with a discription
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Includes
+source $VESTA/func/main.sh
+
+# Argument defenition
+user=$1
+format=${2-shell}
+keys='/usr/local/vesta/data/keys/'
+
+function json_list_keys() {
+    i=0
+    echo "{"
+    if [[ $(ls -A ${keys}) ]]; then
+        total=$(ls -l ${keys}* | wc -l)
+        for key in ${keys}*
+        do
+            if [ $(sed -n -e 's/^\s*user\s*=\s*//p' ${key}) = ${user} ] ; then
+                i=$(($i+1))
+                desc=$(sed -n -e 's/^\s*desc\s*=\s*//p' ${key})
+                echo -e "\t\"$i\": {"
+                echo -e "\t\t\"key\":" \"$(basename ${key})\"\,
+                echo -e "\t\t\"desc\":" \"${desc:0:32}\"
+                if [ "$total" = "$i" ]; then
+                    echo -e "\t}"
+                else
+                    echo -e "\t},"
+                fi
+            fi
+        done
+    fi
+
+    if [ "$i" = "0" ]; then
+        echo -e "\t\"1\": {"
+        echo -e "\t\t\"msg\":" \"keys were found.\"
+        echo -e "\t}"
+    fi
+    echo "}"
+    echo
+}
+
+function plain_list_keys() {
+    i=0
+    if [[ $(ls -A ${keys}) ]]; then
+        for key in ${keys}*
+        do
+            if [ $(sed -n -e 's/^\s*user\s*=\s*//p' ${key}) = ${user} ] ; then
+                i=$(($i+1))
+                desc=$(sed -n -e 's/^\s*desc\s*=\s*//p' ${key})
+                echo -e $(basename ${key})"  "${desc:0:32}
+            fi
+        done
+    fi
+
+    if [ "$i" = "0" ]; then
+        echo "$i keys were found."
+    fi
+    echo
+}
+
+function shell_list_keys() {
+    i=0
+    if [[ $(ls -A ${keys}) ]]; then
+        echo "API KEY                           DESC"
+        echo "--------------------------------  --------"
+        for key in ${keys}*
+        do
+            if [ $(sed -n -e 's/^\s*user\s*=\s*//p' ${key}) = ${user} ] ; then
+                i=$(($i+1))
+                desc=$(sed -n -e 's/^\s*desc\s*=\s*//p' ${key})
+                echo $(basename ${key})"  "${desc:0:32}
+            fi
+        done
+        echo
+    fi
+
+    if [ "$i" = "1" ]; then
+        echo "$i key was found."
+    else
+        echo "$i keys were found."
+    fi
+    echo
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER [FORMAT]'
+validate_format 'user'
+is_object_valid 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+case ${format} in
+    json)   json_list_keys ;;
+    plain)  plain_list_keys ;;
+    shell)  shell_list_keys ;;
+    *)      check_args '1' '0' 'USER [FORMAT]'
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

@@ -68,6 +68,9 @@ if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL_SYSTEM" != 'no' ]; then
     fi
 fi
 
+# Deleting user api keys
+$BIN/v-delete-api-keys "$user" "silent"
+
 # Checking db system is enabled
 if [ ! -z "$DB_SYSTEM" ] && [ "$DB_SYSTEM" != 'no' ]; then
     $BIN/v-unsuspend-databases $user
@@ -85,7 +88,7 @@ if [ "$rv" -ne '0' ]; then
     exit $rv
 fi
 
-# Deleteing user pipes
+# Deleting user pipes
 sed -i "/ $user$/d" $VESTA/data/queue/disk.pipe
 sed -i "/ $user$/d" $VESTA/data/queue/traffic.pipe
 
