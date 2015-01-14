@@ -26,7 +26,7 @@ json_list_dkim_dns() {
     echo -e "\t},"
     echo -e "\n\t\"mail._domainkey\": {"
     echo "        \"TTL\": \"3600\","
-    echo "        \"TXT\": \"'$pub'\""
+    echo "        \"TXT\": \"'v=DKIM1; g=*; k=rsa; p=$pub;'\""
     echo -e "\t}\n}"
 
 }
@@ -34,7 +34,7 @@ json_list_dkim_dns() {
 # Shell function
 shell_list_dkim_dns() {
     echo "_domainkey      3600    IN    TXT    \"t=y; o=~;\""
-    echo "mail._domainkey 3600    IN    TXT    \"k=rsa; p=$pub\""
+    echo "mail._domainkey 3600    IN    TXT    \"v=DKIM1; g=*; k=rsa; p=$pub;\""
 }
 
 
@@ -53,7 +53,7 @@ is_object_valid 'mail' 'DOMAIN' "$domain"
 
 # Check pub key
 if [ -e "$USER_DATA/mail/$domain.pub" ]; then
-    pub=$(cat $USER_DATA/mail/$domain.pub | sed ':a;N;$!ba;s/\n/\\n/g')
+    pub=$(cat $USER_DATA/mail/$domain.pub |grep -v ' KEY---' |tr -d '\n')
 else
     pub="DKIM-SUPPORT-IS-NOT-ACTIVATED"
 fi

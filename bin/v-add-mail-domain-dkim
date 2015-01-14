@@ -68,7 +68,7 @@ if [ ! -z "$DNS_SYSTEM" ] && [ -e "$USER_DATA/dns/$domain.conf" ]; then
     $BIN/v-add-dns-record $user $domain $record TXT "$policy"
 
     record='mail._domainkey'
-    selector="\"k=rsa\; p=$p\""
+    selector="\"v=DKIM1; g=*; k=rsa; p=$p;\""
     $BIN/v-add-dns-record $user $domain $record TXT "$selector"
 fi
 
