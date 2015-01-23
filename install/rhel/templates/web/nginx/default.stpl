@@ -4,7 +4,11 @@ server {
     ssl         on;
     ssl_certificate      %ssl_pem%;
     ssl_certificate_key  %ssl_key%;
-    error_log  /var/log/httpd/domains/%domain%.error.log error;
+    %ssl_ca_str%ssl_stapling on;
+    %ssl_ca_str%ssl_stapling_verify on;
+    %ssl_ca_str%ssl_trusted_certificate %ssl_ca%;
+
+    error_log  /var/log/%web_system%/domains/%domain%.error.log error;
 
     location / {
         proxy_pass      https://%ip%:%web_ssl_port%;
