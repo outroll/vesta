@@ -20,6 +20,8 @@ if (!empty($_POST['ok'])) {
     // Check empty fields
     if (empty($_POST['v_action'])) $errors[] = __('action');
     if (empty($_POST['v_protocol'])) $errors[] = __('protocol');
+    // if I need a firewall rule with port 0 here gives me error
+    // So port should accept 0 value too
     if (empty($_POST['v_port'])) $errors[] = __('port');
     if (empty($_POST['v_ip'])) $errors[] = __('ip address');
     if (!empty($errors[0])) {
