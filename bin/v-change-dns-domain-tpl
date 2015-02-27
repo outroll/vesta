@@ -65,6 +65,14 @@ cat $DNSTPL/$template.tpl |\
         -e "s/%date%/$DATE/g" > $USER_DATA/dns/$domain.conf
 records="$(wc -l $USER_DATA/dns/$domain.conf |cut -f 1 -d ' ')"
 
+# Reapply dkim records if enabled
+if [ -e "$USER_DATA/mail/$domain.pub" ]; then
+    p=$(cat $USER_DATA/mail/$domain.pub |grep -v ' KEY---' |tr -d '\n')
+    echo "ID='$(($records+1))' RECORD='_domainkey' TYPE='TXT' PRIORITY='' VALUE='\"t=y; o=~;\"' SUSPENDED='no' TIME='$TIME' DATE='$DATE'" >> "$USER_DATA/dns/$domain.conf"
+    echo "ID='$(($records+2))' RECORD='mail._domainkey' TYPE='TXT' PRIORITY='' VALUE='\"v=DKIM1; g=*; k=rsa; p=$p;\"' SUSPENDED='no' TIME='$TIME' DATE='$DATE'" >> "$USER_DATA/dns/$domain.conf"
+    records=$(($records+2))
+fi
+
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
     update_domain_zone

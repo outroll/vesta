@@ -29,7 +29,7 @@
             <table class="data">
                 <?php
                     list($http_host, $port) = explode(':', $_SERVER["HTTP_HOST"].":");
-                    $webmail = "http://".$http_host."/webmail/";
+                    $webmail = "https://".$http_host."/webmail/";
                     if (!empty($_SESSION['MAIL_URL'])) $webmail = $_SESSION['MAIL_URL'];
 
                     foreach ($data as $key => $value) {

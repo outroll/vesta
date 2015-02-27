@@ -1,38 +1,91 @@
 #!/bin/bash
-# info: generate api key
-# options: none
+# info: api key generator
+# options: USER DESCRIPTION [FORMAT]
 #
-# The function creates a key file in /usr/local/vesta/data/keys/
+# This function creates a new key in directory:
+# "/usr/local/vesta/data/keys/" every key has a user name
+# and description embedded within the generated key.
 
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-keygen()
-{
+# Includes
+source $VESTA/func/main.sh
+
+# Argument defenition
+user=$1
+description=$2
+format=${3-shell}
+keys='/usr/local/vesta/data/keys/'
+
+function keygen(){
     cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1
 }
-KEYS='/usr/local/vesta/data/keys/'
-HASH=$(keygen)
+
+hash=$(keygen)
+
+function json_add_key() {
+    echo "{"
+    echo -e "\t\"1\": {"
+    echo -e "\t\t\"key\": \"$hash\","
+    echo -e "\t\t\"desc\": \"$description\""
+    echo -e "\t}"
+    echo "}"
+    echo
+}
+
+function plain_add_key() {
+    echo "$hash  $description"
+    echo
+}
+
+function shell_add_key() {
+    echo "API KEY                           DESC"
+    echo "--------------------------------  --------"
+    echo "$hash  $description"
+    echo
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DESCRIPTION [FORMAT]'
+validate_format 'user description format'
+is_object_valid 'user' 'USER' "$user"
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-if [ ! -d ${KEYS} ]; then
-  mkdir ${KEYS}
+# Make a dir for keys if missing
+if [ ! -d ${keys} ] ; then
+  mkdir ${keys}
 fi
 
-if [[ -e ${KEYS}${HASH} ]] ; then
-    while [[ -e ${KEYS}${HASH} ]] ; do
-        HASH=$(keygen)
+# Generate a unique key
+if [ -e ${keys}${hash} ] ; then
+    while [ -e ${keys}${hash} ] ; do
+        hash=$(keygen)
     done
 fi
 
-touch ${KEYS}${HASH}
-echo ${HASH}
+# Make are file and push data into it
+touch ${keys}${hash}
+echo "user=$user" >> ${keys}${hash}
+echo "desc=$description" >> ${keys}${hash}
+
+case ${format} in
+    json)   json_add_key ;;
+    plain)  plain_add_key ;;
+    shell)  shell_add_key ;;
+    *)      check_args '2' '0' 'USER DESCRIPTION [FORMAT]'
+esac
+    
 
 #----------------------------------------------------------#
 #                       Vesta                              #

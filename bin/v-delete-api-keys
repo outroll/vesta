@@ -1,0 +1,137 @@
+#!/bin/bash
+# info: removes all keys for given user
+# options: USER [FORMAT]
+#
+# This function removes all keys for a givin user
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Includes
+source $VESTA/func/main.sh
+
+# Argument defenition
+user=$1
+format=${2-shell}
+keys='/usr/local/vesta/data/keys/'
+
+json_delete_keys(){
+    i=0
+    echo "{"
+    if [[ $(ls -A ${keys}) ]]; then
+        total=$(ls -l ${keys}* | wc -l)
+        for key in ${keys}*
+        do
+            if [ $(sed -n -e 's/^\s*user\s*=\s*//p' ${key}) = ${user} ] ; then
+                i=$(($i+1))
+                echo -e "\t\"$i\": {"
+                echo -e "\t\t\"key\":" \"$(basename ${key})\"\,
+                echo -e "\t\t\"msg\":" \"Removed\"
+                rm -f ${key}
+                if [ "$total" = "$i" ]; then
+                    echo -e "\t}"
+                else
+                    echo -e "\t},"
+                fi
+            fi
+        done
+    fi
+
+    if [ "$i" = "0" ]; then
+        echo -e "\t\"1\": {"
+        echo -e "\t\t\"msg\":" \"keys were found.\"
+        echo -e "\t}"
+    fi
+    echo "}"
+    echo
+}
+
+plain_delete_keys(){
+    i=0
+
+    if [[ $(ls -A ${keys}) ]]; then
+        for key in ${keys}*
+        do
+            if [ $(sed -n -e 's/^\s*user\s*=\s*//p' ${key}) = ${user} ] ; then
+                i=$(($i+1))
+                echo $(basename ${key})"  "Removed
+                rm -f ${key}
+            fi
+        done
+    fi
+
+    if [ "$i" = "0" ]; then
+        echo "$i keys were found."
+    fi
+    echo
+}
+
+shell_delete_keys(){
+    i=0
+
+    if [[ $(ls -A ${keys}) ]]; then
+        echo "API KEY                           DESC"
+        echo "--------------------------------  --------"
+        for key in ${keys}*
+        do
+            if [ $(sed -n -e 's/^\s*user\s*=\s*//p' ${key}) = ${user} ] ; then
+                i=$(($i+1))
+                DESC=$(sed -n -e 's/^\s*desc\s*=\s*//p' ${key})
+                echo $(basename ${key})"  "${DESC:0:32}
+                rm -f ${key}
+            fi
+        done
+        echo
+    fi
+
+    if [ "$i" = "0" ]; then
+        echo "$i keys were found."
+    elif [ "$i" = "1" ]; then
+        echo "$i key was removed."
+    else
+        echo "$i keys were removed."
+    fi
+    echo
+}
+
+silent_delete_keys(){
+    if [[ $(ls -A ${keys}) ]]; then
+        for key in ${keys}*
+        do
+            if [ $(sed -n -e 's/^\s*user\s*=\s*//p' ${key}) = ${user} ] ; then
+                rm -f ${key}
+            fi
+        done
+    fi
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER [FORMAT]'
+validate_format 'user'
+is_object_valid 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+case ${format} in
+    json)   json_delete_keys ;;
+    plain)  plain_delete_keys ;;
+    shell)  shell_delete_keys ;;
+    silent)  silent_delete_keys ;;
+    *)      check_args '1' '0' 'USER [FORMAT]'
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit
