@@ -273,6 +273,15 @@ is_object_value_exist() {
     fi
 }
 
+# Check if password is transmitted via file
+is_password_valid() {
+    if [[ "$password" =~ ^/tmp/ ]]; then
+        if [ -f "$password" ]; then
+            password=$(head -n1 $password)
+        fi
+    fi
+}
+
 # Get object value
 get_object_value() {
     object=$(grep "$2='$3'" $USER_DATA/$1.conf)
@@ -457,7 +466,7 @@ recalc_user_disk_usage() {
         sed -i "s/U_DISK_DB='$d'/U_DISK_DB='$usage'/g" $USER_DATA/user.conf
         u_usage=$((u_usage + usage))
     fi
-    usage=$(grep 'U_DIR_DISK=' $USER_DATA/user.conf | cut -f 2 -d "'")
+    usage=$(grep 'U_DISK_DIRS=' $USER_DATA/user.conf | cut -f 2 -d "'")
     u_usage=$((u_usage + usage))
     old=$(grep "U_DISK='" $USER_DATA/user.conf | cut -f 2 -d \')
     sed -i "s/U_DISK='$old'/U_DISK='$u_usage'/g" $USER_DATA/user.conf

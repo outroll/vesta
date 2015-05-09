@@ -45,6 +45,7 @@ if ( $v_ssl == 'yes' ) {
     $v_ssl_ca = $ssl_str[$v_domain]['CA'];
 }
 $v_ssl_home = $data[$v_domain]['SSL_HOME'];
+$v_backend_template = $data[$v_domain]['BACKEND'];
 $v_proxy = $data[$v_domain]['PROXY'];
 $v_proxy_template = $data[$v_domain]['PROXY'];
 $v_proxy_ext = str_replace(',', ', ', $data[$v_domain]['PROXY_EXT']);
@@ -74,6 +75,13 @@ unset($output);
 exec (VESTA_CMD."v-list-web-templates json", $output, $return_var);
 $templates = json_decode(implode('', $output), true);
 unset($output);
+
+// List backend templates
+if (!empty($_SESSION['WEB_BACKEND'])) {
+    exec (VESTA_CMD."v-list-web-templates-backend json", $output, $return_var);
+    $backend_templates = json_decode(implode('', $output), true);
+    unset($output);
+}
 
 // List proxy templates
 if (!empty($_SESSION['PROXY_SYSTEM'])) {
@@ -188,6 +196,14 @@ if (!empty($_POST['save'])) {
                 }
             }
         }
+    }
+
+    // Change backend template
+    if ((!empty($_SESSION['WEB_BACKEND'])) && ( $v_backend_template != $_POST['v_backend_template']) && (empty($_SESSION['error_msg']))) {
+            $v_backend_template = $_POST['v_backend_template'];
+            exec (VESTA_CMD."v-change-web-domain-backend-tpl ".$v_username." ".$v_domain." ".escapeshellarg($v_backend_template), $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
     }
 
     // Delete proxy support
@@ -426,10 +442,14 @@ if (!empty($_POST['save'])) {
             $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
         } else {
             $v_stats_user = escapeshellarg($_POST['v_stats_user']);
-            $v_stats_password = escapeshellarg($_POST['v_stats_password']);
+            $v_stats_password = tempnam("/tmp","vst");
+            $fp = fopen($v_stats_password, "w");
+            fwrite($fp, $_POST['v_stats_password']."\n");
+            fclose($fp);
             exec (VESTA_CMD."v-add-web-domain-stats-user ".$v_username." ".$v_domain." ".$v_stats_user." ".$v_stats_password, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
+            unlink($v_stats_password);
             $v_stats_password = "••••••••";
         }
     }
@@ -450,10 +470,14 @@ if (!empty($_POST['save'])) {
         }
         if (($v_stats_user != $_POST['v_stats_user']) || ($_POST['v_stats_password'] != "••••••••" ) && (empty($_SESSION['error_msg']))) {
             $v_stats_user = escapeshellarg($_POST['v_stats_user']);
-            $v_stats_password = escapeshellarg($_POST['v_stats_password']);
+            $v_stats_password = tempnam("/tmp","vst");
+            $fp = fopen($v_stats_password, "w");
+            fwrite($fp, $_POST['v_stats_password']."\n");
+            fclose($fp);
             exec (VESTA_CMD."v-add-web-domain-stats-user ".$v_username." ".$v_domain." ".$v_stats_user." ".$v_stats_password, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
+            unlink($v_stats_password);
             $v_stats_password = "••••••••";
         }
     }
@@ -484,9 +508,12 @@ if (!empty($_POST['save'])) {
                 $v_ftp_username      = $v_ftp_user_data['v_ftp_user'];
                 $v_ftp_username_full = $user . '_' . $v_ftp_user_data['v_ftp_user'];
                 $v_ftp_user = escapeshellarg($v_ftp_username);
-                $v_ftp_password = escapeshellarg($v_ftp_user_data['v_ftp_password']);
                 $v_ftp_path = escapeshellarg(trim($v_ftp_user_data['v_ftp_path']));
                 if (empty($_SESSION['error_msg'])) {
+                    $v_ftp_password = tempnam("/tmp","vst");
+                    $fp = fopen($v_ftp_password, "w");
+                    fwrite($fp, $v_ftp_user_data['v_ftp_password']."\n");
+                    fclose($fp);
                     exec (VESTA_CMD."v-add-web-domain-ftp ".$v_username." ".$v_domain." ".$v_ftp_username." ".$v_ftp_password . " " . $v_ftp_path, $output, $return_var);
                     check_return_code($return_var,$output);
                     if ((!empty($v_ftp_user_data['v_ftp_email'])) && (empty($_SESSION['error_msg']))) {
@@ -499,6 +526,8 @@ if (!empty($_POST['save'])) {
                         unset($v_ftp_email);
                     }
                     unset($output);
+                    unlink($v_ftp_password);
+                    $v_ftp_password = escapeshellarg($v_ftp_user_data['v_ftp_password']);
                 }
 
                 if ($return_var == 0) {
@@ -552,7 +581,13 @@ if (!empty($_POST['save'])) {
                 $v_ftp_path = escapeshellarg(trim($v_ftp_user_data['v_ftp_path']));
                 exec (VESTA_CMD."v-change-web-domain-ftp-path ".$v_username." ".$v_domain." ".$v_ftp_username." ".$v_ftp_path, $output, $return_var);
                 if ($v_ftp_user_data['v_ftp_password'] != "'••••••••'" && $v_ftp_user_data['v_ftp_password'] != "••••••••" && !empty($v_ftp_user_data['v_ftp_password'])) {
+                    $v_ftp_password = tempnam("/tmp","vst");
+                    $fp = fopen($v_ftp_password, "w");
+                    fwrite($fp, $v_ftp_user_data['v_ftp_password']."\n");
+                    fclose($fp);
                     exec (VESTA_CMD."v-change-web-domain-ftp-password ".$v_username." ".$v_domain." ".$v_ftp_username." ".$v_ftp_user_data['v_ftp_password'], $output, $return_var);
+                    unlink($v_ftp_password);
+                    $v_ftp_user_data['v_ftp_password'] = escapeshellarg(trim($v_ftp_user_data['v_ftp_password']));
                     $to = $v_ftp_user_data['v_ftp_email'];
                     $subject = __("FTP login credentials");
                     $hostname = exec('hostname');

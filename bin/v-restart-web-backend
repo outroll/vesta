@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: restart web server
+# info: restart backend server
 # options: NONE
 #
-# The function reloads web server configuration.
+# The function reloads backend server configuration.
 
 
 #----------------------------------------------------------#
@@ -18,9 +18,9 @@ send_email_report() {
     email=$(grep CONTACT $VESTA/data/users/admin/user.conf)
     email=$(echo "$email" | cut -f 2 -d "'")
     tmpfile=$(mktemp)
-    subj="$(hostname): $WEB_SYSTEM restart failed"
-    service $WEB_SYSTEM configtest >> $tmpfile 2>&1
-    service $WEB_SYSTEM restart >> $tmpfile 2>&1
+    subj="$(hostname): $WEB_BACKEND restart failed"
+    service $WEB_BACKEND configtest >> $tmpfile 2>&1
+    service $WEB_BACKEND restart >> $tmpfile 2>&1
     cat $tmpfile | $send_mail -s "$subj" $email
     rm -f $tmpfile
 }
@@ -40,31 +40,16 @@ if [ -z "$1" ] && [ "$SCHEDULED_RESTART" = 'yes' ]; then
     exit
 fi
 
-if [ -z "$WEB_SYSTEM" ] || [ "$WEB_SYSTEM" = 'remote' ]; then
+if [ -z "$WEB_BACKEND" ] || [ "$WEB_BACKEND" = 'remote' ]; then
     exit
 fi
 
-# Reload web system
-service $WEB_SYSTEM reload >/dev/null 2>&1
-rc=$?
-
-# Workaround for Ubuntu 12.04
-if [ "$WEB_SYSTEM" == 'apache2' ]; then
-    pid1='/var/run/apache2.pid'
-    pid2='/var/run/apache2/apache2.pid'
-    if [ ! -e "$pid1" ] && [ ! -e "$pid2" ]; then
-        rc=1
-    fi
-fi
-
-# Resart web system if reload didn't work
-if [ "$rc" -ne 0 ]; then
-    service $WEB_SYSTEM restart >/dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        send_email_report
-        echo "Error: $WEB_SYSTEM restart failed"
-        exit $E_RESTART
-    fi
+# Restart system
+service $WEB_BACKEND restart >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    send_email_report
+    echo "Error: $WEB_BACKEND restart failed"
+    exit $E_RESTART
 fi
 
 # Update restart queue
