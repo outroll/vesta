@@ -2,14 +2,14 @@
 # info: list user ips
 # options: USER [FORMAT]
 #
-# The function for obtainig the list of available ip addresses.
+# The function for obtaining the list of available ip addresses.
 
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 format=${2-shell}
 
@@ -117,7 +117,7 @@ is_object_valid 'user' 'USER' "$user"
 #----------------------------------------------------------#
 
 # Defining fileds to select
-fields='$IP $OWNER $STATUS $NAME $NAT'
+fields='$IP $OWNER $STATUS $NAME $NAT $VERSION'
 
 # Listing ips
 case $format in

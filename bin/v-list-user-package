@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 package=$1
 PACKAGE=$package
 format=${2-shell}
@@ -29,6 +29,9 @@ json_list_package() {
         if [ $i -eq 1 ]; then
             echo -e "\t\"$value\": {"
         else
+            if [ "${field//$/}" = 'WEB_TEMPLATE' ] || [ "${field//$/}" = 'BACKEND_TEMPLATE' ] || [ "${field//$/}" = 'DNS_TEMPLATE' ] || [ "${field//$/}" = 'PROXY_TEMPLATE' ]; then
+                value=$(echo "$value" | cut -f 2 -d / )
+            fi
             if [ $fileds_count -eq $i ]; then
                 echo -e "\t\t\"${field//$/}\": \"${value//,/, }\""
             else
@@ -49,6 +52,9 @@ shell_list_package() {
     eval $line
     for field in $fields; do
         eval key="$field"
+            if [ "${field//$/}" = 'WEB_TEMPLATE' ] || [ "${field//$/}" = 'BACKEND_TEMPLATE' ] || [ "${field//$/}" = 'DNS_TEMPLATE' ] || [ "${field//$/}" = 'PROXY_TEMPLATE' ]; then
+                key=$(echo "$key" | cut -f 2 -d / )
+            fi
         if [ -z "$key" ]; then
             key='NULL'
         fi

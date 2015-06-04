@@ -10,7 +10,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain_idn=$(idn -t --quiet -a "$domain")
@@ -21,8 +21,16 @@ restart=$4
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
+
+tpldir="ipv4ipv6"
+if [ "$IPV4" == 'yes' ] && [ "$IPV6" == 'no' ]; then
+    tpldir="ipv4"
+elif [ "$IPV4" == 'no' ] && [ "$IPV6" == 'yes' ]; then
+    tpldir="ipv6"
+fi
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -44,7 +52,14 @@ is_web_template_valid
 
 # Parsing domain values
 get_domain_values 'web'
-ip=$(get_real_ip $IP)
+ip=''
+ipv6=''
+if [ "$IPV4" == "yes" ] ; then
+  ip=$(get_real_ip $IP)
+fi
+if [ "$IPV6" == "yes" ] ; then
+  ipv6=$(get_real_ipv6 $IP6)
+fi
 
 # Deleting domain
 tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.tpl"
@@ -61,27 +76,27 @@ fi
 
 # Defining variables for new vhost config
 upd_web_domain_values
-tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.tpl"
+tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$tpldir/$template.tpl"
 
 # Adding domain to the web conf
 add_web_config
 
 # Running template trigger
-if [ -x $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.sh ]; then
-    $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.sh \
-        $user $domain $ip $HOMEDIR $docroot
+if [ -x $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$tpldir/$template.sh ]; then
+    $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$tpldir/$template.sh \
+        $user $domain $ip $ipv6 $HOMEDIR $docroot
 fi
 
 # Checking SSL
 if [ "$SSL" = 'yes' ]; then
     conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
-    tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.stpl"
+    tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$tpldir/$template.stpl"
     add_web_config
 
     # Running template trigger
-    if [ -x $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.sh ]; then
-        $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.sh \
-            "$user" "$domain" "$ip" "$HOMEDIR" "$sdocroot"
+    if [ -x $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$tpldir/$template.sh ]; then
+        $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$tpldir/$template.sh \
+            "$user" "$domain" "$ip" "$ipv6" "$HOMEDIR" "$sdocroot"
     fi
 fi
 
@@ -91,14 +106,12 @@ fi
 #----------------------------------------------------------#
 
 # Changing tpl in config
-update_object_value 'web' 'DOMAIN' "$domain" '$TPL' "$template"
+update_object_value 'web' 'DOMAIN' "$domain" '$TPL' "$tpldir/$template"
 
-# Restart web
+# Restarting web
 if [ "$restart" != 'no' ]; then
     $BIN/v-restart-web
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+    check_result $? "Web restart failed" >/dev/null
 fi
 
 # Logging

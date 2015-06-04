@@ -31,6 +31,7 @@
         ?>
         <form id="vstobjects" name="v_add_ip" method="post">
             <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
+            <input type="hidden" name="ok" value="Add" />
             <script type="text/javascript">
                 function elementHideShow(elementToHideOrShow) {
                     var el = document.getElementById(elementToHideOrShow);
@@ -86,6 +87,22 @@
                                                 echo ">".htmlentities($value)."</option>\n";
                                             }
                                         ?> 
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Version');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="vst-list" name="v_version">
+                                      <?php if($_SESSION['IPV4'] == 'yes') { ?>
+                                      <option value="4"><?php print __('IPV4');?></option>
+                                      <?php } if($_SESSION['IPV6'] == 'yes') { ?>
+                                      <option value="6"><?php print __('IPV6');?></option>
+                                      <?php } ?>
                                     </select>
                                 </td>
                             </tr>

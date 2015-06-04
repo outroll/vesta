@@ -31,6 +31,7 @@
       ?>
         <form id="vstobjects" name="v_edit_dns" method="post"  class="<?=$v_status?>">
             <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
+            <input type="hidden" name="save" value="save" />
             <table class='data'>
                 <tr class="data-add">
                     <td class="data-dotted">
@@ -56,37 +57,29 @@
                                     <input type="text" size="20" class="vst-input" name="v_domain" <?php if (!empty($v_domain)) echo "value=".htmlentities($v_domain);  ?> disabled> <input type="hidden" name="v_domain" <?php if (!empty($v_domain)) echo "value=".htmlentities($v_domain);  ?>>
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="vst-text input-label">
-                                    <?php print __('IP Address');?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="text" size="20" class="vst-input" name="v_ip" <?php if (!empty($v_ip)) echo "value=".htmlentities($v_ip);  ?>>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="vst-text input-label">
-                                    <?php print __('Template');?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <select class="vst-list" name="v_template">
-                                        <?php
-                                            foreach ($templates as $key => $value) {
-                                                echo "\t\t\t\t<option value=\"".htmlentities($value)."\"";
-                                                $svalue = "'".$value."'";
-                                                if ((!empty($v_template)) && ( $value == $v_template ) || ($svalue == $v_template)){
-                                                    echo ' selected' ;
-                                                }
-                                                echo ">".htmlentities($value)."</option>\n";
-                                            }
-                                        ?> 
-                                    </select>
-                                </td>
-                            </tr>
+                            <?php if($_SESSION['IPV4'] == 'yes') { ?>
+                              <tr>
+                                  <td class="vst-text input-label">
+                                      <?php print __('IP address');?>
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>
+                                      <input type="text" size="20" class="vst-input" name="v_ip" <?php if (!empty($v_ip)) echo "value=".htmlentities($v_ip);  ?>>
+                                  </td>
+                              </tr>
+                            <?php } if($_SESSION['IPV6'] == 'yes') { ?>
+                              <tr>
+                                  <td class="vst-text input-label">
+                                      <?php print __('IPV6 address');?>
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>
+                                      <input type="text" size="20" class="vst-input" name="v_ipv6" <?php if (!empty($v_ipv6)) echo "value=".htmlentities($v_ipv6);  ?>>
+                                  </td>
+                              </tr>
+                            <?php } ?>
                             <tr>
                                 <td class="vst-text input-label">
                                     <?php print __('Expiration Date');?><span class="optional">(<?=__('YYYY-MM-DD');?>)</span>

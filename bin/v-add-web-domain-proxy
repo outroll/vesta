@@ -10,7 +10,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain_idn=$(idn -t --quiet -a "$domain")
@@ -24,6 +24,7 @@ restart="$5"
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -42,7 +43,7 @@ is_object_value_empty 'web' 'DOMAIN' "$domain" '$PROXY'
 if [ -z $template ]; then
     template=$(get_user_value '$PROXY_TEMPLATE')
 fi
-is_proxy_template_valid
+is_proxy_template_valid $template
 
 
 #----------------------------------------------------------#
@@ -55,7 +56,14 @@ PROXY="$template"
 PROXY_EXT="$extentions"
 tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
 conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
-ip=$(get_real_ip $IP)
+ip=''
+ipv6=''
+if [ "$IPV4" == "yes" ] ; then
+  ip=$(get_real_ip $IP)
+fi
+if [ "$IPV6" == "yes" ] ; then
+  ipv6=$(get_real_ipv6 $IP6)
+fi
 
 # Preparing domain values for the template substitution
 upd_web_domain_values
@@ -88,7 +96,7 @@ fi
 
 # Running template trigger
 if [ -x $WEBTPL/$PROXY_SYSTEM/$template.sh ]; then
-    $WEBTPL/$PROXY_SYSTEM/$template.sh $user $domain $ip $HOMEDIR $docroot
+    $WEBTPL/$PROXY_SYSTEM/$template.sh $user $domain $ip $ipv6 $HOMEDIR $docroot
 fi
 
 
@@ -100,12 +108,10 @@ fi
 update_object_value 'web' 'DOMAIN' "$domain" '$PROXY' "$PROXY"
 update_object_value 'web' 'DOMAIN' "$domain" '$PROXY_EXT' "$extentions"
 
-# Restart web server
+# Restarting web server
 if [ "$restart" != 'no' ]; then
     $BIN/v-restart-proxy
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+    check_result $? "Proxy restart failed" >/dev/null
 fi
 
 log_history "enabled proxy support for $domain"

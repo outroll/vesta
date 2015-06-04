@@ -1,5 +1,5 @@
 <?php
-session_start();
+error_reporting(NULL);
 $TAB = 'WEB';
 
 // Main include

@@ -10,7 +10,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$2
 format=${3-shell}
@@ -39,6 +39,9 @@ json_list_domain() {
         if [ "$i" -eq 1 ]; then
             echo -e "\t\"$value\": {"
         else
+            if [ "${field//$/}" = 'TPL' ]; then
+                value=$(echo "$value" | cut -f 2 -d / )
+            fi
             if [ "$fileds_count" -eq "$i" ]; then
                 echo -e "\t\t\"${field//$/}\": \"$value\""
             else
@@ -67,6 +70,9 @@ shell_list_domain() {
     # Print result line
     for field in $fields; do
         eval key="$field"
+        if [ "${field//$/}" = 'TPL' ]; then
+            key=$(echo "$key" | cut -f 2 -d / )
+        fi
         echo "${field//$/}: $key "
     done
 }
@@ -87,7 +93,8 @@ is_object_valid 'dns' 'DOMAIN' "$domain"
 
 # Defining config and fields to select
 conf=$USER_DATA/dns.conf
-fields='$DOMAIN $IP $TPL $TTL $EXP $SOA $RECORDS $SUSPENDED $TIME $DATE'
+fields='$DOMAIN $IP $IP6 $TPL $TTL $EXP $SOA $SERIAL $SRC $RECORDS
+    $SUSPENDED $TIME $DATE'
 
 # Listing domains
 case $format in 

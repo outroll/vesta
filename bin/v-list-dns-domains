@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 format=${2-shell}
 
@@ -25,21 +25,21 @@ check_args '1' "$#" 'USER [FORMAT]'
 validate_format 'user'
 is_object_valid 'user' 'USER' "$user"
 
-
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
 # Defining config and fields
 conf=$USER_DATA/dns.conf
-fields='$DOMAIN $IP $TPL $TTL $EXP $SOA $SRC $RECORDS $SUSPENDED $TIME $DATE'
+fields='$DOMAIN $IP $IP6 $TPL $TTL $EXP $SOA $SERIAL $SRC $RECORDS
+    $SUSPENDED $TIME $DATE'
 
 # Listing domains
 case $format in 
     json)   json_list ;;
     plain)  nohead=1; shell_list ;;
-    shell)  fields='$DOMAIN $IP $TPL $EXP $DATE';
-            shell_list| column -t ;;
+    shell)  fields='$DOMAIN $IP $IP6 $TPL $EXP $DATE';
+            shell_list | column -t ;;
     *)      check_args '1' '0' 'USER [FORMAT]';;
 esac
 

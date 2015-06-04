@@ -13,7 +13,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain_idn=$(idn -t --quiet -a "$domain")
@@ -53,6 +53,7 @@ upd_web_domain_values
 # Adding statistic config
 cat $WEBTPL/$type/$type.tpl |\
     sed -e "s|%ip%|$ip|g" \
+        -e "s|%ipv6%|$ipv6|g" \
         -e "s|%web_port%|$WEB_PORT|g" \
         -e "s|%web_system%|$WEB_SYSTEM|g" \
         -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \

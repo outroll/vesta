@@ -12,7 +12,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain_idn=$(idn -t --quiet -a "$domain")
@@ -22,6 +22,7 @@ restart=$3
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -46,7 +47,14 @@ is_object_unsuspended 'web' 'DOMAIN' "$domain"
 get_domain_values 'web'
 tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.tpl"
 conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
-ip=$(get_real_ip $IP)
+ip=''
+ipv6=''
+if [ "$IPV4" == "yes" ] ; then
+  ip=$(get_real_ip $IP)
+fi
+if [ "$IPV6" == "yes" ] ; then
+  ipv6=$(get_real_ipv6 $IP6)
+fi
 
 # Deleting domain
 del_web_config
@@ -84,6 +92,12 @@ if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
         tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
         conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
         del_web_config
+    fi
+
+    # Deleting domain from proxy cache pool
+    pool="/etc/$PROXY_SYSTEM/conf.d/01_caching_pool.conf"
+    if [ -e "$pool" ]; then
+        sed -i "/=$domain:/d" $pool
     fi
 fi
 
@@ -155,25 +169,26 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
 fi
 
 # Decrease counters
-decrease_ip_value "$ip"
+if [ "$IPV4" == "yes" ] ; then
+  decrease_ip_value "$ip"
+fi
+if [ "$IPV6" == "yes" ] ; then
+  decrease_ipv6_value "$ipv6"
+fi
 decrease_user_value "$user" '$U_WEB_DOMAINS'
 decrease_user_value "$user" '$U_WEB_ALIASES' "$aliases"
 if [ "$SSL" = 'yes' ]; then
     decrease_user_value "$user" '$U_WEB_SSL'
 fi
 
-# Restart web server
+# Restarting web server
 if [ "$restart" != 'no' ]; then
     $BIN/v-restart-web
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+    check_result $? "Web restart failed" >/dev/null
 
     if [ ! -z "$PROXY_SYSTEM" ]; then
         $BIN/v-restart-proxy
-        if [ $? -ne 0 ]; then
-            exit $E_RESTART
-        fi
+        check_result $? "Proxy restart failed" >/dev/null
     fi
 fi
 

@@ -1,8 +1,6 @@
 <?php
 // Init
 error_reporting(NULL);
-ob_start();
-session_start();
 $TAB = 'SERVER';
 
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
@@ -153,6 +151,43 @@ if (!empty($_POST['save'])) {
                 check_return_code($return_var,$output);
                 unset($output);
                 if (empty($_SESSION['error_msg'])) $_SESSION['DISK_QUOTA'] = 'no';
+            }
+        }
+    }
+  
+  
+    // Update ipv4
+    if (empty($_SESSION['error_msg'])) {
+        if ($_POST['v_ipv4'] != $_SESSION['IPV4']) {
+            exec (VESTA_CMD."v-change-sys-config-value IPV4 '".escapeshellarg($_POST['v_ipv4'])."'", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+        }
+    }
+    // Update ipv6
+    if (empty($_SESSION['error_msg'])) {
+        if ($_POST['v_ipv6'] != $_SESSION['IPV6']) {
+            exec (VESTA_CMD."v-change-sys-config-value IPV6 '".escapeshellarg($_POST['v_ipv6'])."'", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+        }
+    }
+
+    // Set firewall support
+    if (empty($_SESSION['error_msg'])) {
+        if ($_SESSION['FIREWALL_SYSTEM'] == 'iptables') $v_firewall = 'yes';
+        if ($_SESSION['FIREWALL_SYSTEM'] != 'iptables') $v_firewall = 'no';
+        if ((!empty($_POST['v_firewall'])) && ($v_firewall != $_POST['v_firewall'])) {
+            if($_POST['v_firewall'] == 'yes') {
+                exec (VESTA_CMD."v-add-sys-firewall", $output, $return_var);
+                check_return_code($return_var,$output);
+                unset($output);
+                if (empty($_SESSION['error_msg'])) $_SESSION['FIREWALL_SYSTEM'] = 'iptables';
+            } else {
+                exec (VESTA_CMD."v-delete-sys-firewall", $output, $return_var);
+                check_return_code($return_var,$output);
+                unset($output);
+                if (empty($_SESSION['error_msg'])) $_SESSION['FIREWALL_SYSTEM'] = '';
             }
         }
     }
@@ -332,6 +367,67 @@ if (!empty($_POST['save'])) {
     // Flush field values on success
     if (empty($_SESSION['error_msg'])) {
         $_SESSION['ok_msg'] = __('Changes has been saved.');
+    }
+
+    // activating sftp licence
+    if (empty($_SESSION['error_msg'])) {
+        if($_SESSION['SFTPJAIL_KEY'] != $_POST['v_sftp_licence'] && $_POST['v_sftp'] == 'yes'){
+            $module = 'sftpjail';
+            $licence_key = escapeshellarg($_POST['v_sftp_licence']);
+            exec (VESTA_CMD."v-activate-vesta-license ".$module." ".$licence_key, $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Licence Activated');
+                $_SESSION['SFTPJAIL_KEY'] = $_POST['v_sftp_licence'];
+            }
+        }
+    }
+
+    // cancel sftp licence
+    if (empty($_SESSION['error_msg'])) {
+        if($_POST['v_sftp'] == 'cancel' && $_SESSION['SFTPJAIL_KEY']){
+            $module = 'sftpjail';
+            $licence_key = escapeshellarg($_SESSION['SFTPJAIL_KEY']);
+            exec (VESTA_CMD."v-deactivate-vesta-license ".$module." ".$licence_key, $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Licence Deactivated');
+                unset($_SESSION['SFTPJAIL_KEY']);
+            }
+        }
+    }
+
+
+    // activating filemanager licence
+    if (empty($_SESSION['error_msg'])) {
+        if($_SESSION['FILEMANAGER_KEY'] != $_POST['v_filemanager_licence'] && $_POST['v_filemanager'] == 'yes'){
+            $module = 'filemanager';
+            $licence_key = escapeshellarg($_POST['v_filemanager_licence']);
+            exec (VESTA_CMD."v-activate-vesta-license ".$module." ".$licence_key, $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Licence Activated');
+                $_SESSION['FILEMANAGER_KEY'] = $_POST['v_filemanager_licence'];
+            }
+        }
+    }
+
+    // cancel filemanager licence
+    if (empty($_SESSION['error_msg'])) {
+        if($_POST['v_filemanager'] == 'cancel' && $_SESSION['FILEMANAGER_KEY']){
+            $module = 'filemanager';
+            $licence_key = escapeshellarg($_SESSION['FILEMANAGER_KEY']);
+            exec (VESTA_CMD."v-deactivate-vesta-license ".$module." ".$licence_key, $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Licence Deactivated');
+                unset($_SESSION['FILEMANAGER_KEY']);
+            }
+        }
     }
 }
 

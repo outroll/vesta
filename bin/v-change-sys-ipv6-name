@@ -1,0 +1,50 @@
+#!/bin/bash
+# info: change ip name
+# options: IPV6 NAME
+#
+# The function for changing dns domain associated with ip.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument defenition
+ipv6=$1
+ip_name=$2
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/ipv6.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'IPV6 IP_NAME'
+validate_format 'ipv6'
+if [ ! -z "$ip_name" ]; then
+    validate_format 'ip_name'
+fi
+is_ipv6_valid
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Changing ip name
+update_ipv6_value '$NAME' "$ip_name"
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_history "changed associated dns on $ipv6 to $domain" '' 'admin'
+log_event "$OK" "$EVENT"
+
+exit

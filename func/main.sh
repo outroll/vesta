@@ -2,16 +2,6 @@
 DATE=$(date +%F)
 TIME=$(date +%T)
 SCRIPT=$(basename $0)
-A1=$1
-A2=$2
-A3=$3
-A4=$4
-A5=$5
-A6=$6
-A7=$7
-A8=$8
-A9=$9
-EVENT="$DATE $TIME $SCRIPT $A1 $A2 $A3 $A4 $A5 $A6 $A7 $A8 $A9"
 HOMEDIR='/home'
 BACKUP='/backup'
 BACKUP_GZIP=5
@@ -51,6 +41,16 @@ E_RRD=18
 E_UPDATE=19
 E_RESTART=20
 
+# Event string for logger
+EVENT="$DATE $TIME $SCRIPT"
+for ((I=1; I <= $# ; I++)); do
+    if [[ "$HIDE" != $I ]]; then
+        EVENT="$EVENT '$(eval echo \$${I})'"
+    else
+        EVENT="$EVENT '******'"
+    fi
+done
+
 # Log event function
 log_event() {
     if [ "$1" -eq 0 ]; then
@@ -77,6 +77,20 @@ log_history() {
     curr_str=$(grep "ID=" $log | cut -f 2 -d \' | sort -n | tail -n1)
     id="$((curr_str +1))"
     echo "ID='$id' DATE='$DATE' TIME='$TIME' CMD='$cmd' UNDO='$undo'" >> $log
+}
+
+# Result checker
+check_result() {
+    if [ $1 -ne 0 ]; then
+        echo "Error: $2"
+        if [ ! -z "$3" ]; then
+            log_event $3 $EVENT
+            exit $3
+        else
+            log_event $1 $EVENT
+            exit $1
+        fi
+    fi
 }
 
 # Argument list checker
@@ -292,7 +306,7 @@ get_object_value() {
 
 # Update object value
 update_object_value() {
-    row=$(grep -n "$2='$3'" $USER_DATA/$1.conf)
+    row=$(grep -nF "$2='$3'" $USER_DATA/$1.conf)
     lnr=$(echo $row | cut -f 1 -d ':')
     object=$(echo $row | sed "s/^$lnr://")
     eval "$object"
@@ -327,7 +341,7 @@ search_objects() {
 
 # Get user value
 get_user_value() {
-    grep "^${1//$/}=" $USER_DATA/user.conf| cut -f 2 -d \'
+    grep "^${1//$/}=" $USER_DATA/user.conf |awk -F "'" '{print $2}'
 }
 
 # Update user value in user.conf
@@ -390,6 +404,9 @@ json_list() {
                 (( ++i))
                 echo -e "\t\"$value\": {"
             else
+                if [ "${field//$/}" = 'TPL' ] || [ "${field//$/}" = 'BACKEND' ] || [ "${field//$/}" = 'PROXY' ]; then
+                    value=$(echo "$value" | cut -f 2 -d / )
+                fi
                 if [ $i -lt $fileds_count ]; then
                     (( ++i))
                     echo -e "\t\t\"${field//$/}\": \"$value\","
@@ -420,6 +437,9 @@ shell_list() {
         eval $line
         for field in $fields; do
             eval value=$field
+            if [ "${field//$/}" = 'TPL' ] || [ "${field//$/}" = 'BACKEND' ] || [ "${field//$/}" = 'PROXY' ]; then
+                value=$(echo "$value" | cut -f 2 -d / )
+            fi
             if [ -z "$value" ]; then
                 value='NULL'
             fi
@@ -602,6 +622,110 @@ validate_format_ip() {
     fi
 }
 
+
+# IP address
+validate_format_ipall() {
+    t_ip=$(echo $1 |awk -F / '{print $1}')
+    t_cidr=$(echo $1 |awk -F / '{print $2}')
+    valid_octets=0
+    valid_cidr=1
+    for octet in ${t_ip//./ }; do
+        if [[ $octet =~ ^[0-9]{1,3}$ ]] && [[ $octet -le 255 ]]; then
+            ((++valid_octets))
+        fi
+    done
+
+    if [ ! -z "$(echo $1|grep '/')" ]; then
+        if [[ "$t_cidr" -lt 0 ]] || [[ "$t_cidr" -gt 32 ]]; then
+            valid_cidr=0
+        fi
+        if ! [[ "$t_cidr" =~ ^[0-9]+$ ]]; then
+            valid_cidr=0
+        fi
+    fi
+    if [ "$valid_octets" -lt 4 ] || [ "$valid_cidr" -eq 0 ]; then
+        #Check IPV6
+        ipv6_valid=""
+        WORD="[0-9A-Fa-f]\{1,4\}"
+        # flat address, no compressed words
+        FLAT="^${WORD}\(:${WORD}\)\{7\}$"
+
+        COMP2="^\(${WORD}:\)\{1,1\}\(:${WORD}\)\{1,6\}$"
+        COMP3="^\(${WORD}:\)\{1,2\}\(:${WORD}\)\{1,5\}$"
+        COMP4="^\(${WORD}:\)\{1,3\}\(:${WORD}\)\{1,4\}$"
+        COMP5="^\(${WORD}:\)\{1,4\}\(:${WORD}\)\{1,3\}$"
+        COMP6="^\(${WORD}:\)\{1,5\}\(:${WORD}\)\{1,2\}$"
+        COMP7="^\(${WORD}:\)\{1,6\}\(:${WORD}\)\{1,1\}$"
+        # trailing :: edge case, includes case of only :: (all 0's)
+        EDGE_TAIL="^\(\(${WORD}:\)\{1,7\}\|:\):$"
+        # leading :: edge case
+        EDGE_LEAD="^:\(:${WORD}\)\{1,7\}$"
+
+        echo $t_ip | grep --silent "\(${FLAT}\)\|\(${COMP2}\)\|\(${COMP3}\)\|\(${COMP4}\)\|\(${COMP5}\)\|\(${COMP6}\)\|\(${COMP7}\)\|\(${EDGE_TAIL}\)\|\(${EDGE_LEAD}\)"
+        if [ $? -ne 0 ]; then
+           ipv6_valid="INVALID"
+        fi
+
+        if [ ! -z "$(echo $1|grep '/')" ]; then
+            if [[ "$t_cidr" -lt 0 ]] || [[ "$t_cidr" -gt 128 ]]; then
+                valid_cidr=0
+            fi
+            if ! [[ "$t_cidr" =~ ^[0-9]+$ ]]; then
+                valid_cidr=0
+            fi
+        fi
+        
+        if [ ! -z "$ipv6_valid" ] || [ "$valid_cidr" -eq 0 ]; then
+          echo "Error: ip $1 is not valid"
+          log_event "$E_INVALID" "$EVENT"
+          exit $E_INVALID
+        fi
+    fi
+}
+
+# IP address
+validate_format_ipv6() {
+    t_ip=$(echo $1 |awk -F / '{print $1}')
+    t_cidr=$(echo $1 |awk -F / '{print $2}')
+    valid_cidr=1
+    
+    WORD="[0-9A-Fa-f]\{1,4\}"
+    # flat address, no compressed words
+    FLAT="^${WORD}\(:${WORD}\)\{7\}$"
+    
+    COMP2="^\(${WORD}:\)\{1,1\}\(:${WORD}\)\{1,6\}$"
+    COMP3="^\(${WORD}:\)\{1,2\}\(:${WORD}\)\{1,5\}$"
+    COMP4="^\(${WORD}:\)\{1,3\}\(:${WORD}\)\{1,4\}$"
+    COMP5="^\(${WORD}:\)\{1,4\}\(:${WORD}\)\{1,3\}$"
+    COMP6="^\(${WORD}:\)\{1,5\}\(:${WORD}\)\{1,2\}$"
+    COMP7="^\(${WORD}:\)\{1,6\}\(:${WORD}\)\{1,1\}$"
+    # trailing :: edge case, includes case of only :: (all 0's)
+    EDGE_TAIL="^\(\(${WORD}:\)\{1,7\}\|:\):$"
+    # leading :: edge case
+    EDGE_LEAD="^:\(:${WORD}\)\{1,7\}$"
+   
+    echo $t_ip | grep --silent "\(${FLAT}\)\|\(${COMP2}\)\|\(${COMP3}\)\|\(${COMP4}\)\|\(${COMP5}\)\|\(${COMP6}\)\|\(${COMP7}\)\|\(${EDGE_TAIL}\)\|\(${EDGE_LEAD}\)"
+    if [ $? -ne 0 ]; then
+        echo "Error: ip $1 is not valid"
+        log_event "$E_INVALID" "$EVENT"
+        exit $E_INVALID
+    fi
+    
+    if [ ! -z "$(echo $1|grep '/')" ]; then
+        if [[ "$t_cidr" -lt 0 ]] || [[ "$t_cidr" -gt 128 ]]; then
+            valid_cidr=0
+        fi
+        if ! [[ "$t_cidr" =~ ^[0-9]+$ ]]; then
+            valid_cidr=0
+        fi
+    fi
+    if [ "$valid_cidr" -eq 0 ]; then
+        echo "Error: ip $1 is not valid"
+        log_event "$E_INVALID" "$EVENT"
+        exit $E_INVALID
+    fi
+}
+
 # IP address status
 validate_format_ip_status() {
     if [ -z "$(echo shared,dedicated | grep -w $1 )" ]; then
@@ -613,14 +737,7 @@ validate_format_ip_status() {
 
 # Email address
 validate_format_email() {
-    local_part=$(echo $1 | cut  -s -f1 -d\@)
-    remote_host=$(echo $1 | cut -s -f2 -d\@)
-    mx_failed=1
-    if [ ! -z "$remote_host" ] && [ ! -z "$local_part" ]; then
-        /usr/bin/host -t mx "$remote_host" &> /dev/null
-        mx_failed="$?"
-    fi
-    if [ "$mx_failed" -eq 1 ]; then
+    if [[ ! "$1" =~ "@" ]] ; then
         echo "Error: email $1 is not valid"
         log_event "$E_INVALID" "$EVENT"
         exit $E_INVALID
@@ -677,7 +794,7 @@ validate_format_domain() {
 validate_format_domain_alias() {
     exclude="[!|@|#|$|^|&|(|)|+|=|{|}|:|,|<|>|?|_|/|\|\"|'|;|%|\`| ]"
     if [[ "$1" =~ $exclude ]] || [[ "$1" =~ "^[0-9]+$" ]]; then
-        echo "Error: domain alias $1 is not valid"
+        echo "Error: $2 $1 is not valid"
         log_event "$E_INVALID" "$EVENT"
         exit $E_INVALID
     fi
@@ -907,6 +1024,7 @@ validate_format(){
             id)             validate_format_int "$arg" 'id' ;;
             interface)      validate_format_interface "$arg" ;;
             ip)             validate_format_ip "$arg" ;;
+            ipv6)           validate_format_ipv6 "$arg" ;;
             ip_name)        validate_format_domain "$arg" 'domain';;
             ip_status)      validate_format_ip_status "$arg" ;;
             job)            validate_format_int "$arg" 'job' ;;
@@ -918,11 +1036,13 @@ validate_format(){
             month)          validate_format_mhdmw "$arg" $arg_name ;;
             nat_ip)         validate_format_ip "$arg" ;;
             netmask)        validate_format_ip "$arg" ;;
+            netmaskv6)      validate_format_int "$arg" 'netmaskv6' ;;
             newid)          validate_format_int "$arg" 'id' ;;
             ns1)            validate_format_domain "$arg" 'name_server';;
             ns2)            validate_format_domain "$arg" 'name_server';;
             ns3)            validate_format_domain "$arg" 'name_server';;
             ns4)            validate_format_domain "$arg" 'name_server';;
+            object)         validate_format_name_s "$arg" 'object';;
             package)        validate_format_name "$arg" "$arg_name" ;;
             password)       validate_format_password "$arg" ;;
             port)           validate_format_int "$arg" 'port' ;;
@@ -941,6 +1061,7 @@ validate_format(){
             ttl)            validate_format_int "$arg" 'ttl';;
             user)           validate_format_username "$arg" "$arg_name" ;;
             wday)           validate_format_mhdmw "$arg" $arg_name ;;
+            ip_all)         validate_format_ipall "$arg" ;;
         esac
     done
 }

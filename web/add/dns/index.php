@@ -18,7 +18,8 @@ if (!empty($_POST['ok'])) {
 
     // Check empty fields
     if (empty($_POST['v_domain'])) $errors[] = __('domain');
-    if (empty($_POST['v_ip'])) $errors[] = __('ip');
+    if (empty($_POST['v_ip']) && $_SESSION['IPV4'] == 'yes') $errors[] = __('ip');
+    if (empty($_POST['v_ipv6']) && $_SESSION['IPV6'] == 'yes') $errors[] = __('ipv6');
     if (!empty($errors[0])) {
         foreach ($errors as $i => $error) {
             if ( $i == 0 ) {
@@ -35,17 +36,23 @@ if (!empty($_POST['ok'])) {
     $v_domain = escapeshellarg($v_domain);
     $v_domain = strtolower($v_domain);
     $v_ip = escapeshellarg($_POST['v_ip']);
+    $v_ipv6 = escapeshellarg($_POST['v_ipv6']);
     if (!empty($_POST['v_ns1'])) $v_ns1 = escapeshellarg($_POST['v_ns1']);
     if (!empty($_POST['v_ns2'])) $v_ns2 = escapeshellarg($_POST['v_ns2']);
     if (!empty($_POST['v_ns3'])) $v_ns3 = escapeshellarg($_POST['v_ns3']);
     if (!empty($_POST['v_ns4'])) $v_ns4 = escapeshellarg($_POST['v_ns4']);
+    if (!empty($_POST['v_ns5'])) $v_ns5 = escapeshellarg($_POST['v_ns5']);
+    if (!empty($_POST['v_ns6'])) $v_ns6 = escapeshellarg($_POST['v_ns6']);
+    if (!empty($_POST['v_ns7'])) $v_ns7 = escapeshellarg($_POST['v_ns7']);
+    if (!empty($_POST['v_ns8'])) $v_ns8 = escapeshellarg($_POST['v_ns8']);
 
     // Add dns domain
     if (empty($_SESSION['error_msg'])) {
-        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_ip." ".$v_ns1." ".$v_ns2." ".$v_ns3." ".$v_ns4." no", $output, $return_var);
+        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_ip." ".$v_ipv6." ".$v_ns1." ".$v_ns2." ".$v_ns3." ".$v_ns4." ".$v_ns5."  ".$v_ns6."  ".$v_ns7." ".$v_ns8." no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
+
 
     // Set expiriation date
     if (empty($_SESSION['error_msg'])) {
@@ -139,6 +146,16 @@ include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 // Panel
 top_panel($user,$TAB);
 
+$v_ns1 = str_replace("'", "", $v_ns1);
+$v_ns2 = str_replace("'", "", $v_ns2);
+$v_ns3 = str_replace("'", "", $v_ns3);
+$v_ns4 = str_replace("'", "", $v_ns4);
+$v_ns5 = str_replace("'", "", $v_ns5);
+$v_ns6 = str_replace("'", "", $v_ns6);
+$v_ns7 = str_replace("'", "", $v_ns7);
+$v_ns8 = str_replace("'", "", $v_ns8);
+
+
 // Display body for dns domain
 if (empty($_GET['domain'])) {
     if (empty($v_ttl)) $v_ttl = 14400;
@@ -146,10 +163,14 @@ if (empty($_GET['domain'])) {
     if (empty($v_ns1)) {
         exec (VESTA_CMD."v-list-user-ns ".$user." json", $output, $return_var);
         $nameservers = json_decode(implode('', $output), true);
-        $v_ns1 = $nameservers[0];
-        $v_ns2 = $nameservers[1];
-        $v_ns3 = $nameservers[2];
-        $v_ns4 = $nameservers[3];
+        $v_ns1 = str_replace("'", "", $nameservers[0]);
+        $v_ns2 = str_replace("'", "", $nameservers[1]);
+        $v_ns3 = str_replace("'", "", $nameservers[2]);
+        $v_ns4 = str_replace("'", "", $nameservers[3]);
+        $v_ns5 = str_replace("'", "", $nameservers[4]);
+        $v_ns6 = str_replace("'", "", $nameservers[5]);
+        $v_ns7 = str_replace("'", "", $nameservers[6]);
+        $v_ns8 = str_replace("'", "", $nameservers[7]);
         unset($output);
     }
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/add_dns.html');

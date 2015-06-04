@@ -10,7 +10,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$2
 format=${3-shell}
@@ -30,6 +30,9 @@ json_list_domain() {
         if [ "$i" -eq 1 ]; then
             echo -e "\t\"$value\": {"
         else
+            if [ "${field//$/}" = 'TPL' ] || [ "${field//$/}" = 'BACKEND' ] || [ "${field//$/}" = 'PROXY' ]; then
+              value=$(echo "$value" | cut -f 2 -d / )
+            fi
             if [ "$fileds_count" -eq "$i" ]; then
                 echo -e "\t\t\"${field//$/}\": \"$value\""
             else
@@ -52,6 +55,9 @@ shell_list_domain() {
         eval key="$field"
         if [ -z "$key" ]; then
             key='NULL'
+        fi
+        if [ "${field//$/}" = 'TPL' ] || [ "${field//$/}" = 'BACKEND' ] || [ "${field//$/}" = 'PROXY' ]; then
+            key=$(echo "$key" | cut -f 2 -d / )
         fi
         echo "${field//$/}: $key "
     done
@@ -76,7 +82,7 @@ conf=$USER_DATA/web.conf
 
 # Defining fileds to select
 fields='$DOMAIN $IP $IP6 $U_DISK $U_BANDWIDTH $TPL $ALIAS $STATS $STATS_USER
-    $SSL $SSL_HOME $FTP_USER $FTP_PATH $BACKEND $PROXY $PROXY_EXT
+    $SSL $SSL_HOME $FTP_USER $FTP_PATH $BACKEND $PROXY $PROXY_EXT $AUTH_USER
     $DOCUMENT_ROOT $SUSPENDED $TIME $DATE'
 
 # Defining document root

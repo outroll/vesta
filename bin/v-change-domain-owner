@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: change ip owner
-# options: DOMAIN USER [IP]
+# options: DOMAIN USER [IP] [IPV6]
 #
 # The function of changing domain ownership.
 
@@ -9,13 +9,15 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 domain=$1
 user=$2
 ip=$3
+ip=$4
 
 # Includes
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
@@ -24,13 +26,17 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '2' "$#" 'DOMAIN USER [IP]'
+check_args '2' "$#" 'DOMAIN USER [IP] [IPV6]'
 validate_format 'domain' 'user'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 if [ ! -z "$ip" ]; then
     is_ip_valid
     is_ip_avalable
+fi
+if [ ! -z "$ipv6" ]; then
+    is_ipv6_valid
+    is_ipv6_avalable
 fi
 
 owner=$(v-search-domain-owner $domain)
@@ -57,6 +63,9 @@ if [ ! -z "$web_data" ]; then
     # Change IP
     if [ ! -z "$ip" ]; then
         web_data=$(echo "$web_data" | sed "s/IP='$IP'/IP='$ip'/")
+    fi
+    if [ ! -z "$ipv6" ]; then
+        web_data=$(echo "$web_data" | sed "s/IP6='$IP6'/IP6='$ipv6'/")
     fi
 
     # Check SSL
@@ -106,6 +115,10 @@ if [ ! -z "$dns_data" ]; then
     if [ ! -z "$ip" ]; then
         dns_data=$(echo "$dns_data" | sed "s/IP='$IP'/IP='$ip'/")
         sed -i "s/$IP/$ip/g" $VESTA/data/users/$owner/dns/$domain.conf
+    fi
+    if [ ! -z "$ipv6" ]; then
+        dns_data=$(echo "$dns_data" | sed "s/IP6='$IP6'/IP='$ipv6'/")
+        sed -i "s/$IP6/$ipv6/g" $VESTA/data/users/$owner/dns/$domain.conf
     fi
 
     # Move config

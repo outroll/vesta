@@ -9,15 +9,22 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 format=${1-shell}
 
 # Includes
 source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+tpldir="ipv4"
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "yes" ] ; then
+  tpldir="ipv4ipv6"
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
+  tpldir="ipv6"
+fi
 
 # Json function
 json_list_dnstpl() {
-    templates=$(ls -t $DNSTPL |grep '\.tpl' |cut -f 1 -d  '.')
+    templates=$(ls -t $DNSTPL/$tpldir |grep '\.tpl' |cut -f 1 -d  '.')
     t_counter=$(echo "$templates" | wc -w)
     i=1
     echo '['
@@ -34,7 +41,7 @@ json_list_dnstpl() {
 
 # Shell function
 shell_list_dnstpl() {
-    templates=$(ls -t $DNSTPL |grep '\.tpl' |cut -f 1 -d  '.')
+    templates=$(ls -t $DNSTPL/$tpldir |grep '\.tpl' |cut -f 1 -d  '.')
     if [ -z "$nohead" ]; then
         echo "Templates"
         echo "----------"
