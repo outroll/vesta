@@ -349,6 +349,7 @@ $LANG['el'] = array(
     'ranges are acceptable' => 'εύρος είναι αποδεκτό',
     'CIDR format is supported' => 'To format CIDR υποστηρίζεται',
 
+    'unlimited'  => 'unlimited',
     '1 account'  => '1 λογαριασμός',
     '%s accounts'  => '%s λογαριασμοί',
     '1 domain'  => '1 domain',
@@ -468,6 +469,31 @@ $LANG['el'] = array(
     'RESET_CODE_SENT'  => 'Ο κωδικός επαναφοράς του κωδικού πρόσβασης έχει αποσταλεί στη διεύθυνση ταχυδρομείου σας<br>',
     'MAIL_RESET_SUBJECT'  => 'Επαναφορά κωδικού πρόσβασης στο %s',
     'PASSWORD_RESET_REQUEST' => "Για να επαναφέρετε τον κωδικό πρόσβασης του πίνακα ελέγχου σας, παρακαλώ ακολουθήστε το link:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nΕναλλακτικά, πλοηγηθείτε στη διεύθυνση https://%s/reset/?action=code&user=%s και εισάγετε τον ακόλουθο κωδικό επαναφοράς:\n%s\n\nΕάν δεν ζητήσατε επαναφορά κωδικού πρόσβασης, παρακαλούμε αγνοείστε το παρόν μήνυμα και δεχθείτε τη συγγνώμη μας.\n\n--\nVesta Control Panel\n",
-);
 
-?>
+    'Jan' => 'Jan',
+    'Feb' => 'Feb',
+    'Mar' => 'Mar',
+    'Apr' => 'Apr',
+    'May' => 'May',
+    'Jun' => 'Jun',
+    'Jul' => 'Jul',
+    'Aug' => 'Aug',
+    'Sep' => 'Sep',
+    'Oct' => 'Oct',
+    'Nov' => 'Nov',
+    'Dec' => 'Dec',
+
+    'Configuring Server' => 'Configuring Server',
+    'Hostname' => 'Hostname',
+    'Time Zone' => 'Time Zone',
+    'Default Language' => 'Default Language',
+    'FileSystem Disk Quota' => 'FileSystem Disk Quota',
+    'Vesta Control Panel Plugins' => 'Vesta Control Panel Plugins',
+    'preview' => 'preview',
+    'Reseller Role' => 'Reseller Role',
+    'Web Config Editor' => 'Web Config Editor',
+    'Template Manager' => 'Template Manager',
+    'Backup Migration Manager' => 'Backup Migration Manager',
+    'FileManager' => 'FileManager',
+
+);
