@@ -284,19 +284,28 @@ fi
 
 # Install EPEL repo
 if [ ! -e '/etc/yum.repos.d/epel.repo' ]; then
-    if [ "$release" -eq '5' ]; then
-        epel="5/$arch/epel-release-5-4.noarch.rpm"
-    fi
 
-    if [ "$release" -eq '6' ]; then
-        epel="6/$arch/epel-release-6-8.noarch.rpm"
-    fi
+    case "$release" in
+        '7')
+		yum -y install epel-release
+	;;
+        '6')
+		rpm -ivh http://dl.fedoraproject.org/pub/epel/6/$arch/epel-release-6-8.noarch.rpm
+	;;
+        '5')
+		rpm -ivh http://dl.fedoraproject.org/pub/epel/5/$arch/epel-release-5-4.noarch.rpm
+	;;
+        *)
+		echo "Error: unsupported RHEL release"
+		exit 1
 
-    rpm -ivh http://dl.fedoraproject.org/pub/epel/$epel
-    if [ $? -ne 0 ]; then
-        echo "Error: can't install EPEL repository"
-        exit 1
-    fi
+	;;
+    esac
+
+	if [ $? -ne 0 ]; then
+		echo "Error: can't install EPEL repository"
+		exit 1
+	fi
 fi
 
 # Install remi repo
@@ -307,6 +316,10 @@ if [ ! -e '/etc/yum.repos.d/remi.repo' ]; then
 
     if [ "$release" -eq '6' ]; then
         remi="remi-release-6.rpm"
+    fi
+
+    if [ "$release" -eq '7' ]; then
+        remi="remi-release-7.rpm"
     fi
 
     rpm -ivh http://rpms.famillecollet.com/enterprise/$remi
