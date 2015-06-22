@@ -88,6 +88,7 @@
                                     <input type="text" size="20" class="vst-input" name="v_email" <?php if (!empty($v_email)) echo "value=".htmlentities($v_email); ?>>
                                 </td>
                             </tr>
+                            <?php if($_SESSION['user'] == 'admin'): ?>
                             <tr>
                                 <td class="vst-text input-label">
                                     <?php print __('Package');?>
@@ -109,6 +110,7 @@
                                     </select>
                                 </td>
                             </tr>
+                            <?php endif; ?>
                             <tr>
                                 <td class="vst-text input-label">
                                     <?php print __('Language');?>
@@ -153,6 +155,7 @@
                                     <input type="text" size="20" class="vst-input" name="v_lname" <?php if (!empty($v_lname)) echo "value=\"".htmlentities($v_lname)."\""; ?>>
                                 </td>
                             </tr>
+                            <?php if($_SESSION['user'] == 'admin'): ?>
                             <tr>
                                 <td class="vst-text input-label">
                                     <?php print __('SSH Access');?>
@@ -174,6 +177,7 @@
                                     </select>
                                 </td>
                             </tr>
+                            <?php endif; ?>
                             <tr>
                                 <td class="vst-text input-label">
                                     <?php print __('Default Name Servers');?>
