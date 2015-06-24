@@ -466,7 +466,7 @@ $LANG['de'] = array(
     'RESET_NOTICE'  => '',
     'RESET_CODE_SENT'  => 'Passwort Rücksetz-Code wurde an Ihre Adresse gesandt<br>',
     'MAIL_RESET_SUBJECT'  => 'Passwort Reset für %s',
-    'PASSWORD_RESET_REQUEST' => "Zum Zurücksetzten Ihre Passwortes, besuchen Sie bitte folgenden Link:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nAlternativ, können Sie https://%s/reset/?action=code&user=%s öffnen und dort folgenden Reset Code eingeben:\n%s\n\nWenn Sie Ihr Passwort nicht zurücksetzen wollten, ignorieren Sie diese Nachricht und entschuldigen Sie uns die Unannehmlichkeiten.\n\n--\nVesta Control Panel\n",
+    'PASSWORD_RESET_REQUEST' => "Zum Zurücksetzen Ihres Passwortes, besuchen Sie bitte folgenden Link:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nAlternativ, können Sie https://%s/reset/?action=code&user=%s öffnen und dort folgenden Rücksetz-Code eingeben:\n%s\n\nWenn Sie Ihr Passwort nicht zurücksetzen wollten, ignorieren Sie diese Nachricht und entschuldigen Sie uns die Unannehmlichkeiten.\n\n--\nVesta Control Panel\n",
 
     'Jan' => 'Jan',
     'Feb' => 'Feb',
