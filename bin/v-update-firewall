@@ -39,6 +39,9 @@ if [ ! -e "$rules" ]; then
     exit
 fi
 
+sshport=$(grep '^Port ' /etc/ssh/sshd_config | head -1 | cut -d ' ' -f 2)
+sed -i "s/PORT='22'/PORT=\'$sshport\'/" $rules
+
 $sysctl net.netfilter.nf_conntrack_max >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     conntrack='no'
