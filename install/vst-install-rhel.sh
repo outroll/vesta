@@ -782,7 +782,6 @@ sed -i 's/short_open_tag = Off/short_open_tag = On/g' /etc/php.ini
 sed -i "s/;date.timezone =/date.timezone = UTC/g" /etc/php.ini
 
 # phpMyAdmin configuration
-wget $CHOST/$VERSION/httpd-pma.conf -O /etc/httpd/conf.d/phpMyAdmin.conf
 wget $CHOST/$VERSION/pma.conf -O /etc/phpMyAdmin/config.inc.php
 sed -i "s/%blowfish_secret%/$(gen_pass)/g" /etc/phpMyAdmin/config.inc.php
 
