@@ -20,7 +20,7 @@ This package contains php-cgi for Vesta Control Panel web interface.
 %setup -q -n %{name}-%{version}
 
 %build
-./configure --prefix=/usr/local/vesta/php --enable-fpm --with-fpm-user=admin --with-fpm-group=admin  --with-mysqli --with-bz2 --with-zlib --enable-zip --enable-mbstring --with-mcrypt
+./configure --prefix=/usr/local/vesta/php --enable-fpm --with-fpm-user=admin --with-fpm-group=admin --with-mysqli --with-bz2 --with-zlib --enable-zip --enable-mbstring --with-mcrypt
 
 make
 
