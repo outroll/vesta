@@ -23,7 +23,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
     } else {
         $key = '/usr/local/vesta/data/keys/' . basename($_POST['hash']);
         if (file_exists($key) && is_file($key)) {
-            $auth_code = '0';
+            $auth_code = 0;
         }
     }
 
