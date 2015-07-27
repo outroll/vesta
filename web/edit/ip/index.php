@@ -22,7 +22,7 @@ if (empty($_GET['ip'])) {
 // List ip
 $v_ip = escapeshellarg($_GET['ip']);
 exec (VESTA_CMD."v-list-sys-ip ".$v_ip." 'json'", $output, $return_var);
-check_return_code($return_var,$output);
+check_return_code($return_var, $output);
 $data = json_decode(implode('', $output), true);
 unset($output);
 
@@ -57,13 +57,13 @@ if (!empty($_POST['save'])) {
     // Change Status
     if (($v_ipstatus == 'shared') && (empty($_POST['v_shared'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." 'dedicated'", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $v_dedicated = 'yes'; 
     }
     if (($v_ipstatus == 'dedicated') && (!empty($_POST['v_shared'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." 'shared'", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         unset($v_dedicated);
     }
@@ -72,7 +72,7 @@ if (!empty($_POST['save'])) {
     if (($v_owner != $_POST['v_owner']) && (empty($_SESSION['error_msg']))) {
         $v_owner = escapeshellarg($_POST['v_owner']);
         exec (VESTA_CMD."v-change-sys-ip-owner ".$v_ip." ".$v_owner, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         $v_owner = $_POST['v_owner'];
         unset($output);
     }
@@ -81,7 +81,7 @@ if (!empty($_POST['save'])) {
     if (($v_name != $_POST['v_name']) && (empty($_SESSION['error_msg']))) {
         $v_name = escapeshellarg($_POST['v_name']);
         exec (VESTA_CMD."v-change-sys-ip-name ".$v_ip." ".$v_name, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -89,7 +89,7 @@ if (!empty($_POST['save'])) {
     if (($v_nat != $_POST['v_nat']) && (empty($_SESSION['error_msg']))) {
         $v_nat = escapeshellarg($_POST['v_nat']);
         exec (VESTA_CMD."v-change-sys-ip-nat ".$v_ip." ".$v_nat, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -103,7 +103,7 @@ if (!empty($_POST['save'])) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Display body
 include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_ip.html');

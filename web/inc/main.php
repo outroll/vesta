@@ -33,8 +33,8 @@ if (isset($_SESSION['user'])) {
  */
 function __() {
    $args = func_get_args();
-   array_unshift($args,$_SESSION['language']);
-   return call_user_func_array("_translate",$args);
+   array_unshift($args, $_SESSION['language']);
+   return call_user_func_array("_translate", $args);
 }
 
 /**
@@ -64,7 +64,7 @@ function _translate() {
     array_shift($args);
     if (count($args)>1) {
         $args[0] = $text;
-        return call_user_func_array("sprintf",$args);
+        return call_user_func_array("sprintf", $args);
     } else {
         return $text;
     }
@@ -109,10 +109,10 @@ function check_error($return_var) {
     }
 }
 
-function check_return_code($return_var,$output) {
+function check_return_code($return_var, $output) {
    if ($return_var != 0) {
         $error = implode('<br>', $output);
-        if (empty($error)) $error = __('Error code:',$return_var);
+        if (empty($error)) $error = __('Error code:', $return_var);
         $_SESSION['error_msg'] = $error;
     }
 }
@@ -232,7 +232,7 @@ function humanize_usage_measure($usage) {
 }
 
 
-function get_percentage($used,$total) {
+function get_percentage($used, $total) {
     if (!isset($total)) $total =  0;
     if (!isset($used)) $used =  0;
     if ( $total == 0 ) {
@@ -252,7 +252,7 @@ function get_percentage($used,$total) {
     return $percent;
 }
 
-function send_email($to,$subject,$mailtext,$from) {
+function send_email($to, $subject, $mailtext, $from) {
     $charset = "utf-8";
     $to = '<'.$to.'>';
     $boundary = '--' . md5( uniqid("myboundary") );

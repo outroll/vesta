@@ -74,7 +74,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
         if (($return_var == 0) && (empty($output))) {
             echo "OK";
         } else {
-            echo implode("\n",$output)."\n";
+            echo implode("\n", $output)."\n";
         }
     }
 }

@@ -37,7 +37,7 @@ if (!empty($_POST['ok'])) {
                 $error_msg = $error_msg.", ".$error;
             }
         }
-        $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+        $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
     }
 
     // Validate email
@@ -48,7 +48,7 @@ if (!empty($_POST['ok'])) {
     // Check password length
     if (empty($_SESSION['error_msg'])) {
         $pw_len = strlen($_POST['v_password']);
-        if ($pw_len < 6 ) $_SESSION['error_msg'] = __('Password is too short.',$error_msg);
+        if ($pw_len < 6 ) $_SESSION['error_msg'] = __('Password is too short.', $error_msg);
     }
 
     // Protect input
@@ -68,7 +68,7 @@ if (!empty($_POST['ok'])) {
         fwrite($fp, $_POST['v_password']."\n");
         fclose($fp);
         exec (VESTA_CMD."v-add-user ".$v_username." ".$v_password." ".$v_email." ".$v_package." ".$v_fname." ".$v_lname, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         unlink($v_password);
         $v_password = escapeshellarg($_POST['v_password']);
@@ -77,7 +77,7 @@ if (!empty($_POST['ok'])) {
     // Set language
     if (empty($_SESSION['error_msg'])) {
         exec (VESTA_CMD."v-change-user-language ".$v_username." ".$v_language, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -87,19 +87,19 @@ if (!empty($_POST['ok'])) {
         $subject = _translate($_POST['v_language'],"Welcome to Vesta Control Panel");
         $hostname = exec('hostname');
         unset($output);
-        $from = _translate($_POST['v_language'],'MAIL_FROM',$hostname);
+        $from = _translate($_POST['v_language'],'MAIL_FROM', $hostname);
         if (!empty($_POST['v_fname'])) {
-            $mailtext = _translate($_POST['v_language'],'GREETINGS_GORDON_FREEMAN',$_POST['v_fname'],$_POST['v_lname']);
+            $mailtext = _translate($_POST['v_language'],'GREETINGS_GORDON_FREEMAN', $_POST['v_fname'], $_POST['v_lname']);
         } else {
             $mailtext = _translate($_POST['v_language'],'GREETINGS');
         }
-        $mailtext .= _translate($_POST['v_language'],'ACCOUNT_READY',$_SERVER['HTTP_HOST'],$_POST['v_username'],$_POST['v_password']);
+        $mailtext .= _translate($_POST['v_language'],'ACCOUNT_READY', $_SERVER['HTTP_HOST'], $_POST['v_username'], $_POST['v_password']);
         send_email($to, $subject, $mailtext, $from);
     }
 
     // Flush field values on success
     if (empty($_SESSION['error_msg'])) {
-        $_SESSION['ok_msg'] = __('USER_CREATED_OK',htmlentities($_POST['v_username']),htmlentities($_POST['v_username']));
+        $_SESSION['ok_msg'] = __('USER_CREATED_OK', htmlentities($_POST['v_username']), htmlentities($_POST['v_username']));
         $_SESSION['ok_msg'] .= " / <a href=/login/?loginas=".htmlentities($_POST['v_username']).">" . __('login as') ." ".htmlentities($_POST['v_username']). "</a>";
         unset($v_username);
         unset($v_password);
@@ -115,7 +115,7 @@ if (!empty($_POST['ok'])) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // List hosting packages
 exec (VESTA_CMD."v-list-user-packages json", $output, $return_var);

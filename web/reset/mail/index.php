@@ -1,6 +1,6 @@
 <?php
 // Init
-define('NO_AUTH_REQUIRED',true);
+define('NO_AUTH_REQUIRED', true);
 error_reporting(NULL);
 
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
@@ -29,11 +29,11 @@ function md5crypt ($pw, $salt="", $magic="")
     {
         if ($i > 16)
         {
-            $ctx .= substr ($final,0,16);
+            $ctx .= substr ($final, 0, 16);
         }
         else
         {
-            $ctx .= substr ($final,0,$i);
+            $ctx .= substr ($final, 0, $i);
         }
     }
     $i = strlen ($pw);
@@ -55,13 +55,13 @@ function md5crypt ($pw, $salt="", $magic="")
         }
         else
         {
-            $ctx1 .= substr ($final,0,16);
+            $ctx1 .= substr ($final, 0, 16);
         }
         if ($i % 3) $ctx1 .= $salt;
         if ($i % 7) $ctx1 .= $pw;
         if ($i & 1)
         {
-            $ctx1 .= substr ($final,0,16);
+            $ctx1 .= substr ($final, 0, 16);
         }
         else
         {

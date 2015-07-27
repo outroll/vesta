@@ -27,7 +27,7 @@ if (!empty($_GET['job'])) {
     $v_job = escapeshellarg($_GET['job']);
     exec (VESTA_CMD."v-unsuspend-cron-job ".$v_username." ".$v_job, $output, $return_var);
 }
-check_return_code($return_var,$output);
+check_return_code($return_var, $output);
 unset($output);
 
 $back=getenv("HTTP_REFERER");

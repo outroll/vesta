@@ -20,7 +20,7 @@ if (!empty($_GET['backup'])) {
     $v_backup = escapeshellarg($_GET['backup']);
     exec (VESTA_CMD."v-delete-user-backup ".$v_username." ".$v_backup, $output, $return_var);
 }
-check_return_code($return_var,$output);
+check_return_code($return_var, $output);
 unset($output);
 
 $back = $_SESSION['back'];

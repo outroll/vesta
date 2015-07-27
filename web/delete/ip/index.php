@@ -16,7 +16,7 @@ if ($_SESSION['user'] == 'admin') {
         $v_ip = escapeshellarg($_GET['ip']);
         exec (VESTA_CMD."v-delete-sys-ip ".$v_ip, $output, $return_var);
     }
-    check_return_code($return_var,$output);
+    check_return_code($return_var, $output);
     unset($output);
 
 }

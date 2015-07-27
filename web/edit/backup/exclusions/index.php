@@ -14,7 +14,7 @@ if (($_SESSION['user'] == 'admin') && (!empty($_GET['user']))) {
 
 // List backup exclustions
 exec (VESTA_CMD."v-list-user-backup-exclusions ".$user." 'json'", $output, $return_var);
-check_return_code($return_var,$output);
+check_return_code($return_var, $output);
 $data = json_decode(implode('', $output), true);
 unset($output);
 
@@ -113,7 +113,7 @@ if (!empty($_POST['save'])) {
 
     // Save changes
     exec (VESTA_CMD."v-update-user-backup-exclusions ".$user." ".$tmp, $output, $return_var);
-    check_return_code($return_var,$output);
+    check_return_code($return_var, $output);
     unset($output);
 
     // Set success message
@@ -127,7 +127,7 @@ if (!empty($_POST['save'])) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Display body
 include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_backup_exclusions.html');

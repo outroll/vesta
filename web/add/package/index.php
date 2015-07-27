@@ -54,7 +54,7 @@ if (!empty($_POST['ok'])) {
                 $error_msg = $error_msg.", ".$error;
             }
         }
-        $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+        $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
     }
 
     // Protect input
@@ -90,7 +90,7 @@ if (!empty($_POST['ok'])) {
     if (empty($_SESSION['error_msg'])) {
         exec ('mktemp -d', $output, $return_var);
         $tmpdir = $output[0];
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -128,7 +128,7 @@ if (!empty($_POST['ok'])) {
     // Add new package
     if (empty($_SESSION['error_msg'])) {
         exec (VESTA_CMD."v-add-user-package ".$tmpdir." ".$v_package, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -138,7 +138,7 @@ if (!empty($_POST['ok'])) {
 
     // Flush field values on success
     if (empty($_SESSION['error_msg'])) {
-        $_SESSION['ok_msg'] = __('PACKAGE_CREATED_OK',htmlentities($_POST['v_package']),htmlentities($_POST['v_package']));
+        $_SESSION['ok_msg'] = __('PACKAGE_CREATED_OK', htmlentities($_POST['v_package']), htmlentities($_POST['v_package']));
         unset($v_package);
     }
 
@@ -149,7 +149,7 @@ if (!empty($_POST['ok'])) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // List web temmplates
 exec (VESTA_CMD."v-list-web-templates json", $output, $return_var);

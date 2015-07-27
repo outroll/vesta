@@ -9,7 +9,7 @@ if (empty($argv[1])) {
 $options = getopt("s:f:");
 
 
-define('NO_AUTH_REQUIRED',true);
+define('NO_AUTH_REQUIRED', true);
 include("/usr/local/vesta/web/inc/main.php");
 
 // Set system language
@@ -30,7 +30,7 @@ $mailtext = file_get_contents("php://stdin");
 
 // Send email
 if ((!empty($to)) && (!empty($subject))) {
-    send_email($to,$subject,$mailtext,$from);
+    send_email($to, $subject, $mailtext, $from);
 }
 
 ?>

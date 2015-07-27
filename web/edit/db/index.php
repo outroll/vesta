@@ -11,7 +11,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Check database id
 if (empty($_GET['database'])) {
@@ -27,7 +27,7 @@ if (($_SESSION['user'] == 'admin') && (!empty($_GET['user']))) {
 // List datbase
 $v_database = escapeshellarg($_GET['database']);
 exec (VESTA_CMD."v-list-database ".$user." ".$v_database." 'json'", $output, $return_var);
-check_return_code($return_var,$output);
+check_return_code($return_var, $output);
 $data = json_decode(implode('', $output), true);
 unset($output);
 
@@ -63,7 +63,7 @@ if (!empty($_POST['save'])) {
         $v_dbuser = preg_replace("/^".$user."_/", "", $_POST['v_dbuser']);
         $v_dbuser = escapeshellarg($v_dbuser);
         exec (VESTA_CMD."v-change-database-user ".$v_username." ".$v_database." ".$v_dbuser, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $v_dbuser = $user."_".preg_replace("/^".$user."_/", "", $_POST['v_dbuser']);
     }
@@ -75,7 +75,7 @@ if (!empty($_POST['save'])) {
         fwrite($fp, $_POST['v_password']."\n");
         fclose($fp);
         exec (VESTA_CMD."v-change-database-password ".$v_username." ".$v_database." ".$v_password, $output, $return_var);
-        check_return_code($return_var,$output);    
+        check_return_code($return_var, $output);    
         unset($output);
         unlink($v_password);
         $v_password = escapeshellarg($_POST['v_password']);

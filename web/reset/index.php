@@ -1,6 +1,6 @@
 <?php
 session_start();
-define('NO_AUTH_REQUIRED',true);
+define('NO_AUTH_REQUIRED', true);
 $TAB = 'RESET PASSWORD';
 
 if (isset($_SESSION['user'])) {
@@ -22,15 +22,15 @@ if ((!empty($_POST['user'])) && (empty($_POST['code']))) {
         $lname = $data[$user]['LNAME'];
         $contact = $data[$user]['CONTACT'];
         $to = $data[$user]['CONTACT'];
-        $subject = __('MAIL_RESET_SUBJECT',date("Y-m-d H:i:s"));
+        $subject = __('MAIL_RESET_SUBJECT', date("Y-m-d H:i:s"));
         $hostname = exec('hostname');
-        $from = __('MAIL_FROM',$hostname);
+        $from = __('MAIL_FROM', $hostname);
         if (!empty($fname)) {
-            $mailtext = __('GREETINGS_GORDON_FREEMAN',$fname,$lname);
+            $mailtext = __('GREETINGS_GORDON_FREEMAN', $fname, $lname);
         } else {
             $mailtext = __('GREETINGS');
         }
-        $mailtext .= __('PASSWORD_RESET_REQUEST',$_SERVER['HTTP_HOST'],$user,$rkey,$_SERVER['HTTP_HOST'],$user,$rkey);
+        $mailtext .= __('PASSWORD_RESET_REQUEST', $_SERVER['HTTP_HOST'], $user, $rkey, $_SERVER['HTTP_HOST'], $user, $rkey);
         if (!empty($rkey)) send_email($to, $subject, $mailtext, $from);
         unset($output);
     }

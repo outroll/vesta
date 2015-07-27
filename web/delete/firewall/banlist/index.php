@@ -24,7 +24,7 @@ if ((!empty($_GET['ip'])) && (!empty($_GET['chain']))) {
     $v_chain = escapeshellarg($_GET['chain']);
     exec (VESTA_CMD."v-delete-firewall-ban ".$v_ip." ".$v_chain, $output, $return_var);
 }
-check_return_code($return_var,$output);
+check_return_code($return_var, $output);
 unset($output);
 
 $back = $_SESSION['back'];

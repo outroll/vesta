@@ -28,7 +28,7 @@ if (!function_exists('_translate')) {
         array_shift($args);
         if (count($args)>1) {
             $args[0] = $text;
-            return call_user_func_array("sprintf",$args);
+            return call_user_func_array("sprintf", $args);
         } else {
             return $text;
         }
@@ -38,8 +38,8 @@ if (!function_exists('_translate')) {
 if (!function_exists('__')) {
     function __() {
         $args = func_get_args();
-        array_unshift($args,$_SESSION['language']);
-        return call_user_func_array("_translate",$args);
+        array_unshift($args, $_SESSION['language']);
+        return call_user_func_array("_translate", $args);
     }
 }
 ?>

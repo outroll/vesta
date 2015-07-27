@@ -11,7 +11,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Check domain argument
 if (empty($_GET['domain'])) {
@@ -100,7 +100,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['accou
     // Delete antispam
     if (($v_antispam == 'yes') && (empty($_POST['v_antispam'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-mail-domain-antispam ".$v_username." ".$v_domain, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         $v_antispam = 'no';
         unset($output);
     }
@@ -108,7 +108,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['accou
     // Add antispam
     if (($v_antispam == 'no') && (!empty($_POST['v_antispam'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-add-mail-domain-antispam ".$v_username." ".$v_domain, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         $v_antispam = 'yes';
         unset($output);
     }
@@ -116,7 +116,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['accou
     // Delete antivirus
     if (($v_antivirus == 'yes') && (empty($_POST['v_antivirus'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-mail-domain-antivirus ".$v_username." ".$v_domain, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         $v_antivirus = 'no';
         unset($output);
     }
@@ -124,7 +124,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['accou
     // Add antivirs
     if (($v_antivirus == 'no') && (!empty($_POST['v_antivirus'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-add-mail-domain-antivirus ".$v_username." ".$v_domain, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         $v_antivirus = 'yes';
         unset($output);
     }
@@ -132,7 +132,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['accou
     // Delete DKIM
     if (($v_dkim == 'yes') && (empty($_POST['v_dkim'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-mail-domain-dkim ".$v_username." ".$v_domain, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         $v_dkim = 'no';
         unset($output);
     }
@@ -140,7 +140,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['accou
     // Add DKIM
     if (($v_dkim == 'no') && (!empty($_POST['v_dkim'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-add-mail-domain-dkim ".$v_username." ".$v_domain, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         $v_dkim = 'yes';
         unset($output);
     }
@@ -148,7 +148,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['accou
     // Delete catchall
     if ((!empty($v_catchall)) && (empty($_POST['v_catchall'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-mail-domain-catchall ".$v_username." ".$v_domain, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         $v_catchall = '';
         unset($output);
     }
@@ -158,7 +158,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['accou
         if ($v_catchall != $_POST['v_catchall']) {
             $v_catchall = escapeshellarg($_POST['v_catchall']);
             exec (VESTA_CMD."v-change-mail-domain-catchall ".$v_username." ".$v_domain." ".$v_catchall, $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             unset($output);
         }
     }
@@ -167,7 +167,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['accou
     if ((empty($v_catchall)) && (!empty($_POST['v_catchall'])) && (empty($_SESSION['error_msg']))) {
         $v_catchall = escapeshellarg($_POST['v_catchall']);
         exec (VESTA_CMD."v-add-mail-domain-catchall ".$v_username." ".$v_domain." ".$v_catchall, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -196,7 +196,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         fwrite($fp, $_POST['v_password']."\n");
         fclose($fp);
         exec (VESTA_CMD."v-change-mail-account-password ".$v_username." ".$v_domain." ".$v_account." ".$v_password, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         unlink($v_password);
         $v_password = escapeshellarg($_POST['v_password']);;
@@ -210,7 +210,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
             $v_quota = escapeshellarg($_POST['v_quota']);
         }
         exec (VESTA_CMD."v-change-mail-account-quota ".$v_username." ".$v_domain." ".$v_account." ".$v_quota, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -218,7 +218,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
     if (empty($_SESSION['error_msg'])) {
         $waliases = preg_replace("/\n/", " ", $_POST['v_aliases']);
         $waliases = preg_replace("/,/", " ", $waliases);
-        $waliases = preg_replace('/\s+/', ' ',$waliases);
+        $waliases = preg_replace('/\s+/', ' ', $waliases);
         $waliases = trim($waliases);
         $aliases = explode(" ", $waliases);
         $v_aliases = str_replace(' ', "\n", $waliases);
@@ -226,7 +226,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         foreach ($result as $alias) {
             if ((empty($_SESSION['error_msg'])) && (!empty($alias))) {
                 exec (VESTA_CMD."v-delete-mail-account-alias ".$v_username." ".$v_domain." ".$v_account." '".$alias."'", $output, $return_var);
-                check_return_code($return_var,$output);
+                check_return_code($return_var, $output);
                 unset($output);
             }
         }
@@ -234,7 +234,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         foreach ($result as $alias) {
             if ((empty($_SESSION['error_msg'])) && (!empty($alias))) {
                 exec (VESTA_CMD."v-add-mail-account-alias ".$v_username." ".$v_domain." ".$v_account." '".$alias."'", $output, $return_var);
-                check_return_code($return_var,$output);
+                check_return_code($return_var, $output);
                 unset($output);
             }
         }
@@ -244,7 +244,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
     if (empty($_SESSION['error_msg'])) {
         $wfwd = preg_replace("/\n/", " ", $_POST['v_fwd']);
         $wfwd = preg_replace("/,/", " ", $wfwd);
-        $wfwd = preg_replace('/\s+/', ' ',$wfwd);
+        $wfwd = preg_replace('/\s+/', ' ', $wfwd);
         $wfwd = trim($wfwd);
         $fwd = explode(" ", $wfwd);
         $v_fwd = str_replace(' ', "\n", $wfwd);
@@ -252,7 +252,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         foreach ($result as $forward) {
             if ((empty($_SESSION['error_msg'])) && (!empty($forward))) {
                 exec (VESTA_CMD."v-delete-mail-account-forward ".$v_username." ".$v_domain." ".$v_account." '".$forward."'", $output, $return_var);
-                check_return_code($return_var,$output);
+                check_return_code($return_var, $output);
                 unset($output);
             }
         }
@@ -260,7 +260,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         foreach ($result as $forward) {
             if ((empty($_SESSION['error_msg'])) && (!empty($forward))) {
                 exec (VESTA_CMD."v-add-mail-account-forward ".$v_username." ".$v_domain." ".$v_account." '".$forward."'", $output, $return_var);
-                check_return_code($return_var,$output);
+                check_return_code($return_var, $output);
                 unset($output);
             }
         }
@@ -269,7 +269,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
     // Delete FWD_ONLY flag
     if (($v_fwd_only == 'yes') && (empty($_POST['v_fwd_only'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-mail-account-fwd-only ".$v_username." ".$v_domain." ".$v_account, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $v_fwd_only = '';
     }
@@ -277,7 +277,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
     // Add FWD_ONLY flag
     if (($v_fwd_only != 'yes') && (!empty($_POST['v_fwd_only'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-add-mail-account-fwd-only ".$v_username." ".$v_domain." ".$v_account, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $v_fwd_only = 'yes';
     }
@@ -285,7 +285,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
     // Delete autoreply
     if (($v_autoreply == 'yes') && (empty($_POST['v_autoreply'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-mail-account-autoreply ".$v_username." ".$v_domain." ".$v_account, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $v_autoreply = 'no';
         $v_autoreply_message = '';
@@ -297,7 +297,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
             $v_autoreply_message = str_replace("\r\n", "\n", $_POST['v_autoreply_message']);
             $v_autoreply_message = escapeshellarg($v_autoreply_message);
             exec (VESTA_CMD."v-add-mail-account-autoreply ".$v_username." ".$v_domain." ".$v_account." ".$v_autoreply_message, $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             unset($output);
             $v_autoreply = 'yes';
             $v_autoreply_message = $_POST['v_autoreply_message'];

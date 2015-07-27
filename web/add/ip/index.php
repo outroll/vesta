@@ -35,7 +35,7 @@ if (!empty($_POST['ok'])) {
                 $error_msg = $error_msg.", ".$error;
             }
         }
-        $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+        $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
     }
 
     // Protect input
@@ -59,7 +59,7 @@ if (!empty($_POST['ok'])) {
     // Add IP
     if (empty($_SESSION['error_msg'])) {
         exec (VESTA_CMD."v-add-sys-ip ".$v_ip." ".$v_netmask." ".$v_interface."  ".$v_owner." '".$ip_status."' ".$v_name." ".$v_nat, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $v_owner = $_POST['v_owner'];
         $v_interface = $_POST['v_interface'];
@@ -67,7 +67,7 @@ if (!empty($_POST['ok'])) {
 
     // Flush field values on success
     if (empty($_SESSION['error_msg'])) {
-        $_SESSION['ok_msg'] = __('IP_CREATED_OK',htmlentities($_POST['v_ip']),htmlentities($_POST['v_ip']));
+        $_SESSION['ok_msg'] = __('IP_CREATED_OK', htmlentities($_POST['v_ip']), htmlentities($_POST['v_ip']));
         unset($v_ip);
         unset($v_netmask);
         unset($v_name);
@@ -79,7 +79,7 @@ if (!empty($_POST['ok'])) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // List network interfaces
 exec (VESTA_CMD."v-list-sys-interfaces 'json'", $output, $return_var);
