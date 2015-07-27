@@ -1,7 +1,7 @@
 <?php
 
 class FileManager {
-    
+
     protected $delimeter = '|';
     protected $info_positions = array(
         'TYPE'          => 0,
@@ -13,26 +13,26 @@ class FileManager {
         'SIZE'          => 6,
         'NAME'          => 7
     );
-    
+
     protected $user  = null;
     public $ROOT_DIR = null;
-    
+
     public function setRootDir($root = null) {
         if (null != $root) {
-            $root = realpath($root);        
+            $root = realpath($root);
         }
         $this->ROOT_DIR = $root;
     }
-    
+
     public function __construct($user) {
         $this->user = $user;
     }
-    
+
     /*public function init() {
         $path = !empty($_REQUEST['dir']) ? $_REQUEST['dir'] : '';
         $start_url = !empty($path) ? $this->ROOT_DIR . '/' . $path : $this->ROOT_DIR;
         $listing = $this->getDirectoryListing($path);
-        
+
         return $data = array(
             'result'     => true,
             'ROOT_DIR'   => $this->ROOT_DIR,
@@ -41,7 +41,7 @@ class FileManager {
             'listing'    => $listing
         );
     }*/
-    
+
     public function formatFullPath($path_part = '') {
         if (substr($path_part, 0, strlen($this->ROOT_DIR)) === $this->ROOT_DIR) {
             $path = $path_part;
@@ -52,7 +52,7 @@ class FileManager {
         //var_dump($path);die();
         return escapeshellarg($path);
     }
-    
+
     function deleteItems($dir, $item) {
         if (is_readable($item)) {
             unlink($item);
@@ -67,33 +67,33 @@ class FileManager {
             'result' => true
         );
     }
-    
+
     function copyFile($dir, $target_dir, $filename) {
         // todo: checks
         // todo: vesta method "create file"
         if (empty($dir)) {
             $dir = $this->ROOT_DIR;
         }
-        
+
         if (empty($target_dir)) {
             $target_dir = $this->ROOT_DIR;
         }
         copy($dir . '/' . $filename, $target_dir.'/'.$filename);
-        
+
         if (!is_readable($target_dir . '/' .$filename)) {
             return array(
                 'result'  => false,
                 'message' => 'item was not created'
             );
         }
-        
+
         return array(
             'result' => true,
             'bla' => $target_dir.'/'.$filename,
             'bla2' => $dir . '/' . $filename
         );
     }
-    
+
     function createFile($dir, $filename) {
         // todo: checks
         // todo: vesta method "create file"
@@ -101,19 +101,19 @@ class FileManager {
             $dir = $this->ROOT_DIR;
         }
         file_put_contents($dir . '/' . $filename, '');
-        
+
         if (!is_readable($dir . '/' .$filename)) {
             return array(
                 'result'  => false,
                 'message' => 'item was not created'
             );
         }
-        
+
         return array(
             'result' => true
         );
     }
-    
+
     function renameItem($dir, $item, $target_name) {
         if (empty($dir)) {
             $dir = $this->ROOT_DIR;
@@ -127,12 +127,12 @@ class FileManager {
                 'message' => 'item was not renamed'
             );
         }
-        
+
         return array(
             'result' => true
         );
     }
-    
+
     function createDir($dir, $dirname) {
         // todo: checks
         // todo: vesta method "create file"
@@ -141,26 +141,26 @@ class FileManager {
         }
 
         mkdir($dir . '/' . $dirname);
-        
+
         if (!is_readable($dir . '/' .$dirname)) {
             return array(
                 'result'  => false,
                 'message' => 'item was not created'
             );
         }
-        
+
         return array(
             'result' => true
         );
     }
-    
+
     function getDirectoryListing($dir = '') {
         $dir = $this->formatFullPath($dir);
         exec (VESTA_CMD . "v-list-fs-directory {$this->user} {$dir}", $output, $return_var);
 
         return $this->parseListing($output);
     }
-    
+
     public function ls($dir = '') {
         $listing = $this->getDirectoryListing($dir);
 
@@ -169,7 +169,7 @@ class FileManager {
             'listing' => $listing
         );
     }
-    
+
     public function open_file($dir = '') {
         $listing = $this->getDirectoryListing($dir);
 
@@ -178,7 +178,7 @@ class FileManager {
             'listing' => $listing
         );
     }
-    
+
     public function parseListing($raw) {
         $data = array();
         foreach ($raw as $o) {
@@ -194,7 +194,7 @@ class FileManager {
                 'name'          => $info[$this->info_positions['NAME']]
             );
         }
-        
+
         return $data;
     }
 

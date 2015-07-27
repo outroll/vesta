@@ -22,7 +22,7 @@ if (!empty($_GET['user'])) {
 }
 
 // DNS domain
-if ((!empty($_GET['domain'])) && (empty($_GET['record_id'])))  {
+if ((!empty($_GET['domain'])) && (empty($_GET['record_id']))) {
     $v_username = escapeshellarg($user);
     $v_domain = escapeshellarg($_GET['domain']);
     exec (VESTA_CMD."v-unsuspend-dns-domain ".$v_username." ".$v_domain, $output, $return_var);
@@ -42,7 +42,7 @@ if ((!empty($_GET['domain'])) && (empty($_GET['record_id'])))  {
 }
 
 // DNS record
-if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
+if ((!empty($_GET['domain'])) && (!empty($_GET['record_id']))) {
     $v_username = escapeshellarg($user);
     $v_domain = escapeshellarg($_GET['domain']);
     $v_record_id = escapeshellarg($_GET['record_id']);

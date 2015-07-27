@@ -30,7 +30,7 @@ if (!empty($_POST['ok'])) {
                 $error_msg = $error_msg.", ".$error;
             }
         }
-        $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+        $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
     }
 
     // Validate email
@@ -43,7 +43,7 @@ if (!empty($_POST['ok'])) {
     // Check password length
     if (empty($_SESSION['error_msg'])) {
         $pw_len = strlen($_POST['v_password']);
-        if ($pw_len < 6 ) $_SESSION['error_msg'] = __('Password is too short.',$error_msg);
+        if ($pw_len < 6 ) $_SESSION['error_msg'] = __('Password is too short.', $error_msg);
     }
 
     // Protect input
@@ -64,7 +64,7 @@ if (!empty($_POST['ok'])) {
         fwrite($fp, $_POST['v_password']."\n");
         fclose($fp);
         exec (VESTA_CMD."v-add-database ".$user." ".$v_database." ".$v_dbuser." ".$v_password." ".$v_type." ".$v_host." ".$v_charset, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         unlink($v_password);
         $v_password = escapeshellarg($_POST['v_password']);
@@ -90,15 +90,15 @@ if (!empty($_POST['ok'])) {
         $to = $v_db_email;
         $subject = __("Database Credentials");
         $hostname = exec('hostname');
-        $from = __('MAIL_FROM',$hostname);
-        $mailtext = __('DATABASE_READY',$user."_".$_POST['v_database'],$user."_".$_POST['v_dbuser'],$_POST['v_password'],$db_admin_link);
+        $from = __('MAIL_FROM', $hostname);
+        $mailtext = __('DATABASE_READY', $user."_".$_POST['v_database'], $user."_".$_POST['v_dbuser'], $_POST['v_password'], $db_admin_link);
         send_email($to, $subject, $mailtext, $from);
     }
 
     // Flush field values on success
     if (empty($_SESSION['error_msg'])) {
-        $_SESSION['ok_msg'] = __('DATABASE_CREATED_OK',htmlentities($user)."_".htmlentities($_POST['v_database']),htmlentities($user)."_".htmlentities($_POST['v_database']));
-        $_SESSION['ok_msg'] .= " / <a href=".$db_admin_link." target='_blank'>" . __('open %s',$db_admin) . "</a>";
+        $_SESSION['ok_msg'] = __('DATABASE_CREATED_OK', htmlentities($user)."_".htmlentities($_POST['v_database']), htmlentities($user)."_".htmlentities($_POST['v_database']));
+        $_SESSION['ok_msg'] .= " / <a href=".$db_admin_link." target='_blank'>" . __('open %s', $db_admin) . "</a>";
         unset($v_database);
         unset($v_dbuser);
         unset($v_password);
@@ -111,13 +111,13 @@ if (!empty($_POST['ok'])) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Get user email
 $v_db_email = $panel[$user]['CONTACT'];
 
 // List avaiable database types
-$db_types = split(",",$_SESSION['DB_SYSTEM']);
+$db_types = split(",", $_SESSION['DB_SYSTEM']);
 
 // List available database servers
 $db_hosts = array();

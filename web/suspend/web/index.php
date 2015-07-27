@@ -26,7 +26,7 @@ if (!empty($_GET['domain'])) {
     $v_domain = escapeshellarg($_GET['domain']);
     exec (VESTA_CMD."v-suspend-web-domain ".$v_username." ".$v_domain, $output, $return_var);
 }
-check_return_code($return_var,$output);
+check_return_code($return_var, $output);
 unset($output);
 
 $back = $_SESSION['back'];

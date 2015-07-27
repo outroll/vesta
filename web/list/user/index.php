@@ -9,7 +9,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Data
 if ($_SESSION['user'] == 'admin') {
@@ -19,7 +19,7 @@ if ($_SESSION['user'] == 'admin') {
         exec (VESTA_CMD . "v-list-user ".$user." json", $output, $return_var);
     }
     $data = json_decode(implode('', $output), true);
-    $data = array_reverse($data,true);
+    $data = array_reverse($data, true);
     display_error_block();
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_user.html');
 } else {

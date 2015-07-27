@@ -21,7 +21,7 @@ if (empty($_GET['job'])) {
 // List cron job
 $v_job = escapeshellarg($_GET['job']);
 exec (VESTA_CMD."v-list-cron-job ".$user." ".$v_job." 'json'", $output, $return_var);
-check_return_code($return_var,$output);
+check_return_code($return_var, $output);
 $data = json_decode(implode('', $output), true);
 unset($output);
 
@@ -62,7 +62,7 @@ if (!empty($_POST['save'])) {
 
     // Save changes
     exec (VESTA_CMD."v-change-cron-job ".$v_username." ".$v_job." ".$v_min." ".$v_hour." ".$v_day." ".$v_month." ".$v_wday." ".$v_cmd, $output, $return_var);
-    check_return_code($return_var,$output);
+    check_return_code($return_var, $output);
     unset($output);
 
     $v_cmd = $_POST['v_cmd'];
@@ -77,7 +77,7 @@ if (!empty($_POST['save'])) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Display body
 include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_cron.html');

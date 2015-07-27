@@ -9,10 +9,10 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Data
-if (empty($_GET['domain'])){
+if (empty($_GET['domain'])) {
     exec (VESTA_CMD."v-list-mail-domains $user json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
     $data = array_reverse($data, true);

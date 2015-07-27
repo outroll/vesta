@@ -16,7 +16,7 @@ if ($_SESSION['user'] == 'admin') {
         $v_package = escapeshellarg($_GET['package']);
         exec (VESTA_CMD."v-delete-user-package ".$v_package, $output, $return_var);
     }
-    check_return_code($return_var,$output);
+    check_return_code($return_var, $output);
     unset($output);
 }
 

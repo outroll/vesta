@@ -10,7 +10,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Data
 if ($_SESSION['user'] == 'admin') {

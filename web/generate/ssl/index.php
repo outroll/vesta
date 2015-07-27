@@ -9,7 +9,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Prepare values
 if (!empty($_GET['domain'])) {
@@ -56,7 +56,7 @@ if (!empty($errors[0])) {
             $error_msg = $error_msg.", ".$error;
         }
     }
-    $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+    $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/generate_ssl.html');
     include($_SERVER['DOCUMENT_ROOT'].'/templates/footer.html');
     unset($_SESSION['error_msg']);
@@ -84,7 +84,7 @@ $v_org = $_POST['v_org'];
 // Check return code
 if ($return_var != 0) {
     $error = implode('<br>', $output);
-    if (empty($error)) $error = __('Error code:',$return_var);
+    if (empty($error)) $error = __('Error code:', $return_var);
     $_SESSION['error_msg'] = $error;
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/generate_ssl.html');
     include($_SERVER['DOCUMENT_ROOT'].'/templates/footer.html');

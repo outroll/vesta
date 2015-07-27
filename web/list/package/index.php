@@ -15,7 +15,7 @@ if ($_SESSION['user'] != 'admin') {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Data
 exec (VESTA_CMD."v-list-user-packages json", $output, $return_var);

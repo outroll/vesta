@@ -436,7 +436,7 @@ $LANG['cn'] = array(
     'SERVICE_ACTION_FAILED'  => '"%s" "%s" 字段',
     'IP address is in use' => 'IP地址已被使用',
     'BACKUP_SCHEDULED'  => '任务已经被添加到队列中。当备份完成将会电子邮件通知您.',
-    'BACKUP_EXISTS'  => '现有的备份已在运行,请等待该备份完成.',
+    'BACKUP_EXISTS'  => '现有的备份已在运行, 请等待该备份完成.',
     'RESTORE_SCHEDULED'  => '任务已经被添加到队列中。当备份完成将会电子邮件通知您.',
     'RESTORE_EXISTS'  => '现有的修复工作已在执行，请等待完成后再执行.',
 

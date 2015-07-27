@@ -22,7 +22,7 @@ if (!empty($_GET['user'])) {
     $v_username = escapeshellarg($_GET['user']);
     exec (VESTA_CMD."v-unsuspend-user ".$v_username, $output, $return_var);
 }
-check_return_code($return_var,$output);
+check_return_code($return_var, $output);
 unset($output);
 
 $back=getenv("HTTP_REFERER");

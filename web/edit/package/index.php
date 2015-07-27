@@ -126,7 +126,7 @@ if (!empty($_POST['save'])) {
                 $error_msg = $error_msg.", ".$error;
             }
         }
-        $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+        $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
     }
 
     // Protect input
@@ -193,7 +193,7 @@ if (!empty($_POST['save'])) {
 
     // Save changes
     exec (VESTA_CMD."v-add-user-package ".$tmpdir." ".$v_package." 'yes'", $output, $return_var);
-    check_return_code($return_var,$output);
+    check_return_code($return_var, $output);
     unset($output);
 
     // Remove temporary dir
@@ -202,7 +202,7 @@ if (!empty($_POST['save'])) {
 
     // Propogate new package
     exec (VESTA_CMD."v-update-user-package ".$v_package." 'json'", $output, $return_var);
-    check_return_code($return_var,$output);
+    check_return_code($return_var, $output);
     unset($output);
 
     // Set success message
@@ -216,7 +216,7 @@ if (!empty($_POST['save'])) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Display body
 include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_package.html');

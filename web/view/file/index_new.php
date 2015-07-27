@@ -1,8 +1,8 @@
-<?php 
+<?php
 if (!empty($_REQUEST['path'])) {
     $path = $_REQUEST['path'];
     if (is_readable($path) && !empty($_REQUEST['raw'])) {
-        header('content-type: image/jpeg'); 
+        header('content-type: image/jpeg');
         print file_get_contents($path);
         exit;
     }

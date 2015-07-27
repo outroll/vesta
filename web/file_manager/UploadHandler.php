@@ -192,7 +192,7 @@ class UploadHandler
             (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ($_SERVER['SERVER_NAME'].
             ($https && $_SERVER['SERVER_PORT'] === 443 ||
             $_SERVER['SERVER_PORT'] === 80 ? '' : ':'.$_SERVER['SERVER_PORT']))).
-            substr($_SERVER['SCRIPT_NAME'],0, strrpos($_SERVER['SCRIPT_NAME'], '/'));
+            substr($_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['SCRIPT_NAME'], '/'));
     }
 
     protected function get_user_id() {
@@ -1102,7 +1102,7 @@ class UploadHandler
     protected function body($str) {
         echo $str;
     }
-    
+
     protected function header($str) {
         header($str);
     }

@@ -42,14 +42,14 @@ switch($_REQUEST['action']){
     case 'create_file': fm_create_file($_REQUEST['source'], $_REQUEST['mode']  || FALSE); break;
     case 'create_dir': fm_create_dir($_REQUEST['source'], $_REQUEST['mode'] || FALSE); break;
 
-    default: 
+    default:
 	$pwd = $_REQUEST['path'] ? $_REQUEST['path'] : __DIR__;
-	$listing = dir_list($pwd, $_REQUEST['sort_field']); 
+	$listing = dir_list($pwd, $_REQUEST['sort_field']);
 	$writable = is_writable($pwd);
 
-	$pwd = array_merge(array('/'), explode('/', trim($pwd, '/'))); 
+	$pwd = array_merge(array('/'), explode('/', trim($pwd, '/')));
 
-	include('templates/filemanager.php'); 
+	include('templates/filemanager.php');
     break;
 }
 
@@ -60,9 +60,9 @@ switch($_REQUEST['action']){
 
 //echo $_GET['sort_field'];
 
-//    if(in_array($_GET['sort_field'], $available_sort_fields)){
+//    if (in_array($_GET['sort_field'], $available_sort_fields)) {
 //	echo '1';
-//    }	
+//    }
 
 
 
@@ -84,13 +84,13 @@ switch($_REQUEST['action']){
 +-  create dir
 
   view file / image
-  download file / image   
+  download file / image
 */
 
 
 
 function fm_create_file($filename){
-    if(is_file($filename))
+    if (is_file($filename))
         return array('error' => 'file exists', 'code' => 1);
 
     return !!fopen($filename, 'w');
@@ -98,7 +98,7 @@ function fm_create_file($filename){
 
 
 function fm_create_dir($dirname){
-    if(is_dir($filename))
+    if (is_dir($filename))
         return array('error' => 'directory exists', 'code' => 1);
 
     // TODO set parent directory mode
@@ -107,48 +107,48 @@ function fm_create_dir($dirname){
 
 
 function fm_chown($filename, $recursive = 0, $uid = FALSE, $gid = FALSE){
-    if(is_dir($filename) && $recursive){
+    if (is_dir($filename) && $recursive) {
         $dir_handle  = opendir($dir);
 	while ($item = readdir($dir_handle)){
-    	    if (!in_array($item, array('.','..'))){
+    	    if (!in_array($item, array('.','..'))) {
 		$new_item = $filename.'/'.$item;
 
 	        if($uid !== FALSE) chown($new_item, (int)$uid);
-		if($gid !== FALSE) chgrp($new_item, (int)$gid); 
+		if($gid !== FALSE) chgrp($new_item, (int)$gid);
 
-		if(is_dir($new_item)){
+		if (is_dir($new_item)) {
 		    fm_chown($new_item, $recursive, $uid, $gid);
 		}
 	    }
 	}
-    }else{
+    } else {
         if($uid !== FALSE) chown($filename, (int)$uid);
-	if($gid !== FALSE) chgrp($filename, (int)$gid); 
+	if($gid !== FALSE) chgrp($filename, (int)$gid);
     }
 }
 
 
 function fm_chmod($filename, $recursive = 0, $mode){
-    if(is_dir($filename) && $recursive){
+    if (is_dir($filename) && $recursive) {
         $dir_handle  = opendir($dir);
 	while ($item = readdir($dir_handle)){
-    	    if (!in_array($item, array('.','..'))){
+    	    if (!in_array($item, array('.','..'))) {
 		$new_item = $filename.'/'.$item;
 	        chmod($new_item, octdec($mode));
 
-		if(is_dir($new_item)){
+		if (is_dir($new_item)) {
 		    fm_chmod($new_item, $recursive, $mode);
 		}
 	    }
 	}
-    }else{
+    } else {
 	chmod($filename, octdec($mode));
     }
 }
 
 
 function fm_delete($filename){
-    if(is_dir($filename)){
+    if (is_dir($filename)) {
 	foreach (
 	    $iterator = new RecursiveIteratorIterator(
 	    new RecursiveDirectoryIterator($filename, RecursiveDirectoryIterator::SKIP_DOTS),
@@ -162,7 +162,7 @@ function fm_delete($filename){
 //	    copy($item, $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
 	  }
 	}
-    }else{
+    } else {
 	return unlink($filename);
     }
 }
@@ -174,21 +174,21 @@ function fm_rename($source, $dest){
 
 
 function fm_copy($source, $dest){
-    if(is_dir($source)){
+    if (is_dir($source)) {
 	foreach (
 	    $iterator = new RecursiveIteratorIterator(
 	    new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
 	    RecursiveIteratorIterator::SELF_FIRST) as $item
 	) {
 	  if ($item->isDir()) {
-	    // TODO set dir perms 
+	    // TODO set dir perms
 	    mkdir($dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName(), decoct(fileperms($item->getPerms())));
 	  } else {
 	    copy($item, $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
 	  }
 	}
-    
-    }else{
+
+    } else {
 	return copy($source, $dest);
     }
 }
@@ -217,9 +217,9 @@ function list_dir(){
 
 
 
-/// fast removing directory 
+/// fast removing directory
 function rmrf($dir) {
-    
+
     foreach (glob($dir) as $file) {
         if (is_dir($file)) {
             rmrf("$file/*");
@@ -249,10 +249,10 @@ function dir_list($dir, $sort = 0)
     $dir_handle  = opendir($dir);
     $dir_objects = array();
     while ($object = readdir($dir_handle)){
-        if (!in_array($object, array('.','..'))){
+        if (!in_array($object, array('.','..'))) {
             $filename    = $dir . $object;
 	    $time = microtime(true) - $start;
-	    if($time <= LISTING_TIMEOUT){
+	    if ($time <= LISTING_TIMEOUT) {
     		$stats = stat($filename);
     		$mode = explain_mode($stats['mode']);
 		$perms = decoct(fileperms($filename));
@@ -272,7 +272,7 @@ function dir_list($dir, $sort = 0)
 	    	    'owner' => posix_getpwuid($stats['uid'])['name'],
 	    	    'group' => posix_getgrgid($stats['gid'])['name']
             	);
-	    }else{
+	    } else {
 		$listing['timeout_exeeded'] = TRUE;
 		if(is_dir($filename)){   $type = 'd';
 		}else{   $type = '-'; }
@@ -297,11 +297,11 @@ function dir_list($dir, $sort = 0)
 
 	    $listing['count']++;
 
-	    if($item['type'] == 'd'){
+	    if ($item['type'] == 'd') {
 		$listing['dirs'][] = $item;
 		$listing['dir_names'][] = $item['name'];
-	    }else{
-		if($sort && !$listing['timeout_exeeded']){
+	    } else {
+		if ($sort && !$listing['timeout_exeeded']) {
 		    $listing[$sort][] = $item[$sort];
 		}
 		$listing['files'][] = $item;
@@ -312,9 +312,9 @@ function dir_list($dir, $sort = 0)
     $listing['time'] = microtime(TRUE) - $start;
 
 
-    if(!$listing['timeout_exeeded']){
-	if(in_array($_REQUEST['sort_field'], $available_sort_fields)){
-	    if($_REQUEST['sort_desc']){
+    if (!$listing['timeout_exeeded']) {
+	if (in_array($_REQUEST['sort_field'], $available_sort_fields)) {
+	    if ($_REQUEST['sort_desc']) {
 		$sort_order = SORT_DESC;
 	    }
 	    array_multisort($listing[$_REQUEST['sort_field']], $sort_order, $listing['file_names'], $sort_order_for_filename, $listing['files']);
@@ -325,11 +325,11 @@ function dir_list($dir, $sort = 0)
     return $listing;
 }
 
-	
+
 function explain_mode($mode)
 {
     $info = array();
-    
+
     if     (($mode & 0xC000) == 0xC000) { $info['type'] = 's'; }
     elseif (($mode & 0xA000) == 0xA000) { $info['type'] = 'l'; }
     elseif (($mode & 0x8000) == 0x8000) { $info['type'] = '-'; }

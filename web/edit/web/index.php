@@ -110,19 +110,19 @@ if (!empty($_POST['save'])) {
     if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
         $v_ip = escapeshellarg($_POST['v_ip']);
         exec (VESTA_CMD."v-change-web-domain-ip ".$v_username." ".$v_domain." ".$v_ip." 'no'", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         $restart_web = 'yes';
         $restart_proxy = 'yes';
         unset($output);
     }
 
     // Chane dns domain IP
-    if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg'])))  {
+    if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
         unset($output);
         if ($return_var == 0 ) {
             exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." ".$v_domain." ".$v_ip." 'no'", $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             unset($output);
             $restart_dns = 'yes';
         }
@@ -135,7 +135,7 @@ if (!empty($_POST['save'])) {
             unset($output);
             if ($return_var == 0 ) {
                 exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." '".$v_alias."' ".$v_ip, $output, $return_var);
-                check_return_code($return_var,$output);
+                check_return_code($return_var, $output);
                 unset($output);
                 $restart_dns = 'yes';
             }
@@ -146,7 +146,7 @@ if (!empty($_POST['save'])) {
     if (($v_template != $_POST['v_template']) && ( $_SESSION['user'] == 'admin') && (empty($_SESSION['error_msg']))) {
         $v_template = escapeshellarg($_POST['v_template']);
         exec (VESTA_CMD."v-change-web-domain-tpl ".$v_username." ".$v_domain." ".$v_template." 'no'", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $restart_web = 'yes';
     }
@@ -155,7 +155,7 @@ if (!empty($_POST['save'])) {
     if (empty($_SESSION['error_msg'])) {
         $waliases = preg_replace("/\n/", " ", $_POST['v_aliases']);
         $waliases = preg_replace("/,/", " ", $waliases);
-        $waliases = preg_replace('/\s+/', ' ',$waliases);
+        $waliases = preg_replace('/\s+/', ' ', $waliases);
         $waliases = trim($waliases);
         $aliases = explode(" ", $waliases);
         $v_aliases = str_replace(' ', "\n", $waliases);
@@ -166,7 +166,7 @@ if (!empty($_POST['save'])) {
                 $restart_proxy = 'yes';
                 $v_template = escapeshellarg($_POST['v_template']);
                 exec (VESTA_CMD."v-delete-web-domain-alias ".$v_username." ".$v_domain." '".$alias."' 'no'", $output, $return_var);
-                check_return_code($return_var,$output);
+                check_return_code($return_var, $output);
                 unset($output);
 
                 if (empty($_SESSION['error_msg'])) {
@@ -174,7 +174,7 @@ if (!empty($_POST['save'])) {
                     unset($output);
                     if ($return_var == 0) {
                         exec (VESTA_CMD."v-delete-dns-on-web-alias ".$v_username." ".$v_domain." '".$alias."' 'no'", $output, $return_var);
-                        check_return_code($return_var,$output);
+                        check_return_code($return_var, $output);
                         unset($output);
                         $restart_dns = 'yes';
                     }
@@ -189,14 +189,14 @@ if (!empty($_POST['save'])) {
                 $restart_proxy = 'yes';
                 $v_template = escapeshellarg($_POST['v_template']);
                 exec (VESTA_CMD."v-add-web-domain-alias ".$v_username." ".$v_domain." '".$alias."' 'no'", $output, $return_var);
-                check_return_code($return_var,$output);
+                check_return_code($return_var, $output);
                 unset($output);
                 if (empty($_SESSION['error_msg'])) {
                     exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain, $output, $return_var);
                     unset($output);
                     if ($return_var == 0) {
                         exec (VESTA_CMD."v-add-dns-on-web-alias ".$v_username." ".$v_domain." '".$alias."' 'no'", $output, $return_var);
-                        check_return_code($return_var,$output);
+                        check_return_code($return_var, $output);
                     unset($output);
                         $restart_dns = 'yes';
                     }
@@ -209,14 +209,14 @@ if (!empty($_POST['save'])) {
     if ((!empty($_SESSION['WEB_BACKEND'])) && ( $v_backend_template != $_POST['v_backend_template']) && (empty($_SESSION['error_msg']))) {
             $v_backend_template = $_POST['v_backend_template'];
             exec (VESTA_CMD."v-change-web-domain-backend-tpl ".$v_username." ".$v_domain." ".escapeshellarg($v_backend_template), $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             unset($output);
     }
 
     // Delete proxy support
     if ((!empty($_SESSION['PROXY_SYSTEM'])) && (!empty($v_proxy)) && (empty($_POST['v_proxy'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-web-domain-proxy ".$v_username." ".$v_domain." 'no'", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         unset($v_proxy);
         $restart_proxy = 'yes';
@@ -226,14 +226,14 @@ if (!empty($_POST['save'])) {
     if ((!empty($_SESSION['PROXY_SYSTEM'])) && (!empty($v_proxy)) && (!empty($_POST['v_proxy'])) && (empty($_SESSION['error_msg']))) {
         $ext = preg_replace("/\n/", " ", $_POST['v_proxy_ext']);
         $ext = preg_replace("/,/", " ", $ext);
-        $ext = preg_replace('/\s+/', ' ',$ext);
+        $ext = preg_replace('/\s+/', ' ', $ext);
         $ext = trim($ext);
         $ext = str_replace(' ', ", ", $ext);
         if (( $v_proxy_template != $_POST['v_proxy_template']) || ($v_proxy_ext != $ext)) {
             $ext = str_replace(', ', ",", $ext);
             if (!empty($_POST['v_proxy_template'])) $v_proxy_template = $_POST['v_proxy_template'];
             exec (VESTA_CMD."v-change-web-domain-proxy-tpl ".$v_username." ".$v_domain." ".escapeshellarg($v_proxy_template)." ".escapeshellarg($ext)." 'no'", $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             $v_proxy_ext = str_replace(',', ', ', $ext);
             unset($output);
             $restart_proxy = 'yes';
@@ -246,13 +246,13 @@ if (!empty($_POST['save'])) {
         if (!empty($_POST['v_proxy_ext'])) {
             $ext = preg_replace("/\n/", " ", $_POST['v_proxy_ext']);
             $ext = preg_replace("/,/", " ", $ext);
-            $ext = preg_replace('/\s+/', ' ',$ext);
+            $ext = preg_replace('/\s+/', ' ', $ext);
             $ext = trim($ext);
             $ext = str_replace(' ', ",", $ext);
             $v_proxy_ext = str_replace(',', ', ', $ext);
         }
         exec (VESTA_CMD."v-add-web-domain-proxy ".$v_username." ".$v_domain." ".escapeshellarg($v_proxy_template)." ".escapeshellarg($ext)." 'no'", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $restart_proxy = 'yes';
     }
@@ -260,7 +260,7 @@ if (!empty($_POST['save'])) {
     // Delete SSL certificate
     if (( $v_ssl == 'yes' ) && (empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-web-domain-ssl ".$v_username." ".$v_domain." 'no'", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $v_ssl = 'no';
         $restart_web = 'yes';
@@ -298,7 +298,7 @@ if (!empty($_POST['save'])) {
             }
 
             exec (VESTA_CMD."v-change-web-domain-sslcert ".$user." ".$v_domain." ".$tmpdir." 'no'", $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             unset($output);
             $restart_web = 'yes';
             $restart_proxy = 'yes';
@@ -337,7 +337,7 @@ if (!empty($_POST['save'])) {
                     $error_msg = $error_msg.", ".$error;
                 }
             }
-            $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+            $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
         } else {
             exec ('mktemp -d', $mktemp_output, $return_var);
             $tmpdir = $mktemp_output[0];
@@ -363,7 +363,7 @@ if (!empty($_POST['save'])) {
                 fclose($fp);
             }
             exec (VESTA_CMD."v-add-web-domain-ssl ".$user." ".$v_domain." ".$tmpdir." ".$v_ssl_home." 'no'", $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             unset($output);
             $v_ssl = 'yes';
             $restart_web = 'yes';
@@ -395,7 +395,7 @@ if (!empty($_POST['save'])) {
         if ( $v_ssl_home != $_POST['v_ssl_home'] ) {
             $v_ssl_home = escapeshellarg($_POST['v_ssl_home']);
             exec (VESTA_CMD."v-change-web-domain-sslhome ".$user." ".$v_domain." ".$v_ssl_home." 'no'", $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             $v_ssl_home = $_POST['v_ssl_home'];
             unset($output);
         }
@@ -404,7 +404,7 @@ if (!empty($_POST['save'])) {
     // Delete web stats
     if ((!empty($v_stats)) && ($_POST['v_stats'] == 'none') && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-web-domain-stats ".$v_username." ".$v_domain, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $v_stats = '';
     }
@@ -413,7 +413,7 @@ if (!empty($_POST['save'])) {
     if ((!empty($v_stats)) && ($_POST['v_stats'] != $v_stats) && (empty($_SESSION['error_msg']))) {
         $v_stats = escapeshellarg($_POST['v_stats']);
         exec (VESTA_CMD."v-change-web-domain-stats ".$v_username." ".$v_domain." ".$v_stats, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -421,14 +421,14 @@ if (!empty($_POST['save'])) {
     if ((empty($v_stats)) && ($_POST['v_stats'] != 'none') && (empty($_SESSION['error_msg']))) {
         $v_stats = escapeshellarg($_POST['v_stats']);
         exec (VESTA_CMD."v-add-web-domain-stats ".$v_username." ".$v_domain." ".$v_stats, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
     // Delete web stats authorization
     if ((!empty($v_stats_user)) && (empty($_POST['v_stats_auth'])) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-web-domain-stats-user ".$v_username." ".$v_domain, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
         $v_stats_user = '';
         $v_stats_password = '';
@@ -445,7 +445,7 @@ if (!empty($_POST['save'])) {
                     $error_msg = $error_msg.", ".$error;
                 }
             }
-            $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+            $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
         } else {
             $v_stats_user = escapeshellarg($_POST['v_stats_user']);
             $v_stats_password = tempnam("/tmp","vst");
@@ -453,7 +453,7 @@ if (!empty($_POST['save'])) {
             fwrite($fp, $_POST['v_stats_password']."\n");
             fclose($fp);
             exec (VESTA_CMD."v-add-web-domain-stats-user ".$v_username." ".$v_domain." ".$v_stats_user." ".$v_stats_password, $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             unset($output);
             unlink($v_stats_password);
             $v_stats_password = escapeshellarg($_POST['v_stats_password']);
@@ -471,7 +471,7 @@ if (!empty($_POST['save'])) {
                     $error_msg = $error_msg.", ".$error;
                 }
             }
-            $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+            $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
         }
         if (($v_stats_user != $_POST['v_stats_user']) || (!empty($_POST['v_stats_password'])) && (empty($_SESSION['error_msg']))) {
             $v_stats_user = escapeshellarg($_POST['v_stats_user']);
@@ -480,7 +480,7 @@ if (!empty($_POST['save'])) {
             fwrite($fp, $_POST['v_stats_password']."\n");
             fclose($fp);
             exec (VESTA_CMD."v-add-web-domain-stats-user ".$v_username." ".$v_domain." ".$v_stats_user." ".$v_stats_password, $output, $return_var);
-            check_return_code($return_var,$output);
+            check_return_code($return_var, $output);
             unset($output);
             unlink($v_stats_password);
             $v_stats_password = escapeshellarg($_POST['v_stats_password']);
@@ -507,7 +507,7 @@ if (!empty($_POST['save'])) {
                             $error_msg = $error_msg.", ".$error;
                         }
                     }
-                    $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+                    $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
                 }
 
                 // Add ftp account
@@ -521,13 +521,13 @@ if (!empty($_POST['save'])) {
                     fwrite($fp, $v_ftp_user_data['v_ftp_password']."\n");
                     fclose($fp);
                     exec (VESTA_CMD."v-add-web-domain-ftp ".$v_username." ".$v_domain." ".$v_ftp_username." ".$v_ftp_password . " " . $v_ftp_path, $output, $return_var);
-                    check_return_code($return_var,$output);
+                    check_return_code($return_var, $output);
                     if ((!empty($v_ftp_user_data['v_ftp_email'])) && (empty($_SESSION['error_msg']))) {
                         $to = $v_ftp_user_data['v_ftp_email'];
                         $subject = __("FTP login credentials");
                         $hostname = exec('hostname');
-                        $from = __('MAIL_FROM',$hostname);
-                        $mailtext = __('FTP_ACCOUNT_READY',$_GET['domain'],$user,$v_ftp_username,$v_ftp_user_data['v_ftp_password']);
+                        $from = __('MAIL_FROM', $hostname);
+                        $mailtext = __('FTP_ACCOUNT_READY', $_GET['domain'], $user, $v_ftp_username, $v_ftp_user_data['v_ftp_password']);
                         send_email($to, $subject, $mailtext, $from);
                         unset($v_ftp_email);
                     }
@@ -560,7 +560,7 @@ if (!empty($_POST['save'])) {
             if ($v_ftp_user_data['delete'] == 1) {
                 $v_ftp_username = $user . '_' . $v_ftp_user_data['v_ftp_user'];
                 exec (VESTA_CMD."v-delete-web-domain-ftp ".$v_username." ".$v_domain." ".$v_ftp_username, $output, $return_var);
-                check_return_code($return_var,$output);
+                check_return_code($return_var, $output);
                 unset($output);
 
                 continue;
@@ -576,7 +576,7 @@ if (!empty($_POST['save'])) {
                             $error_msg = $error_msg.", ".$error;
                         }
                     }
-                    $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+                    $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
                 }
 
                 // Change FTP account path
@@ -599,8 +599,8 @@ if (!empty($_POST['save'])) {
                     $to = $v_ftp_user_data['v_ftp_email'];
                     $subject = __("FTP login credentials");
                     $hostname = exec('hostname');
-                    $from = __('MAIL_FROM',$hostname);
-                    $mailtext = __('FTP_ACCOUNT_READY',$_GET['domain'],$user,$v_ftp_username,$v_ftp_user_data['v_ftp_password']);
+                    $from = __('MAIL_FROM', $hostname);
+                    $mailtext = __('FTP_ACCOUNT_READY', $_GET['domain'], $user, $v_ftp_username, $v_ftp_user_data['v_ftp_password']);
                     send_email($to, $subject, $mailtext, $from);
                     unset($v_ftp_email);
                 }
@@ -622,21 +622,21 @@ if (!empty($_POST['save'])) {
     // Restart web server
     if (!empty($restart_web) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-restart-web", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
     // Restart proxy server
     if ((!empty($_SESSION['PROXY_SYSTEM'])) && !empty($restart_proxy) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-restart-proxy", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
     // Restart dns server
     if (!empty($restart_dns) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-restart-dns", $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -698,7 +698,7 @@ if (isset($v_ftp_users_updated)) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Display body
 if ($_SESSION['user'] == 'admin') {

@@ -76,7 +76,7 @@ if (!empty($restart)) {
     exec (VESTA_CMD."v-restart-dns", $output, $return_var);
 }
 
-if (empty($record)) { 
+if (empty($record)) {
     header("Location: /list/dns/");
     exit;
 } else {

@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-define('NO_AUTH_REQUIRED',true);
+define('NO_AUTH_REQUIRED', true);
 $TAB = 'LOGIN';
 
 // Logout

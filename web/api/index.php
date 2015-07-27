@@ -23,7 +23,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
     } else {
         $key = '/usr/local/vesta/data/keys/' . basename($_POST['hash']);
         if (file_exists($key) && is_file($key)) {
-            $auth_code = '0';
+            $auth_code = 0;
         }
     }
 
@@ -46,23 +46,23 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
 
     // Build query
     $cmdquery = VESTA_CMD.$cmd." ";
-    if(!empty($arg1)){
+    if (!empty($arg1)) {
          $cmdquery = $cmdquery.$arg1." "; }
-    if(!empty($arg2)){
+    if (!empty($arg2)) {
          $cmdquery = $cmdquery.$arg2." "; }
-    if(!empty($arg3)){
+    if (!empty($arg3)) {
          $cmdquery = $cmdquery.$arg3." "; }
-    if(!empty($arg4)){
+    if (!empty($arg4)) {
          $cmdquery = $cmdquery.$arg4." "; }
-    if(!empty($arg5)){
+    if (!empty($arg5)) {
          $cmdquery = $cmdquery.$arg5." "; }
-    if(!empty($arg6)){
+    if (!empty($arg6)) {
          $cmdquery = $cmdquery.$arg6." "; }
-    if(!empty($arg7)){
+    if (!empty($arg7)) {
          $cmdquery = $cmdquery.$arg7." "; }
-    if(!empty($arg8)){
+    if (!empty($arg8)) {
          $cmdquery = $cmdquery.$arg8." "; }
-    if(!empty($arg9)){
+    if (!empty($arg9)) {
          $cmdquery = $cmdquery.$arg9; }
 
     // Run query
@@ -74,7 +74,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
         if (($return_var == 0) && (empty($output))) {
             echo "OK";
         } else {
-            echo implode("\n",$output)."\n";
+            echo implode("\n", $output)."\n";
         }
     }
 }

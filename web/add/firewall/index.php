@@ -36,7 +36,7 @@ if (!empty($_POST['ok'])) {
                 $error_msg = $error_msg.", ".$error;
             }
         }
-        $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+        $_SESSION['error_msg'] = __('Field "%s" can not be blank.', $error_msg);
     }
 
     // Protect input
@@ -52,7 +52,7 @@ if (!empty($_POST['ok'])) {
     // Add firewall rule
     if (empty($_SESSION['error_msg'])) {
         exec (VESTA_CMD."v-add-firewall-rule ".$v_action." ".$v_ip." ".$v_port." ".$v_protocol." ".$v_comment, $output, $return_var);
-        check_return_code($return_var,$output);
+        check_return_code($return_var, $output);
         unset($output);
     }
 
@@ -69,7 +69,7 @@ if (!empty($_POST['ok'])) {
 include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
-top_panel($user,$TAB);
+top_panel($user, $TAB);
 
 // Display body
 include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/add_firewall.html');
