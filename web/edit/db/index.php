@@ -75,7 +75,7 @@ if (!empty($_POST['save'])) {
         fwrite($fp, $_POST['v_password']."\n");
         fclose($fp);
         exec (VESTA_CMD."v-change-database-password ".$v_username." ".$v_database." ".$v_password, $output, $return_var);
-        check_return_code($return_var, $output);    
+        check_return_code($return_var, $output);
         unset($output);
         unlink($v_password);
         $v_password = escapeshellarg($_POST['v_password']);

@@ -117,7 +117,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Chane dns domain IP
-    if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg'])))  {
+    if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
         unset($output);
         if ($return_var == 0 ) {

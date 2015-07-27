@@ -72,7 +72,7 @@ if (empty($account)) {
     }
 }
 
-if (empty($account)) { 
+if (empty($account)) {
     header("Location: /list/mail/");
     exit;
 } else {

@@ -12,7 +12,7 @@ include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 top_panel($user, $TAB);
 
 // Data
-if (empty($_GET['backup'])){
+if (empty($_GET['backup'])) {
     exec (VESTA_CMD."v-list-user-backups $user json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
     $data = array_reverse($data, true);

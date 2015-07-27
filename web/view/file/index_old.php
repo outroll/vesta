@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 if (!empty($_REQUEST['path'])) {
     $path = $_REQUEST['path'];
     if (is_readable($path) && !empty($_REQUEST['raw'])) {
-        header('content-type: image/jpeg'); 
+        header('content-type: image/jpeg');
         print file_get_contents($path);
         exit;
     }
@@ -26,7 +26,7 @@ else {
             var $ = jQuery;
             $(document).ready(function(){
                   var iv1 = $("#viewer").iviewer({
-                       src: "/view/file/?path=<?php echo $path ?>&raw=true", 
+                       src: "/view/file/?path=<?php echo $path ?>&raw=true",
                        update_on_resize: false,
                        zoom_animation: true,
                        mousewheel: true,
@@ -35,10 +35,10 @@ else {
                        onDrag: function(ev, coords) { }
                   });
 
-                   $("#in").click(function(){ iv1.iviewer('zoom_by', 1); }); 
-                   $("#out").click(function(){ iv1.iviewer('zoom_by', -1); }); 
-                   $("#fit").click(function(){ iv1.iviewer('fit'); }); 
-                   $("#orig").click(function(){ iv1.iviewer('set_zoom', 100); }); 
+                   $("#in").click(function(){ iv1.iviewer('zoom_by', 1); });
+                   $("#out").click(function(){ iv1.iviewer('zoom_by', -1); });
+                   $("#fit").click(function(){ iv1.iviewer('fit'); });
+                   $("#orig").click(function(){ iv1.iviewer('set_zoom', 100); });
                    $("#update").click(function(){ iv1.iviewer('update_container_info'); });
 /*
                   var iv2 = $("#viewer2").iviewer(
@@ -62,7 +62,7 @@ else {
                 border: 1px solid black;
                 position: relative;
             }
-            
+
             .wrapper
             {
                 overflow: hidden;

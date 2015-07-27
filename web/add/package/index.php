@@ -132,7 +132,7 @@ if (!empty($_POST['ok'])) {
         unset($output);
     }
 
-    // Remove tmpdir 
+    // Remove tmpdir
     exec ('rm -rf '.$tmpdir, $output, $return_var);
     unset($output);
 

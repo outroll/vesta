@@ -18,7 +18,7 @@ if ((!isset($_SESSION['user'])) && (!defined('NO_AUTH_REQUIRED'))) {
 
 if (isset($_SESSION['user'])) {
     require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n/'.$_SESSION['language'].'.php');
-    if(!isset($_SESSION['token'])){
+    if (!isset($_SESSION['token'])) {
         $token = uniqid(mt_rand(), true);
         $_SESSION['token'] = $token;
     }

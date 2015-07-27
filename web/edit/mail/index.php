@@ -26,7 +26,7 @@ if (($_SESSION['user'] == 'admin') && (!empty($_GET['user']))) {
 $v_username = $user;
 
 // List mail domain
-if ((!empty($_GET['domain'])) && (empty($_GET['account'])))  {
+if ((!empty($_GET['domain'])) && (empty($_GET['account']))) {
     $v_domain = escapeshellarg($_GET['domain']);
     exec (VESTA_CMD."v-list-mail-domain ".$user." ".$v_domain." json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
@@ -49,7 +49,7 @@ if ((!empty($_GET['domain'])) && (empty($_GET['account'])))  {
 }
 
 // List mail account
-if ((!empty($_GET['domain'])) && (!empty($_GET['account'])))  {
+if ((!empty($_GET['domain'])) && (!empty($_GET['account']))) {
     $v_domain = escapeshellarg($_GET['domain']);
     $v_account = escapeshellarg($_GET['account']);
     exec (VESTA_CMD."v-list-mail-account ".$user." ".$v_domain." ".$v_account." 'json'", $output, $return_var);
@@ -205,7 +205,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
     // Change quota
     if (($v_quota != $_POST['v_quota']) && (empty($_SESSION['error_msg']))) {
         if (empty($_POST['v_quota'])) {
-            $v_quota = 0; 
+            $v_quota = 0;
         } else {
             $v_quota = escapeshellarg($_POST['v_quota']);
         }
@@ -311,12 +311,12 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
 }
 
 // Display body for mail domain
-if ((!empty($_GET['domain'])) && (empty($_GET['account'])))  {
+if ((!empty($_GET['domain'])) && (empty($_GET['account']))) {
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_mail.html');
 }
 
 // Display body for mail account
-if ((!empty($_GET['domain'])) && (!empty($_GET['account'])))  {
+if ((!empty($_GET['domain'])) && (!empty($_GET['account']))) {
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_mail_acc.html');
 }
 

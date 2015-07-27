@@ -7,7 +7,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 //
 // sourceforge.net/projects/postfixadmin/
-// md5crypt 
+// md5crypt
 // Action: Creates MD5 encrypted password
 // Call: md5crypt (string cleartextpassword)
 //

@@ -19,7 +19,7 @@ if (($_SESSION['user'] == 'admin') && (!empty($_GET['user']))) {
 }
 
 // List dns domain
-if ((!empty($_GET['domain'])) && (empty($_GET['record_id'])))  {
+if ((!empty($_GET['domain'])) && (empty($_GET['record_id']))) {
     $v_domain = escapeshellarg($_GET['domain']);
     exec (VESTA_CMD."v-list-dns-domain ".$user." ".$v_domain." json", $output, $return_var);
     check_return_code($return_var, $output);
@@ -50,7 +50,7 @@ if ((!empty($_GET['domain'])) && (empty($_GET['record_id'])))  {
 }
 
 // List dns record
-if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
+if ((!empty($_GET['domain'])) && (!empty($_GET['record_id']))) {
     $v_domain = escapeshellarg($_GET['domain']);
     $v_record_id = escapeshellarg($_GET['record_id']);
     exec (VESTA_CMD."v-list-dns-records ".$user." ".$v_domain." 'json'", $output, $return_var);
@@ -202,7 +202,7 @@ include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 top_panel($user, $TAB);
 
 // Display body for dns domain
-if ((!empty($_GET['domain'])) && (empty($_GET['record_id'])))  {
+if ((!empty($_GET['domain'])) && (empty($_GET['record_id']))) {
     if ($_SESSION['user'] == 'admin') {
         include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_dns.html');
     } else {
@@ -211,7 +211,7 @@ if ((!empty($_GET['domain'])) && (empty($_GET['record_id'])))  {
 }
 
 // List dns record
-if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
+if ((!empty($_GET['domain'])) && (!empty($_GET['record_id']))) {
     // Display body for dns record
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_dns_rec.html');
 }

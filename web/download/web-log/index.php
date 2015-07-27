@@ -11,7 +11,7 @@ if ($_GET['type'] == 'error') $type = 'error';
 header("Cache-Control: public");
 header("Content-Description: File Transfer");
 header("Content-Disposition: attachment; filename=".$_GET['domain'].".".$type."-log.txt");
-header("Content-Type: application/octet-stream; "); 
+header("Content-Type: application/octet-stream; ");
 header("Content-Transfer-Encoding: binary");
 
 $v_domain = escapeshellarg($_GET['domain']);

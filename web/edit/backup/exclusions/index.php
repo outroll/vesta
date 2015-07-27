@@ -21,7 +21,7 @@ unset($output);
 // Parse web
 $v_username = $user;
 foreach ($data['WEB'] as $key => $value) {
-    if (!empty($value)){
+    if (!empty($value)) {
         $v_web .= $key . ":" . $value. "\n";
     } else {
         $v_web .= $key . "\n";
@@ -30,7 +30,7 @@ foreach ($data['WEB'] as $key => $value) {
 
 // Parse dns
 foreach ($data['DNS'] as $key => $value) {
-    if (!empty($value)){
+    if (!empty($value)) {
         $v_dns .= $key . ":" . $value. "\n";
     } else {
         $v_dns .= $key . "\n";
@@ -39,7 +39,7 @@ foreach ($data['DNS'] as $key => $value) {
 
 // Parse mail
 foreach ($data['MAIL'] as $key => $value) {
-    if (!empty($value)){
+    if (!empty($value)) {
         $v_mail .= $key . ":" . $value. "\n";
     } else {
         $v_mail .= $key . "\n";
@@ -48,7 +48,7 @@ foreach ($data['MAIL'] as $key => $value) {
 
 // Parse databases
 foreach ($data['DB'] as $key => $value) {
-    if (!empty($value)){
+    if (!empty($value)) {
         $v_db .= $key . ":" . $value. "\n";
     } else {
         $v_db .= $key . "\n";
@@ -57,7 +57,7 @@ foreach ($data['DB'] as $key => $value) {
 
 // Parse user directories
 foreach ($data['USER'] as $key => $value) {
-    if (!empty($value)){
+    if (!empty($value)) {
         $v_userdir .= $key . ":" . $value. "\n";
     } else {
         $v_userdir .= $key . "\n";

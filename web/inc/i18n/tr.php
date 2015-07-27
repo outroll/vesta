@@ -1,7 +1,7 @@
 <?php
 /**
  * Vesta turkish language file
- * info@ozgurbozkurt.com (ozgur@forum.vestacp.com) 
+ * info@ozgurbozkurt.com (ozgur@forum.vestacp.com)
  */
 
 $LANG['tr'] = array(

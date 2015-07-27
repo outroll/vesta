@@ -186,12 +186,12 @@ include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 top_panel($user, $TAB);
 
 // Display body for mail domain
-if (empty($_GET['domain']))  {
+if (empty($_GET['domain'])) {
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/add_mail.html');
 }
 
 // Display body for mail account
-if (!empty($_GET['domain']))  {
+if (!empty($_GET['domain'])) {
     $v_domain = $_GET['domain'];
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/add_mail_acc.html');
 }

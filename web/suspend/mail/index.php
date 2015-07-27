@@ -22,7 +22,7 @@ if (!empty($_GET['user'])) {
 }
 
 // Mail domain
-if ((!empty($_GET['domain'])) && (empty($_GET['account'])))  {
+if ((!empty($_GET['domain'])) && (empty($_GET['account']))) {
     $v_username = escapeshellarg($user);
     $v_domain = escapeshellarg($_GET['domain']);
     exec (VESTA_CMD."v-suspend-mail-domain ".$v_username." ".$v_domain, $output, $return_var);
@@ -38,7 +38,7 @@ if ((!empty($_GET['domain'])) && (empty($_GET['account'])))  {
 }
 
 // Mail account
-if ((!empty($_GET['domain'])) && (!empty($_GET['account'])))  {
+if ((!empty($_GET['domain'])) && (!empty($_GET['account']))) {
     $v_username = escapeshellarg($user);
     $v_domain = escapeshellarg($_GET['domain']);
     $v_account = escapeshellarg($_GET['account']);

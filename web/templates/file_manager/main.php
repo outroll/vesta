@@ -17,7 +17,7 @@
     <div id="main">
         <div class="window active">
             <div class="pwd">
-           <? /* <? foreach($pwd as $dir ){ 
+           <? /* <? foreach($pwd as $dir ){
                 $path .= '/'.$dir;
                 echo '<a href="/admin.php?page=tor/index.php&files=1&path='.$path.'">'.$dir.'</a>';
             } ?> */ ?>
@@ -25,11 +25,11 @@
             <div class="menu menu-left">
                 <?php $pre_tab = 'A';include($_SERVER['DOCUMENT_ROOT'].'/templates/file_manager/tab_menu.php'); ?>
             </div>
-            
-            
+
+
             <ul class="listing listing-left">
-                <? 
-                /*if(count($pwd) > 1){
+                <?
+                /*if (count($pwd) > 1) {
                     echo '<li class="back">
                         <span class="marker"></span>
                         <span class="filename"><a href="/admin.php?page=tor/index.php&files=1&path='.$path.'/..">..</a></span><span class="mode"><span class="owner"></span><span class="size"></span><span class="date"></span><span class="time"></time>
@@ -46,7 +46,7 @@
                     <span class="owner">'.$dir['owner'].'/'.$dir['group'].'</span>
                     <span class="mode m-775">'.$dir['mode']['owner'].''.$dir['mode']['group'].''.$dir['mode']['other'].'</span>
                         </li>';
-                } 
+                }
 
                 foreach($listing['files'] as $item){
                     echo '<li class="dir">
@@ -292,7 +292,7 @@
         <script src="/js/jquery.iframe-transport.js"></script>
         <script src="/js/jquery.fileupload.js"></script>
         <script src="/js/jquery.arcticmodal.js"></script>
-        
+
         <?php if (!empty($GLOBAL_JS)): ?>
             <?php echo $GLOBAL_JS; ?>
         <?php endif; ?>
@@ -340,26 +340,26 @@
                             $(info).find('.close').bind('click', function() {
                                 $('#file-upload-msg').remove();
                             });
-                            
+
                             $('body').append($(info).removeClass('hidden'));
-                        
+
                             window.ht_fd = setTimeout(function() {
                                 $('#file-upload-msg').fadeOut();
                             }, 3000);
                         }
-                        
+
                         var tab = FM.getTabLetter(FM.CURRENT_TAB);
                         var box = FM['TAB_' + tab];
                         FM.open(FM['TAB_' + tab + '_CURRENT_PATH'], box);
-                        
+
                         //$('.file-upload-button-' + tab).removeClass('progress');
                         $('.file-upload-button-' + tab).addClass('done');
-                        
+
                         setTimeout(function() {
                             $('.file-upload-button-' + tab).removeClass('progress');
                             $('.file-upload-button-' + tab).removeClass('done');
                         }, 2000);
-                        
+
                         $('.file-upload-button-' + tab).css('background-position', '-96px 0');
                     },
                     progressall: function (e, data) {
