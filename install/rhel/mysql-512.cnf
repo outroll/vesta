@@ -11,7 +11,7 @@ long_query_time=5
 #log-queries-not-using-indexes
 #log-slow-queries=/var/log/mysql/log-slow-queries.log
 
-key_buffer = 16M
+key_buffer_size = 16M
 myisam_sort_buffer_size = 32M
 join_buffer_size=1M
 read_buffer_size=1M
