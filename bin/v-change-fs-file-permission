@@ -1,0 +1,43 @@
+#!/bin/bash
+# info: change file permission
+# options: USER FILE PERMISSIONS
+#
+# The function changes file access permissions on the file system
+
+user=$1
+src_file=$2
+permissions=$3
+
+# Checking arguments
+if [ -z "$permissions" ]; then
+    echo "Usage: USER FILE PERMISSIONS"
+    exit 1
+fi
+
+# Checking vesta user
+if [ ! -e "$VESTA/data/users/$user" ]; then
+    exit 1
+fi
+
+# Checking user homedir
+homedir=$(grep "^$user:" /etc/passwd | cut -f 6 -d :)
+if [ -z $homedir ]; then
+    exit 1
+fi
+
+# Checking source file
+if [ ! -f "$src_file" ]; then
+    exit 1
+fi
+
+# Checking source path
+rpath=$(readlink -f "$src_file")
+if [ -z "$(echo $rpath |egrep "^/tmp|^$homedir")" ]; then
+    exit 1
+fi
+
+# Changing file permissions
+sudo -u $user chmod $permisions $src_file >/dev/null 2>&1
+
+# Exiting
+exit $?

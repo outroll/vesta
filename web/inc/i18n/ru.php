@@ -182,7 +182,7 @@ $LANG['ru'] = array(
     'Additional FTP Account' => 'Дополнительный ftp',
     'SOA' => 'SOA',
     'TTL' => 'TTL',
-    'Expire' => 'Регистрация до',
+    'Expire' => 'Истекает',
     'Records' => 'DNS записи',
     'Catchall email' => 'Ловушка почты',
     'AntiVirus Support' => 'Антивирус',
@@ -423,6 +423,7 @@ $LANG['ru'] = array(
     'DELETE_RULE_CONFIRMATION' => 'Вы уверены, что хотите удалить правило №%s?',
     'SUSPEND_RULE_CONFIRMATION' => 'Вы уверены, что хотите заблокирован правило №%s?',
     'UNSUSPEND_RULE_CONFIRMATION' => 'Вы уверены, что хотите разблокировать правило №%s?',
+    'LEAVE_PAGE_CONFIRMATION' => 'Leave Page?',
     'RESTART_CONFIRMATION' => 'Вы уверены, что хотите перезагрузить %s?',
     'Welcome' => 'Добро пожаловать',
     'LOGGED_IN_AS' => 'Вы вошли как пользователь %s',
@@ -497,4 +498,8 @@ $LANG['ru'] = array(
     'Backup Migration Manager' => 'Менеджер Миграции Бэкапов',
     'FileManager' => 'Файл Менеджер',
 
+    'sort by' => 'сортировка',
+    'Date' => 'Дата',
+    'Starred' => 'Избранные',
+    'Name' => 'Имя',
 );

@@ -421,6 +421,7 @@ $LANG['tr'] = array(
     'DELETE_RULE_CONFIRMATION' => '#%s kuralını silmek istediğinize emin misiniz?',
     'SUSPEND_RULE_CONFIRMATION' => '#%s kuralını askıya almak istediğinize emin misiniz?',
     'UNSUSPEND_RULE_CONFIRMATION' => '#%s kuralını devam ettirmek istediğinize emin misiniz?',
+    'LEAVE_PAGE_CONFIRMATION' => 'Leave Page?',
     'RESTART_CONFIRMATION' => '%s yeniden başlatılacak. Onaylıyor musunuz?',
     'Welcome'  => 'Hoşgeldiniz',
     'LOGGED_IN_AS'  => '%s kullanıcısı olarak oturum aç',
@@ -495,4 +496,8 @@ $LANG['tr'] = array(
     'Backup Migration Manager' => 'Yedek Aktarma Yöneticisi',
     'FileManager' => 'DosyaYöneticisi',
 
+    'sort by' => 'sort by',
+    'Date' => 'Date',
+    'Starred' => 'Starred',
+    'Name' => 'Name',
 );

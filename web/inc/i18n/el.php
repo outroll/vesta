@@ -422,6 +422,7 @@ $LANG['el'] = array(
     'DELETE_RULE_CONFIRMATION' => 'Είστε σίγουρος πως θέλετε να διαγράψετε τον κανόνα #%s?',
     'SUSPEND_RULE_CONFIRMATION' => 'Είστε σίγουρος πως θέλετε να αποκλείσετε τον κανόνα  #%s?',
     'UNSUSPEND_RULE_CONFIRMATION' => 'Είστε σίγουρος πως θέλετε να αρθεί ο αποκλεισμός του κανόνα #%s?',
+    'LEAVE_PAGE_CONFIRMATION' => 'Leave Page?',
     'RESTART_CONFIRMATION' => 'Είστε σίγουρος πως θέλετε να επανεκκινήσετε το %s?',
     'Welcome'  => 'Καλωσήρθατε',
     'LOGGED_IN_AS'  => 'Συνδεδεμένος ως χρήστης %s',
@@ -496,4 +497,8 @@ $LANG['el'] = array(
     'Backup Migration Manager' => 'Backup Migration Manager',
     'FileManager' => 'FileManager',
 
+    'sort by' => 'sort by',
+    'Date' => 'Date',
+    'Starred' => 'Starred',
+    'Name' => 'Name',
 );

@@ -422,6 +422,7 @@ $LANG['cz'] = array(
     'DELETE_RULE_CONFIRMATION' => 'Opravdu chcete odstranit pravidlo #%s?',
     'SUSPEND_RULE_CONFIRMATION' => 'Opravdu chcete pozastavit pravidlo #%s?',
     'UNSUSPEND_RULE_CONFIRMATION' => 'Opravdu chcete odblokovat pravidlo #%s?',
+    'LEAVE_PAGE_CONFIRMATION' => 'Leave Page?',
     'RESTART_CONFIRMATION' => 'Opravdu chcete restartovat %s?',
     'Welcome'  => 'Vítejte!',
     'LOGGED_IN_AS'  => 'Přihlášen jako uživatel %s',
@@ -496,4 +497,8 @@ $LANG['cz'] = array(
     'Backup Migration Manager' => 'Backup Migration Manager',
     'FileManager' => 'FileManager',
 
+    'sort by' => 'sort by',
+    'Date' => 'Date',
+    'Starred' => 'Starred',
+    'Name' => 'Name',
 );

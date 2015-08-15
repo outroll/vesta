@@ -43,11 +43,7 @@
     <!-- /.l-separator -->
 
 
-    <div class="l-center">
-
-
-
-
+    <div class="l-center units">
       <div class="l-unit <? if($status == 'suspended') echo 'l-unit--suspended';?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
@@ -57,7 +53,7 @@
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__restart"><a href="/restart/service/?srv=<?php echo $sys['sysinfo']['HOSTNAME'] ?>"><?=__('restart')?> <i></i></a></div>
+              <div class="actions-panel__col actions-panel__restart"><a href="/restart/system/?hostname=<?php echo $sys['sysinfo']['HOSTNAME'] ?>"><?=__('restart')?> <i></i></a></div>
             </div>
             <!-- /.actions-panel -->
           </div>
@@ -111,12 +107,6 @@
         <!-- /.l-unit__col -->
       </div>
       <!-- /.l-unit -->
-      <div class="l-separator"></div>
-      <!-- /.l-separator -->
-
-
-
-
 
 
 
@@ -198,7 +188,7 @@
         <!-- /.l-unit__col -->
       </div>
       <!-- /.l-unit -->
-      <div class="l-separator"></div>
+      <!-- div class="l-separator"></div -->
       <!-- /.l-separator -->
       <?}?>
 

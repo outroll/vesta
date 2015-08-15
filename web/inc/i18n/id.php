@@ -424,6 +424,7 @@ $LANG['id'] = array(
     'DELETE_RULE_CONFIRMATION' => 'Aturan #%s beneran mau dihapus?',
     'SUSPEND_RULE_CONFIRMATION' => 'Aturan #%s beneran mau ditangguhin?',
     'UNSUSPEND_RULE_CONFIRMATION' => 'Penangguhan aturan #%s mau dibatalin. Yakin?',
+    'LEAVE_PAGE_CONFIRMATION' => 'Leave Page?',
     'RESTART_CONFIRMATION' => '%s mau me-restart?',
     'Welcome'  => 'Selamat Datang',
     'LOGGED_IN_AS'  => 'Masuk sebagai pengguna %s',
@@ -498,4 +499,8 @@ $LANG['id'] = array(
     'Backup Migration Manager' => 'Backup Migration Manager',
     'FileManager' => 'FileManager',
 
+    'sort by' => 'sort by',
+    'Date' => 'Date',
+    'Starred' => 'Starred',
+    'Name' => 'Name',
 );

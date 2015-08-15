@@ -422,6 +422,7 @@ $LANG['nl'] = array(
     'DELETE_RULE_CONFIRMATION' => 'Weet u zeker dat u regel #%s wilt verwijderen?',
     'SUSPEND_RULE_CONFIRMATION' => 'Weet u zeker dat u regel #%s wilt uitschakelen?',
     'UNSUSPEND_RULE_CONFIRMATION' => 'Weet u zeker dat u regel #%s weer wilt inschakelen?',
+    'LEAVE_PAGE_CONFIRMATION' => 'Leave Page?',
     'RESTART_CONFIRMATION' => 'Weet u zeker dat %s wilt herstarten?',
     'Welcome'  => 'Welkom',
     'LOGGED_IN_AS'  => 'Ingelogd als gebruiker %s',
@@ -496,4 +497,8 @@ $LANG['nl'] = array(
     'Backup Migration Manager' => 'Backup Migration Manager',
     'FileManager' => 'FileManager',
 
+    'sort by' => 'sort by',
+    'Date' => 'Date',
+    'Starred' => 'Starred',
+    'Name' => 'Name',
 );

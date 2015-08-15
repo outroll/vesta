@@ -423,6 +423,7 @@ $LANG['fr'] = array(
     'DELETE_RULE_CONFIRMATION' => 'Êtes-vous sûr de vouloir supprimer la règle #%s?',
     'SUSPEND_RULE_CONFIRMATION' => 'Êtes-vous sûr de vouloir suspendre la règle #%s?',
     'UNSUSPEND_RULE_CONFIRMATION' => 'Êtes-vous sûr de vouloir réactiver la règle #%s?',
+    'LEAVE_PAGE_CONFIRMATION' => 'Leave Page?',
     'RESTART_CONFIRMATION' => 'Êtes-vous sûr de vouloir redémarrer le serveur %s ?',
     'Welcome'  => 'Bienvenue',
     'LOGGED_IN_AS'  => 'Connecté en tant que %s',
@@ -497,4 +498,8 @@ $LANG['fr'] = array(
     'Backup Migration Manager' => 'Backup Migration Manager',
     'FileManager' => 'FileManager',
 
+    'sort by' => 'sort by',
+    'Date' => 'Date',
+    'Starred' => 'Starred',
+    'Name' => 'Name',
 );

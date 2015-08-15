@@ -419,6 +419,7 @@ $LANG['ar'] = array(
     'DELETE_RULE_CONFIRMATION' => 'هل أنت متأكد أنك تريد حذف حكم %s?',
     'SUSPEND_RULE_CONFIRMATION' => 'هل أنت متأكد أنك تريد تعليق حكم %s?',
     'UNSUSPEND_RULE_CONFIRMATION' => 'هل أنت متأكد أنك تريد إلغاء تعليق حكم %s?',
+    'LEAVE_PAGE_CONFIRMATION' => 'Leave Page?',
 
     'RESTART_CONFIRMATION' => 'هل أنت متأكد من أنك تريد إعادة تشغيل %s?',
     'Welcome'  => 'أهلا وسهلا',
@@ -494,4 +495,8 @@ $LANG['ar'] = array(
     'Backup Migration Manager' => 'Backup Migration Manager',
     'FileManager' => 'FileManager',
 
+    'sort by' => 'sort by',
+    'Date' => 'Date',
+    'Starred' => 'Starred',
+    'Name' => 'Name',
 );
