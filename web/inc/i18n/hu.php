@@ -1,17 +1,17 @@
 <?php
 /**
- * Vesta hungarian language file
- * Készítette: Kovács Ákos - (kovacsakos1991@gmail.com)
- * www.kovacsakos.info
- * 2014.06.18.
+ * VestaCP magyar nyelvi fájl - rev1(20150817)
+ * Készítette: Kovács Ákos
  */
 
 $LANG['hu'] = array(
     'Packages'  => 'Csomagok',
-    'IP'  => 'IP',
+    'IP'  => 'IP címek',
     'Graphs'  => 'Grafikonok',
     'Statistics'  => 'Statisztikák',
-    'Log'  => 'Log',
+    'Log'  => 'Naplók',
+	'Server'  => 'Szerver',
+    'Firewall' => 'Tűzfal',
     'Services'  => 'Szolgáltatások',
     'Updates'  => 'Frissítések',
     'Log in'  => 'Belépés',
@@ -142,7 +142,7 @@ $LANG['hu'] = array(
     'Databases'  => 'Adatbázis',
     'User Directories'  => 'Felhasználói könyvtárak',
     'Template'  => 'Sablon',
-    'Web Template'  => 'Apache sablon,
+    'Web Template'  => 'Apache sablon',
     'Proxy Template'  => 'Nginx sablon',
     'DNS Template'  => 'DNS sablon',
     'Web Domains'  => 'Web Domainek',
@@ -155,7 +155,7 @@ $LANG['hu'] = array(
     'Name Servers'  => 'Name Serverek',
     'Mail Domains'  => 'Mail Domainek',
     'Mail Accounts'  => 'Mail Fiókok',
-    'Cron Jobs'  => 'Cron Jobs',
+    'Cron Jobs'  => 'Időzített feladatok',
     'SSH Access'  => 'SSH hozzáférés',
     'IP Addresses'  => 'IP Címek',
     'Backups'  => 'Mentések',
@@ -398,7 +398,7 @@ $LANG['hu'] = array(
     'LOGGED_IN_AS'  => 'Belépve, mint %s',
     'Error'  => 'Hiba',
     'Invalid username or password'  => 'Hibás felhasználónév vagy jelszó',
-    'Invalid username or code'  => 'Hibás felhasználónév vagy kód
+    'Invalid username or code'  => 'Hibás felhasználónév vagy kód',
     'Passwords not match'  => 'A jelszavak nem egyeznek meg',
     'Please enter valid email address.'  => 'Kérlek valós e-mail címet adj meg!',
     'Field "%s" can not be blank.'  => 'A(z) "%s" mező nem lehet üres.',
