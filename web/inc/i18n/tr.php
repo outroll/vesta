@@ -496,8 +496,8 @@ $LANG['tr'] = array(
     'Backup Migration Manager' => 'Yedek Aktarma Yöneticisi',
     'FileManager' => 'DosyaYöneticisi',
 
-    'sort by' => 'sort by',
-    'Date' => 'Date',
-    'Starred' => 'Starred',
-    'Name' => 'Name',
+    'sort by' => 'sıralama ölçütü',
+    'Date' => 'Tarih',
+    'Starred' => 'Yıldızlı',
+    'Name' => 'İsim',
 );
