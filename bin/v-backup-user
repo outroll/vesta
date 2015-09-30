@@ -137,7 +137,7 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
     # Parsing domain exclusions
     conf="$USER_DATA/web.conf"
     for domain in $(search_objects 'web' 'SUSPENDED' "*" 'DOMAIN'); do
-        check_exl=$(echo -e "${WEB//,/\n}" |grep "^$domain$")
+        check_exl=$(echo -e "${WEB//,/\\n}" |grep "^$domain$")
         if [ -z "$check_exl" ]; then
             web_list="$web_list $domain"
         else
@@ -212,9 +212,9 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
         fargs+=(-not)
         fargs+=(-path)
         fargs+=("./logs*")
-        check_exlusion=$(echo -e "${WEB//,/\n}" | grep "^$domain:")
+        check_exlusion=$(echo -e "${WEB//,/\\n}" | grep "^$domain:")
         if [ ! -z "$check_exlusion" ]; then
-            xdirs="$(echo -e "${check_exlusion//:/\n}" |grep -v $domain)"
+            xdirs="$(echo -e "${check_exlusion//:/\\n}" |grep -v $domain)"
             for xpath in $xdirs; do
                 xpath="$(echo $xpath | sed -e 's/\/*$//' -e 's/^\/*//')"
                 fargs+=(-not)
@@ -259,7 +259,7 @@ if [ ! -z "$DNS_SYSTEM" ] && [ "$DNS" != '*' ]; then
 
     # Parsing domain exclusions
     for domain in $(search_objects 'dns' 'SUSPENDED' "*" 'DOMAIN'); do
-        check_exl=$(echo -e "${DNS//,/\n}" |grep "^$domain$")
+        check_exl=$(echo -e "${DNS//,/\\n}" |grep "^$domain$")
         if [ -z "$check_exl" ]; then
             dns_list="$dns_list $domain"
         else
@@ -312,7 +312,7 @@ if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL" != '*' ]; then
     # Parsing domain exclusions
     conf="$USER_DATA/mail.conf"
     for domain in $(search_objects 'mail' 'SUSPENDED' "*" 'DOMAIN'); do
-        check_exl=$(echo -e "${MAIL//,/\n}" |grep "^$domain$")
+        check_exl=$(echo -e "${MAIL//,/\\n}" |grep "^$domain$")
         if [ -z "$check_exl" ]; then
             mail_list="$mail_list $domain"
         else
@@ -348,8 +348,8 @@ if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL" != '*' ]; then
         # Backup emails
         cd $HOMEDIR/$user/mail/$domain_idn
         for account in $(ls); do
-            exclusion=$(echo -e "${MAIL//,/\n}" |grep "$domain:")
-            exclusion=$(echo -e "${exclusion//:/\n}" |grep "^$account$")
+            exclusion=$(echo -e "${MAIL//,/\\n}" |grep "$domain:")
+            exclusion=$(echo -e "${exclusion//:/\\n}" |grep "^$account$")
 
             # Checking exlusions
             if [ -z "$exclusion" ] && [[ "$MAIL_SYSTEM" =~ exim ]]; then
@@ -390,7 +390,7 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB" != '*' ]; then
 
     # Parsing database exclusions
     for database in $(search_objects 'db' 'SUSPENDED' "*" 'DB'); do
-        check_exl=$(echo -e "${DB//,/\n}" |grep "^$database$")
+        check_exl=$(echo -e "${DB//,/\\n}" |grep "^$database$")
         if [ -z "$check_exl" ]; then
             db_list="$db_list $database"
         else
@@ -477,7 +477,7 @@ if [ "$USER" != '*' ]; then
     if [ -e "$USER_DATA/backup-excludes.conf" ]; then
         source $USER_DATA/backup-excludes.conf
     fi
-    exlusion_list=$(echo -e "${USER//,/\n}")
+    exlusion_list=$(echo -e "${USER//,/\\n}")
     fargs=()
     for xpath in $exlusion_list; do
         fargs+=(-not)
@@ -491,7 +491,7 @@ if [ "$USER" != '*' ]; then
     set -f
     i=0
     for udir in $(ls |egrep -v "conf|web|dns|mail"); do
-        check_exl=$(echo -e "${USER//,/\n}" |grep "^$udir$")
+        check_exl=$(echo -e "${USER//,/\\n}" |grep "^$udir$")
         if [ -z "$check_exl" ]; then
             ((i ++))
             udir_list="$udir_list $udir"
