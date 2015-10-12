@@ -39,6 +39,11 @@ shell_path=$(grep -w "$shell" /etc/shells | head -n1)
 /usr/bin/chsh -s "$shell_path" "$user" &>/dev/null
 shell=$(basename $shell_path)
 
+# Adding jailed sftp env
+if [ ! -z "$SFTPJAIL_KEY" ]; then
+    $BIN/v-add-user-sftp-jail $user
+fi
+
 
 #----------------------------------------------------------#
 #                       Vesta                              #

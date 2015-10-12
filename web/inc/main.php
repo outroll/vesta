@@ -1,6 +1,7 @@
 <?php
+session_start();
 
-// Check system settiongs
+// Check system settings
 if ((!isset($_SESSION['VERSION'])) && (!defined('NO_AUTH_REQUIRED'))) {
     session_destroy();
     $_SESSION['request_uri'] = $_SERVER['REQUEST_URI'];
@@ -101,6 +102,30 @@ if (isset($_SESSION['look']) && ( $_SESSION['look'] != 'admin' )) {
     $user = $_SESSION['look'];
 }
 
+get_favorites();
+
+
+function get_favorites(){
+    exec (VESTA_CMD."v-list-user-favourites ".$_SESSION['user']." json", $output, $return_var);
+//    $data = json_decode(implode('', $output).'}', true);
+    $data = json_decode(implode('', $output), true);
+    $data = array_reverse($data,true);
+    $favourites = array();
+
+    foreach($data['Favourites'] as $key => $favourite){
+        $favourites[$key] = array();
+
+        $items = explode(',', $favourite);
+        foreach($items as $item){
+            if($item)
+                $favourites[$key][trim($item)] = 1;
+        }
+    }
+
+    $_SESSION['favourites'] = $favourites;
+}
+
+
 
 function check_error($return_var) {
     if ( $return_var > 0 ) {
@@ -144,6 +169,7 @@ function humanize_time($usage) {
         $usage = $usage / 60;
         if ( $usage > 24 ) {
              $usage = $usage / 24;
+
             $usage = number_format($usage);
             if ( $usage == 1 ) {
                 $usage = $usage." ".__('day');
@@ -164,29 +190,6 @@ function humanize_time($usage) {
         } else {
             $usage = $usage." ".__('minutes');
         }
-    }
-    return $usage;
-}
-
-function humanize_usage($usage) {
-    if ( $usage > 1024 ) {
-        $usage = $usage / 1024;
-        if ( $usage > 1024 ) {
-                $usage = $usage / 1024 ;
-                if ( $usage > 1024 ) {
-                    $usage = $usage / 1024 ;
-                    $usage = number_format($usage, 2);
-                    $usage = $usage." ".__('pb');
-                } else {
-                    $usage = number_format($usage, 2);
-                    $usage = $usage." ".__('tb');
-                }
-        } else {
-            $usage = number_format($usage, 2);
-            $usage = $usage." ".__('gb');
-        }
-    } else {
-        $usage = $usage." ".__('mb');
     }
     return $usage;
 }
@@ -212,23 +215,24 @@ function humanize_usage_size($usage) {
 
 function humanize_usage_measure($usage) {
     $measure = 'kb';
+
     if ( $usage > 1024 ) {
         $usage = $usage / 1024;
         if ( $usage > 1024 ) {
                 $usage = $usage / 1024 ;
                 if ( $usage > 1024 ) {
-                    $measure = __('pb');
+                    $measure = 'pb';
                 } else {
-                    $measure = __('tb');
+                    $measure = 'tb';
                 }
         } else {
-            $measure = __('gb');
+            $measure = 'gb';
         }
     } else {
-        $measure = __('mb');
+        $measure = 'mb';
     }
 
-    return $measure;
+    return __($measure);
 }
 
 
