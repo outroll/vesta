@@ -1,7 +1,15 @@
 <?php
-session_start();
 
 define('NO_AUTH_REQUIRED',true);
+
+
+
+// Main include
+include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
+
+//echo $_SESSION['request_uri'];
+
+
 $TAB = 'LOGIN';
 
 // Logout
@@ -9,12 +17,10 @@ if (isset($_GET['logout'])) {
     session_destroy();
 }
 
-// Main include
-include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 // Login as someone else
 if (isset($_SESSION['user'])) {
-    if ($_SESSION['user'] ==  'admin' && !empty($_GET['loginas'])) {
+    if ($_SESSION['user'] == 'admin' && !empty($_GET['loginas'])) {
         exec (VESTA_CMD . "v-list-user ".escapeshellarg($_GET['loginas'])." json", $output, $return_var);
         if ( $return_var == 0 ) {
             $data = json_decode(implode('', $output), true);
@@ -32,7 +38,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
     $v_user = escapeshellarg($_POST['user']);
 
     // Send password via tmp file
-    $v_password = tempnam("/tmp","vst");
+    $v_password = exec('mktemp -p /tmp');
     $fp = fopen($v_password, "w");
     fwrite($fp, $_POST['password']."\n");
     fclose($fp);
@@ -90,5 +96,3 @@ if (empty($_SESSION['language'])) $_SESSION['language']='en';
 require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n/'.$_SESSION['language'].'.php');
 require_once('../templates/header.html');
 require_once('../templates/login.html');
-
-?>
