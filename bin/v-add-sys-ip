@@ -92,7 +92,8 @@ INTERFACE='$interface'
 NETMASK='$netmask'
 NAT='$nat_ip'
 TIME='$TIME'
-DATE='$DATE'" > $VESTA/data/ips/$ip
+DATE='$DATE'
+VERSION='4'" > $VESTA/data/ips/$ip
 chmod 660 $VESTA/data/ips/$ip
 
 # WEB support

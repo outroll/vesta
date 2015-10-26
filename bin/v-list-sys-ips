@@ -81,13 +81,13 @@ shell_list_ips() {
 # Defining fileds to select
 conf=$VESTA/data/ips/*
 fields="\$IP \$OWNER \$STATUS \$NAME \$U_SYS_USERS \$U_WEB_DOMAINS"
-fields="$fields \$INTERFACE \$NETMASK \$NAT \$TIME \$DATE"
+fields="$fields \$INTERFACE \$NETMASK \$NAT \$TIME \$DATE \$VERSION"
 
 # Listing ip addresses
 case $format in 
     json)   json_list_ips ;;
     plain)  nohead=1; shell_list_ips ;;
-    shell)  fields='$IP $NETMASK $NAT $OWNER $U_WEB_DOMAINS';
+    shell)  fields='$IP $NETMASK $NAT $OWNER $U_WEB_DOMAINS $VERSION';
             shell_list_ips | column -t ;;
     *)      check_args '1' '0' '[FORMAT]'
 esac

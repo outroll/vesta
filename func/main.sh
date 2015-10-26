@@ -616,6 +616,28 @@ validate_format_ip() {
     fi
 }
 
+# IP address
+validate_format_ipv6() {
+    t_ip=$(echo $1 |awk -F / '{print $1}')
+    t_cidr=$(echo $1 |awk -F / '{print $2}')
+    valid_octets=0
+    valid_cidr=1
+    
+    if [ ! -z "$(echo $1|grep '/')" ]; then
+        if [[ "$t_cidr" -lt 0 ]] || [[ "$t_cidr" -gt 128 ]]; then
+            valid_cidr=0
+        fi
+        if ! [[ "$t_cidr" =~ ^[0-9]+$ ]]; then
+            valid_cidr=0
+        fi
+    fi
+    if [ "$valid_cidr" -eq 0 ]; then
+        echo "Error: ip $1 is not valid"
+        log_event "$E_INVALID" "$EVENT"
+        exit $E_INVALID
+    fi
+}
+
 # IP address status
 validate_format_ip_status() {
     if [ -z "$(echo shared,dedicated | grep -w $1 )" ]; then
@@ -914,6 +936,7 @@ validate_format(){
             id)             validate_format_int "$arg" 'id' ;;
             interface)      validate_format_interface "$arg" ;;
             ip)             validate_format_ip "$arg" ;;
+            ipv6)           validate_format_ipv6 "$arg" ;;
             ip_name)        validate_format_domain "$arg" 'domain';;
             ip_status)      validate_format_ip_status "$arg" ;;
             job)            validate_format_int "$arg" 'job' ;;
@@ -925,6 +948,7 @@ validate_format(){
             month)          validate_format_mhdmw "$arg" $arg_name ;;
             nat_ip)         validate_format_ip "$arg" ;;
             netmask)        validate_format_ip "$arg" ;;
+            netmaskv6)      validate_format_int "$arg" 'netmaskv6' ;;
             newid)          validate_format_int "$arg" 'id' ;;
             ns1)            validate_format_domain "$arg" 'name_server';;
             ns2)            validate_format_domain "$arg" 'name_server';;

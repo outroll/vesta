@@ -34,6 +34,7 @@ $v_interace = $data[$v_ip]['INTERFACE'];
 $v_name = $data[$v_ip]['NAME'];
 $v_nat = $data[$v_ip]['NAT'];
 $v_ipstatus = $data[$v_ip]['STATUS'];
+$v_version = $data[$v_ip]['VERSION'];
 if ($v_ipstatus == 'dedicated') $v_dedicated = 'yes';
 $v_owner = $data[$v_ip]['OWNER'];
 $v_date = $data[$v_ip]['DATE'];
