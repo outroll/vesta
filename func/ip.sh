@@ -177,19 +177,19 @@ get_real_ip() {
     if [ -e "$VESTA/data/ips/$1" ]; then
         echo $1
     else
-        nated_ip=$(grep -H "^NAT='$1'" $VESTA/data/ips/*)
-        echo "$nated_ip" | cut -f 1 -d : | cut -f 7 -d /
+        nated_ip=$(grep -Hl "^NAT='$1'" $VESTA/data/ips/*)
+        echo "$nated_ip" | cut -f 7 -d /
     fi
 }
 
 # Get user ip
 get_user_ip(){
-    ip=$(grep -H "OWNER='$1'" $VESTA/data/ips/* 2>/dev/null | head -n1)
-    ip=$(echo "$ip" | cut -f 7 -d / | cut -f 1 -d :)
+    ip=$(grep -lZ "OWNER='$1'" $VESTA/data/ips/* 2>/dev/null | xargs -0 grep -l "VERSION='4'" 2>/dev/null | head -n1)
+    ip=$(echo "$ip" | cut -f 7 -d /)
 
     if [ -z "$ip" ]; then
-        admin_ips=$(grep -H "OWNER='admin'" $VESTA/data/ips/* 2>/dev/null)
-        admin_ips=$(echo "$admin_ips" | cut -f 7 -d / | cut -f 1 -d :)
+        admin_ips=$(grep -lZ "OWNER='admin'" $VESTA/data/ips/* 2>/dev/null | xargs -0 grep -l "VERSION='4'" 2>/dev/null | head -n1)
+        admin_ips=$(echo "$admin_ips" | cut -f 7 -d /)
         for admin_ip in $admin_ips; do
             if [ -z "$ip" ]; then
                 shared=$(grep "STATUS='shared'" $VESTA/data/ips/$admin_ip)

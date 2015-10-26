@@ -616,6 +616,47 @@ validate_format_ip() {
     fi
 }
 
+
+# IP address
+validate_format_ipall() {
+    t_ip=$(echo $1 |awk -F / '{print $1}')
+    t_cidr=$(echo $1 |awk -F / '{print $2}')
+    valid_octets=0
+    valid_cidr=1
+    for octet in ${t_ip//./ }; do
+        if [[ $octet =~ ^[0-9]{1,3}$ ]] && [[ $octet -le 255 ]]; then
+            ((++valid_octets))
+        fi
+    done
+
+    if [ ! -z "$(echo $1|grep '/')" ]; then
+        if [[ "$t_cidr" -lt 0 ]] || [[ "$t_cidr" -gt 32 ]]; then
+            valid_cidr=0
+        fi
+        if ! [[ "$t_cidr" =~ ^[0-9]+$ ]]; then
+            valid_cidr=0
+        fi
+    fi
+    if [ "$valid_octets" -lt 4 ] || [ "$valid_cidr" -eq 0 ]; then
+        #Check IPV6
+        ipv6_valid=""
+        if [ ! -z "$(echo $1|grep '/')" ]; then
+          if [[ "$t_cidr" -lt 0 ]] || [[ "$t_cidr" -gt 32 ]]; then
+            valid_cidr=0
+          fi
+          if ! [[ "$t_cidr" =~ ^[0-9]+$ ]]; then
+            valid_cidr=0
+          fi
+        fi
+        
+        if [ ! -z "$ipv6_valid" ] || [ "$valid_cidr" -eq 0 ]; then
+          echo "Error: ip $1 is not valid"
+          log_event "$E_INVALID" "$EVENT"
+          exit $E_INVALID
+        fi
+    fi
+}
+
 # IP address
 validate_format_ipv6() {
     t_ip=$(echo $1 |awk -F / '{print $1}')
@@ -973,6 +1014,7 @@ validate_format(){
             ttl)            validate_format_int "$arg" 'ttl';;
             user)           validate_format_username "$arg" "$arg_name" ;;
             wday)           validate_format_mhdmw "$arg" $arg_name ;;
+            ip_all)         validate_format_ipall "$arg" ;;
         esac
     done
 }

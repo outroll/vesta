@@ -1,5 +1,5 @@
 # Validationg ip address
-is_ip_valid() {
+is_ipv6_valid() {
     userip=${1-$ip}
     check_nat=$(grep -H "^NAT='$userip'" $VESTA/data/ips/* 2>/dev/null)
     if [ ! -e "$VESTA/data/ips/$userip" ] && [ -z "$check_nat" ] ; then
@@ -10,7 +10,7 @@ is_ip_valid() {
 }
 
 # Check if ip availabile for user
-is_ip_avalable() {
+is_ipv6_avalable() {
     userip=${1-$ip}
     if [ -e "$VESTA/data/ips/$userip" ]; then
         ip_data=$(cat $VESTA/data/ips/$userip)
@@ -33,7 +33,7 @@ is_ip_avalable() {
 }
 
 # Check ip ownership
-is_ip_owner() {
+is_ipv6_owner() {
     # Parsing ip
     owner=$(grep 'OWNER=' $VESTA/data/ips/$IP|cut -f 2 -d \')
     if [ "$owner" != "$user" ]; then
@@ -66,7 +66,7 @@ get_ipv6_iface() {
 
 
 # Check ip address speciefic value
-is_ip_key_empty() {
+is_ipv6_key_empty() {
     key="$1"
     string=$(cat $VESTA/data/ips/$ip)
     eval $string
@@ -79,7 +79,7 @@ is_ip_key_empty() {
 }
 
 # Update ip address value
-update_ip_value() {
+update_ipv6_value() {
     key="$1"
     value="$2"
     conf="$VESTA/data/ips/$ip"
@@ -94,12 +94,12 @@ update_ip_value() {
 }
 
 # Get ip name
-get_ip_name() {
+get_ipv6_name() {
     grep "NAME=" $VESTA/data/ips/$ip | cut -f 2 -d \'
 }
 
 # Increase ip value
-increase_ip_value() {
+increase_ipv6_value() {
     sip=${1-ip}
     USER=$user
     web_key='U_WEB_DOMAINS'
@@ -130,7 +130,7 @@ increase_ip_value() {
 }
 
 # Decrease ip value
-decrease_ip_value() {
+decrease_ipv6_value() {
     sip=${1-ip}
     USER=$user
     web_key='U_WEB_DOMAINS'
@@ -164,7 +164,7 @@ decrease_ip_value() {
 }
 
 # Get ip address value
-get_ip_value() {
+get_ipv6_value() {
     key="$1"
     string=$( cat $VESTA/data/ips/$ip )
     eval $string
@@ -173,23 +173,23 @@ get_ip_value() {
 }
 
 # Get real ip address
-get_real_ip() {
+get_real_ipv6() {
     if [ -e "$VESTA/data/ips/$1" ]; then
         echo $1
     else
-        nated_ip=$(grep -H "^NAT='$1'" $VESTA/data/ips/*)
-        echo "$nated_ip" | cut -f 1 -d : | cut -f 7 -d /
+        nated_ip=$(grep -Hl "^NAT='$1'" $VESTA/data/ips/*)
+        echo "$nated_ip" | cut -f 7 -d /
     fi
 }
 
 # Get user ip
-get_user_ip(){
-    ip=$(grep -H "OWNER='$1'" $VESTA/data/ips/* 2>/dev/null | head -n1)
-    ip=$(echo "$ip" | cut -f 7 -d / | cut -f 1 -d :)
+get_user_ipv6(){
+    ip=$(grep -lZ "OWNER='$1'" $VESTA/data/ips/* 2>/dev/null | xargs -0 grep -l "VERSION='6'" 2>/dev/null | head -n1)
+    ip=$(echo "$ip" | cut -f 7 -d /)
 
     if [ -z "$ip" ]; then
-        admin_ips=$(grep -H "OWNER='admin'" $VESTA/data/ips/* 2>/dev/null)
-        admin_ips=$(echo "$admin_ips" | cut -f 7 -d / | cut -f 1 -d :)
+        admin_ips=$(grep -lZ "OWNER='admin'" $VESTA/data/ips/* 2>/dev/null | xargs -0 grep -l "VERSION='6'" 2>/dev/null | head -n1)
+        admin_ips=$(echo "$admin_ips" | cut -f 7 -d /)
         for admin_ip in $admin_ips; do
             if [ -z "$ip" ]; then
                 shared=$(grep "STATUS='shared'" $VESTA/data/ips/$admin_ip)
@@ -202,49 +202,3 @@ get_user_ip(){
     echo "$ip"
 }
 
-# Convert CIDR to netmask
-convert_cidr() {
-    set -- $(( 5 - ($1 / 8) )) 255 255 255 255 \
-        $(((255 << (8 - ($1 % 8))) & 255 )) 0 0 0
-    if [[ $1 -gt 1 ]]; then
-        shift $1
-    else
-        shift
-    fi
-    echo ${1-0}.${2-0}.${3-0}.${4-0}
-}
-
-# Convert netmask to CIDR
-convert_netmask() {
-    nbits=0
-    IFS=.
-    for dec in $1 ; do
-        case $dec in
-            255) let nbits+=8;;
-            254) let nbits+=7;;
-            252) let nbits+=6;;
-            248) let nbits+=5;;
-            240) let nbits+=4;;
-            224) let nbits+=3;;
-            192) let nbits+=2;;
-            128) let nbits+=1;;
-            0);;
-        esac
-    done
-    echo "$nbits"
-}
-
-# Calculate broadcast address
-get_broadcast() {
-    OLD_IFS=$IFS
-    IFS=.
-    typeset -a I=($1)
-    typeset -a N=($2)
-    IFS=$OLD_IFS
-
-    echo "$((${I[0]} |\
-        (255 ^ ${N[0]}))).$((${I[1]} |\
-        (255 ^ ${N[1]}))).$((${I[2]} |\
-        (255 ^ ${N[2]}))).$((${I[3]} |\
-        (255 ^ ${N[3]})))"
-}

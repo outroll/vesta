@@ -293,6 +293,7 @@ sort_dns_records() {
 add_web_config() {
     cat $tpl_file | \
         sed -e "s|%ip%|$ip|g" \
+            -e "s|%ipv6%|$ipv6|g" \
             -e "s|%web_system%|$WEB_SYSTEM|g" \
             -e "s|%web_port%|$WEB_PORT|g" \
             -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \

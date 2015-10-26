@@ -3,8 +3,9 @@
 user="$1"
 domain="$2"
 ip="$3"
-home_dir="$4"
-docroot="$5"
+ipv6="$4"
+home_dir="$5"
+docroot="$6"
 
 chmod 755 $docroot
 

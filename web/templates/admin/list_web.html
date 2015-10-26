@@ -5,6 +5,7 @@
           <li entity="sort-date" sort_as_int="1"><span class="name active"><?=__('Date')?></span><span class="up">&nbsp;</span></li>
           <li entity="sort-name"><span class="name"><?=__('Domain')?></span><span class="up">&nbsp;</span></li>
           <li entity="sort-ip" sort_as_int="1"><span class="name"><?=__('IP address')?></span><span class="up">&nbsp;</span></li>
+          <li entity="sort-ipv6" sort_as_int="1"><span class="name"><?=__('IPV6 address')?></span><span class="up">&nbsp;</span></li>
           <li entity="sort-disk" sort_as_int="1"><span class="name"><?=__('Disk')?></span><span class="up">&nbsp;</span></li>
           <li entity="sort-bandwidth" sort_as_int="1"><span class="name"><?=__('Bandwidth')?></span><span class="up">&nbsp;</span></li>
           <li entity="sort-star" sort_as_int="1"><span class="name"><?=__('Starred')?></span><span class="up">&nbsp;</span></li>
@@ -116,7 +117,7 @@
                     ?>
 
       <div class="l-unit <? if($data[$key]['SUSPENDED'] == 'yes') echo 'l-unit--suspended'; if($_SESSION['favourites']['WEB'][$key] == 1) echo ' l-unit--starred'; ?>" v_section="web" v_unit_id="<?=$key?>" 
-id="web-unit-<?=$i?>"  sort-ip="<?=str_replace('.', '', $data[$key]['IP'])?>" 
+id="web-unit-<?=$i?>"  sort-ip="<?=str_replace('.', '', $data[$key]['IP'])?>" sort-ipv6="<?=str_replace(':', '', $data[$key]['IP6'])?>"
 sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" 
 sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-disk="<?=$data[$key]['U_DISK']?>" sort-star="<? if($_SESSION['WEB'][$key] == 1) echo '1'; else echo '0';?>">
         <div class="l-unit-toolbar clearfix">
@@ -177,6 +178,10 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
             <?=str_replace('.', '<span>.</span>', $data[$key]['IP'])?>
           </div>
           <!-- /.l-unit__ip -->
+          <div class="l-unit__ip">
+            <?=str_replace(':', '<span>:</span>', $data[$key]['IP6'])?>
+          </div>
+          <!-- /.l-unit__ipv6 -->
           <div class="l-unit__stats">
             <table>
               <tr>

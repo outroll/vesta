@@ -103,13 +103,39 @@
                                 <select class="vst-list" name="v_ip">
                                     <?php
                                         foreach ($ips as $key => $value) {
-                                            $display_ip = $key;
-                                            if (!empty($value['NAT'])) $display_ip = $value['NAT'];
-                                            echo "\t\t\t\t<option value=\"".htmlentities($display_ip)."\"";
-                                            if ((!empty($v_ip)) && ( $display_ip == $_POST['v_ip'])){
-                                                echo ' selected';
+                                            if($value['VERSION']==4) {
+                                              $display_ip = $key;
+                                              if (!empty($value['NAT'])) $display_ip = $value['NAT'];
+                                              echo "\t\t\t\t<option value=\"".htmlentities($display_ip)."\"";
+                                              if ((!empty($v_ip)) && ( $display_ip == $_POST['v_ip'])){
+                                                  echo ' selected';
+                                              }
+                                              echo ">".htmlentities($display_ip)."</option>\n";
                                             }
-                                            echo ">".htmlentities($display_ip)."</option>\n";
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="vst-text input-label">
+                                <?php print __('IP address');?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <select class="vst-list" name="v_ipv6">
+                                    <?php
+                                        foreach ($ips as $key => $value) {
+                                            if($value['VERSION']==6) {
+                                              $display_ip = $key;
+                                              if (!empty($value['NAT'])) $display_ip = $value['NAT'];
+                                              echo "\t\t\t\t<option value=\"".htmlentities($display_ip)."\"";
+                                              if ((!empty($v_ip)) && ( $display_ip == $_POST['v_ip'])){
+                                                  echo ' selected';
+                                              }
+                                              echo ">".htmlentities($display_ip)."</option>\n";
+                                            }
                                         }
                                     ?>
                                 </select>
