@@ -42,7 +42,15 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN IP IPV6 [NS1] [NS2] [NS3] [..] [NS8] [RESTART]'
-validate_format 'user' 'domain' 'ip' 'ipv6'
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "no" ] ; then
+  validate_format 'user' 'domain' 'ip'
+  ipv6=""
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
+  validate_format 'user' 'domain' 'ipv6'
+  ip=""
+else
+  validate_format 'user' 'domain' 'ip' 'ipv6'
+fi
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -105,8 +113,15 @@ exp=$(date +%F -d "+ 1 year")
 serial=$(date +'%Y%m%d01')
 ttl=14400
 
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "no" ] ; then
+  tpl_sufix=""
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
+  tpl_sufix="IPV6"
+else
+  tpl_sufix="IP46"
+fi
 # Reading template
-template_data=$(cat $DNSTPL/$template.tpl)
+template_data=$(cat $DNSTPL/$template$tpl_sufix.tpl)
 
 # Deleting unused nameservers
 if [ -z "$ns3" ]; then

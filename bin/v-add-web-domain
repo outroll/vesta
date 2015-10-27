@@ -41,14 +41,14 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '4' "$#" 'USER DOMAIN IP IPV6 [RESTART] [ALIASES] [PROXY_EXTENTIONS]'
-if [ "$IPV4" == "yes" && "$IPV6" == "no" ] ; then
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "no" ] ; then
   validate_format 'user' 'domain' 'ip'
   ipv6=""
   is_ip_valid
   is_ip_avalable
   is_ipv6_valid
   is_ipv6_avalable
-elif [ "$IPV4" == "no" && "$IPV6" == "yes" ] ; then
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
   validate_format 'user' 'domain' 'ipv6'
   ip=""
   is_ipv6_valid
@@ -105,9 +105,9 @@ if [ "$IPV6" == "yes" ] ; then
   ipv6_name=$(get_ipv6_name)
 fi
 
-if [ "$IPV4" == "yes" && "$IPV6" == "no" ] ; then
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "no" ] ; then
   tpl_sufix=""
-elif [ "$IPV4" == "no" && "$IPV6" == "yes" ] ; then
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
   tpl_sufix="IPV6"
 else
   tpl_sufix="IP46"
@@ -122,19 +122,19 @@ conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
 # Defining domain aliases
 
 if [ -z "$aliases" ]; then
-    if [ -z "$ip_name" && -z "$ipv6_name" ]; then
+    if [ -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
         aliases="www.$domain"
-    elfi [ -z "$ip_name" ]; then
+    elif [ -z "$ip_name" ]; then
         aliases="www.$domain,${domain//./-}.$ipv6_name"
-    elfi [ -z "$ipv6_name" ]; then
+    elif [ -z "$ipv6_name" ]; then
         aliases="www.$domain,${domain//./-}.$ip_name"
     else
         aliases="www.$domain,${domain//./-}.$ip_name,${domain//./-}.$ipv6_name"
     fi
 else
-    fi [ -z "$ip_name" && ! -z "$ipv6_name" ]; then
+    if [ -z "$ip_name" ] && [ ! -z "$ipv6_name" ]; then
         aliases="$aliases,${domain//./-}.$ipv6_name"
-    elfi [ ! -z "$ip_name" && -z "$ipv6_name" ]; then
+    elif [ ! -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
         aliases="www.$domain,${domain//./-}.$ipv6_name"
     else
         aliases="$aliases,${domain//./-}.$ip_name,${domain//./-}.$ipv6_name"
@@ -251,7 +251,7 @@ increase_user_value "$user" '$U_WEB_DOMAINS'
 increase_user_value "$user" '$U_WEB_ALIASES'
 
 # Defining domain variables
-str="DOMAIN='$domain' IP='$IP' IP6='$IPV6' ALIAS='$aliases' TPL='$template'"
+str="DOMAIN='$domain' IP='$ip' IP6='$ipv6' ALIAS='$aliases' TPL='$template'"
 str="$str SSL='no' SSL_HOME='same' FTP_USER='' FTP_MD5='' BACKEND='$backend'"
 str="$str PROXY='$proxy' PROXY_EXT='$extentions' STATS='' STATS_USER=''"
 str="$str STATS_CRYPT='' U_DISK='0' U_BANDWIDTH='0' SUSPENDED='no'"

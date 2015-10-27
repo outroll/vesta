@@ -27,7 +27,16 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER ALIAS IP IPV6 [RESTART]'
-validate_format 'user' 'alias' 'ip' 'ipv6'
+if [ "$IPV4" == "yes" && "$IPV6" == "no" ] ; then
+  validate_format 'user' 'alias' 'ip'
+  ipv6=""
+elif [ "$IPV4" == "no" && "$IPV6" == "yes" ] ; then
+  validate_format 'user' 'alias' 'ipv6'
+  ip=""
+else
+  validate_format 'user' 'alias' 'ip' 'ipv6'
+fi
+
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -72,10 +81,14 @@ fi
 
 # Adding subdomain record
 if [ -z "$check_record" ]; then
+  if [ "$IPV4" == "yes" ] ; then
     $BIN/v-add-dns-record \
         $user $top_domain "$sub_domain" A $ip '' '' $restart >> /dev/null
+  fi
+  if [ "$IPV6" == "yes" ] ; then
     $BIN/v-add-dns-record \
         $user $top_domain "$sub_domain" AAAA $ipv6 '' '' $restart >> /dev/null
+  fi
 fi
 
 

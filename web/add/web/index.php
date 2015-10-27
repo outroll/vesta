@@ -131,7 +131,9 @@ if (!empty($_POST['ok'])) {
         foreach ($aliases_arr as $alias) {
             if ($alias != "www.".$_POST['v_domain']) {
                 $alias = escapeshellarg($alias);
-                exec (VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." ".$v_ipv6." 'no'", $output, $return_var);
+                //exec (VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." ".$v_ipv6." 'no'", $output, $return_var);
+              echo VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." ".$v_ipv6." 'no'";
+              exit;
                 check_return_code($return_var,$output);
                 unset($output);
             }
