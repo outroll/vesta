@@ -61,7 +61,7 @@
       ?>
 
       <div class="l-unit <? if($data[$key]['SUSPENDED'] == 'yes') echo 'l-unit--suspended'; if($_SESSION['favourites']['IP'][$key] == 1) echo ' l-unit--starred'; ?>" v_unit_id="<?=$key?>" 
-v_section="ip" sort-ip="<?=str_replace('.', '', $key)?>" sort-date="<?=strtotime($data[$key]['DATE'] .' '. $data[$key]['TIME'] )?>" 
+v_section="ip" sort-ip="<?=str_replace('.', '', str_replace(':', '', $key))?>" sort-date="<?=strtotime($data[$key]['DATE'] .' '. $data[$key]['TIME'] )?>" 
 sort-netmask="<?=str_replace('.', '', $data[$key]['NETMASK'])?>" sort-interface="<?=__($data[$key]['INTERFACE'])?>" sort-domains="<?=$data[$key]['U_WEB_DOMAINS']?>" 
 sort-owner="<?=__($data[$key]['OWNER'])?>" sort-star="<? if($_SESSION['favourites']['IP'][$key] == 1) echo '1'; else echo '0'; ?>">
         <div class="l-unit-toolbar clearfix">
@@ -76,7 +76,7 @@ sort-owner="<?=__($data[$key]['OWNER'])?>" sort-star="<? if($_SESSION['favourite
               <div class="actions-panel__col actions-panel__delete">
                 <a id="delete_link_<?=$i?>" class="data-controls do_delete">
                   <?=__('delete')?> <i class="do_delete"></i>
-                  <input type="hidden" name="delete_url" value="/delete/ip/?ip=<?=$key?>&token=<?=$_SESSION['token']?>" />
+                  <input type="hidden" name="delete_url" value="/delete/ip/?<?=($data[$key]['VERSION'] == 6 ? "ipv6=" : "ip=")?><?=$key?>&token=<?=$_SESSION['token']?>" />
                   <div id="delete_dialog_<?=$i?>" class="confirmation-text-delete hidden" title="<?=__('Confirmation')?>">
                     <p class="confirmation"><?=__('DELETE_IP_CONFIRMATION',$key)?></p>
                   </div>
