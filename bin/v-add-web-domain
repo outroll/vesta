@@ -21,7 +21,7 @@ domain=$(echo $domain | sed -e 's/\.*$//g' -e 's/^\.*//g')
 domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
 domain_idn=$(idn -t --quiet -a "$domain")
 ip=$3; IP=$3
-ipv6=$4; IPV6=$4
+ipv6=$4;
 restart=$5
 aliases=$6
 default_extentions="jpg,jpeg,gif,png,ico,svg,css,zip,tgz,gz,rar,bz2,doc,xls,\
@@ -41,15 +41,29 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '4' "$#" 'USER DOMAIN IP IPV6 [RESTART] [ALIASES] [PROXY_EXTENTIONS]'
-validate_format 'user' 'domain' 'ip' 'ipv6'
+if [ "$IPV4" == "yes" && "$IPV6" == "no" ] ; then
+  validate_format 'user' 'domain' 'ip'
+  ipv6=""
+  is_ip_valid
+  is_ip_avalable
+  is_ipv6_valid
+  is_ipv6_avalable
+elif [ "$IPV4" == "no" && "$IPV6" == "yes" ] ; then
+  validate_format 'user' 'domain' 'ipv6'
+  ip=""
+  is_ipv6_valid
+  is_ipv6_avalable
+else
+  validate_format 'user' 'domain' 'ip' 'ipv6'
+  is_ip_valid
+  is_ip_avalable
+  is_ipv6_valid
+  is_ipv6_avalable
+fi
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_domain_new 'web'
-is_ip_valid
-is_ip_avalable
-is_ipv6_valid
-is_ipv6_avalable
 is_package_full 'WEB_DOMAINS'
 template=$(get_user_value '$WEB_TEMPLATE')
 is_web_template_valid
@@ -70,42 +84,64 @@ fi
 #----------------------------------------------------------#
 
 # Checking domain backend in case PHP-FPM is configured
-#if [ ! -z "$WEB_BACKEND" ]; then
-#    is_web_backend_pool_valid
-#    $BIN/v-add-web-domain-backend $user $domain
-#    rc=$?
-#    if [ $rc -ne 0 ]; then
-#        exit $rc
-#    fi
-#    get_domain_backend_values
-#    backend=$(get_user_value '$BACKEND_TEMPLATE')
-#fi
+if [ ! -z "$WEB_BACKEND" ]; then
+    is_web_backend_pool_valid
+    $BIN/v-add-web-domain-backend $user $domain
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        exit $rc
+    fi
+    get_domain_backend_values
+    backend=$(get_user_value '$BACKEND_TEMPLATE')
+fi
 
 # Defining variables for add_config function
-ip=$(get_real_ip $ip)
-ipv6=$(get_real_ipv6 $ipv6)
+if [ "$IPV4" == "yes" ] ; then
+  ip=$(get_real_ip $ip)
+  ip_name=$(get_ip_name)
+fi
+if [ "$IPV6" == "yes" ] ; then
+  ipv6=$(get_real_ipv6 $ipv6)
+  ipv6_name=$(get_ipv6_name)
+fi
+
+if [ "$IPV4" == "yes" && "$IPV6" == "no" ] ; then
+  tpl_sufix=""
+elif [ "$IPV4" == "no" && "$IPV6" == "yes" ] ; then
+  tpl_sufix="IPV6"
+else
+  tpl_sufix="IP46"
+fi
+
 group="$user"
 email="info@$domain"
 docroot="$HOMEDIR/$user/web/$domain/public_html"
-tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.tpl"
+tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template$tpl_sufix.tpl"
 conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
 
 # Defining domain aliases
-ip_name=$(get_ip_name)
-ipv6_name=$(get_ipv6_name)
+
 if [ -z "$aliases" ]; then
-    if [ -z "$ip_name" ]; then
+    if [ -z "$ip_name" && -z "$ipv6_name" ]; then
         aliases="www.$domain"
+    elfi [ -z "$ip_name" ]; then
+        aliases="www.$domain,${domain//./-}.$ipv6_name"
+    elfi [ -z "$ipv6_name" ]; then
+        aliases="www.$domain,${domain//./-}.$ip_name"
     else
         aliases="www.$domain,${domain//./-}.$ip_name,${domain//./-}.$ipv6_name"
     fi
 else
-    if [ ! -z "$ip_name" ]; then
+    fi [ -z "$ip_name" && ! -z "$ipv6_name" ]; then
+        aliases="$aliases,${domain//./-}.$ipv6_name"
+    elfi [ ! -z "$ip_name" && -z "$ipv6_name" ]; then
+        aliases="www.$domain,${domain//./-}.$ipv6_name"
+    else
         aliases="$aliases,${domain//./-}.$ip_name,${domain//./-}.$ipv6_name"
     fi
 fi
 aliases_idn=$(idn -t --quiet -a $aliases)
-#lias_string="ServerAlias ${aliases_idn//,/ }"
+alias_string="ServerAlias ${aliases_idn//,/ }"
 
 # Adding web config
 add_web_config
@@ -185,7 +221,7 @@ fi
 # Checking proxy system
 if [ ! -z "$PROXY_SYSTEM" ]; then
     PROXY_EXT="$extentions"
-    tpl_file="$WEBTPL/$PROXY_SYSTEM/$proxy.tpl"
+    tpl_file="$WEBTPL/$PROXY_SYSTEM/$proxy$tpl_sufix.tpl"
     conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
     add_web_config
     chown root:$user $conf
@@ -205,8 +241,12 @@ fi
 #----------------------------------------------------------#
 
 # Increasing counters
-increase_ip_value "$ip"
-increase_ipv6_value "$ip"
+if [ "$IPV4" == "yes" ] ; then
+  increase_ip_value "$ip"
+fi
+if [ "$IPV6" == "yes" ] ; then
+  increase_ipv6_value "$ip"
+fi
 increase_user_value "$user" '$U_WEB_DOMAINS'
 increase_user_value "$user" '$U_WEB_ALIASES'
 

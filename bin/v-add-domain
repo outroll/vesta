@@ -28,11 +28,15 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 check_args '2' "$#" 'USER DOMAIN [IP] [IPV6] [RESTART]'
 validate_format 'user' 'domain'
-if [ ! -z "$ip" ] ; then
+if [ ! -z "$ip" && "$IPV4" == 'yes' ] ; then
     validate_format 'ip'
+else
+  ip='0'
 fi
-if [ ! -z "$ipv6" ] ; then
+if [ ! -z "$ipv6" && "$IPV6" == 'yes' ] ; then
     validate_format 'ipv6'
+else
+  ipv6='0'
 fi
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"

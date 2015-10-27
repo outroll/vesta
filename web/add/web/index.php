@@ -18,8 +18,8 @@ if (!empty($_POST['ok'])) {
 
     // Check for empty fields
     if (empty($_POST['v_domain'])) $errors[] = __('domain');
-    if (empty($_POST['v_ip'])) $errors[] = __('ip');
-    if (empty($_POST['v_ipv6'])) $errors[] = __('ipv6');
+    if (empty($_POST['v_ip']) && $_SESSION['IPV4'] == 'yes') $errors[] = __('ip');
+    if (empty($_POST['v_ipv6']) && $_SESSION['IPV6'] == 'yes') $errors[] = __('ipv6');
     if ((!empty($_POST['v_ssl'])) && (empty($_POST['v_ssl_crt']))) $errors[] = __('ssl certificate');
     if ((!empty($_POST['v_ssl'])) && (empty($_POST['v_ssl_key']))) $errors[] = __('ssl key');
     if (!empty($errors[0])) {
@@ -106,7 +106,14 @@ if (!empty($_POST['ok'])) {
 
     // Add web domain
     if (empty($_SESSION['error_msg'])) {
-        exec (VESTA_CMD."v-add-web-domain ".$user." ".$v_domain." ".$v_ip." ".$v_ipv6." 'no' ".$aliases." ".$proxy_ext, $output, $return_var);
+        if($_SESSION['IPV4'] == 'no' && $_SESSION['IPV6'] == 'yes') {
+          exec (VESTA_CMD."v-add-web-domain ".$user." ".$v_domain." '' ".$v_ipv6." 'no' ".$aliases." ".$proxy_ext, $output, $return_var);
+        }
+        else if($_SESSION['IPV4'] == 'yes' && $_SESSION['IPV6'] == 'no') {
+          exec (VESTA_CMD."v-add-web-domain ".$user." ".$v_domain." ".$v_ip." '' 'no' ".$aliases." ".$proxy_ext, $output, $return_var);
+        } else {
+           exec (VESTA_CMD."v-add-web-domain ".$user." ".$v_domain." ".$v_ip." ".$v_ipv6." 'no' ".$aliases." ".$proxy_ext, $output, $return_var);
+        }
         check_return_code($return_var,$output);
         unset($output);
         $domain_added = empty($_SESSION['error_msg']);
