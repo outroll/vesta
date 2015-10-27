@@ -100,7 +100,7 @@ get_ipv6_name() {
 
 # Increase ip value
 increase_ipv6_value() {
-    sip=${1-ip}
+    sip=${1-ipv6}
     USER=$user
     web_key='U_WEB_DOMAINS'
     usr_key='U_SYS_USERS'
@@ -131,7 +131,7 @@ increase_ipv6_value() {
 
 # Decrease ip value
 decrease_ipv6_value() {
-    sip=${1-ip}
+    sip=${1-ipv6}
     USER=$user
     web_key='U_WEB_DOMAINS'
     usr_key='U_SYS_USERS'

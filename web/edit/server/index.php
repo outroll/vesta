@@ -156,6 +156,24 @@ if (!empty($_POST['save'])) {
             }
         }
     }
+  
+  
+    // Update ipv4
+    if (empty($_SESSION['error_msg'])) {
+        if ($_POST['v_ipv4'] != $_SESSION['IPV4']) {
+            exec (VESTA_CMD."v-change-sys-config-value IPV4 '".escapeshellarg($_POST['v_ipv4'])."'", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+        }
+    }
+    // Update ipv6
+    if (empty($_SESSION['error_msg'])) {
+        if ($_POST['v_ipv6'] != $_SESSION['IPV6']) {
+            exec (VESTA_CMD."v-change-sys-config-value IPV6 '".escapeshellarg($_POST['v_ipv6'])."'", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+        }
+    }
 
     // Update mysql pasword
     if (empty($_SESSION['error_msg'])) {

@@ -205,9 +205,10 @@ fi
 #----------------------------------------------------------#
 
 # Increasing counters
-#increase_ip_value "$ip"
-#increase_user_value "$user" '$U_WEB_DOMAINS'
-#increase_user_value "$user" '$U_WEB_ALIASES'
+increase_ip_value "$ip"
+increase_ipv6_value "$ip"
+increase_user_value "$user" '$U_WEB_DOMAINS'
+increase_user_value "$user" '$U_WEB_ALIASES'
 
 # Defining domain variables
 str="DOMAIN='$domain' IP='$IP' IP6='$IPV6' ALIAS='$aliases' TPL='$template'"
