@@ -55,12 +55,11 @@ if (!empty($_POST['ok'])) {
     } else {
         $ip_status = 'dedicated';
         $v_dedicated = 'yes';
-
     }
 
     // Add IP
     if (empty($_SESSION['error_msg'])) {
-        if($v_version == 6)  {
+        if($v_version == 6 && $_SESSION['IPV6'] == 'yes')  {
           exec (VESTA_CMD."v-add-sys-ipv6 ".$v_ip." ".$v_netmask." ".$v_interface."  ".$v_owner." '".$ip_status."' ".$v_name, $output, $return_var);
         } else {
           exec (VESTA_CMD."v-add-sys-ip ".$v_ip." ".$v_netmask." ".$v_interface."  ".$v_owner." '".$ip_status."' ".$v_name." ".$v_nat, $output, $return_var);

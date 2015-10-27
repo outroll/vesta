@@ -98,8 +98,11 @@
                             <tr>
                                 <td>
                                     <select class="vst-list" name="v_version">
+                                      <?php if($_SESSION['IPV4'] == 'yes') { ?>
                                       <option value="4"><?php print __('IPV4');?></option>
+                                      <?php } if($_SESSION['IPV6'] == 'yes') { ?>
                                       <option value="6"><?php print __('IPV6');?></option>
+                                      <?php } ?>
                                     </select>
                                 </td>
                             </tr>

@@ -46,6 +46,10 @@ if [ ! -z "$nat_ip" ] ; then
     validate_format 'nat_ip'
 fi
 
+if [ "$IPV4" != "yes" ]; then
+    echo "IPV4 is disabled"
+    exit $E_DISABLED
+fi
 
 #----------------------------------------------------------#
 #                       Action                             #

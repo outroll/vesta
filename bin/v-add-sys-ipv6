@@ -28,7 +28,6 @@ source $VESTA/func/ipv6.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
-
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
@@ -42,6 +41,10 @@ if [ ! -z "$ip_name" ] ; then
     validate_format 'ip_name'
 fi
 
+if [ "$IPV6" != "yes" ]; then
+    echo "IPV6 is disabled"
+    exit $E_DISABLED
+fi
 
 #----------------------------------------------------------#
 #                       Action                             #
