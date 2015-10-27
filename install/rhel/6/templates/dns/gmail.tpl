@@ -11,4 +11,12 @@ ID='10' RECORD='@' TYPE='MX' PRIORITY='5' VALUE='ALT1.ASPMX.L.GOOGLE.COM.' SUSPE
 ID='11' RECORD='@' TYPE='MX' PRIORITY='5' VALUE='ALT2.ASPMX.L.GOOGLE.COM.' SUSPENDED='no' TIME='%time%' DATE='%date%'
 ID='12' RECORD='@' TYPE='MX' PRIORITY='10' VALUE='ASPMX2.GOOGLEMAIL.COM.' SUSPENDED='no' TIME='%time%' DATE='%date%'
 ID='13' RECORD='@' TYPE='MX' PRIORITY='10' VALUE='ASPMX3.GOOGLEMAIL.COM.' SUSPENDED='no' TIME='%time%' DATE='%date%'
-ID='14' RECORD='@' TYPE='TXT' PRIORITY='' VALUE='"v=spf1 a mx ip4:%ip% ?all"' SUSPENDED='no' TIME='%time%' DATE='%date%'
+ID='14' RECORD='@' TYPE='TXT' PRIORITY='' VALUE='"v=spf1 a mx ip4:%ip% ip6:%ipv6% ?all"' SUSPENDED='no' TIME='%time%' DATE='%date%'
+ID='15' RECORD='@' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
+ID='16' RECORD='ns1' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
+ID='17' RECORD='ns2' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
+ID='18' RECORD='mail' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
+ID='19' RECORD='www' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
+ID='20' RECORD='pop' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
+ID='21' RECORD='ftp' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
+
