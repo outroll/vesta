@@ -1,6 +1,6 @@
 # Validationg ip address
 is_ipv6_valid() {
-    userip=${1-$ip}
+    userip=${1-$ipv6}
     check_nat=$(grep -H "^NAT='$userip'" $VESTA/data/ips/* 2>/dev/null)
     if [ ! -e "$VESTA/data/ips/$userip" ] && [ -z "$check_nat" ] ; then
         echo "Error: IP $userip not exist"
@@ -11,7 +11,7 @@ is_ipv6_valid() {
 
 # Check if ip availabile for user
 is_ipv6_avalable() {
-    userip=${1-$ip}
+    userip=${1-$ipv6}
     if [ -e "$VESTA/data/ips/$userip" ]; then
         ip_data=$(cat $VESTA/data/ips/$userip)
     else
@@ -35,9 +35,9 @@ is_ipv6_avalable() {
 # Check ip ownership
 is_ipv6_owner() {
     # Parsing ip
-    owner=$(grep 'OWNER=' $VESTA/data/ips/$IP|cut -f 2 -d \')
+    owner=$(grep 'OWNER=' $VESTA/data/ips/$ipv6|cut -f 2 -d \')
     if [ "$owner" != "$user" ]; then
-        echo "Error: IP $IP not owned"
+        echo "Error: IPV6 $ipv6 not owned"
         log_event "$E_FORBIDEN" "$EVENT"
         exit $E_FORBIDEN
     fi
@@ -46,7 +46,7 @@ is_ipv6_owner() {
 # Check if ip address is free
 is_ipv6_free() {
     if [ -e "$VESTA/data/ips/$ipv6" ]; then
-        echo "Error: IP exist"
+        echo "Error: IPV6 exist"
         log_event "$E_EXISTS" "$EVENT"
         exit  $E_EXISTS
     fi
@@ -68,7 +68,7 @@ get_ipv6_iface() {
 # Check ip address speciefic value
 is_ipv6_key_empty() {
     key="$1"
-    string=$(cat $VESTA/data/ips/$ip)
+    string=$(cat $VESTA/data/ips/$ipv6)
     eval $string
     eval value="$key"
     if [ ! -z "$value" ] && [ "$value" != '0' ]; then
@@ -82,7 +82,7 @@ is_ipv6_key_empty() {
 update_ipv6_value() {
     key="$1"
     value="$2"
-    conf="$VESTA/data/ips/$ip"
+    conf="$VESTA/data/ips/$ipv6"
     str=$(cat $conf)
     eval $str
     c_key=$(echo "${key//$/}")
@@ -95,7 +95,7 @@ update_ipv6_value() {
 
 # Get ip name
 get_ipv6_name() {
-    grep "NAME=" $VESTA/data/ips/$ip | cut -f 2 -d \'
+    grep "NAME=" $VESTA/data/ips/$ipv6 | cut -f 2 -d \'
 }
 
 # Increase ip value
@@ -124,9 +124,9 @@ increase_ipv6_value() {
     fi
 
     sed -i "s/$web_key='$current_web'/$web_key='$new_web'/g" \
-        $VESTA/data/ips/$ip
+        $VESTA/data/ips/$sip
     sed -i "s/$usr_key='$current_usr'/$usr_key='$new_usr'/g" \
-        $VESTA/data/ips/$ip
+        $VESTA/data/ips/$sip
 }
 
 # Decrease ip value
@@ -166,7 +166,7 @@ decrease_ipv6_value() {
 # Get ip address value
 get_ipv6_value() {
     key="$1"
-    string=$( cat $VESTA/data/ips/$ip )
+    string=$( cat $VESTA/data/ips/$ipv6 )
     eval $string
     eval value="$key"
     echo "$value"

@@ -246,7 +246,7 @@ if [ "$IPV4" == "yes" ] ; then
   increase_ip_value "$ip"
 fi
 if [ "$IPV6" == "yes" ] ; then
-  increase_ipv6_value "$ip"
+  increase_ipv6_value "$ipv6"
 fi
 increase_user_value "$user" '$U_WEB_DOMAINS'
 increase_user_value "$user" '$U_WEB_ALIASES'
