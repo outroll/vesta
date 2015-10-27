@@ -17,7 +17,7 @@ source $VESTA/func/main.sh
 
 # Json function
 json_list_dnstpl() {
-    templates=$(ls -t $DNSTPL |grep '\.tpl' |cut -f 1 -d  '.')
+    templates=$(ls -t $DNSTPL |grep '\.tpl' |grep -v "IPV6.tpl"| grep -v "IP46.tpl" |cut -f 1 -d  '.')
     t_counter=$(echo "$templates" | wc -w)
     i=1
     echo '['
@@ -34,7 +34,7 @@ json_list_dnstpl() {
 
 # Shell function
 shell_list_dnstpl() {
-    templates=$(ls -t $DNSTPL |grep '\.tpl' |cut -f 1 -d  '.')
+    templates=$(ls -t $DNSTPL |grep '\.tpl' |grep -v "IPV6.tpl"| grep -v "IP46.tpl" |cut -f 1 -d  '.')
     if [ -z "$nohead" ]; then
         echo "Templates"
         echo "----------"

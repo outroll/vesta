@@ -120,7 +120,8 @@ tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template$tpl_sufix.tpl"
 conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
 
 # Defining domain aliases
-
+echo "ip$ip_name.ip"
+echo "ip$ipv6_name.ip"
 if [ -z "$aliases" ]; then
     if [ -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
         aliases="www.$domain"
