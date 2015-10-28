@@ -17,16 +17,17 @@ TO DO:
 - templates
 
 
-v-add-web-domain
+v-add-web-domain                  OK
 v-add-web-domain-alias
 v-add-web-domain-proxy
 v-add-web-domain-ssl
 v-add-web-domain-stats
-v-add-dns-domain
+v-add-dns-domain                  OK
 v-add-dns-on-web-alias
-v-add-domain
-v-add-sys-ip
-v-add-sys-ipv6
+v-add-domain                      OK -> IPV6 validation?
+v-add-sys-ip                      OK
+v-add-sys-ipv6                    OK
+v-change-dns-domain-ipv6          OK
 v-change-domain-owner
 v-change-web-domain-backend-tpl
 v-change-web-domain-ip
@@ -36,12 +37,12 @@ v-change-web-domain-sslhome
 v-change-web-domain-stats
 v-change-web-domain-tpl
 v-delete-sys-ipv6
-v-list-dns-domain
-v-list-dns-domains
-v-list-dns-templates
-v-list-web-templates
-v-list-web-templates-proxy
-v-list-sys-ip
-v-list-user-ips
-v-list-web-domains
+v-list-dns-domain                 OK
+v-list-dns-domains                OK
+v-list-dns-templates              OK
+v-list-web-templates              OK
+v-list-web-templates-proxy        OK
+v-list-sys-ip                     OK
+v-list-user-ips                   OK
+v-list-web-domains                OK
 v-update-sys-vesta
