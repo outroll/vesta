@@ -15,3 +15,13 @@ TO DO:
 - IPV6 check validation
 - install scripts
 - templates
+
+
+v-add-web-domain
+v-change-web-domain-backend-tpl
+v-change-web-domain-ip
+v-change-web-domain-ipv6
+v-change-web-domain-proxy-tpl
+v-change-web-domain-sslhome
+v-change-web-domain-stats
+v-change-web-domain-tpl

@@ -1,5 +1,9 @@
 #!/bin/bash
-# info: changing domain ssl home
+# info: change web domain ip address
+# options: USER DOMAIN IPV6 [RESTART]
+#
+# The call is used for changing the site ip address.
+
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
@@ -9,11 +13,13 @@
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain_idn=$(idn -t --quiet -a "$domain")
-ssl_home=$3
+ipv6=$3
+restart=$4
 
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -21,14 +27,15 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '3' "$#" 'USER DOMAIN SSL_HOME'
-validate_format 'user' 'domain'
+check_args '3' "$#" 'USER DOMAIN IPV6 [RESTART]'
+validate_format 'user' 'domain' 'ipv6'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_object_value_exist 'web' 'DOMAIN' "$domain" '$SSL'
+is_ipv6_valid
+is_ipv6_avalable
 
 
 #----------------------------------------------------------#
@@ -42,28 +49,33 @@ elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
 else
   tpl_suffix="IP46"
 fi
-
-# Get domain values
+        
+        
+# Define variable for replace
 get_domain_values 'web'
-old_ssl_home=$SSL_HOME
-SSL_HOME=$ssl_home
-tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL$tpl_suffix.stpl"
-conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
-
-# Parsing tpl_option
-case $SSL_HOME in
-    single) new="$HOMEDIR/$user/web/$domain/public_shtml" ;
-            old="$HOMEDIR/$user/web/$domain/public_html" ;;
-    same)   new="$HOMEDIR/$user/web/$domain/public_html" ;
-            old="$HOMEDIR/$user/web/$domain/public_shtml" ;;
-    *)      check_args '3' "2" 'USER DOMAIN SSLHOME'
-esac
-
-# Changing sslhome directory
+ipv6=$(get_real_ipv6 $ipv6)
+tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL$tpl_suffix.tpl"
+conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
+old=$(get_real_ipv6 $IP)
+new=$ipv6
 replace_web_config
 
-# Checking proxy config
+# Checking SSL
+if [ "$SSL" = 'yes' ]; then
+    tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL$tpl_suffix.stpl"
+    conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
+    replace_web_config
+fi
+
+# Checking proxy
 if [ ! -z "$PROXY" ]; then
+    tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY$tpl_suffix.tpl"
+    conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
+    replace_web_config
+fi
+
+# Checking SSL proxy
+if [ "$SSL" = 'yes' ] && [ ! -z "$PROXY" ]; then 
     tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY$tpl_suffix.stpl"
     conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
     replace_web_config
@@ -74,22 +86,28 @@ fi
 #                       Vesta                              #
 #----------------------------------------------------------#
 
+# Update counters
+increase_ipv6_value "$new"
+decrease_ipv6_value "$old"
+
 # Update config
-update_object_value 'web' 'DOMAIN' "$domain" '$SSL_HOME' "$SSL_HOME"
+update_object_value 'web' 'DOMAIN' "$domain" '$IP6' "$3"
 
 # Restart web server
-$BIN/v-restart-web
-if [ $? -ne 0 ]; then
-    exit $E_RESTART
-fi
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-web
+    if [ $? -ne 0 ]; then
+        exit $E_RESTART
+    fi
 
-$BIN/v-restart-proxy
-if [ $? -ne 0 ]; then
-    exit $E_RESTART
+    $BIN/v-restart-proxy
+    if [ $? -ne 0 ]; then
+        exit $E_RESTART
+    fi
 fi
 
 # Logging
-log_history "changed ssl home for $domain to $ssl_home"
+log_history "changed web domain $domain ipv6 to $3"
 log_event "$OK" "$EVENT"
 
 exit

@@ -62,9 +62,18 @@ rm -f $HOMEDIR/$user/conf/web/$STATS.$domain.conf
 # Preparing domain values for the template substitution
 upd_web_domain_values
 
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "no" ] ; then
+  tpl_suffix=""
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
+  tpl_suffix="IPV6"
+else
+  tpl_suffix="IP46"
+fi
+
 # Adding statistic config
-cat $WEBTPL/$type/$type.tpl |\
+cat $WEBTPL/$type/$type$tpl_suffix.tpl |\
     sed -e "s/%ip%/$ip/g" \
+        -e "s/%ipv6%/$ipv6/g" \
         -e "s/%web_port%/$WEB_PORT/g" \
         -e "s/%web_system%/$WEB_SYSTEM/g" \
         -e "s/%web_ssl_port%/$WEB_SSL_PORT/g" \
