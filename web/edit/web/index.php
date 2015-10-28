@@ -109,8 +109,7 @@ if (!empty($_POST['save'])) {
 
     // Change web domain IP
     if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
-        $v_ip = escapeshellarg($_POST['v_ip']);
-        exec (VESTA_CMD."v-change-web-domain-ip ".$v_username." ".$v_domain." ".$v_ip." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-change-web-domain-ip ".$v_username." ".$v_domain." ".escapeshellarg($_POST['v_ip'])." 'no'", $output, $return_var);
         check_return_code($return_var,$output);
         $restart_web = 'yes';
         $restart_proxy = 'yes';
@@ -119,8 +118,7 @@ if (!empty($_POST['save'])) {
 
     // Change web domain IPV6
     if (($v_ipv6 != $_POST['v_ipv6']) && (empty($_SESSION['error_msg']))) {
-        $v_ipv6 = escapeshellarg($_POST['v_ipv6']);
-        exec (VESTA_CMD."v-change-web-domain-ipv6 ".$v_username." ".$v_domain." ".$v_ipv6." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-change-web-domain-ipv6 ".$v_username." ".$v_domain." ".escapeshellarg($_POST['v_ipv6'])." 'no'", $output, $return_var);
         check_return_code($return_var,$output);
         $restart_web = 'yes';
         $restart_proxy = 'yes';
@@ -132,7 +130,7 @@ if (!empty($_POST['save'])) {
         exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
         unset($output);
         if ($return_var == 0 ) {
-            exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." ".$v_domain." ".$v_ip." 'no'", $output, $return_var);
+            exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." ".$v_domain." ".escapeshellarg($_POST['v_ip'])." 'no'", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             $restart_dns = 'yes';
@@ -144,7 +142,7 @@ if (!empty($_POST['save'])) {
         exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
         unset($output);
         if ($return_var == 0 ) {
-            exec (VESTA_CMD."v-change-dns-domain-ipv6 ".$v_username." ".$v_domain." ".$v_ipv6." 'no'", $output, $return_var);
+            exec (VESTA_CMD."v-change-dns-domain-ipv6 ".$v_username." ".$v_domain." ".escapeshellarg($_POST['v_ipv6'])." 'no'", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             $restart_dns = 'yes';
@@ -157,7 +155,7 @@ if (!empty($_POST['save'])) {
             exec (VESTA_CMD."v-list-dns-domain ".$v_username." '".$v_alias."' json", $output, $return_var);
             unset($output);
             if ($return_var == 0 ) {
-                exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." '".$v_alias."' ".$v_ip, $output, $return_var);
+                exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." '".$v_alias."' ".escapeshellarg($_POST['v_ip']), $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
                 $restart_dns = 'yes';
@@ -171,14 +169,21 @@ if (!empty($_POST['save'])) {
             exec (VESTA_CMD."v-list-dns-domain ".$v_username." '".$v_alias."' json", $output, $return_var);
             unset($output);
             if ($return_var == 0 ) {
-                exec (VESTA_CMD."v-change-dns-domain-ipv6 ".$v_username." '".$v_alias."' ".$v_ipv6, $output, $return_var);
+                exec (VESTA_CMD."v-change-dns-domain-ipv6 ".$v_username." '".$v_alias."' ".escapeshellarg($_POST['v_ipv6']), $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
                 $restart_dns = 'yes';
             }
         }
     }
-
+  
+    if (($v_ipv6 != $_POST['v_ipv6']) && (empty($_SESSION['error_msg']))) {
+      $v_ipv6 = escapeshellarg($_POST['v_ipv6']);
+    }
+    if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
+      $v_ip = escapeshellarg($_POST['v_ip']);
+    }
+  
     // Change template (admin only)
     if (($v_template != $_POST['v_template']) && ( $_SESSION['user'] == 'admin') && (empty($_SESSION['error_msg']))) {
         $v_template = escapeshellarg($_POST['v_template']);
