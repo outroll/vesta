@@ -65,7 +65,7 @@ fi
 
 # Deleting domain
 del_web_config
-
+echo "3"
 # Checking aliases
 if [ ! -z "$ALIAS" ]; then
     aliases=$(echo $ALIAS | tr ',' '\n' | wc -l )
@@ -176,8 +176,12 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
 fi
 
 # Decrease counters
-decrease_ip_value "$ip"
-decrease_ipv6_value "$ipv6"
+if [ "$IPV4" == "yes" ] ; then
+  decrease_ip_value "$ip"
+fi
+if [ "$IPV6" == "yes" ] ; then
+  decrease_ipv6_value "$ipv6"
+fi
 decrease_user_value "$user" '$U_WEB_DOMAINS'
 decrease_user_value "$user" '$U_WEB_ALIASES' "$aliases"
 if [ "$SSL" = 'yes' ]; then

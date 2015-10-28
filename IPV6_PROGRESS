@@ -1,16 +1,17 @@
 IPV6 Progress
 =============
-Add IP -> 80%
-* TO DO
-** IPV6 check
-Edit IP -> 50%?
+Add IP -> 90%
+EDIT IP -> 90%
+DELETE IP -> 90%
+ADD DOMAIN -> 90% (Add standaard web domain tested: IPV4 or IPV6 or both )
+DELETE DOMAIN -> 90% (Delete standaard web domain tested:  IPV4 or IPV6 or both )
+EDIT DOMAIN -> 0%
+LIST WEB -> 90%
+LIST DNS -> 90%
 
-Add Domain
-* Add WEB -> 80%
-** TO DO
-* Add DNS -> 80%
-** TO DO
-* EDIT .. -> 0%
-* LIST WEB -> 80%
-* LIST DNS -> 80%
-** TO DO: design (positioning)
+TO DO:
+- design (positioning)
+- EDIT DOMAIN
+- IPV6 check validation
+- install scripts
+- templates

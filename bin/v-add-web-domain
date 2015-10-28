@@ -46,8 +46,6 @@ if [ "$IPV4" == "yes" ] && [ "$IPV6" == "no" ] ; then
   ipv6=""
   is_ip_valid
   is_ip_avalable
-  is_ipv6_valid
-  is_ipv6_avalable
 elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
   validate_format 'user' 'domain' 'ipv6'
   ip=""
@@ -120,8 +118,6 @@ tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template$tpl_sufix.tpl"
 conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
 
 # Defining domain aliases
-echo "ip$ip_name.ip"
-echo "ip$ipv6_name.ip"
 if [ -z "$aliases" ]; then
     if [ -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
         aliases="www.$domain"
