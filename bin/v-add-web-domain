@@ -121,19 +121,19 @@ conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
 if [ -z "$aliases" ]; then
     if [ -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
         aliases="www.$domain"
-    elif [ -z "$ip_name" ]; then
+    elif [ ! -z "$ipv6_name" ] && [ -z "$ip_name" ]; then
         aliases="www.$domain,${domain//./-}.$ipv6_name"
-    elif [ -z "$ipv6_name" ]; then
+    elif [ ! -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
         aliases="www.$domain,${domain//./-}.$ip_name"
     else
         aliases="www.$domain,${domain//./-}.$ip_name,${domain//./-}.$ipv6_name"
     fi
 else
-    if [ -z "$ip_name" ] && [ ! -z "$ipv6_name" ]; then
+    if [ ! -z "$ipv6_name" ] && [ -z "$ip_name" ]; then
         aliases="$aliases,${domain//./-}.$ipv6_name"
     elif [ ! -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
-        aliases="www.$domain,${domain//./-}.$ipv6_name"
-    else
+        aliases="$aliases,${domain//./-}.$ip_name"
+    elif [ ! -z "$ip_name" ] && [ ! -z "$ipv6_name" ]; then
         aliases="$aliases,${domain//./-}.$ip_name,${domain//./-}.$ipv6_name"
     fi
 fi

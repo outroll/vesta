@@ -103,7 +103,7 @@ if (!empty($_POST['ok'])) {
     if (empty($_POST['v_dns'])) $v_dns = 'off';
     if (empty($_POST['v_mail'])) $v_mail = 'off';
     if (empty($_POST['v_proxy'])) $v_proxy = 'off';
-
+  
     // Add web domain
     if (empty($_SESSION['error_msg'])) {
         if($_SESSION['IPV4'] == 'no' && $_SESSION['IPV6'] == 'yes') {
@@ -131,9 +131,7 @@ if (!empty($_POST['ok'])) {
         foreach ($aliases_arr as $alias) {
             if ($alias != "www.".$_POST['v_domain']) {
                 $alias = escapeshellarg($alias);
-                //exec (VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." ".$v_ipv6." 'no'", $output, $return_var);
-              echo VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." ".$v_ipv6." 'no'";
-              exit;
+                exec (VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." ".$v_ipv6." 'no'", $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
             }
