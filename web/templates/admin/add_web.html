@@ -133,7 +133,7 @@
                                               $display_ip = $key;
                                               if (!empty($value['NAT'])) $display_ip = $value['NAT'];
                                               echo "\t\t\t\t<option value=\"".htmlentities($display_ip)."\"";
-                                              if ((!empty($v_ip)) && ( $display_ip == $_POST['v_ip'])){
+                                              if ((!empty($v_ipv6)) && ( $display_ip == $_POST['v_ipv6'])){
                                                   echo ' selected';
                                               }
                                               echo ">".htmlentities($display_ip)."</option>\n";
