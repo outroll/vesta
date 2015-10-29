@@ -27,12 +27,12 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER ALIAS IP IPV6 [RESTART]'
-if [ "$IPV4" == "yes" && "$IPV6" == "no" ] ; then
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "no" ] ; then
   validate_format 'user' 'alias' 'ip'
-  ipv6=""
-elif [ "$IPV4" == "no" && "$IPV6" == "yes" ] ; then
+  ipv6=''
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
   validate_format 'user' 'alias' 'ipv6'
-  ip=""
+  ip=''
 else
   validate_format 'user' 'alias' 'ip' 'ipv6'
 fi

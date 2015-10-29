@@ -237,7 +237,7 @@ if (!empty($_POST['save'])) {
                     exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain, $output, $return_var);
                     unset($output);
                     if ($return_var == 0) {
-                        exec (VESTA_CMD."v-add-dns-on-web-alias ".$v_username." ".$alias." ".$v_ip." ".$_ipv6." no", $output, $return_var);
+                        exec (VESTA_CMD."v-add-dns-on-web-alias ".$v_username." ".$alias." ".$v_ip." ".$v_ipv6." no", $output, $return_var);
                         check_return_code($return_var,$output);
                     unset($output);
                         $restart_dns = 'yes';

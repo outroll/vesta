@@ -18,12 +18,12 @@ TO DO:
 
 
 v-add-web-domain                  OK
-v-add-web-domain-alias
-v-add-web-domain-proxy
+v-add-web-domain-alias            OK
+v-add-web-domain-proxy            OK
 v-add-web-domain-ssl
 v-add-web-domain-stats
 v-add-dns-domain                  OK
-v-add-dns-on-web-alias
+v-add-dns-on-web-alias            OK
 v-add-domain                      OK -> IPV6 validation?
 v-add-sys-ip                      OK
 v-add-sys-ipv6                    OK
@@ -39,7 +39,9 @@ v-change-web-domain-proxy-tpl
 v-change-web-domain-sslhome
 v-change-web-domain-stats
 v-change-web-domain-tpl
-v-delete-sys-ipv6
+v-delete-dns-on-web-alias         OK
+v-delete-sys-ipv6                 OK
+v-delete-web-domain-proxy         OK
 v-list-dns-domain                 OK
 v-list-dns-domains                OK
 v-list-dns-templates              OK
