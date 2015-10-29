@@ -29,6 +29,9 @@ v-add-sys-ip                      OK
 v-add-sys-ipv6                    OK
 v-change-dns-domain-ipv6          OK
 v-change-domain-owner
+v-change-sys-ipv6-name            OK
+v-change-sys-ipv6-owner           OK
+v-change-sys-ipv6-status          OK
 v-change-web-domain-backend-tpl
 v-change-web-domain-ip
 v-change-web-domain-ipv6          OK
