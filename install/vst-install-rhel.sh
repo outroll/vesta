@@ -9,7 +9,7 @@ export PATH=$PATH:/sbin
 RHOST='r.vestacp.com'
 CHOST='c.vestacp.com'
 REPO='cmmnt'
-VERSION='0.9.8/rhel'
+VERSION='rhel'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os=$(cut -f 1 -d ' ' /etc/redhat-release)
@@ -684,7 +684,7 @@ touch $VESTA/data/queue/backup.pipe $VESTA/data/queue/disk.pipe \
     $VESTA/log/nginx-error.log $VESTA/log/auth.log
 chmod 750 $VESTA/conf $VESTA/data/users $VESTA/data/ips $VESTA/log
 chmod -R 750 $VESTA/data/queue
-chmod 660 /var/log/vesta/*
+chmod 660 $VESTA/log/*
 rm -f /var/log/vesta
 ln -s /usr/local/vesta/log /var/log/vesta
 
@@ -894,8 +894,10 @@ fi
 if [ -z "$ZONE" ]; then
     ZONE='UTC'
 fi
-sed -i 's%short_open_tag = Off%short_open_tag = On%g' /etc/php.ini
-sed -i "s%;date.timezone =%date.timezone = $ZONE%g" /etc/php.ini
+for pconf in $(find /etc/php* -name php.ini); do
+    sed -i "s/;date.timezone =/date.timezone = $ZONE/g" $pconf
+    sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
+fi
 
 
 #----------------------------------------------------------#

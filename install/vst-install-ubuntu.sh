@@ -9,7 +9,7 @@ export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
 RHOST='apt.vestacp.com'
 CHOST='c.vestacp.com'
-VERSION='0.9.8/ubuntu'
+VERSION='ubuntu'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os='ubuntu'
@@ -90,6 +90,7 @@ set_default_value() {
     fi
 }
 
+
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
@@ -116,6 +117,7 @@ for arg; do
         --spamassassin)         args="${args}-t " ;;
         --iptables)             args="${args}-i " ;;
         --fail2ban)             args="${args}-b " ;;
+        --remi)                 args="${args}-r " ;;
         --quota)                args="${args}-q " ;;
         --lang)                 args="${args}-l " ;;
         --interactive)          args="${args}-y " ;;
@@ -148,6 +150,7 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:q:l:y:s:e:p:fh" Option; do
         t) spamd=$OPTARG ;;             # SpamAssassin
         i) iptables=$OPTARG ;;          # Iptables
         b) fail2ban=$OPTARG ;;          # Fail2ban
+        r) remi=$OPTARG ;;              # Remi repo
         q) quota=$OPTARG ;;             # FS Quota
         l) lang=$OPTARG ;;              # Language
         y) interactive=$OPTARG ;;       # Interactive install
@@ -487,6 +490,10 @@ rm -rf /usr/local/vesta > /dev/null 2>&1
 #----------------------------------------------------------#
 
 # Excluding packages
+if [ "$release" != "15.04" ] && [ "$release" != "15.04" ]; then
+    software=$(echo "$software" | sed -e "s/apache2.2-common//")
+fi
+
 if [ "$nginx" = 'no'  ]; then
     software=$(echo "$software" | sed -e "s/^nginx//")
 fi
@@ -636,7 +643,7 @@ touch $VESTA/data/queue/backup.pipe $VESTA/data/queue/disk.pipe \
     $VESTA/log/nginx-error.log $VESTA/log/auth.log
 chmod 750 $VESTA/conf $VESTA/data/users $VESTA/data/ips $VESTA/log
 chmod -R 750 $VESTA/data/queue
-chmod 660 /var/log/vesta/*
+chmod 660 $VESTA/log/*
 rm -f /var/log/vesta
 ln -s /usr/local/vesta/log /var/log/vesta
 
@@ -839,10 +846,10 @@ ZONE=$(timedatectl 2>/dev/null|grep Timezone|awk '{print $2}')
 if [ -z "$ZONE" ]; then
     ZONE='UTC'
 fi
-sed -i "s/;date.timezone =/date.timezone = $ZONE/g" /etc/php5/apache2/php.ini
-sed -i "s/;date.timezone =/date.timezone = $ZONE/g" /etc/php5/cli/php.ini
-sed -i 's%_open_tag = Off%_open_tag = On%g' /etc/php5/apache2/php.ini
-sed -i 's%_open_tag = Off%_open_tag = On%g' /etc/php5/cli/php.ini
+for pconf in $(find /etc/php* -name php.ini); do
+    sed -i "s/;date.timezone =/date.timezone = $ZONE/g" $pconf
+    sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
+fi
 
 
 #----------------------------------------------------------#
@@ -1042,10 +1049,6 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
     php5enmod mcrypt 2>/dev/null
     service apache2 restart
-    if [ "$release" -eq 8 ]; then
-        mv -f /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
-        mv -f /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
-    fi
 fi
 
 

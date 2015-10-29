@@ -178,7 +178,11 @@ get_real_ipv6() {
         echo $1
     else
         nated_ip=$(grep -Hl "^NAT='$1'" $VESTA/data/ips/*)
-        echo "$nated_ip" | cut -f 7 -d /
+        if [ ! -z "$nated_ip" ]; then
+            echo "$nated_ip" | cut -f 7 -d /
+        else
+            get_user_ipv6
+        fi
     fi
 }
 
