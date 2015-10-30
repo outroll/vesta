@@ -723,6 +723,8 @@ if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
     fi
     echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
 fi
+echo "IPV4='yes'" >> $VESTA/conf/vesta.conf
+echo "IPV6='yes'" >> $VESTA/conf/vesta.conf
 
 # FTP stack
 if [ "$vsftpd" = 'yes' ]; then

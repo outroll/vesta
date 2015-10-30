@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add dns domain or dns record after web domain alias
-# options: USER ALIAS IP [RESTART]
+# options: USER ALIAS IP IPV6 [RESTART]
 #
 # The function adds dns domain or dns record based on web domain alias.
 
@@ -13,7 +13,8 @@
 user=$1
 alias=$2
 ip=$3
-restart=$4
+ipv6=$4
+restart=$5
 
 # Includes
 source $VESTA/func/main.sh
@@ -25,8 +26,17 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '3' "$#" 'USER ALIAS IP [RESTART]'
-validate_format 'user' 'alias' 'ip'
+check_args '3' "$#" 'USER ALIAS IP IPV6 [RESTART]'
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "no" ] ; then
+  validate_format 'user' 'alias' 'ip'
+  ipv6=''
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
+  validate_format 'user' 'alias' 'ipv6'
+  ip=''
+else
+  validate_format 'user' 'alias' 'ip' 'ipv6'
+fi
+
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -50,12 +60,12 @@ domain_lvl=$(echo "$alias" |grep -o "\." |wc -l)
 # Adding second level domain
 if [ "$domain_lvl" -eq 1 ] || [ "${#top_domain}" -le '6' ]; then
     $BIN/v-add-dns-domain \
-        $user $alias $ip '' '' '' '' '' $restart >> /dev/null
+        $user $alias $ip $ipv6 '' '' '' '' '' '' '' '' $restart >> /dev/null
     exit
 fi
 
 # Adding toplevel domain and then its sub
-$BIN/v-add-dns-domain $user $top_domain $ip '' '' '' '' $restart >> /dev/null
+$BIN/v-add-dns-domain $user $top_domain $ip $ipv6 '' '' '' '' '' '' '' '' $restart >> /dev/null
 
 # Checking top-level domain
 if [ ! -e "$USER_DATA/dns/$top_domain.conf" ]; then
@@ -71,8 +81,14 @@ fi
 
 # Adding subdomain record
 if [ -z "$check_record" ]; then
+  if [ "$IPV4" == "yes" ] ; then
     $BIN/v-add-dns-record \
         $user $top_domain "$sub_domain" A $ip '' '' $restart >> /dev/null
+  fi
+  if [ "$IPV6" == "yes" ] ; then
+    $BIN/v-add-dns-record \
+        $user $top_domain "$sub_domain" AAAA $ipv6 '' '' $restart >> /dev/null
+  fi
 fi
 
 

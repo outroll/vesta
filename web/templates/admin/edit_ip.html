@@ -85,7 +85,20 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_netmask" <?php if (!empty($v_interace)) echo "value=".htmlentities($v_interace); ?> disabled>
+                                    <input type="text" size="20" class="vst-input" name="v_interface" <?php if (!empty($v_interace)) echo "value=".htmlentities($v_interace); ?> disabled>
+                                </td>
+                            </tr>
+                          <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Version');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="vst-list" name="v_version" disabled>
+                                      <option value="4" <?php if(!empty($v_version) && $v_version == 4) echo "selected" ?>><?php print __('IPV4');?></option>
+                                      <option value="6" <?php if(!empty($v_version) && $v_version == 6) echo "selected" ?>><?php print __('IPV6');?></option>
+                                    </select>
                                 </td>
                             </tr>
                             <tr>

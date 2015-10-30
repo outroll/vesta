@@ -124,9 +124,9 @@ increase_ip_value() {
     fi
 
     sed -i "s/$web_key='$current_web'/$web_key='$new_web'/g" \
-        $VESTA/data/ips/$ip
+        $VESTA/data/ips/$sip
     sed -i "s/$usr_key='$current_usr'/$usr_key='$new_usr'/g" \
-        $VESTA/data/ips/$ip
+        $VESTA/data/ips/$sip
 }
 
 # Decrease ip value
@@ -188,12 +188,12 @@ get_real_ip() {
 
 # Get user ip
 get_user_ip(){
-    ip=$(grep -H "OWNER='$1'" $VESTA/data/ips/* 2>/dev/null | head -n1)
-    ip=$(echo "$ip" | cut -f 7 -d / | cut -f 1 -d :)
+    ip=$(grep -lZ "OWNER='$1'" $VESTA/data/ips/* 2>/dev/null | xargs -0 grep -l "VERSION='4'" 2>/dev/null | head -n1)
+    ip=$(echo "$ip" | cut -f 7 -d /)
 
     if [ -z "$ip" ]; then
-        admin_ips=$(grep -H "OWNER='admin'" $VESTA/data/ips/* 2>/dev/null)
-        admin_ips=$(echo "$admin_ips" | cut -f 7 -d / | cut -f 1 -d :)
+        admin_ips=$(grep -lZ "OWNER='admin'" $VESTA/data/ips/* 2>/dev/null | xargs -0 grep -l "VERSION='4'" 2>/dev/null | head -n1)
+        admin_ips=$(echo "$admin_ips" | cut -f 7 -d /)
         for admin_ip in $admin_ips; do
             if [ -z "$ip" ]; then
                 shared=$(grep "STATUS='shared'" $VESTA/data/ips/$admin_ip)

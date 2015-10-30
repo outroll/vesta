@@ -1,0 +1,53 @@
+IPV6 Progress
+=============
+Add IP -> 90%
+EDIT IP -> 90%
+DELETE IP -> 90%
+ADD DOMAIN -> 90% (Add standaard web domain tested: IPV4 or IPV6 or both )
+DELETE DOMAIN -> 90% (Delete standaard web domain tested:  IPV4 or IPV6 or both )
+EDIT DOMAIN -> 0%
+LIST WEB -> 90%
+LIST DNS -> 90%
+
+TO DO:
+- design (positioning)
+- EDIT DOMAIN
+- IPV6 check validation
+- install scripts
+- templates
+
+
+v-add-web-domain                  OK
+v-add-web-domain-alias            OK
+v-add-web-domain-proxy            OK
+v-add-web-domain-ssl
+v-add-web-domain-stats
+v-add-dns-domain                  OK
+v-add-dns-on-web-alias            OK
+v-add-domain                      OK -> IPV6 validation?
+v-add-sys-ip                      OK
+v-add-sys-ipv6                    OK
+v-change-dns-domain-ipv6          OK
+v-change-domain-owner
+v-change-sys-ipv6-name            OK
+v-change-sys-ipv6-owner           OK
+v-change-sys-ipv6-status          OK
+v-change-web-domain-backend-tpl
+v-change-web-domain-ip
+v-change-web-domain-ipv6          OK
+v-change-web-domain-proxy-tpl
+v-change-web-domain-sslhome
+v-change-web-domain-stats
+v-change-web-domain-tpl
+v-delete-dns-on-web-alias         OK
+v-delete-sys-ipv6                 OK
+v-delete-web-domain-proxy         OK
+v-list-dns-domain                 OK
+v-list-dns-domains                OK
+v-list-dns-templates              OK
+v-list-web-templates              OK
+v-list-web-templates-proxy        OK
+v-list-sys-ip                     OK
+v-list-user-ips                   OK
+v-list-web-domains                OK
+v-update-sys-vesta

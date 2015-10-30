@@ -127,6 +127,34 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('IPV4 Adress');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="vst-list" name="v_ipv4">
+                                        <option value='no'><?php print __('no'); ?></option>
+                                        <option value='yes' <?php if($_SESSION['IPV4'] == 'yes') echo 'selected' ?> ><?php print __('yes'); ?></option>
+                                    </select>
+                                    <br><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('IPV6 Adress');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="vst-list" name="v_ipv6">
+                                        <option value='no'><?php print __('no'); ?></option>
+                                        <option value='yes' <?php if($_SESSION['IPV6'] == 'yes') echo 'selected' ?> ><?php print __('yes'); ?></option>
+                                    </select>
+                                    <br><br>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td class="vst-text input-label step-top">
                                     <a href="javascript:elementHideShow('web');" class="vst-text">
                                         <b><?php print __('WEB');?> <img src="/images/arrow.png"></b>

@@ -91,29 +91,59 @@
                                     <input type="text" size="20" class="vst-input" name="v_domain" <?php if (!empty($v_domain)) echo "value=".htmlentities($v_domain);  ?> disabled> <input type="hidden" name="v_domain" <?php if (!empty($v_domain)) echo "value=".htmlentities($v_domain);  ?>>
                                 </td>
                             </tr>
+                            <?php if($_SESSION['IPV4'] == 'yes') { ?>
+                                <tr>
+                                    <td class="vst-text input-label">
+                                        <?php print __('IP address');?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select class="vst-list" name="v_ip">
+                                            <?php
+                                                foreach ($ips as $key => $value) {
+                                                    if($value['VERSION']==4) {
+                                                      $display_ip = $key;
+                                                      if (!empty($value['NAT'])) $display_ip = $value['NAT'];
+                                                      $skey = "'".$display_ip."'";
+                                                      echo "\t\t\t\t<option value=\"".htmlentities($display_ip)."\"";
+                                                      if ((!empty($v_ip)) && ( $display_ip == $v_ip) || ( $skey == $v_ip )){
+                                                          echo ' selected';
+                                                      }
+                                                      echo ">".htmlentities($display_ip)."</option>\n";
+                                                    }
+                                                }
+                                            ?>
+                                        </select>
+                                    </td>
+                                </tr>
+                            <?php } if($_SESSION['IPV6'] == 'yes') { ?>
                             <tr>
                                 <td class="vst-text input-label">
-                                    <?php print __('IP Address');?>
+                                    <?php print __('IP address');?>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <select class="vst-list" name="v_ip">
+                                    <select class="vst-list" name="v_ipv6">
                                         <?php
                                             foreach ($ips as $key => $value) {
-                                                $display_ip = $key;
-                                                if (!empty($value['NAT'])) $display_ip = $value['NAT'];
-                                                $skey = "'".$display_ip."'";
-                                                echo "\n\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"".htmlentities($display_ip)."\"";
-                                                if ((!empty($v_ip)) && ( $display_ip == $v_ip ) || ( $skey == $v_ip )){
-                                                    echo ' selected';
+                                                if($value['VERSION']==6) {
+                                                  $display_ip = $key;
+                                                  if (!empty($value['NAT'])) $display_ip = $value['NAT'];
+                                                  $skey = "'".$display_ip."'";
+                                                  echo "\t\t\t\t<option value=\"".htmlentities($display_ip)."\"";
+                                                  if ((!empty($v_ipv6)) && ( $display_ip == $v_ipv6) || ( $skey == $v_ipv6 )){
+                                                      echo ' selected';
+                                                  }
+                                                  echo ">".htmlentities($display_ip)."</option>\n";
                                                 }
-                                                echo ">".htmlentities($display_ip)."</option>\n";
                                             }
                                         ?>
                                     </select>
                                 </td>
                             </tr>
+                            <?php } ?>
                             <tr>
                                 <td class="vst-text input-label">
                                     <?php print __('Aliases');?>
