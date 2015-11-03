@@ -178,7 +178,8 @@
               );
 
               $(window).bind('keypress', function(evt) {
-                  if (evt.charCode == 97) {
+                  var tag = evt.target.tagName.toLowerCase();
+                  if (evt.charCode == 97 && tag != 'input' && tag != 'textarea') {
                       evt.preventDefault();
                       if (!evt.ctrlKey && !evt.shiftKey) {
                           if ($('.l-sort__create-btn')[0]) {
