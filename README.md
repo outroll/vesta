@@ -13,9 +13,9 @@ Connect to your server as root via SSH
 ssh root@your.server
 ```
 
-Download the installation script, and run it:
+Run this command to delete previous install files, download the latest, and run it.
 ```bash
-curl http://vestacp.com/pub/vst-install.sh | bash
+rm vst-install*.sh && curl http://vestacp.com/pub/vst-install.sh | bash; bash ./vst-install-*.sh
 ```
 
 If the above example does not work, try this 2 step method:
