@@ -1,0 +1,6 @@
+language: bash
+before_install:
+	- sudo apt-get update -qq
+script: ./install/vst-install.sh
+deploy:
+	skip_cleanup: true
