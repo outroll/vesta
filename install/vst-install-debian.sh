@@ -28,7 +28,7 @@ if [ "$release" -eq 8 ]; then
         mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils vesta vesta-nginx vesta-php"
+        bsdmainutils cron vesta vesta-nginx vesta-php"
 else
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
@@ -40,7 +40,7 @@ else
         mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils vesta vesta-nginx vesta-php"
+        bsdmainutils cron vesta vesta-nginx vesta-php"
 fi
 
 # Defining help function
@@ -1074,12 +1074,12 @@ if [ "$fail2ban" = 'yes' ]; then
     rm -f fail2ban.tar.gz
     if [ "$dovecot" = 'no' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n dovecot-iptables -A 2)
-        fline=$(echo "$fline" |tail -n1 |cut -f 1 -d -)
+        fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
     fi
     if [ "$exim" = 'no' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n exim-iptables -A 2)
-        fline=$(echo "$fline" |tail -n1 |cut -f 1 -d -)
+        fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
     fi
     update-rc.d fail2ban defaults
@@ -1175,6 +1175,9 @@ fi
 update-rc.d vesta defaults
 service vesta start
 check_result $? "vesta start failed"
+
+# Adding notifications
+$VESTA/upd/add_notifications.sh
 
 
 #----------------------------------------------------------#

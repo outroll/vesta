@@ -792,6 +792,7 @@ cp templates/web/skel/public_html/index.html /var/www/html/
 sed -i 's/%domain%/It worked!/g' /var/www/html/index.html
 
 # Downloading firewall rules
+chkconfig firewalld off >/dev/null 2>&1
 wget $vestacp/firewall.tar.gz -O firewall.tar.gz
 tar -xzf firewall.tar.gz
 rm -f firewall.tar.gz
@@ -1143,12 +1144,12 @@ if [ "$fail2ban" = 'yes' ]; then
     rm -f fail2ban.tar.gz
     if [ "$dovecot" = 'no' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n dovecot-iptables -A 2)
-        fline=$(echo "$fline" |tail -n1 |cut -f 1 -d -)
+        fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
     fi
     if [ "$exim" = 'no' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n exim-iptables -A 2)
-        fline=$(echo "$fline" |tail -n1 |cut -f 1 -d -)
+        fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
     fi
     chkconfig fail2ban on
@@ -1244,6 +1245,9 @@ fi
 chkconfig vesta on
 service vesta start
 check_result $? "vesta start failed"
+
+# Adding notifications
+$VESTA/upd/add_notifications.sh
 
 
 #----------------------------------------------------------#
