@@ -4,3 +4,7 @@ before_install:
 script: ./install/vst-install.sh
 deploy:
 	skip_cleanup: true
+addons:
+  hosts:
+    - travis.dev
+    - joshkalderimis.com
