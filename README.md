@@ -1,3 +1,5 @@
+![Build Status](https://travis-ci.org/EidolonHost/vesta.svg?branch=master)
+
 [Vesta Control Panel](http://vestacp.com/)
 ==================================================
 
