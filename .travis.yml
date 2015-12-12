@@ -1,7 +1,7 @@
 language: bash
 before_install:
   - sudo apt-get update -qq
-script: sudo yes | ./install/vst-install-ubuntu.sh --force
+script: sudo ./install/vst-install-ubuntu.sh --force | yes
 addons:
   hosts:
     - travis.dev
