@@ -61,9 +61,10 @@ fi
 
 # Defining variables for new vhost config
 upd_web_domain_values
-tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.tpl"
 
 # Adding domain to the web conf
+conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
+tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.tpl"
 add_web_config
 
 # Running template trigger
