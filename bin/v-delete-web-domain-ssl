@@ -74,7 +74,6 @@ conf="/etc/$WEB_SYSTEM/conf.d/vesta.conf"
 if [ -z "$ssl_dom" ]; then
     sed -i "/.*\/$user\/.*s$WEB_SYSTEM.conf/d" $conf
     rm -f $HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf
-
 fi
 
 # Checking proxy

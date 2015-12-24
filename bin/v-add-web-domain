@@ -185,8 +185,11 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
     tpl_file="$WEBTPL/$PROXY_SYSTEM/$proxy.tpl"
     conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
     add_web_config
+
     chown root:$user $conf
     chmod 640 $conf
+
+    # Checking proxy config
     proxy_conf="/etc/$PROXY_SYSTEM/conf.d/vesta.conf"
     if [ -z "$(grep "$conf" $proxy_conf)" ]; then
         echo "include $conf;" >> $proxy_conf

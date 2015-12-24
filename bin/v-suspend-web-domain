@@ -60,6 +60,18 @@ if [ "$SSL" = 'yes' ]; then
     conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
     del_web_config
     add_web_config
+
+    # Running template trigger
+    if [ -x $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.sh ]; then
+        $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.sh \
+            $user $domain $ip $HOMEDIR $sdocroot
+    fi
+fi
+
+# Running template trigger
+if [ -x $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.sh ]; then
+    $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.sh \
+        $user $domain $ip $HOMEDIR $docroot
 fi
 
 # Checking proxy
@@ -75,9 +87,14 @@ if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
         conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
         del_web_config
         add_web_config
+        if [ -x $WEBTPL/$PROXY_SYSTEM/$PROXY.sh ]; then
+            $WEBTPL/$PROXY_SYSTEM/$PROXY.sh $user $domain $ip $HOMEDIR $sdocroot
+        fi
+    fi
+    if [ -x $WEBTPL/$PROXY_SYSTEM/$PROXY.sh ]; then
+        $WEBTPL/$PROXY_SYSTEM/$PROXY.sh $user $domain $ip $HOMEDIR $docroot
     fi
 fi
-
 
 
 #----------------------------------------------------------#
