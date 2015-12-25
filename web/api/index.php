@@ -6,20 +6,33 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
     // Authentication
     $auth_code = 1;
     if (empty($_POST['hash'])) {
-        // Check user permission to use API
-        if ($_POST['user'] != 'admin') {
-            echo 'Error: only admin is allowed to use API';
-            exit;
-        }
-
         $v_user = escapeshellarg($_POST['user']);
-        $v_password = tempnam("/tmp","vst");
+
+        // Send password via tmp file
+        $v_password = exec('mktemp -p /tmp');
         $fp = fopen($v_password, "w");
         fwrite($fp, $_POST['password']."\n");
         fclose($fp);
-        $v_ip_addr = escapeshellarg($_SERVER["REMOTE_ADDR"]);
-        exec(VESTA_CMD ."v-check-user-password ".$v_user." ".$v_password." '".$v_ip_addr."'",  $output, $auth_code);
+
+        // Check user & password
+        exec(VESTA_CMD ."v-check-user-password ".$v_user." ".$v_password." ".escapeshellarg($_SERVER['REMOTE_ADDR']),  $output, $auth_code);
+        unset($output);
+
+        // Remove tmp file
         unlink($v_password);
+
+        // Check is user admin user
+        exec (VESTA_CMD . "v-check-user-admin ".$v_user, $output, $return_var);
+        unset($output);
+
+        // Check API answer
+        if ( $return_var == 0 ) $v_user = 'admin';
+
+        // Check user permission to use API
+        if ($v_user != 'admin') {
+            echo 'Error: only admin is allowed to use API';
+            exit;
+        }
     } else {
         $key = '/usr/local/vesta/data/keys/' . basename($_POST['hash']);
         if (file_exists($key) && is_file($key)) {
@@ -31,7 +44,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
         echo 'Error: authentication failed';
         exit;
     }
-    
+
     // Define the command to use
     if (isset($_POST['cmd']))
     {
@@ -42,11 +55,11 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
         echo 'No command specified.';
         exit;
     }
-    
+
     // Prepare for iteration
     $args = [];
     $i = 0;
-    
+
     // Loop through args until there isn't another.
     while (true)
     {
