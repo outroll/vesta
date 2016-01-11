@@ -303,3 +303,39 @@ function list_timezones() {
     }
     return $timezone_list;
 }
+
+function get_langName($name){
+  $langNames = array(
+                      "ar" => "Arabic",
+                      "bs" => "Bosnian",
+                      "cn" => 'Chinese',
+                      "cz" => 'Czech',
+                      "da" => "Danish",
+                      "de" => "German",
+                      "el" => "Greek",
+                      "en" => "English",
+                      "es" => "Spanish",
+                      "fi" => "Finnish",
+                      "fr" => "French",
+                      "hu" => "Hungarian",
+                      "id" => "Indonesian",
+                      "it" => "Italian",
+                      "ja" => "Japanese",
+                      "nl" => "Dutch",
+                      "no" => "Norwegian",
+                      "pl" => "Polish",
+                      "pt" => "Portuguese",
+                      "ro" => "Romanian",
+                      "ru" => "Russian",
+                      "se" => "Northern Sami",
+                      "tr" => "Turkish",
+                      "tw" => "Taiwanese",
+                      "ua" => "Ukrainian",
+                      "vi" => "Vietnamese");
+
+    if(isset($langNames[$name])){
+     $name = $langNames[$name];
+    }
+    
+    return $name;
+}
