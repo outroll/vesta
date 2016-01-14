@@ -815,6 +815,9 @@ sftp_backup() {
 echo "-- SUMMARY --"
 msg="$msg\n-- SUMMARY --"
 
+# get upload_start_time
+upload_start_time=$(date '+%s')
+
 # Switching on backup system types
 for backup_type in $(echo -e "${BACKUP_SYSTEM//,/\\n}"); do
     case $backup_type in
@@ -827,22 +830,34 @@ done
 # Removing tmpdir
 rm -rf $tmpdir
 
+# get upload_end_time
+upload_end_time=$(date '+%s')
+
 # Calculation run time
 run_time=$((end_time - start_time))
 run_time=$((run_time / 60))
+upload_time=$((upload_end_time - upload_start_time))
+upload_time=$((upload_time / 60))
+total_time=$((run_time + upload_time))
+
 current_time=$(date "+%T")
 if [ "$run_time" -lt 1 ]; then
     run_time=1
 fi
-min=miutes
-if [ "$run_time" -eq 1 ]; then
-    min=minute
+[ "$run_time" -eq 1 ] && r_min=minute || r_min=miutes
+if [ "$upload_time" -lt 1 ]; then
+    upload_time=1
 fi
+[ "$upload_time" -eq 1 ] && u_min=minute || u_min=miutes
+if [ "$total_time" -lt 1 ]; then
+    total_time=1
+fi
+[ "$total_time" -eq 1 ] && t_min=minute || t_min=miutes
 
 echo "$(date "+%F %T") Size: $size Mb"
 msg="$msg\n$(date "+%F %T") Size: $size Mb"
-echo "$(date "+%F %T") Runtime: $run_time $min"
-msg="$msg\n$(date "+%F %T") Runtime: $run_time $min"
+echo "$(date "+%F %T") Runtime: $run_time $r_min; Upload/Store time: $upload_time $u_min; Total time: $total_time $t_min"
+msg="$msg\n$(date "+%F %T") Runtime: $run_time $r_min; Upload/Store time: $upload_time $u_min; Total time: $total_time $t_min"
 
 
 #----------------------------------------------------------#
