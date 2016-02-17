@@ -4,7 +4,7 @@
  * skid (skid@vestacp.com)
  */
 
-$LANG['en'] = array(
+$LANG['kr'] = array(
     'Packages'  => '패키지',
     'IP'  => 'IP',
     'Graphs'  => 'Graphs',
