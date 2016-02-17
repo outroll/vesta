@@ -12,10 +12,10 @@ $LANG['kr'] = array(
     'Log'  => 'Log',
     'Server'  => 'Server',
     'Services'  => 'Services',
-    'Firewall' => 'Firewall',
+    'Firewall' => '방화벽',
     'Updates'  => 'Updates',
-    'Log in'  => 'Log in',
-    'Log out'  => 'Log out',
+    'Log in'  => '로그인',
+    'Log out'  => '로그아웃',
 
     'USER'  => 'USER',
     'WEB'  => 'WEB',
