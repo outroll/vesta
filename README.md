@@ -5,6 +5,10 @@
 * Vesta has a clean and focused interface without the clutter.
 * Vesta has the latest of very innovative technologies.
 
+Questions and Support
+----------------------------
+You can either get support on the [VestaCP Forums](http://forum.vestacp.com/) or on the new [Gitter Channel](https://gitter.im/SysVoid/VestaCP?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
+_Note: the Gitter may be empty on times. It's brand new._
 
 How to install
 ----------------------------
@@ -32,4 +36,3 @@ bash vst-install.sh
 License
 ----------------------------
 Vesta is licensed under  [GPL v3 ](https://github.com/serghey-rodin/vesta/blob/master/LICENSE) license
-
