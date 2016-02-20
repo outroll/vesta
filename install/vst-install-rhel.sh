@@ -1087,6 +1087,9 @@ if [ "$clamd" = 'yes' ]; then
         wget $vestacp/clamav/clamd.service -O \
             /usr/lib/systemd/system/clamd.service
         systemctl --system daemon-reload
+        
+        # Should fix #645
+        сhown clam:mail /var/run/clamav/
     fi
     /usr/bin/freshclam
     chkconfig clamd on
