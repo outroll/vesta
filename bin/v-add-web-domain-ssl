@@ -93,7 +93,7 @@ fi
 # Checking web config
 web_conf="/etc/$WEB_SYSTEM/conf.d/vesta.conf"
 if [ -z "$(grep "$conf" $web_conf)" ]; then
-    echo "Include $conf" >> $web_conf
+    echo "include $conf;" >> $web_conf
 fi
 
 # Checking proxy
