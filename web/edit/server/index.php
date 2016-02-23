@@ -192,6 +192,25 @@ if (!empty($_POST['save'])) {
         }
     }
 
+    // Set firewall support
+    if (empty($_SESSION['error_msg'])) {
+        if ($_SESSION['FIREWALL_SYSTEM'] == 'iptables') $v_firewall = 'yes';
+        if ($_SESSION['FIREWALL_SYSTEM'] != 'iptables') $v_firewall = 'no';
+        if ((!empty($_POST['v_firewall'])) && ($v_firewall != $_POST['v_firewall'])) {
+            if($_POST['v_firewall'] == 'yes') {
+                exec (VESTA_CMD."v-add-sys-firewall", $output, $return_var);
+                check_return_code($return_var,$output);
+                unset($output);
+                if (empty($_SESSION['error_msg'])) $_SESSION['FIREWALL_SYSTEM'] = 'iptables';
+            } else {
+                exec (VESTA_CMD."v-delete-sys-firewall", $output, $return_var);
+                check_return_code($return_var,$output);
+                unset($output);
+                if (empty($_SESSION['error_msg'])) $_SESSION['FIREWALL_SYSTEM'] = '';
+            }
+        }
+    }
+
     // Update mysql pasword
     if (empty($_SESSION['error_msg'])) {
         if (!empty($_POST['v_mysql_password'])) {

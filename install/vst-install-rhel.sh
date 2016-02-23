@@ -289,7 +289,6 @@ echo '                                  Vesta Control Panel'
 echo -e "\n\n"
 
 echo 'Following software will be installed on your system:'
-
 # Web stack
 if [ "$nginx" = 'yes' ]; then
     echo '   - Nginx Web Server'
@@ -829,7 +828,6 @@ wget $vestacp/firewallv6.tar.gz -O firewallv6.tar.gz
 tar -xzf firewallv6.tar.gz
 rm -f firewallv6.tar.gz
 
-
 # Configuring server hostname
 $VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
 
@@ -965,6 +963,18 @@ if [ "$mysql" = 'yes' ]; then
     mycnf="my-small.cnf"
     if [ $memory -gt 1200000 ]; then
         mycnf="my-medium.cnf"
+    fi
+    if [ $memory -gt 3900000 ]; then
+        mycnf="my-large.cnf"
+    fi
+
+    mkdir -p /var/lib/mysql
+    chown mysql:mysql /var/lib/mysql
+
+    if [ $release -ne 7 ]; then
+        service='mysqld'
+    else
+        service='mariadb'
     fi
     if [ $memory -gt 3900000 ]; then
         mycnf="my-large.cnf"

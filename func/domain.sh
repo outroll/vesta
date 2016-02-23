@@ -324,7 +324,6 @@ add_web_config() {
 
 # Get config top and bottom line numbers
 get_web_config_brds() {
-
     serv_line=$(egrep -ni "Name %domain_idn%($| )" $tpl_file |cut -f 1 -d : | head -n1)
     if [ -z "$serv_line" ]; then
         log_event "$E_PARSING" "$EVENT"

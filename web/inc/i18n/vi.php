@@ -558,6 +558,7 @@ $LANG['vi'] = array(
     'Move backward through top menu' => 'Di chuyển ngược trên Top Menu',
     'Move forward through top menu' => 'Di chuyển xuôi trên Top Menu',
     'Enter focused element' => 'Nhập vào phần tử focus',
+  
     'Upload' => 'Tải lên',
     'New File' => 'Tạo tệp',
     'New Folder' => 'Tạo thư mục',
