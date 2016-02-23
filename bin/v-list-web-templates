@@ -18,7 +18,7 @@ source $VESTA/conf/vesta.conf
 
 # Json function
 json_list_wtpl() {
-    templates=$(ls -v $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/)
+    templates=$(ls -v $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/ipv4/)
     templates=$(echo "$templates" | grep '\.tpl' | sed 's/\.tpl$//')
     t_counter=$(echo "$templates" | wc -w)
     i=1
@@ -36,7 +36,7 @@ json_list_wtpl() {
 
 # Shell function
 shell_list_wtpl() {
-    templates=$(ls -v $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/)
+    templates=$(ls -v $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/ipv4/)
     templates=$(echo "$templates" | grep '\.tpl' | sed 's/\.tpl$//')
     if [ -z "$nohead" ]; then
         echo "Templates"

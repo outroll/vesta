@@ -1,0 +1,199 @@
+#!/bin/bash
+# info: add system ipv6 address
+# options: IPV6 NETMASKV6 [INTERFACE] [USER] [IP_STATUS] [IP_NAME]
+#
+# The function adds ipv6 address into a system. It also creates rc scripts. You
+# can specify ipv6 name which will be used as root domain for temporary aliases.
+# For example, if you set a1.myhosting.com as name, each new domain created on
+# this  ip will automaticaly receive alias $domain.a1.myhosting.com. Of course
+# you must have wildcard record *.a1.myhosting.com pointed to ip. This feature 
+# is very handy when customer wants to test domain before dns migration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument defenition
+ipv6=${1// /}
+netmaskv6=$2
+interface="${3-eth0}"
+user="${4-admin}"
+ip_status="${5-shared}"
+ip_name=$6
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/ipv6.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'IPV6 NETMASKV6 [INTERFACE] [USER] [STATUS] [NAME]'
+validate_format 'ipv6' 'netmaskv6' 'interface' 'user' 'ip_status'
+is_ipv6_free
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+if [ ! -z "$ip_name" ] ; then
+    validate_format 'ip_name'
+fi
+
+if [ "$IPV6" != "yes" ]; then
+    echo "IPV6 is disabled"
+    exit $E_DISABLED
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Adding vesta ip
+echo "OWNER='$user'
+STATUS='$ip_status'
+NAME='$ip_name'
+U_SYS_USERS=''
+U_WEB_DOMAINS='0'
+INTERFACE='$interface'
+NETMASK='$netmaskv6'
+NAT=''
+TIME='$TIME'
+DATE='$DATE'
+VERSION='6'" > $VESTA/data/ips/$ipv6
+chmod 660 $VESTA/data/ips/$ipv6
+
+
+cidr=$netmaskv6
+
+#enable ipv6
+#ipConf=$(cat /etc/sysctl.conf | grep "net.ipv6.conf.all.disable_ipv6")
+#if [ -z "$ipConf" ]; then
+#  echo "net.ipv6.conf.all.disable_ipv6 = 0" >> /etc/sysctl.conf
+#  echo "net.ipv6.conf.default.disable_ipv6 = 0" >> /etc/sysctl.conf
+#  echo "net.ipv6.conf.lo.disable_ipv6 = 0" >> /etc/sysctl.conf
+#else
+#  disable_ipv6=$(cat /etc/sysctl.conf | grep "net.ipv6.conf.all.disable_ipv6 = 0")
+#  if [ -n "$disable_ipv6" ]; then
+#    sed -i "s/net.ipv6.conf.all.disable_ipv6 = 1/net.ipv6.conf.all.disable_ipv6 = 0/g" /etc/sysctl.conf
+#    sed -i "s/net.ipv6.conf.default.disable_ipv6 = 1/net.ipv6.conf.default.disable_ipv6 = 0/g" /etc/sysctl.conf
+#    sed -i "s/net.ipv6.conf.lo.disable_ipv6 = 1/net.ipv6.conf.lo.disable_ipv6 = 0/g" /etc/sysctl.conf
+#  fi
+#fi
+#REBOOT
+
+sys_ip_check=$(/sbin/ip -6 addr | grep "$ipv6")
+if [ -z "$sys_ip_check" ]; then
+    # Adding sys ip
+    /sbin/ip -6 addr add $ipv6/$cidr dev $interface
+
+    # Adding RHEL/CentOS/Fedora startup script
+    if [ -e "/etc/redhat-release" ]; then
+        sys_ip="# Added by vesta"
+        sys_ip="$sys_ip\nIPV6INIT=yes"
+        sys_ip="$sys_ip\nIPV6ADDR=$ipv6/$netmaskv6"
+        sys_ip="$sys_ip\nIPV6_DEFAULTGW=$interface"
+        sys_ip="$sys_ip\nIPV6_AUTOCONF=no"
+####### sys_ip="$sys_ip\nIPV6ADDR_SECONDARIES="""
+        echo -e $sys_ip > /etc/sysconfig/network-scripts/ifcfg-$interface
+    fi
+
+    # Adding Debian/Ubuntu startup script
+    if [ -e "/etc/debian_version" ]; then
+        sys_ip="\n# Added by vesta"
+        sys_ip="$sys_ip\niface $interface inet6 static"
+        sys_ip="$sys_ip\naddress $ipv6"
+        sys_ip="$sys_ip\nnetmask $netmaskv6"
+        echo -e $sys_ip >> /etc/network/interfaces
+    fi
+fi
+
+# WEB support
+if [ ! -z "$WEB_SYSTEM" ]; then
+    web_conf="/etc/$WEB_SYSTEM/conf.d/$ipv6.conf"
+    rm -f $web_conf
+
+    if [ "$WEB_SYSTEM" = 'httpd' ] || [ "$WEB_SYSTEM" = 'apache2' ]; then
+        if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
+            echo "NameVirtualHost [$ipv6]:$WEB_PORT" >  $web_conf
+        fi
+        echo "Listen [$ipv6]:$WEB_PORT" >> $web_conf
+    fi
+
+    if [ "$WEB_SSL" = 'mod_ssl' ]; then
+        if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
+            echo "NameVirtualHost [$ipv6]:$WEB_SSL_PORT" >> $web_conf
+        fi
+        echo "Listen [$ipv6]:$WEB_SSL_PORT" >> $web_conf
+    fi
+fi
+
+# Proxy support
+if [ ! -z "$PROXY_SYSTEM" ]; then
+    cat $WEBTPL/$PROXY_SYSTEM/proxy_ip.tpl |\
+        sed -e "s/%ip%/[$ipv6]/g" \
+            -e "s/%web_port%/$WEB_PORT/g" \
+            -e "s/%proxy_port%/$PROXY_PORT/g" \
+        > /etc/$PROXY_SYSTEM/conf.d/$ipv6.conf
+
+    # mod_extract_forwarded
+#    fw_conf="/etc/$WEB_SYSTEM/conf.d/mod_extract_forwarded.conf"
+#    if [ -e "$fw_conf" ]; then
+#        ips=$(grep 'MEFaccept ' $fw_conf | grep -v '#' | head -n1)
+#        sed -i "s/$ips/$ips $ipv6/g" $fw_conf
+#    fi
+
+    # mod_rpaf
+    rpaf_conf="/etc/$WEB_SYSTEM/mods-enabled/rpaf.conf"
+    if [ -e "$rpaf_conf" ]; then
+        rpaf_str=$(grep RPAFproxy_ips $rpaf_conf)
+        rpaf_str="$rpaf_str $ipv6"
+        sed -i "s/.*RPAFproxy_ips.*/$rpaf_str/" $rpaf_conf
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Updating user counters
+increase_user_value "$user" '$IP_OWNED'
+if [ "$user" = 'admin' ]; then
+    if [ "$ip_status" = 'shared' ]; then
+        for user in $(ls $VESTA/data/users); do
+            increase_user_value "$user" '$IP_AVAIL'
+        done
+    else
+        increase_user_value 'admin' '$IP_AVAIL'
+    fi
+else
+    increase_user_value "$user" '$IP_AVAIL'
+    increase_user_value 'admin' '$IP_AVAIL'
+fi
+
+# Restarting web server
+$BIN/v-restart-web
+if [ $? -ne 0 ]; then
+    exit $E_RESTART
+fi
+
+# Restarting proxy server
+if [ ! -z "$PROXY_SYSTEM" ]; then
+    $BIN/v-restart-proxy
+    if [ $? -ne 0 ]; then
+        exit $E_RESTART
+    fi
+fi
+
+# Restarting firewall
+if [ ! -z "$FIREWALL_SYSTEM" ]; then
+    $BIN/v-update-firewall
+fi
+
+# Logging
+log_history "added system ipv6 address $ipv6" '' 'admin'
+log_event "$OK" "$EVENT"
+
+exit

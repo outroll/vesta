@@ -24,6 +24,7 @@ restart="$5"
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -55,7 +56,14 @@ PROXY="$template"
 PROXY_EXT="$extentions"
 tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
 conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
-ip=$(get_real_ip $IP)
+ip=''
+ipv6=''
+if [ "$IPV4" == "yes" ] ; then
+  ip=$(get_real_ip $IP)
+fi
+if [ "$IPV6" == "yes" ] ; then
+  ipv6=$(get_real_ipv6 $IP6)
+fi
 
 # Preparing domain values for the template substitution
 upd_web_domain_values
@@ -88,7 +96,7 @@ fi
 
 # Running template trigger
 if [ -x $WEBTPL/$PROXY_SYSTEM/$template.sh ]; then
-    $WEBTPL/$PROXY_SYSTEM/$template.sh $user $domain $ip $HOMEDIR $docroot
+    $WEBTPL/$PROXY_SYSTEM/$template.sh $user $domain $ip $ipv6 $HOMEDIR $docroot
 fi
 
 

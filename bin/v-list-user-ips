@@ -117,7 +117,7 @@ is_object_valid 'user' 'USER' "$user"
 #----------------------------------------------------------#
 
 # Defining fileds to select
-fields='$IP $OWNER $STATUS $NAME $NAT'
+fields='$IP $OWNER $STATUS $NAME $NAT $VERSION'
 
 # Listing ips
 case $format in

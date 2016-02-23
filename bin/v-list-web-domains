@@ -16,7 +16,6 @@ format=${2-shell}
 # Includes
 source $VESTA/func/main.sh
 
-
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
@@ -42,7 +41,7 @@ fields="$fields \$BACKEND \$PROXY \$PROXY_EXT \$SUSPENDED \$TIME \$DATE"
 case $format in 
     json)   json_list ;;
     plain)  nohead=1; shell_list ;;
-    shell)  fields='$DOMAIN $IP $U_DISK $U_BANDWIDTH $TPL $DATE';
+    shell)  fields='$DOMAIN $IP $IP6 $U_DISK $U_BANDWIDTH $TPL $DATE';
             shell_list | column -t ;;
     *)      check_args '1' '0' 'USER [FORMAT]'
 esac

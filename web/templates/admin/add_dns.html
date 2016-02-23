@@ -62,16 +62,29 @@
                                     <input type="text" size="20" class="vst-input" name="v_domain" <?php if (!empty($v_domain)) echo "value=".htmlentities($v_domain);  ?>>
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="vst-text input-label">
-                                    <?php print __('IP address');?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="text" size="20" class="vst-input" name="v_ip" <?php if (!empty($v_ip)) echo "value=".htmlentities($v_ip); ?>>
-                                </td>
-                            </tr>
+                            <?php if($_SESSION['IPV4'] == 'yes') { ?>
+                              <tr>
+                                  <td class="vst-text input-label">
+                                      <?php print __('IP address');?>
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>
+                                      <input type="text" size="20" class="vst-input" name="v_ip" <?php if (!empty($v_ip)) echo "value=".htmlentities($v_ip); ?>>
+                                  </td>
+                              </tr>
+                            <?php } if($_SESSION['IPV6'] == 'yes') { ?>
+                              <tr>
+                                  <td class="vst-text input-label">
+                                      <?php print __('IPV6 address');?>
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>
+                                      <input type="text" size="20" class="vst-input" name="v_ipv6" <?php if (!empty($v_ipv6)) echo "value=".htmlentities($v_ipv6); ?>>
+                                  </td>
+                              </tr>
+                            <?php } ?>
                             <tr>
                                 <td class="vst-text input-label">
                                     <a href="javascript:elementHideShow('advtable');" class="vst-advanced"><?php print __('Advanced options');?></a>

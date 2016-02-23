@@ -16,9 +16,12 @@ if ($_SESSION['user'] == 'admin') {
         $v_ip = escapeshellarg($_GET['ip']);
         exec (VESTA_CMD."v-delete-sys-ip ".$v_ip, $output, $return_var);
     }
+    if (!empty($_GET['ipv6'])) {
+        $v_ipv6 = escapeshellarg($_GET['ipv6']);
+        exec (VESTA_CMD."v-delete-sys-ipv6 ".$v_ipv6, $output, $return_var);
+    }
     check_return_code($return_var,$output);
     unset($output);
-
 }
 
 $back = $_SESSION['back'];

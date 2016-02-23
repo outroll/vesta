@@ -21,6 +21,13 @@ source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
 
+tpldir="ipv4ipv6"
+if [ "$IPV4" == 'yes' ] && [ "$IPV6" == 'no' ]; then
+    tpldir="ipv4"
+elif [ "$IPV4" == 'no' ] && [ "$IPV6" == 'yes' ]; then
+    tpldir="ipv6"
+fi
+
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#

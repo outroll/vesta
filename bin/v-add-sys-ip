@@ -46,6 +46,10 @@ if [ ! -z "$nat_ip" ] ; then
     validate_format 'nat_ip'
 fi
 
+if [ "$IPV4" != "yes" ]; then
+    echo "IPV4 is disabled"
+    exit $E_DISABLED
+fi
 
 #----------------------------------------------------------#
 #                       Action                             #
@@ -92,7 +96,8 @@ INTERFACE='$interface'
 NETMASK='$netmask'
 NAT='$nat_ip'
 TIME='$TIME'
-DATE='$DATE'" > $VESTA/data/ips/$ip
+DATE='$DATE'
+VERSION='4'" > $VESTA/data/ips/$ip
 chmod 660 $VESTA/data/ips/$ip
 
 # WEB support

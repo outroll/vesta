@@ -143,8 +143,13 @@ rebuild_web_domain_conf() {
 
     # Get domain values
     domain_idn=$(idn -t --quiet -a "$domain")
-    get_domain_values 'web'
-    ip=$(get_real_ip $IP)
+    get_domain_values 'web' 
+    if [ "$IPV4" == "yes" ] ; then
+        ip=$(get_real_ip $IP)
+    fi
+    if [ "$IPV6" == "yes" ] ; then
+        ipv6=$(get_real_ipv6 $IP6)
+    fi
 
     # Preparing domain values for the template substitution
     upd_web_domain_values

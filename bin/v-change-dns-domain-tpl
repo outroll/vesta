@@ -23,6 +23,12 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
+tpldir="ipv4ipv6"
+if [ "$IPV4" == 'yes' ] && [ "$IPV6" == 'no' ]; then
+    tpldir="ipv4"
+elif [ "$IPV4" == 'no' ] && [ "$IPV6" == 'yes' ]; then
+    tpldir="ipv6"
+fi
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -44,6 +50,7 @@ is_dns_template_valid
 
 # Defining variables
 ip=$(get_object_value 'dns' 'DOMAIN' "$domain" '$IP')
+ipv6=$(get_object_value 'dns' 'DOMAIN' "$domain" '$IP6')
 
 i=1
 ns=$(get_user_value '$NS')
@@ -53,8 +60,9 @@ for nameserver in ${ns//,/ };do
 done
 
 # Changing tpl
-cat $DNSTPL/$template.tpl |\
+cat $DNSTPL/$tpldir/$template.tpl |\
     sed -e "s/%ip%/$ip/g" \
+        -e "s/%ipv6%/$ipv6/g" \
         -e "s/%domain_idn%/$domain_idn/g" \
         -e "s/%domain%/$domain/g" \
         -e "s/%ns1%/$ns1/g" \
@@ -87,7 +95,7 @@ fi
 #----------------------------------------------------------#
 
 # Updating vesta config
-update_object_value 'dns' 'DOMAIN' "$domain" '$TPL' "$template"
+update_object_value 'dns' 'DOMAIN' "$domain" '$TPL' "$tpldir/$template"
 update_object_value 'dns' 'DOMAIN' "$domain" '$RECORDS' "$records"
 
 # Restarting named

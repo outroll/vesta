@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add web domain
-# options: USER DOMAIN IP [RESTART] [ALIASES] [PROXY_EXTENTIONS]
+# options: USER DOMAIN IP IPV6 [RESTART] [ALIASES] [PROXY_EXTENTIONS]
 #
 # The function adds virtual host to a server. In cases when a template is
 # undefined in the script, the template "default" will be used. The alias of
@@ -21,16 +21,18 @@ domain=$(echo $domain | sed -e 's/\.*$//g' -e 's/^\.*//g')
 domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
 domain_idn=$(idn -t --quiet -a "$domain")
 ip=$3; IP=$3
-restart=$4
-aliases=$5
+ipv6=$4;
+restart=$5
+aliases=$6
 default_extentions="jpg,jpeg,gif,png,ico,svg,css,zip,tgz,gz,rar,bz2,doc,xls,\
 exe,pdf,ppt,txt,odt,ods,odp,odf,tar,wav,bmp,rtf,js,mp3,avi,mpeg,flv,html,htm"
-extentions=${6-$default_extentions}
+extentions=${7-$default_extentions}
 
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -38,14 +40,30 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '3' "$#" 'USER DOMAIN IP [RESTART] [ALIASES] [PROXY_EXTENTIONS]'
-validate_format 'user' 'domain' 'ip'
+
+check_args '4' "$#" 'USER DOMAIN IP IPV6 [RESTART] [ALIASES] [PROXY_EXTENTIONS]'
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "no" ] ; then
+  validate_format 'user' 'domain' 'ip'
+  ipv6=""
+  is_ip_valid
+  is_ip_avalable
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
+  validate_format 'user' 'domain' 'ipv6'
+  ip=""
+  is_ipv6_valid
+  is_ipv6_avalable
+else
+  validate_format 'user' 'domain' 'ip' 'ipv6'
+  is_ip_valid
+  is_ip_avalable
+  is_ipv6_valid
+  is_ipv6_avalable
+fi
+
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_domain_new 'web'
-is_ip_valid
-is_ip_avalable
 is_package_full 'WEB_DOMAINS'
 template=$(get_user_value '$WEB_TEMPLATE')
 is_web_template_valid
@@ -81,7 +99,15 @@ if [ ! -z "$WEB_BACKEND" ]; then
 fi
 
 # Defining variables for add_config function
-ip=$(get_real_ip $ip)
+if [ "$IPV4" == "yes" ] ; then
+  ip=$(get_real_ip $ip)
+  ip_name=$(get_ip_name)
+fi
+if [ "$IPV6" == "yes" ] ; then
+  ipv6=$(get_real_ipv6 $ipv6)
+  ipv6_name=$(get_ipv6_name)
+fi
+
 group="$user"
 email="info@$domain"
 docroot="$HOMEDIR/$user/web/$domain/public_html"
@@ -89,16 +115,23 @@ tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.tpl"
 conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
 
 # Defining domain aliases
-ip_name=$(get_ip_name)
 if [ -z "$aliases" ]; then
-    if [ -z "$ip_name" ]; then
+    if [ -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
         aliases="www.$domain"
-    else
+    elif [ ! -z "$ipv6_name" ] && [ -z "$ip_name" ]; then
+        aliases="www.$domain,${domain//./-}.$ipv6_name"
+    elif [ ! -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
         aliases="www.$domain,${domain//./-}.$ip_name"
+    else
+        aliases="www.$domain,${domain//./-}.$ip_name,${domain//./-}.$ipv6_name"
     fi
 else
-    if [ ! -z "$ip_name" ]; then
+    if [ ! -z "$ipv6_name" ] && [ -z "$ip_name" ]; then
+        aliases="$aliases,${domain//./-}.$ipv6_name"
+    elif [ ! -z "$ip_name" ] && [ -z "$ipv6_name" ]; then
         aliases="$aliases,${domain//./-}.$ip_name"
+    elif [ ! -z "$ip_name" ] && [ ! -z "$ipv6_name" ]; then
+        aliases="$aliases,${domain//./-}.$ip_name,${domain//./-}.$ipv6_name"
     fi
 fi
 aliases_idn=$(idn -t --quiet -a $aliases)
@@ -166,7 +199,7 @@ chmod 551 $HOMEDIR/$user/web/$domain/stats \
 # Running template trigger
 if [ -x $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.sh ]; then
     $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.sh \
-        $user $domain $ip $HOMEDIR $docroot
+        $user $domain $ip $ipv6 $HOMEDIR $docroot
 fi
 
 # Checking web config include
@@ -192,7 +225,7 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
         echo "include $conf;" >> $proxy_conf
     fi
     if [ -x $WEBTPL/$PROXY_SYSTEM/$proxy.sh ]; then
-        $WEBTPL/$PROXY_SYSTEM/$proxy.sh $user $domain $ip $HOMEDIR $docroot
+        $WEBTPL/$PROXY_SYSTEM/$proxy.sh $user $domain $ip $ipv6 $HOMEDIR $docroot
     fi
 fi
 
@@ -202,12 +235,17 @@ fi
 #----------------------------------------------------------#
 
 # Increasing counters
-increase_ip_value "$ip"
+if [ "$IPV4" == "yes" ] ; then
+  increase_ip_value "$ip"
+fi
+if [ "$IPV6" == "yes" ] ; then
+  increase_ipv6_value "$ipv6"
+fi
 increase_user_value "$user" '$U_WEB_DOMAINS'
 increase_user_value "$user" '$U_WEB_ALIASES'
 
 # Defining domain variables
-str="DOMAIN='$domain' IP='$IP' IP6='' ALIAS='$aliases' TPL='$template'"
+str="DOMAIN='$domain' IP='$ip' IP6='$ipv6' ALIAS='$aliases' TPL='$template'"
 str="$str SSL='no' SSL_HOME='same' FTP_USER='' FTP_MD5='' BACKEND='$backend'"
 str="$str PROXY='$proxy' PROXY_EXT='$extentions' STATS='' STATS_USER=''"
 str="$str STATS_CRYPT='' U_DISK='0' U_BANDWIDTH='0' SUSPENDED='no'"

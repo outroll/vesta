@@ -22,6 +22,7 @@ restart="$4"
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -37,7 +38,14 @@ is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_unsuspended 'web' 'DOMAIN' "$domain"
 get_domain_values 'web'
-ip=$(get_real_ip $IP)
+ip=''
+ipv6=''
+if [ "$IPV4" == "yes" ] ; then
+  ip=$(get_real_ip $IP)
+fi
+if [ "$IPV6" == "yes" ] ; then
+  ipv6=$(get_real_ipv6 $IP6)
+fi
 if [ -z "$(echo $ALIAS | tr ',' '\n' | grep ^$dom_alias$)" ]; then
     echo "Error: alias $dom_alias doesn't exist"
     log_event "$E_NOTEXIST" "$EVENT"

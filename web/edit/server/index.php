@@ -154,6 +154,43 @@ if (!empty($_POST['save'])) {
             }
         }
     }
+  
+  
+    // Update ipv4
+    if (empty($_SESSION['error_msg'])) {
+        if ($_POST['v_ipv4'] != $_SESSION['IPV4']) {
+            exec (VESTA_CMD."v-change-sys-config-value IPV4 '".escapeshellarg($_POST['v_ipv4'])."'", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+        }
+    }
+    // Update ipv6
+    if (empty($_SESSION['error_msg'])) {
+        if ($_POST['v_ipv6'] != $_SESSION['IPV6']) {
+            exec (VESTA_CMD."v-change-sys-config-value IPV6 '".escapeshellarg($_POST['v_ipv6'])."'", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+        }
+    }
+
+    // Set firewall support
+    if (empty($_SESSION['error_msg'])) {
+        if ($_SESSION['FIREWALL_SYSTEM'] == 'iptables') $v_firewall = 'yes';
+        if ($_SESSION['FIREWALL_SYSTEM'] != 'iptables') $v_firewall = 'no';
+        if ((!empty($_POST['v_firewall'])) && ($v_firewall != $_POST['v_firewall'])) {
+            if($_POST['v_firewall'] == 'yes') {
+                exec (VESTA_CMD."v-add-sys-firewall", $output, $return_var);
+                check_return_code($return_var,$output);
+                unset($output);
+                if (empty($_SESSION['error_msg'])) $_SESSION['FIREWALL_SYSTEM'] = 'iptables';
+            } else {
+                exec (VESTA_CMD."v-delete-sys-firewall", $output, $return_var);
+                check_return_code($return_var,$output);
+                unset($output);
+                if (empty($_SESSION['error_msg'])) $_SESSION['FIREWALL_SYSTEM'] = '';
+            }
+        }
+    }
 
     // Set firewall support
     if (empty($_SESSION['error_msg'])) {

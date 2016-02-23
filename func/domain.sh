@@ -1,7 +1,7 @@
 # Web template check
 is_web_template_valid() {
-    t="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.tpl"
-    s="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$template.stpl"
+    t="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$tpldir/$template.tpl"
+    s="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$tpldir/$template.stpl"
     if [ ! -e $t ] || [ ! -e $s ]; then
         echo "Error: web template $template not found"
         log_event "$E_NOTEXIST" "$EVENT"
@@ -12,8 +12,8 @@ is_web_template_valid() {
 # Proxy template check
 is_proxy_template_valid() {
     proxy=$1
-    t="$WEBTPL/$PROXY_SYSTEM/$proxy.tpl"
-    s="$WEBTPL/$PROXY_SYSTEM/$proxy.stpl"
+    t="$WEBTPL/$PROXY_SYSTEM/$tpldir/$proxy.tpl"
+    s="$WEBTPL/$PROXY_SYSTEM/$tpldir/$proxy.stpl"
     if [ ! -e $t ] || [ ! -e $s ]; then
         echo "Error: proxy template $proxy not found"
         log_event "$E_NOTEXIST" "$EVENT"
@@ -29,7 +29,7 @@ is_web_backend_template_valid() {
         template=$(grep BACKEND_TEMPLATE $USER_DATA/user.conf)
     fi
     if [ -z "$template" ]; then
-        if [ -e "$WEBTPL/$WEB_BACKEND/default.tpl" ]; then
+        if [ -e "$WEBTPL/$WEB_BACKEND/$tpldir/default.tpl" ]; then
             sed -i "s/^WEB_DOMAINS/BACKEND_TEMPLATE='default'\nWEB_DOMAINS/g" \
                 $USER_DATA/user.conf
             template='default'
@@ -40,7 +40,7 @@ is_web_backend_template_valid() {
         fi
     else
         template=$(echo "$template"|cut -f 2 -d \'|head -n1)
-        if [ ! -e "$WEBTPL/$WEB_BACKEND/$template.tpl" ]; then
+        if [ ! -e "$WEBTPL/$WEB_BACKEND/$tpldir/$template.tpl" ]; then
             echo "Error: backend template $template not found"
             log_event "$E_NOTEXIST" "$EVENT"
             exit $E_NOTEXIST
@@ -73,7 +73,7 @@ is_web_backend_pool_valid(){
 
 # DNS template check
 is_dns_template_valid() {
-    t="$DNSTPL/$template.tpl"
+    t="$DNSTPL/$tpldir/$template.tpl"
     if [ ! -e $t ]; then
         echo "Error: dns template $template not found"
         log_event "$E_NOTEXIST" "$EVENT"
@@ -293,6 +293,7 @@ sort_dns_records() {
 add_web_config() {
     cat $tpl_file | \
         sed -e "s|%ip%|$ip|g" \
+            -e "s|%ipv6%|$ipv6|g" \
             -e "s|%web_system%|$WEB_SYSTEM|g" \
             -e "s|%web_port%|$WEB_PORT|g" \
             -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \
@@ -323,8 +324,7 @@ add_web_config() {
 
 # Get config top and bottom line numbers
 get_web_config_brds() {
-
-    serv_line=$(egrep -ni "Name %domain_idn%($| )" $tpl_file |cut -f 1 -d :)
+    serv_line=$(egrep -ni "Name %domain_idn%($| )" $tpl_file |cut -f 1 -d : | head -n1)
     if [ -z "$serv_line" ]; then
         log_event "$E_PARSING" "$EVENT"
         return $E_PARSING
@@ -334,7 +334,7 @@ get_web_config_brds() {
     bfr_line=$((serv_line - 1))
     aftr_line=$((last_line - serv_line - 1))
 
-    str=$(grep -niF "Name $domain_idn" $conf |egrep "$domain_idn$|$domain_idn ")
+    str=$(grep -niF "Name $domain_idn" $conf |egrep "$domain_idn$|$domain_idn " | head -n1)
     str=$(echo "$str" |cut -f 1 -d :)
     top_line=$((str - serv_line + 1))
     bottom_line=$((top_line + last_line -1))

@@ -44,6 +44,82 @@ if [ "$key" = "BACKUP" ] && [ "$value" != '/backup' ]; then
     ln -s $value /backup
 fi
 
+if [ "$key" == "IPV6" ] || [ "$key" == "IPV4" ]; then
+    tpldir="ipv4"
+    source $VESTA/conf/vesta.conf
+    if [ "$IPV4" == 'yes' ] && [ "$IPV6" == 'no' ]; then
+        tpldir="ipv4"
+    elif [ "$IPV4" == 'no' ] && [ "$IPV6" == 'yes' ]; then
+        tpldir="ipv6"
+    else
+        tpldir="ipv4ipv6"
+    fi
+     userlist=$(ls --sort=time $VESTA/data/users/)
+     for user in $userlist; do
+        USER_DATA="$VESTA/data/users/$user"
+        #UPDATE USER
+        web_template=$(get_user_value '$WEB_TEMPLATE')
+        proxy_template=$(get_user_value '$PROXY_TEMPLATE')
+        dns_template=$(get_user_value '$DNS_TEMPLATE')
+        
+        if [[ $web_template == *"/"* ]]; then
+          web_template=$(echo $web_template | awk -F '/' '{print $2}')
+        fi
+        if [[ $proxy_template == *"/"* ]]; then
+          proxy_template=$(echo $proxy_template | awk -F '/' '{print $2}')
+        fi
+        if [[ $dns_template == *"/"* ]]; then
+          dns_template=$(echo $dns_template | awk -F '/' '{print $2}')
+        fi
+
+        # Changing user template values
+        update_user_value "$user" '$WEB_TEMPLATE' "$tpldir/$web_template"
+        update_user_value "$user" '$PROXY_TEMPLATE' "$tpldir/$proxy_template"
+        update_user_value "$user" '$DNS_TEMPLATE' "$tpldir/$dns_template"
+        
+        
+        #UPDATE WEB
+        conf="$USER_DATA/web.conf"
+        while read line ; do
+            eval $line
+            if [[ $TPL == *"/"* ]]; then
+              TPL=$(echo $TPL | awk -F '/' '{print $2}')
+            fi
+            if [[ $BACKEND == *"/"* ]]; then
+                BACKEND=$(echo $BACKEND | awk -F '/' '{print $2}')
+            fi
+            if [[ $PROXY == *"/"* ]]; then
+                PROXY=$(echo $PROXY | awk -F '/' '{print $2}')
+            fi
+            
+            if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB_SYSTEM" != 'no' ]; then
+                $BIN/v-change-web-domain-tpl $user $DOMAIN $TPL
+            fi
+            if [ ! -z "$PROXY_SYSTEM" ] && [ "$PROXY_SYSTEM" != 'no' ]; then
+                $BIN/v-change-web-domain-proxy-tpl $user $DOMAIN $PROXY
+            fi
+            if [ ! -z "$WEB_BACKEND" ] && [ "$WEB_BACKEND" != 'no' ]; then
+                $BIN/v-change-web-domain-backend-tpl $user $DOMAIN $BACKEND
+            fi
+        done < $conf
+        
+        #UPDATE DNS
+        conf="$USER_DATA/dns.conf"
+        while read line ; do
+            eval $line
+            if [[ $TPL == *"/"* ]]; then
+              TPL=$(echo $TPL | awk -F '/' '{print $2}')
+            fi
+            
+            if [ ! -z "$DNS_SYSTEM" ] && [ "$DNS_SYSTEM" != 'no' ]; then
+                $BIN/v-change-dns-domain-tpl $user $DOMAIN $TPL
+            fi
+        done < $conf
+        
+        $BIN/v-rebuild-user $user
+    done
+fi
+
 
 #----------------------------------------------------------#
 #                       Vesta                              #

@@ -33,6 +33,9 @@ json_list_pkgs() {
                 (( ++i))
                 echo -e "\t\"$value\": {"
             else
+                if [ "${field//$/}" = 'WEB_TEMPLATE' ] || [ "${field//$/}" = 'BACKEND_TEMPLATE' ] || [ "${field//$/}" = 'DNS_TEMPLATE' ] || [ "${field//$/}" = 'PROXY_TEMPLATE' ]; then
+                    value=$(echo "$value" | cut -f 2 -d / )
+                fi
                 if [ $i -lt $fileds_count ]; then
                     (( ++i))
                     echo -e "\t\t\"${field//$/}\": \"${value//,/, }\","
@@ -60,6 +63,9 @@ shell_list_pkgs() {
         fi
         for field in $fields; do
             eval value=$field
+            if [ "${field//$/}" = 'WEB_TEMPLATE' ] || [ "${field//$/}" = 'BACKEND_TEMPLATE' ] || [ "${field//$/}" = 'DNS_TEMPLATE' ] || [ "${field//$/}" = 'PROXY_TEMPLATE' ]; then
+                value=$(echo "$value" | cut -f 2 -d / )
+            fi
             echo -e "${field//$/}: $value"
         done
     done

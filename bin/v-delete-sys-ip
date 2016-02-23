@@ -58,9 +58,9 @@ if [ ! -z "$interface" ]; then
 fi
 
 # Deleting startup conf on RHEL/CentOS/Fedora
-if [ -e "/etc/sysconfig/network-scripts/ifcfg-$interface" ]; then
-    rm -f /etc/sysconfig/network-scripts/ifcfg-$interface
-fi
+#if [ -e "/etc/sysconfig/network-scripts/ifcfg-$interface" ]; then
+#    rm -f /etc/sysconfig/network-scripts/ifcfg-$interface
+#fi
 
 # Deleting startup conf on Debian/Ubuntu
 if [ -e "/etc/network/interfaces" ]; then

@@ -16,6 +16,13 @@ format=${2-shell}
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+tpldir="ipv4"
+if [ "$IPV4" == "yes" ] && [ "$IPV6" == "yes" ] ; then
+  tpldir="ipv4ipv6"
+elif [ "$IPV4" == "no" ] && [ "$IPV6" == "yes" ] ; then
+  tpldir="ipv6"
+fi
 
 # Json func
 json_list_dns() {
@@ -83,7 +90,7 @@ is_dns_template_valid
 #----------------------------------------------------------#
 
 # Defining config and fields
-conf=$DNSTPL/$template.tpl
+conf=$DNSTPL/$tpldir/$template.tpl
 fields='$RECORD $TYPE $PRIORITY $VALUE'
 
 # Listing templates

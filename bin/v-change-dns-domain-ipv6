@@ -1,0 +1,89 @@
+#!/bin/bash
+# info: change dns domain ipv6 address
+# options: USER DOMAIN IPV6
+#
+# The function for changing the main ipv6 of DNS zone.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument defenition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+ipv6=$3
+restart=$4
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN IPV6'
+validate_format 'user' 'domain' 'ipv6'
+is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Get old ip
+get_domain_values 'dns'
+if [ -z "$IP6" ]; then
+    sed -i "s/DOMAIN='$DOMAIN' IP=/DOMAIN='$DOMAIN' IP6='$ipv6' IP=/g" $USER_DATA/dns.conf
+else
+  old=$IP6
+
+  # Changing ip
+  update_object_value 'dns' 'DOMAIN' "$domain" '$IP6' "$ipv6"
+
+  # Changing records
+  sed -i "s/$old/$ipv6/g" $USER_DATA/dns/$domain.conf
+
+  # Updating zone
+  if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+      update_domain_serial
+      update_domain_zone
+  fi
+
+  # Updating dns-cluster queue
+  if [ ! -z "$DNS_CLUSTER" ]; then
+      # Check for first sync
+      dlock=$(grep "domain $user $domain" $VESTA/data/queue/dns-cluster.pipe)
+      if [ -z "$dlock" ]; then
+          cmd="$BIN/v-add-remote-dns-domain $user $domain domain yes"
+          echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
+      fi
+  fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Restart named
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-dns
+    if [ $? -ne 0 ]; then
+        exit $E_RESTART
+    fi
+fi
+
+# Logging
+log_history "changed dns ip for $domain to $ip"
+log_event "$OK" "$EVENT"
+
+exit

@@ -49,6 +49,8 @@ help() {
   -q, --quota             Filesystem Quota      [yes|no]  default: no
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install   [yes|no]  default: yes
+  -4, --ipv4              Enable IPV4           [yes|no]  default: yes
+  -6, --ipv6              Enable IPV6           [yes|no]  default: yes
   -s, --hostname          Set hostname
   -e, --email             Set admin email
   -p, --password          Set admin password
@@ -121,6 +123,8 @@ for arg; do
         --quota)                args="${args}-q " ;;
         --lang)                 args="${args}-l " ;;
         --interactive)          args="${args}-y " ;;
+        --ipv4)                 args="${args}-4 " ;;
+        --ipv6)                 args="${args}-6 " ;;
         --hostname)             args="${args}-s " ;;
         --email)                args="${args}-e " ;;
         --password)             args="${args}-p " ;;
@@ -157,6 +161,8 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:q:l:y:s:e:p:fh" Option; do
         s) servername=$OPTARG ;;        # Hostname
         e) email=$OPTARG ;;             # Admin email
         p) vpass=$OPTARG ;;             # Admin password
+        4) ipv4=$OPTARG ;;              # IPV4
+        6) ipv6=$OPTARG ;;              # IPV6
         f) force='yes' ;;               # Force install
         h) help ;;                      # Help
         *) help ;;                      # Print help (default)
@@ -187,6 +193,8 @@ set_default_value 'fail2ban' 'yes'
 set_default_value 'quota' 'no'
 set_default_value 'lang' 'en'
 set_default_value 'interactive' 'yes'
+set_default_value 'ipv4' 'yes'
+set_default_value 'ipv6' 'yes'
 
 # Checking software conflicts
 if [ "$phpfpm" = 'yes' ]; then
@@ -332,7 +340,13 @@ if [ "$iptables" = 'yes' ]; then
     echo -n '   - Iptables Firewall'
 fi
 if [ "$iptables" = 'yes' ] && [ "$fail2ban" = 'yes' ]; then
-    echo -n ' + Fail2Ban'
+    echo ' + Fail2Ban'
+fi
+if [ "$ipv4" = 'yes' ]; then
+    echo '   - IPV4'
+fi
+if [ "$ipv6" = 'yes' ]; then
+    echo '   - IPV6'
 fi
 echo -e "\n\n"
 
@@ -682,6 +696,16 @@ if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
     fi
     echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
 fi
+if [ $ipv4 = 'yes' ]; then
+  echo "IPV4='yes'" >> $VESTA/conf/vesta.conf
+else
+  echo "IPV4='no'" >> $VESTA/conf/vesta.conf
+fi
+if [ $ipv6 = 'yes' ]; then
+  echo "IPV6='yes'" >> $VESTA/conf/vesta.conf
+else
+  echo "IPV6='no'" >> $VESTA/conf/vesta.conf
+fi
 
 # FTP stack
 if [ "$vsftpd" = 'yes' ]; then
@@ -754,6 +778,11 @@ sed -i 's/%domain%/It worked!/g' /var/www/index.html
 wget $vestacp/firewall.tar.gz -O firewall.tar.gz
 tar -xzf firewall.tar.gz
 rm -f firewall.tar.gz
+
+# Downloading firewall rules
+wget $vestacp/firewallv6.tar.gz -O firewallv6.tar.gz
+tar -xzf firewallv6.tar.gz
+rm -f firewallv6.tar.gz
 
 # Configuring server hostname
 $VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
@@ -1102,21 +1131,39 @@ $VESTA/bin/v-change-user-language admin $lang
 # Configuring system ips
 $VESTA/bin/v-update-sys-ip
 
-# Get main ip
-ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
-
-# Get public ip
-pub_ip=$(wget vestacp.com/what-is-my-ip/ -O - 2>/dev/null)
-if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
-    $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
+# Get main ipv6
+if [ "$ipv6" = "yes" ]; then
+  ip=$(ip addr show dev eth0 | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | head -n 1)
+  if [ ! -z "$ip" ]; then
+    netmask="ip addr show dev eth0 | grep '$ip' | awk -F '/' '{print \$2}' | awk '{print \$1}'"
+    netmask=$(eval $netmask)
+    $VESTA/bin/v-add-sys-ipv6 $ip $netmask 
+    ip="[$ip]"
+  fi
 fi
-if [ -z "$pub_ip" ]; then
-    ip=$main_ip
+
+
+# Get main ip
+if [ "$ipv4" = 'yes' ]; then
+  ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
+  # Get public ip
+  pub_ip=$(wget vestacp.com/what-is-my-ip/ -O - 2>/dev/null)
+  if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
+      $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
+  fi
+  if [ -z "$pub_ip" ]; then
+      ip=$main_ip
+  fi
 fi
 
 # Firewall configuration
 if [ "$iptables" = 'yes' ]; then
+  if [ "$ipv4" = 'yes' ]; then
     $VESTA/bin/v-update-firewall
+  fi
+  if [ "$ipv6" = 'yes' ]; then
+    $VESTA/bin/v-update-firewall-ipv6
+  fi
 fi
 
 # Configuring mysql host

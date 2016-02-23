@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add web/dns/mail domain
-# options: USER DOMAIN [IP] [RESTART]
+# options: USER DOMAIN [IP] [IPV6] [RESTART]
 #
 # The function adds web/dns/mail domain to a server.
 
@@ -13,21 +13,30 @@
 user=$1
 domain=$2
 ip=$3
-restart="${4-yes}"
+ipv6=$4
+restart="${5-yes}"
 
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
-check_args '2' "$#" 'USER DOMAIN [IP] [RESTART]'
+check_args '2' "$#" 'USER DOMAIN [IP] [IPV6] [RESTART]'
 validate_format 'user' 'domain'
-if [ ! -z "$ip" ] ; then
+if [ ! -z "$ip" ] && [ "$IPV4" == 'yes' ] ; then
     validate_format 'ip'
+else
+  ip=''
+fi
+if [ ! -z "$ipv6" ] && [ "$IPV6" == 'yes' ] ; then
+    validate_format 'ipv6'
+else
+  ipv6=''
 fi
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -47,15 +56,24 @@ if [ -z "$ip" ]; then
     fi
 fi
 
+if [ -z "$ipv6" ]; then
+    ipv6=$(get_user_ipv6 $user)
+    if [ -z "$ipv6" ]; then
+        echo "Error: no avaiable IPV6 address"
+        log_event "$E_NOTEXIST" "$EVENT"
+        exit $E_NOTEXIST
+    fi
+fi
+
 # Working on web domain
 if [ ! -z "$WEB_SYSTEM" ]; then
-    $BIN/v-add-web-domain $user $domain $ip 'no'
+    $BIN/v-add-web-domain $user $domain $ip $ipv6 'no'
     check_result $? "can't add web domain" >/dev/null
 fi
 
 # Working on DNS domain
 if [ ! -z "$DNS_SYSTEM" ]; then
-    $BIN/v-add-dns-domain $user $domain $ip "" "" "" "" "" 'no'
+    $BIN/v-add-dns-domain $user $domain $ip $ipv6 "" "" "" "" "" "" "" "" 'no'
     check_result $? "can't add dns domain" >/dev/null
 fi
 
