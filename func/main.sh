@@ -76,7 +76,7 @@ log_history() {
 
     curr_str=$(grep "ID=" $log | cut -f 2 -d \' | sort -n | tail -n1)
     id="$((curr_str +1))"
-    echo "ID='$id' DATE='$DATE' TIME='$TIME' CMD='$cmd' UNDO='$undo'" >> $log
+    echo "ID='$id' DATE='$(date +%F)' TIME='$(date +%T)' CMD='$cmd' UNDO='$undo'" >> $log
 }
 
 # Result checker
