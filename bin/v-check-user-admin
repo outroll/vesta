@@ -1,0 +1,32 @@
+#!/bin/bash
+# info: check is user an admin user
+# options: USER
+#
+# The function checks is a user an admin user
+
+user=$1
+
+# Checking arguments
+if [ -z "$user" ]; then
+    echo "Usage: USER"
+    exit 1
+fi
+
+if [ "$user" = "root" ]; then
+    exit
+fi
+
+# Checking user groups
+members=$(grep "^admin:" /etc/group | cut -f 4 -d :|sed 's/,/ /g')
+if [ -z "$members" ]; then
+    exit 1
+fi
+
+for member in $members; do
+    if [ "$member" = "$user" ]; then
+        exit
+    fi
+done
+
+# Exiting
+exit 1

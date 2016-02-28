@@ -53,11 +53,13 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
     // Check API answer
     if ( $return_var > 0 ) {
         $ERROR = "<a class=\"error\">".__('Invalid username or password')."</a>";
-
     } else {
+        // Check is user an admin user
+        exec (VESTA_CMD . "v-check-user-admin ".$v_user, $output, $return_var);
+        unset($output);
 
-        // Make root admin user
-        if ($_POST['user'] == 'root') $v_user = 'admin';
+        // Check API answer
+        if ( $return_var == 0 ) $v_user = 'admin';
 
         // Get user speciefic parameters
         exec (VESTA_CMD . "v-list-user ".$v_user." json", $output, $return_var);
