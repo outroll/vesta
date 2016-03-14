@@ -643,6 +643,15 @@ validate_format_name() {
     fi
 }
 
+# Name with single 
+validate_format_name_single() {
+    if ! [[ "$1" =~ ^[[:alnum:]][-|\.|_[:alnum:]]{0,28} ]]; then
+        echo "Error: $2 $1 is not valid"
+        log_event "$E_INVALID" "$EVENT"
+        exit $E_INVALID
+    fi
+}
+
 # Name with space
 validate_format_name_s() {
     if ! [[ "$1" =~ ^[[:alnum:]][-|\ |\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
@@ -918,7 +927,7 @@ validate_format(){
             ip_status)      validate_format_ip_status "$arg" ;;
             job)            validate_format_int "$arg" 'job' ;;
             key)            validate_format_username "$arg" "$arg_name" ;;
-            lname)          validate_format_name_s "$arg" "$arg_name" ;;
+            lname)          validate_format_name_single "$arg" "$arg_name" ;;
             malias)         validate_format_username "$arg" "$arg_name" ;;
             max_db)         validate_format_int "$arg" 'max db';;
             min)            validate_format_mhdmw "$arg" $arg_name ;;
