@@ -49,7 +49,7 @@ else
 fi
 latest=$(grep vesta $tmp_file)
 UPDATED='yes'
-if [ ! -z "$latest" ] && [ "$latest" != "vesta-$VERSION-$RELEASE" ]; then
+if [ ! -z "$latest" ] && [ "$latest" \> "vesta-$VERSION-$RELEASE" ]; then
     UPDATED='no'
     set_upd_flag='yes'
 fi
@@ -72,7 +72,7 @@ else
 fi
 latest=$(grep php $tmp_file)
 UPDATED='yes'
-if [ ! -z "$latest" ] && [ "$latest" != "php-$VERSION-$RELEASE" ]; then
+if [ ! -z "$latest" ] && [ "$latest" \> "php-$VERSION-$RELEASE" ]; then
     UPDATED='no'
     set_upd_flag='yes'
 fi
@@ -96,7 +96,7 @@ else
 fi
 latest=$(grep nginx $tmp_file)
 UPDATED='yes'
-if [ ! -z "$latest" ] && [ "$latest" != "nginx-$VERSION-$RELEASE" ]; then
+if [ ! -z "$latest" ] && [ "$latest" \> "nginx-$VERSION-$RELEASE" ]; then
     UPDATED='no'
     set_upd_flag='yes'
 fi
