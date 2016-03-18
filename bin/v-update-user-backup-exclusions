@@ -26,7 +26,7 @@ is_file_available() {
 }
 
 is_file_valid() {
-    exclude="[!$#&;()\]"
+    exclude="[!#&$;()\]"
     vcontent=$(cat $vfile)
     if [[ "$vcontent" =~ $exclude ]]; then
         echo "Error: invalid characters in the exlusion list"
