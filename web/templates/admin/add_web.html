@@ -224,6 +224,19 @@
                                 </table>
                             </td>
                         </tr>
+						<!-- Pabloko: LetsEncrypt box -->
+						<tr>
+                                <td class="vst-text step-top">
+                                    <label>LetsEncrypt SSL</label><br />
+                                	<div style="background-color:#e0e0e0; font-weight:normal; padding:10px;margin-top:5px;"><?php echo $v_san_table ?><br/>
+                                	   <small>Certificate status: <?php echo $v_letsencrypt_status ?><br /></small><br/>
+                                	   <input type="hidden" name="v_letsencrypt_domains" value="<?php echo $v_san_command ?>" />
+                                	   <input type="hidden" name="v_letsencrypt_issue" id="v_letsencrypt_issue" value="0" />
+                                	   <input type="button" class="button" onclick="document.getElementById('v_letsencrypt_issue').value='1'; this.form.submit();" name="letsencryptissue" value="Issue now">
+                                	</div>
+                                </td>
+                        </tr>
+						<!-- Pabloko: end LetsEncrypt box -->
                         <tr>
                             <td class="vst-text step-top">
                                 <?php print __('Web Statistics');?>

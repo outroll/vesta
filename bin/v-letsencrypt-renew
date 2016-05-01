@@ -1,0 +1,43 @@
+#!/bin/bash
+# info: renew all letsencrypt
+# options: NONE
+#
+# The function renew all letsencrypt certificates.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Importing system environment  as we run this script
+# mostly by cron which not read it by itself
+source /etc/profile
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+for user in $(ls $VESTA/data/users); do
+
+    find $VESTA/data/users/$user/ssl -type f -wholename "*.letsencrypt" -print0 | while IFS= read -r -d $'\0' line; do
+
+	#Execute renewal script
+	exec "$line" > /dev/null
+
+    done
+
+done
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# No Logging
+#log_event "$OK" "$EVENT"
+
+exit
