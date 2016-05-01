@@ -103,15 +103,37 @@ if [ ! -z "$WEB_SYSTEM" ]; then
     if [ "$WEB_SYSTEM" = 'httpd' ] || [ "$WEB_SYSTEM" = 'apache2' ]; then
         if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
             echo "NameVirtualHost $ip:$WEB_PORT" >  $web_conf
+	    echo "<VirtualHost $ip:$WEB_PORT>" >> $web_conf
+            echo "ServerName $ip" >> $web_conf
+            echo "DocumentRoot /var/www/html" >> $web_conf
+            echo "</VirtualHost>" >> $web_conf
         fi
         echo "Listen $ip:$WEB_PORT" >> $web_conf
+        echo "<VirtualHost $ip:$WEB_PORT>" >> $web_conf
+        echo "ServerName $ip" >> $web_conf
+        echo "DocumentRoot /var/www/html" >> $web_conf
+        echo "</VirtualHost>" >> $web_conf
     fi
 
     if [ "$WEB_SSL" = 'mod_ssl' ]; then
         if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
             echo "NameVirtualHost $ip:$WEB_SSL_PORT" >> $web_conf
+            echo "<VirtualHost $ip:$WEB_SSL_PORT>" >> $web_conf
+            echo "ServerName $ip" >> $web_conf
+            echo "SSLEngine on" >> $web_conf
+            echo "SSLCertificateFile /etc/pki/tls/certs/ca.crt" >> $web_conf
+            echo "SSLCertificateKeyFile //etc/pki/tls/certs/ca.key" >> $web_conf
+            echo "DocumentRoot /var/www/html" >> $web_conf
+            echo "</VirtualHost>" >> $web_conf
         fi
         echo "Listen $ip:$WEB_SSL_PORT" >> $web_conf
+        echo "<VirtualHost $ip:$WEB_SSL_PORT>" >> $web_conf
+        echo "ServerName $ip" >> $web_conf
+        echo "SSLEngine on" >> $web_conf
+        echo "SSLCertificateFile /etc/pki/tls/certs/ca.crt" >> $web_conf
+        echo "SSLCertificateKeyFile //etc/pki/tls/certs/ca.key" >> $web_conf
+        echo "DocumentRoot /var/www/html" >> $web_conf
+        echo "</VirtualHost>" >> $web_conf
     fi
 fi
 
