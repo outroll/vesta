@@ -1,0 +1,43 @@
+#!/bin/bash
+# info: check letsencrypt certificate
+# options: USER DOMAIN
+#
+# The function of obtaining domain ssl files.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument defenition
+user=$1
+domain=$2
+
+# Includes
+source $VESTA/func/main.sh
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+if [ -e "$USER_DATA/ssl/$domain.crt" ]; then
+    echo -e "$USER_DATA/ssl/$domain.crt"
+    ltse=$(openssl x509 -text -noout -in "$USER_DATA"/ssl/"$domain.crt" | grep DNS:)
+    echo -e $ltse
+    ltsed=$(openssl x509 -enddate -noout -in "$USER_DATA"/ssl/"$domain.crt")
+    echo -e $ltsed
+fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit
