@@ -1,0 +1,54 @@
+#!/bin/bash
+# info: issue letsencrypt certificate
+# options: USER DOMAIN [DOMAINS_CHAIN]
+#
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument defenition
+user=$1
+domain=$2
+domains=$3
+
+# Includes
+source $VESTA/func/main.sh
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [DOMAINS_CHAIN]'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+if [[ $domains = *[!\ ]* ]]; then
+    echo -e "/root/.local/share/letsencrypt/bin/letsencrypt certonly --renew-by-default --webroot -w /var/www/letsencrypt/ $domains" > $USER_DATA/ssl/$domain.letsencrypt
+    chmod 0770 $USER_DATA/ssl/$domain.letsencrypt
+fi
+
+exec "$USER_DATA/ssl/$domain.letsencrypt" > /dev/null
+
+if [ -e "/etc/letsencrypt/live/$domain/cert.pem" ]; then
+    cp -f "/etc/letsencrypt/live/$domain/cert.pem" "$USER_DATA/ssl/$domain.crt"
+    cp -f "/etc/letsencrypt/live/$domain/chain.pem" "$USER_DATA/ssl/$domain.ca"
+    cp -f "/etc/letsencrypt/live/$domain/fullchain.pem" "$USER_DATA/ssl/$domain.pem"
+    cp -f "/etc/letsencrypt/live/$domain/privkey.pem" "$USER_DATA/ssl/$domain.key"
+    echo -e "LetsEncrypt SSL Verification done :D"
+else
+    echo -e "LetsEncrypt SSL Verification could not be made"
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

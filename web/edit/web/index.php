@@ -36,14 +36,15 @@ $v_tpl = $data[$v_domain]['IP'];
 $v_cgi = $data[$v_domain]['CGI'];
 $v_elog = $data[$v_domain]['ELOG'];
 $v_ssl = $data[$v_domain]['SSL'];
-if ( $v_ssl == 'yes' ) {
+// Pabloko: skip ssl lookup and obtain certificates anyway
+//if ( $v_ssl == 'yes' ) {
     exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".$v_domain."' json", $output, $return_var);
     $ssl_str = json_decode(implode('', $output), true);
     unset($output);
     $v_ssl_crt = $ssl_str[$v_domain]['CRT'];
     $v_ssl_key = $ssl_str[$v_domain]['KEY'];
     $v_ssl_ca = $ssl_str[$v_domain]['CA'];
-}
+//}
 $v_ssl_home = $data[$v_domain]['SSL_HOME'];
 $v_backend_template = $data[$v_domain]['BACKEND'];
 $v_proxy = $data[$v_domain]['PROXY'];
@@ -105,6 +106,13 @@ if (!empty($_POST['save'])) {
         header('location: /login/');
         exit();
     }
+	
+	//Pabloko: LetsEncrypt issue cert
+	if ($_POST['v_letsencrypt_issue']=="1")
+	{
+		exec (VESTA_CMD."v-letsencrypt-issue ".$user." '".$v_domain."' '".$_POST['v_letsencrypt_domains']."'", $issue_out, $return_var_ssl);
+		$_SESSION['error_msg'] = $issue_out[0];
+	}
 
     // Change web domain IP
     if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
@@ -692,6 +700,38 @@ if (isset($v_ftp_users_updated)) {
             'v_ftp_pre_path'    => $v_ftp_user_prepath
         );
     }
+}
+
+//Pabloko: Build SAN table and letsencrypt related stuff
+$v_san_table="";
+$v_san_command="";
+
+function check_acme_challenge($domain) {
+    if (trim(file_get_contents("http://".$domain."/.well-known/acme-challenge/status"))=="OK") 
+    {
+    	return true;
+    }
+    return false;
+}
+
+if (check_acme_challenge($v_domain)) {
+	$v_san_table .= $v_domain."<br/>";
+        $v_san_command .= "-d ".$v_domain." ";
+}
+
+foreach($valiases as $v_alias ) {
+	if (check_acme_challenge($v_alias) && strpos($v_alias, $v_domain) !== false) {
+    	      $v_san_table .= $v_alias."<br/>";
+              $v_san_command .= "-d ".$v_alias." ";
+	}
+}
+
+$v_letsencrypt_status = "<span style='color:red;'>Certificate not issued</span>";
+
+if (!empty($v_ssl_crt)) {
+    $v_letsencrypt_status = "<span style='color:green;'>Issued to (";
+    exec (VESTA_CMD."v-letsencrypt-check ".$user." '".$v_domain."'", $ossl_out, $return_var_ssl);
+    $v_letsencrypt_status .= str_replace("DNS:","",$ossl_out[1]).")</span><br />Expires in: <span style='color:green;'>".str_replace("notAfter=","",$ossl_out[2])."</span>";
 }
 
 // Header

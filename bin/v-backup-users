@@ -9,8 +9,8 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Importing system environment  as we run this script
-# mostly by cron which not read it by itself
+# Importing system enviroment  as we run this script
+# mostly by cron wich not read it by itself
 source /etc/profile
 
 # Includes
@@ -33,6 +33,11 @@ for user in $(ls $VESTA/data/users); do
     if [ ! -z "$check_suspend" ]; then
         echo -e "================================" >> $log
         echo -e "$user" >> $log
+        echo -e "--------------------------------\n" >> $log
+        echo -e "rebuild web domains for user" >> $log
+        echo -e "--------------------------------\n" >> $log
+        $BIN/v-rebuild-web-domains $user >> $log 2>&1
+        echo -e "Start BACKUP!" >> $log
         echo -e "--------------------------------\n" >> $log
         $BIN/v-backup-user $user >> $log 2>&1
         echo -e "\n--------------------------------\n\n" >> $log
