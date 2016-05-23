@@ -526,6 +526,8 @@ sync_cron_jobs() {
     rm -f $sys_cron
     if [ "$CRON_REPORTS" = 'yes' ]; then
         echo "MAILTO=$CONTACT" > $sys_cron
+    else
+        echo "MAILTO=\"\"" > $sys_cron
     fi
     while read line; do
         eval $line
