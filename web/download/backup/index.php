@@ -4,9 +4,10 @@ error_reporting(NULL);
 session_start();
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 $backup = $_GET['backup'];
+$backup_full_path = "/home/backup/".$backup;
 
 // Check if the backup exists
-if (!file_exists($backup)) {
+if (!file_exists($backup_full_path)) {
     exit(0);
 }
 
