@@ -1,5 +1,5 @@
 <?php
-session_start();
+error_reporting(NULL);
 $TAB = 'DB';
 
 // Main include
@@ -10,11 +10,6 @@ include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
 // Panel
 top_panel($user,$TAB);
-
-// SYS
-exec (VESTA_CMD."v-list-sys-config json", $output, $return_var);
-$sys = json_decode(implode('', $output), true);
-unset($output);
 
 // Data
 exec (VESTA_CMD."v-list-databases $user json", $output, $return_var);

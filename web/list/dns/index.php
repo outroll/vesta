@@ -1,5 +1,6 @@
 <?php
-session_start();
+error_reporting(NULL);
+
 $TAB = 'DNS';
 
 // Main include
@@ -23,7 +24,7 @@ if (empty($_GET['domain'])){
         include($_SERVER['DOCUMENT_ROOT'].'/templates/user/list_dns.html');
     }
 } else {
-    exec (VESTA_CMD."v-list-dns-records '".$user."' '".$_GET['domain']."' 'json'", $output, $return_var);
+    exec (VESTA_CMD."v-list-dns-records '".$user."' '".escapeshellarg($_GET['domain'])."' 'json'", $output, $return_var);
     $data = json_decode(implode('', $output), true);
     $data = array_reverse($data, true);
     unset($output);

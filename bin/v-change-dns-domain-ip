@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain_idn=$(idn -t --quiet -a "$domain")
@@ -27,7 +27,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN IP'
-validate_format 'user' 'domain' 'ip'
+is_format_valid 'user' 'domain' 'ip'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -51,6 +51,7 @@ sed -i "s/$old/$ip/g" $USER_DATA/dns/$domain.conf
 
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+    update_domain_serial
     update_domain_zone
 fi
 
@@ -59,7 +60,7 @@ if [ ! -z "$DNS_CLUSTER" ]; then
     # Check for first sync
     dlock=$(grep "domain $user $domain" $VESTA/data/queue/dns-cluster.pipe)
     if [ -z "$dlock" ]; then
-        cmd="$BIN/v-add-remote-dns-domain $user $domain domain"
+        cmd="$BIN/v-add-remote-dns-domain $user $domain domain yes"
         echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
     fi
 fi
@@ -69,16 +70,14 @@ fi
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-# Restart named
+# Restarting named
 if [ "$restart" != 'no' ]; then
     $BIN/v-restart-dns
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+    check_result $? "DNS restart failed" >/dev/null
 fi
 
 # Logging
 log_history "changed dns ip for $domain to $ip"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

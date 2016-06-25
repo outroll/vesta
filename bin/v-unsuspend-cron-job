@@ -1,15 +1,15 @@
 #!/bin/bash
-# info: unuspend cron job
+# info: unsuspend cron job
 # options: USER JOB [RESTART]
 #
-# The function unsuspen certain cron job.
+# The function unsuspend certain cron job.
 
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 job=$2
 restart="${3-yes}"
@@ -24,7 +24,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '2' "$#" 'USER JOB [RESTART]'
-validate_format 'user' 'job' 'restart'
+is_format_valid 'user' 'job' 'restart'
 is_object_valid 'user' 'USER' "$user"
 is_object_valid 'cron' 'JOB' "$job"
 is_object_suspended 'cron' 'JOB' "$job"
@@ -46,15 +46,13 @@ sync_cron_jobs
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-# Restart crond
+# Restarting crond
 if [ "$restart" != 'no' ]; then
     $BIN/v-restart-cron
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+    check_result $? "Cron restart failed" >/dev/null
 fi
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

@@ -2,14 +2,14 @@
 # info: add mail domain catchall account
 # options: USER DOMAIN EMAIL
 #
-# The function enables catchall account for incomming emails. 
+# The function enables catchall account for incoming emails.
 
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
@@ -27,7 +27,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN EMAIL'
-validate_format 'user' 'domain' 'email'
+is_format_valid 'user' 'domain' 'email'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -42,8 +42,8 @@ is_object_value_empty 'mail' 'DOMAIN' "$domain" '$CATCHALL'
 
 # Adding catchall alias
 if [[ "$MAIL_SYSTEM" =~ exim ]]; then
-    sed -i "/*@$domain:/d" $HOMEDIR/$user/conf/mail/$domain/aliases
-    echo "*@$domain:$email" >> $HOMEDIR/$user/conf/mail/$domain/aliases
+    sed -i "/*@$domain_idn:/d" $HOMEDIR/$user/conf/mail/$domain/aliases
+    echo "*@$domain_idn:$email" >> $HOMEDIR/$user/conf/mail/$domain/aliases
 fi
 
 
@@ -56,6 +56,6 @@ update_object_value 'mail' 'DOMAIN' "$domain" '$CATCHALL' "$email"
 
 # Logging
 log_history "added $email as catchall email for $domain"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

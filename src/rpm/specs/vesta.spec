@@ -1,6 +1,6 @@
 Name:           vesta
 Version:        0.9.8
-Release:        8
+Release:        15
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPL
@@ -20,7 +20,6 @@ This package contains the packages for Vesta Control Panel api.
 %setup -q -n %{name}-%{version}
 
 %build
-gcc -lcrypt src/v-check-user-password.c -o bin/v-check-user-password
 
 %install
 install -d  %{buildroot}%{_vestadir}
@@ -31,30 +30,105 @@ rm -rf %{buildroot}
 
 %post
 if [ $1 -ge 2 ]; then
-    if [ -e /usr/local/vesta/upd/convert_templates.sh ]; then
-        /usr/local/vesta/upd/convert_templates.sh
+    if [ -e /usr/local/vesta/upd/add_sudo.sh ]; then
+        /usr/local/vesta/upd/add_sudo.sh
     fi
-    if [ -e /usr/local/vesta/upd/convert_webip.sh ]; then
-        /usr/local/vesta/upd/convert_webip.sh
-    fi
-    if [ -e /usr/local/vesta/upd/add_fwd_only.sh ]; then
-        /usr/local/vesta/upd/add_fwd_only.sh
-    fi
-    if [ -e /usr/local/vesta/fix_vesta_ssl_permissions.sh ]; then
-        /usr/local/vesta/upd/fix_vesta_ssl_permissions.sh
+    if [ -e /usr/local/vesta/upd/add_notifications.sh ]; then
+        /usr/local/vesta/upd/add_notifications.sh
     fi
 fi
-
 %files
 %{_vestadir}
-%config(noreplace) %{_vestadir}/web/images/logo.png
+%config(noreplace) %{_vestadir}/web/images/sprite.png
 %config(noreplace) %{_vestadir}/web/images/favicon.ico
-%config(noreplace) %{_vestadir}/web/css/csshover3.htc
-%config(noreplace) %{_vestadir}/web/css/ie.css
+%config(noreplace) %{_vestadir}/web/css/file_manager.css
+%config(noreplace) %{_vestadir}/web/css/file_manager_editor.css
+%config(noreplace) %{_vestadir}/web/css/jquery.arcticmodal.css
 %config(noreplace) %{_vestadir}/web/css/jquery-custom-dialogs.css
-%config(noreplace) %{_vestadir}/web/css/main.css
+%config(noreplace) %{_vestadir}/web/css/jquery.fileupload.css
+%config(noreplace) %{_vestadir}/web/css/styles.min.css
+%config(noreplace) %{_vestadir}/web/css/uploadify.css
 
 %changelog
+* Fri Nov 06 2015 Serghey Rodin <builder@vestacp.com> - 0.9.8-15
+- File Manager (commercial plugin)
+- SFTP Chroot (commercial plugin)
+- Monitoring Tools: top/free/df/server-status/mysql-status/etc
+- New installer
+- Improved PHP-FPM support
+- UI: Notification center
+- UI: Starred objects
+- UI: Object sorting
+- UI: HotKeys suport
+- UI: Mail account settings JS hint
+- UI: Autofocus on first input when adding/editing
+- UI: Up to 8 nameserver dns support
+- Core: Improved system logger, domain adding api and backup routine
+- Japanese language support. Thanks to Flatta
+- Polish language support. Thanks to MarPiRK
+- Vietnamese language support. Thanks to Nguyen Ngoc Phuong
+- Security Fix: Command Injection and XSS Thanks to Global IT
+- BugFix: DNS Cluster SOA synchronization
+- BugFix: Bulk Operation
+- BugFix: Backup exclusions
+- BugFix: Domain validation
+- BugFix: FTP user name prefix
+- BugFix: Fail2Ban manager
+- BugFix: Service manager
+
+* Wed Jun 03 2015 Serghey Rodin <builder@vestacp.com> - 0.9.8-13
+- New UI
+- PHP-FPM support
+- Security improvements
+- Dozen bugfixes
+
+* Wed Oct 23 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-12
+- Firewall service handler for Debian and Ubuntu
+- Minor i18n fix
+
+* Wed Oct 22 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-11
+- Firewall support
+- Fail2ban support
+- Sudo support for admin user
+- Cron email reporting switch
+- Improved SSL validation
+- Minor design improvements
+- Unsuccessfull login attempt logger
+- Fix for fase sensitive dns records
+- Fix for webstats
+- Fix for ftp user login
+
+
+* Mon Aug 4 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-10
+- New Design
+- MultiFTP Support
+- Exim Queue Chart
+- Arabic Language file. Thanks to Bashar Al-Abdulhadi http://bashar.com
+- Italian Language Support. Thanks to Fabio Cagliero http://webnuvola.com
+- Finnish Languge Support. Thanks to Juho Räsänen and Onni Hakala https://github.com/RJuho http://koodimonni.fi
+- French Language Support. Thanks to nhoway https://github.com/nhoway
+- Hungarian Language Support. Thanks to Kovacs Akos http://kovacsakos.info
+- Improved SSL CA Validation
+- Detailed report on mysql dump error
+- Restart Confirmation Dialogue
+- Autorefresh Module for Graphs
+- Switched service manager from init.d to service command
+- Switched free memeory rrd overlay style to linear
+- Updated nginx extention list. Thanks to Vasily Kraev https://github.com/vasilykraev
+- Updated skel templates. Thanks to Jason Hanes https://github.com/square-orange
+- Urlencoder for DNS Cluster API
+- Fixed dnsbl+authentication router. Thanks to Mirek Kratochvil http://e-x-a.org/
+- Fix for tar < 1.24 to preserve directory ownership
+- Fixed autoupdate script. Thanks to Kijamve
+- Fixed some spelling errors. Thanks to Estratos Consulting
+- Fixed backup exclusion for cron objects
+- Fixed MySQL autostart issue on Ubuntu 14.04
+- Fixed Awstats template parser for Ubuntu 14.04
+- Fixed NameServer validation bug
+- Fixed FS-Quota conversion. Thanks to demlasjr https://github.com/demlasjr
+- Fixed spelling. Thanks to Jakub Ďuraš https://github.com/jlamer, Kotso https://github.com/kotso, Dustin Dauncey http://www.dustindauncey.com
+
+
 * Sun May 18 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-9
 - File System Quota support
 - Norwegian translation. Thanks to Helge Sverre

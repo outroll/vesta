@@ -16,7 +16,7 @@ rebuild_user_conf() {
 
     # Run template trigger
     if [ -x "$VESTA/data/packages/$PACKAGE.sh" ]; then
-        $VESTA/data/packages/$package.sh "$user" "$CONTACT" "$FNAME" "$LNAME"
+        $VESTA/data/packages/$PACKAGE.sh "$user" "$CONTACT" "$FNAME" "$LNAME"
     fi
 
     # Rebuild user
@@ -141,15 +141,11 @@ rebuild_user_conf() {
 # WEB domain rebuild
 rebuild_web_domain_conf() {
 
-    # Get domain values
-    domain_idn=$(idn -t --quiet -a "$domain")
     get_domain_values 'web'
-    ip=$(get_real_ip $IP)
+    is_ip_valid $IP
+    prepare_web_domain_values
 
-    # Preparing domain values for the template substitution
-    upd_web_domain_values
-
-    # Rebuilding directories
+    # Rebuilding domain directories
     mkdir -p $HOMEDIR/$user/web/$domain \
         $HOMEDIR/$user/web/$domain/public_html \
         $HOMEDIR/$user/web/$domain/public_shtml \
@@ -159,68 +155,81 @@ rebuild_web_domain_conf() {
         $HOMEDIR/$user/web/$domain/stats \
         $HOMEDIR/$user/web/$domain/logs
 
-    # Create domain logs
+    # Creating domain logs
+    if [ ! -e "/var/log/$WEB_SYSTEM/domains" ]; then
+        mkdir -p /var/log/$WEB_SYSTEM/domains
+        chmod 771 /var/log/$WEB_SYSTEM/domains
+    fi
     touch /var/log/$WEB_SYSTEM/domains/$domain.bytes \
           /var/log/$WEB_SYSTEM/domains/$domain.log \
           /var/log/$WEB_SYSTEM/domains/$domain.error.log
 
-    # Create symlinks
+    # Creating symlinks
     cd $HOMEDIR/$user/web/$domain/logs/
     ln -f -s /var/log/$WEB_SYSTEM/domains/$domain.log .
     ln -f -s /var/log/$WEB_SYSTEM/domains/$domain.error.log .
-    cd - > /dev/null
+    cd /
 
-    # Propagate html skeleton
+    # Propagating html skeleton
     if [ ! -e "$WEBTPL/skel/document_errors/" ]; then
         cp -r $WEBTPL/skel/document_errors/ $HOMEDIR/$user/web/$domain/
     fi
 
     # Set folder permissions
-    chmod 551 $HOMEDIR/$user/web/$domain
-    chmod 751 $HOMEDIR/$user/web/$domain/private
-    chmod 751 $HOMEDIR/$user/web/$domain/cgi-bin
-    chmod 751 $HOMEDIR/$user/web/$domain/public_html
-    chmod 751 $HOMEDIR/$user/web/$domain/public_shtml
-    chmod 751 $HOMEDIR/$user/web/$domain/document_errors
-    chmod 551 $HOMEDIR/$user/web/$domain/stats
-    chmod 551 $HOMEDIR/$user/web/$domain/logs
+    chmod 551 $HOMEDIR/$user/web/$domain \
+        $HOMEDIR/$user/web/$domain/stats \
+        $HOMEDIR/$user/web/$domain/logs
+    chmod 751 $HOMEDIR/$user/web/$domain/private \
+        $HOMEDIR/$user/web/$domain/cgi-bin \
+        $HOMEDIR/$user/web/$domain/public_html \
+        $HOMEDIR/$user/web/$domain/public_shtml \
+        $HOMEDIR/$user/web/$domain/document_errors
     chmod 640 /var/log/$WEB_SYSTEM/domains/$domain.*
 
     # Set ownership
-    chown $user:$user $HOMEDIR/$user/web/$domain
-    chown $user:$user $HOMEDIR/$user/web/$domain/private
-    chown $user:$user $HOMEDIR/$user/web/$domain/cgi-bin
-    chown $user:$user $HOMEDIR/$user/web/$domain/public_html
-    chown $user:$user $HOMEDIR/$user/web/$domain/public_shtml
+    chown $user:$user $HOMEDIR/$user/web/$domain \
+        $HOMEDIR/$user/web/$domain/private \
+        $HOMEDIR/$user/web/$domain/cgi-bin \
+        $HOMEDIR/$user/web/$domain/public_html \
+        $HOMEDIR/$user/web/$domain/public_shtml
     chown -R $user:$user $HOMEDIR/$user/web/$domain/document_errors
     chown root:$user /var/log/$WEB_SYSTEM/domains/$domain.*
 
-    # Adding tmp conf
-    tpl_file="$WEBTPL/$WEB_SYSTEM/$TPL.tpl"
-    conf="$HOMEDIR/$user/conf/web/tmp_$WEB_SYSTEM.conf"
-    add_web_config
-    chown root:$user $conf
-    chmod 640 $conf
+    # Adding vhost configuration
+    conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
+    add_web_config "$WEB_SYSTEM" "$TPL.tpl"
 
-    # Running template trigger
-    if [ -x $WEBTPL/$WEB_SYSTEM/$TPL.sh ]; then
-        $WEBTPL/$WEB_SYSTEM/$TPL.sh $user $domain $ip $HOMEDIR $docroot
+    # Adding SSL vhost configuration
+    if [ "$SSL" = 'yes' ]; then
+        conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
+        add_web_config "$WEB_SYSTEM" "$TPL.stpl"
+        cp -f $USER_DATA/ssl/$domain.crt \
+            $HOMEDIR/$user/conf/web/ssl.$domain.crt
+        cp -f $USER_DATA/ssl/$domain.key \
+            $HOMEDIR/$user/conf/web/ssl.$domain.key
+        cp -f $USER_DATA/ssl/$domain.pem \
+            $HOMEDIR/$user/conf/web/ssl.$domain.pem
+        if [ -e "$USER_DATA/ssl/$domain.ca" ]; then
+            cp -f $USER_DATA/ssl/$domain.ca \
+                $HOMEDIR/$user/conf/web/ssl.$domain.ca
+        fi
     fi
 
-    # Checking aliases
-    if [ ! -z "$ALIAS" ]; then
-        aliases=$(echo "$ALIAS"|tr ',' '\n'| wc -l)
-        user_aliases=$((user_aliases + aliases))
+    # Adding proxy configuration
+    if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
+        conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
+        add_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+        if [ "$SSL" = 'yes' ]; then
+            conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
+            add_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+        fi
     fi
 
-    # Checking stats
+    # Adding web stats parser
     if [ ! -z "$STATS" ]; then
         cat $WEBTPL/$STATS/$STATS.tpl |\
-            sed -e "s|%ip%|$ip|g" \
-                -e "s|%web_port%|$WEB_PORT|g" \
-                -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \
-                -e "s|%proxy_port%|$PROXY_PORT|g" \
-                -e "s|%proxy_ssl_port%|$PROXY_SSL_PORT|g" \
+            sed -e "s|%ip%|$local_ip|g" \
+                -e "s|%web_system%|$WEB_SYSTEM|g" \
                 -e "s|%domain_idn%|$domain_idn|g" \
                 -e "s|%domain%|$domain|g" \
                 -e "s|%user%|$user|g" \
@@ -228,7 +237,6 @@ rebuild_web_domain_conf() {
                 -e "s|%alias%|${aliases//,/ }|g" \
                 -e "s|%alias_idn%|${aliases_idn//,/ }|g" \
                 > $HOMEDIR/$user/conf/web/$STATS.$domain.conf
-
         if [ "$STATS" == 'awstats' ]; then
             if [ ! -e "/etc/awstats/$STATS.$domain_idn.conf" ]; then
                 ln -f -s $HOMEDIR/$user/conf/web/$STATS.$domain.conf \
@@ -244,111 +252,88 @@ rebuild_web_domain_conf() {
 
         if [ ! -z "$STATS_USER" ]; then
             stats_dir="$HOMEDIR/$user/web/$domain/stats"
-
-            # Adding htaccess file
             echo "AuthUserFile $stats_dir/.htpasswd" > $stats_dir/.htaccess
             echo "AuthName \"Web Statistics\"" >> $stats_dir/.htaccess
             echo "AuthType Basic" >> $stats_dir/.htaccess
             echo "Require valid-user" >> $stats_dir/.htaccess
-
-            # Generating htaccess user and password
             echo "$STATS_USER:$STATS_CRYPT" > $stats_dir/.htpasswd
         fi
     fi
 
-    # Checking SSL
-    if [ "$SSL" = 'yes' ]; then
-
-        # Adding domain to the web conf
-        conf="$HOMEDIR/$user/conf/web/tmp_s$WEB_SYSTEM.conf"
-        tpl_file="$WEBTPL/$WEB_SYSTEM/$TPL.stpl"
-        add_web_config
-        chown root:$user $conf
-        chmod 640 $conf
-
-        cp -f $USER_DATA/ssl/$domain.crt \
-            $HOMEDIR/$user/conf/web/ssl.$domain.crt
-        cp -f $USER_DATA/ssl/$domain.key \
-            $HOMEDIR/$user/conf/web/ssl.$domain.key
-        cp -f $USER_DATA/ssl/$domain.pem \
-            $HOMEDIR/$user/conf/web/ssl.$domain.pem
-        if [ -e "$USER_DATA/ssl/$domain.ca" ]; then
-            cp -f $USER_DATA/ssl/$domain.ca \
-                $HOMEDIR/$user/conf/web/ssl.$domain.ca
+    # Adding ftp users
+    if [ -z "$FTP_SHELL" ]; then
+        shell='/sbin/nologin'
+        if [ -e "/usr/bin/rssh" ]; then
+            shell='/usr/bin/rssh'
         fi
-
-        # Running template trigger
-        if [ -x $WEBTPL/$WEB_SYSTEM/$TPL.sh ]; then
-            $WEBTPL/$WEB_SYSTEM/$TPL.sh $user $domain $ip $HOMEDIR $sdocroot
-        fi
-
-        user_ssl=$((user_ssl + 1))
-        ssl_change='yes'
+    else
+        shell=$FTP_SHELL
     fi
+    for ftp_user in ${FTP_USER//:/ }; do
+        if [ -z "$(grep ^$ftp_user: /etc/passwd)" ]; then
+            position=$(echo $FTP_USER |tr ':' '\n' |grep -n '' |\
+                grep ":$ftp_user$" |cut -f 1 -d:)
+            ftp_path=$(echo $FTP_PATH |tr ':' '\n' |grep -n '' |\
+                grep "^$position:" |cut -f 2 -d :)
+            ftp_md5=$(echo $FTP_MD5 | tr ':' '\n' |grep -n '' |\
+                grep "^$position:" |cut -f 2 -d :)
 
-    # Checking proxy
-    if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
-        tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
-        conf="$HOMEDIR/$user/conf/web/tmp_$PROXY_SYSTEM.conf"
-        add_web_config
-        chown root:$user $conf
-        chmod 640 $conf
-        proxy_change='yes'
-    fi
-
-    if [ ! -z "$PROXY_SYSTEM" ] && [ "$SSL" = 'yes' ]; then
-        tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
-        if [ -z "$PROXY" ]; then
-            tpl_file="$WEBTPL/$PROXY_SYSTEM/default.stpl"
-        fi
-        conf="$HOMEDIR/$user/conf/web/tmp_s$PROXY_SYSTEM.conf"
-        add_web_config
-        chown root:$user $conf
-        chmod 640 $conf
-        proxy_change='yes'
-    fi
-
-    if [ "$SUSPENDED" = 'yes' ]; then
-        suspended_web=$((suspended_web + 1))
-    fi
-    user_domains=$((user_domains + 1))
-
-    # Running template trigger
-    if [ -x $WEBTPL/$PROXY_SYSTEM/$PROXY.sh ]; then
-        $WEBTPL/$PROXY_SYSTEM/$PROXY.sh $user $domain $ip $HOMEDIR $docroot
-    fi
-
-    # Checking ftp
-    if [ ! -z "$FTP_USER" ]; then
-        if [ -z "$(grep ^$FTP_USER: /etc/passwd)" ]; then
-            shell='/sbin/nologin'
-            if [ -e "/usr/bin/rssh" ]; then
-                shell='/usr/bin/rssh'
-            fi
-            /usr/sbin/useradd $FTP_USER \
+            /usr/sbin/useradd $ftp_user \
                 -s $shell \
                 -o -u $(id -u $user) \
                 -g $(id -u $user) \
-                -M -d "$HOMEDIR/$user/web/$domain"  > /dev/null 2>&1
+                -M -d "$HOMEDIR/$user/web/$domain${ftp_path}" >/dev/null 2>&1
 
-            # Update password
-            shadow=$(grep "^$FTP_USER:" /etc/shadow)
-            shdw3=$(echo "$shadow" | cut -f3 -d :)
-            shdw4=$(echo "$shadow" | cut -f4 -d :)
-            shdw5=$(echo "$shadow" | cut -f5 -d :)
-            shdw6=$(echo "$shadow" | cut -f6 -d :)
-            shdw7=$(echo "$shadow" | cut -f7 -d :)
-            shdw8=$(echo "$shadow" | cut -f8 -d :)
-            shdw9=$(echo "$shadow" | cut -f9 -d :)
-            shadow_str="$FTP_USER:$FTP_MD5:$shdw3:$shdw4:$shdw5:$shdw6"
+            # Updating ftp user password
+            shadow=$(grep "^$ftp_user:" /etc/shadow)
+            shdw3=$(echo "$shadow" |cut -f3 -d :)
+            shdw4=$(echo "$shadow" |cut -f4 -d :)
+            shdw5=$(echo "$shadow" |cut -f5 -d :)
+            shdw6=$(echo "$shadow" |cut -f6 -d :)
+            shdw7=$(echo "$shadow" |cut -f7 -d :)
+            shdw8=$(echo "$shadow" |cut -f8 -d :)
+            shdw9=$(echo "$shadow" |cut -f9 -d :)
+            shadow_str="$ftp_user:$ftp_md5:$shdw3:$shdw4:$shdw5:$shdw6"
             shadow_str="$shadow_str:$shdw7:$shdw8:$shdw9"
-
             chmod u+w /etc/shadow
-            sed -i "/^$FTP_USER:*/d" /etc/shadow
+            sed -i "/^$ftp_user:*/d" /etc/shadow
             echo "$shadow_str" >> /etc/shadow
             chmod u-w /etc/shadow
         fi
-    fi
+    done
+
+    # Adding http auth protection
+    htaccess="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.$domain.conf_htaccess"
+    htpasswd="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.$domain.htpasswd"
+    docroot="$HOMEDIR/$user/web/$domain/public_html"
+    for auth_user in ${AUTH_USER//:/ }; do
+        # Parsing auth user variables
+        position=$(echo $AUTH_USER |tr ':' '\n' |grep -n '' |\
+            grep ":$auth_user$" |cut -f 1 -d:)
+        auth_hash=$(echo $AUTH_HASH |tr ':' '\n' |grep -n '' |\
+            grep "^$position:" |cut -f 2 -d :)
+
+        # Adding http auth user
+        touch $htpasswd
+        sed -i "/^$auth_user:/d" $htpasswd
+        echo "$auth_user:$auth_hash" >> $htpasswd
+
+        # Checking web server include
+        if [ ! -e "$htaccess" ]; then
+            if [ "$WEB_SYSTEM" != 'nginx' ]; then
+                echo "<Directory $docroot>" > $htaccess
+                echo "    AuthUserFile $htpasswd" >> $htaccess
+                echo "    AuthName \"$domain access\"" >> $htaccess
+                echo "    AuthType Basic" >> $htaccess
+                echo "    Require valid-user" >> $htaccess
+                echo "</Directory>" >> $htaccess
+            else
+                echo "auth_basic  \"$domain password access\";" > $htaccess
+                echo "auth_basic_user_file    $htpasswd;" >> $htaccess
+            fi
+            chmod 640 $htpasswd $htaccess >/dev/null 2>&1
+        fi
+    done
 }
 
 # DNS domain rebuild
@@ -421,9 +406,13 @@ rebuild_dns_domain_conf() {
 # MAIL domain rebuild
 rebuild_mail_domain_conf() {
 
-    # Get domain values
-    domain_idn=$(idn -t --quiet -a "$domain")
     get_domain_values 'mail'
+
+    if [[ "$domain" = *[![:ascii:]]* ]]; then
+        domain_idn=$(idn -t --quiet -a $domain)
+    else
+        domain_idn=$domain
+    fi
 
     if [ "$SUSPENDED" = 'yes' ]; then
         SUSPENDED_MAIL=$((SUSPENDED_MAIL +1))
@@ -474,7 +463,7 @@ rebuild_mail_domain_conf() {
         # Adding catchall email
         dom_aliases=$HOMEDIR/$user/conf/mail/$domain/aliases
         if [ ! -z "$CATCHALL" ]; then
-            echo "*@$domain:$CATCHALL" >> $dom_aliases
+            echo "*@$domain_idn:$CATCHALL" >> $dom_aliases
         fi
     fi
 
@@ -497,13 +486,16 @@ rebuild_mail_domain_conf() {
         fi
 
         if [[ "$MAIL_SYSTEM" =~ exim ]]; then
+            if [ "$QUOTA" = 'unlimited' ]; then
+                QUOTA=0
+            fi
             str="$account:$MD5:$user:mail::$HOMEDIR/$user:$QUOTA"
             echo $str >> $HOMEDIR/$user/conf/mail/$domain/passwd
             for malias in ${ALIAS//,/ }; do
-                echo "$malias@$domain:$account@$domain" >> $dom_aliases
+                echo "$malias@$domain_idn:$account@$domain_idn" >> $dom_aliases
             done
             if [ ! -z "$FWD" ]; then
-                echo "$account@$domain:$FWD" >> $dom_aliases
+                echo "$account@$domain_idn:$FWD" >> $dom_aliases
             fi
             if [ "$FWD_ONLY" = 'yes' ]; then
                 echo "$account" >> $HOMEDIR/$user/conf/mail/$domain/fwd_only
@@ -538,10 +530,10 @@ rebuild_mysql_database() {
     eval $host_str
     if [ -z $HOST ] || [ -z $USER ] || [ -z $PASSWORD ]; then
         echo "Error: mysql config parsing failed"
-        if [ ! -z "$send_mail" ]; then
-            echo "Can't parse MySQL DB config" | $send_mail -s "$subj" $email
+        if [ ! -z "$SENDMAIL" ]; then
+            echo "Can't parse MySQL DB config" | $SENDMAIL -s "$subj" $email
         fi
-        log_event "$E_PARSING" "$EVENT"
+        log_event "$E_PARSING" "$ARGUMENTS"
         exit $E_PARSING
     fi
 
@@ -549,11 +541,11 @@ rebuild_mysql_database() {
     mysql -h $HOST -u $USER -p$PASSWORD -e "$query" > /dev/null 2>&1
     if [ '0' -ne "$?" ]; then
         echo "Error: Database connection to $HOST failed"
-        if [ ! -z "$send_mail" ]; then
+        if [ ! -z "$SENDMAIL" ]; then
             echo "Database connection to MySQL host $HOST failed" |\
-                $send_mail -s "$subj" $email
+                $SENDMAIL -s "$subj" $email
         fi
-        log_event  "$E_CONNECT" "$EVENT"
+        log_event  "$E_CONNECT" "$ARGUMENTS"
         exit $E_CONNECT
     fi
 
@@ -581,10 +573,10 @@ rebuild_pgsql_database() {
     export PGPASSWORD="$PASSWORD"
     if [ -z $HOST ] || [ -z $USER ] || [ -z $PASSWORD ] || [ -z $TPL ]; then
         echo "Error: postgresql config parsing failed"
-        if [ ! -z "$send_mail" ]; then
-            echo "Can't parse PostgreSQL config" | $send_mail -s "$subj" $email
+        if [ ! -z "$SENDMAIL" ]; then
+            echo "Can't parse PostgreSQL config" | $SENDMAIL -s "$subj" $email
         fi
-        log_event "$E_PARSING" "$EVENT"
+        log_event "$E_PARSING" "$ARGUMENTS"
         exit $E_PARSING
     fi
 
@@ -592,11 +584,11 @@ rebuild_pgsql_database() {
     psql -h $HOST -U $USER -c "$query" > /dev/null 2>&1
     if [ '0' -ne "$?" ];  then
         echo "Error: Connection failed"
-        if [ ! -z "$send_mail" ]; then
+        if [ ! -z "$SENDMAIL" ]; then
             echo "Database connection to PostgreSQL host $HOST failed" |\
-                $send_mail -s "$subj" $email
+                $SENDMAIL -s "$subj" $email
         fi
-        log_event "$E_CONNECT" "$EVENT"
+        log_event "$E_CONNECT" "$ARGUMENTS"
         exit $E_CONNECT
     fi
 
@@ -629,7 +621,7 @@ import_mysql_database() {
     eval $host_str
     if [ -z $HOST ] || [ -z $USER ] || [ -z $PASSWORD ]; then
         echo "Error: mysql config parsing failed"
-        log_event "$E_PARSING" "$EVENT"
+        log_event "$E_PARSING" "$ARGUMENTS"
         exit $E_PARSING
     fi
 
@@ -645,7 +637,7 @@ import_pgsql_database() {
     export PGPASSWORD="$PASSWORD"
     if [ -z $HOST ] || [ -z $USER ] || [ -z $PASSWORD ] || [ -z $TPL ]; then
         echo "Error: postgresql config parsing failed"
-        log_event "$E_PARSING" "$EVENT"
+        log_event "$E_PARSING" "$ARGUMENTS"
         exit $E_PARSING
     fi
 

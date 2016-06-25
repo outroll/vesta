@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add web/dns/mail domain
-# options: USER DOMAIN [IP]
+# options: USER DOMAIN [IP] [RESTART]
 #
 # The function adds web/dns/mail domain to a server.
 
@@ -9,10 +9,11 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$2
 ip=$3
+restart="${4-yes}"
 
 # Includes
 source $VESTA/func/main.sh
@@ -23,11 +24,10 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
-
-check_args '2' "$#" 'USER DOMAIN [IP]'
-validate_format 'user' 'domain'
-if [ ! -z "$ip" ]; then
-    validate_format 'ip'
+check_args '2' "$#" 'USER DOMAIN [IP] [RESTART]'
+is_format_valid 'user' 'domain'
+if [ ! -z "$ip" ] ; then
+    is_format_valid 'ip'
 fi
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -39,39 +39,40 @@ is_object_unsuspended 'user' 'USER' "$user"
 
 # Get ip if it wasn't defined
 if [ -z "$ip" ]; then
-    ip=$(get_user_ip $user)
+    get_user_ip
     if [ -z "$ip" ]; then
-        echo "Error: no avaiable IP address"
-        log_event "$E_NOTEXIST" "$EVENT"
-        exit $E_NOTEXIST
+        check_result $E_NOTEXIST "no avaiable IP address"
     fi
 fi
 
-# Web domain
-if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB_SYSTEM" != 'no' ]; then
-    $BIN/v-add-web-domain $user $domain $ip
-    retun_code=$?
+# Working on web domain
+if [ ! -z "$WEB_SYSTEM" ]; then
+    $BIN/v-add-web-domain $user $domain $ip 'no'
+    check_result $? "can't add web domain" >/dev/null
 fi
 
-# Proxy support
-if [ ! -z "$PROXY_SYSTEM" ] && [ "$retun_code" -eq 0 ]; then
-    $BIN/v-add-web-domain-proxy $user $domain
+# Working on DNS domain
+if [ ! -z "$DNS_SYSTEM" ]; then
+    $BIN/v-add-dns-domain $user $domain $ip "" "" "" "" "" 'no'
+    check_result $? "can't add dns domain" >/dev/null
 fi
 
-# DNS domain
-if [ ! -z "$DNS_SYSTEM" ] && [ "$DNS_SYSTEM" != 'no' ]; then
-    if [ "$retun_code" -eq 0 ]; then
-        $BIN/v-add-dns-domain $user $domain $ip
-        retun_code=$?
+# Working on mail domain
+if [ ! -z "$MAIL_SYSTEM" ]; then
+    $BIN/v-add-mail-domain $user $domain
+    check_result $? "can't add mail domain" >/dev/null
+fi
+
+# Restarting services
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-web
+    check_result $? "can't restart web" > /dev/null
+    if [ ! -z "$PROXY_SYSTEM" ]; then
+        $BIN/v-restart-proxy
+        check_result $? "can't restart proxy" > /dev/null
     fi
-fi
-
-# Mail domain
-if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL_SYSTEM" != 'no' ]; then
-    if [ "$retun_code" -eq 0 ]; then
-        $BIN/v-add-mail-domain $user $domain
-        retun_code=$?
-    fi
+    $BIN/v-restart-dns
+    check_result $? "can't restart dns" > /dev/null
 fi
 
 
@@ -79,4 +80,4 @@ fi
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-exit $retun_code
+exit

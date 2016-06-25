@@ -1,5 +1,5 @@
 <?php
-session_start();
+error_reporting(NULL);
 $TAB = 'BACKUP';
 
 // Main include
@@ -19,7 +19,7 @@ if (empty($_GET['backup'])){
     unset($output);
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_backup.html');
 } else {
-    exec (VESTA_CMD."v-list-user-backup $user '".$_GET['backup']."' json", $output, $return_var);
+    exec (VESTA_CMD."v-list-user-backup $user '".escapeshellarg($_GET['backup'])."' json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
     $data = array_reverse($data,true);
     unset($output);

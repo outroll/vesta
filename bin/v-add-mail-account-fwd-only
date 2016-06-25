@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
@@ -34,7 +34,7 @@ fi
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN ACCOUNT'
-validate_format 'user' 'domain' 'account'
+is_format_valid 'user' 'domain' 'account'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -45,7 +45,7 @@ is_object_unsuspended "mail/$domain" 'ACCOUNT' "$account"
 fwd=$(get_object_value "mail/$domain" 'ACCOUNT' "$account" '$FWD')
 if [ -z "$fwd" ]; then
     echo "Error: forward doesn't exist"
-    log_event "$E_NOTEXIST $EVENT"
+    log_event "$E_NOTEXIST $ARGUMENTS"
     exit $E_NOTEXIST
 fi
 
@@ -56,7 +56,7 @@ fi
 
 # Adding account to fwd_only
 if [[ "$MAIL_SYSTEM" =~ exim ]]; then
-    echo "$account" > $HOMEDIR/$user/conf/mail/$domain/fwd_only
+    echo "$account" >> $HOMEDIR/$user/conf/mail/$domain/fwd_only
     chown -R $MAIL_USER:mail $HOMEDIR/$user/conf/mail/$domain/fwd_only
 fi
 
@@ -71,6 +71,6 @@ update_object_value "mail/$domain" 'ACCOUNT' "$account"  '$FWD_ONLY' "yes"
 
 # Logging
 log_history "added fwd_only flag for $account@$domain"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

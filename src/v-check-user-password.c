@@ -45,8 +45,14 @@ int main (int argc, char** argv) {
     /* open log file */
     FILE* pFile = fopen ("/usr/local/vesta/log/auth.log","a+");
     if (NULL == pFile) {
-        printf("Error: can not open file %s \n", argv[0]);
+        printf("Error: can not open file /usr/local/vesta/log/auth.log \n");
         exit(12);
+    }
+
+    int len = 0;
+    if(strlen(argv[1]) >= 100) {
+        printf("Too long username\n");
+        exit(1);
     }
 
     /* parse user argument */
@@ -78,6 +84,12 @@ int main (int argc, char** argv) {
         }
     } else {
         printf("Error: no such user\n",argv[1]);
+        strcat(str, argv[1]);
+        strcat(str, " ");
+        strcat(str, ip);
+        strcat(str, " failed to login \n");
+        fputs (str,pFile);      /* write */
+        fclose (pFile);         /* close */
         exit(3);
     };
 

@@ -1,0 +1,94 @@
+#!/bin/bash
+# info: add firewall rule
+# options: ACTION IP PORT [PROTOCOL] [COMMENT] [RULE]
+#
+# The function adds new rule to system firewall
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Importing system variables
+source /etc/profile
+
+# Argument definition
+action=$(echo $1|tr '[:lower:]' '[:upper:]')
+ip=$2
+port_ext=$3
+protocol=${4-TCP}
+protocol=$(echo $protocol|tr '[:lower:]' '[:upper:]')
+comment=$5
+rule=$6
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# Get next firewall rule id
+get_next_fw_rule() {
+    if [ -z "$rule" ]; then
+        curr_str=$(grep "RULE=" $VESTA/data/firewall/rules.conf |\
+         cut -f 2 -d \' | sort -n | tail -n1)
+        rule="$((curr_str +1))"
+    fi
+}
+
+sort_fw_rules() {
+    cat $VESTA/data/firewall/rules.conf |\
+        sort -n -k 2 -t \' > $VESTA/data/firewall/rules.conf.tmp
+    mv -f $VESTA/data/firewall/rules.conf.tmp \
+        $VESTA/data/firewall/rules.conf
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'ACTION IP PORT [PROTOCOL] [COMMENT] [RULE]'
+is_format_valid 'action' 'protocol' 'port_ext' 'ip'
+is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
+get_next_fw_rule
+is_format_valid 'rule'
+is_object_new '../../data/firewall/rules' 'RULE' "$rule"
+if [ ! -z "$comment" ]; then
+    is_format_valid 'comment'
+fi
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Generating timestamp
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+# Concatenating rule
+str="RULE='$rule' ACTION='$action' PROTOCOL='$protocol' PORT='$port_ext'"
+str="$str IP='$ip' COMMENT='$comment' SUSPENDED='no'"
+str="$str TIME='$time' DATE='$date'"
+
+# Adding to config
+echo "$str" >> $VESTA/data/firewall/rules.conf
+
+# Changing permissions
+chmod 660 $VESTA/data/firewall/rules.conf
+
+# Sorting firewall rules by id number
+sort_fw_rules
+
+# Updating system firewall
+$BIN/v-update-firewall
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,0 +1,89 @@
+#!/bin/bash
+# info: change path for ftp user.
+# options: USER DOMAIN FTP_USER FTP_PATH
+#
+# The function changes ftp user path.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+ftp_user=$3
+ftp_path=$4
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '4' "$#" 'USER DOMAIN FTP_USER FTP_PATH'
+is_format_valid 'user' 'domain' 'ftp_user'
+is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+get_domain_values 'web'
+if [ -z "$(echo $FTP_USER | tr ':' '\n' | grep ^$ftp_user$)" ]; then
+    echo "Error: account $ftp_user doesn't exist"
+    log_event "$E_NOTEXIST" "$ARGUMENTS"
+    exit $E_NOTEXIST
+fi
+ftp_path_a=$(readlink -f "$HOMEDIR/$user/web/$domain/$ftp_path")
+if [ -z "$(echo $ftp_path_a |grep $HOMEDIR/$user/web/$domain)" ]; then
+    echo "Error: absolute path $ftp_path_a is invalid"
+    log_event "$E_INVALID" "$ARGUMENTS"
+    exit $E_INVALID
+fi
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# MKDIR if path doesn't exist
+if [ ! -e "$ftp_path_a" ]; then
+    mkdir -p "$ftp_path_a"
+    chown $user:$user "$ftp_path_a"
+    chmod 751 "$ftp_path_a"
+fi
+
+# Chaning ftp user path
+pw_str=$(grep -n "^$ftp_user:" /etc/passwd)
+str=$(echo "$pw_str" | cut -f 1 -d :)
+old_path=$(echo "$pw_str" | cut -f 7 -d :)
+sed -i "$str s%$old_path%$ftp_path_a%g" /etc/passwd
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Transforming absolute path to relative
+ftp_path_r=$(echo $ftp_path_a |sed "s%$HOMEDIR/$user/web/$domain%%")
+
+# Rebuilding FTP variables
+position=$(echo $FTP_USER |tr ':' '\n' |grep -n '' |grep ":$ftp_user$" |\
+    cut -f 1 -d:)
+ftp_path=$(echo $FTP_PATH |tr ':' '\n' |grep -n '' |\
+    sed -e "s%^$position:.*%$position:$ftp_path_r%" |\
+    cut -f 2 -d :| sed -e ':a;N;$!ba;s/\n/:/g')
+
+# Updating config
+update_object_value 'web' 'DOMAIN' "$domain" '$FTP_PATH' "$ftp_path"
+
+# Logging
+log_history "changed path to $ftp_path_a for $ftp_user@$domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

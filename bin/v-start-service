@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 service=$1
 
 # Includes
@@ -27,9 +27,12 @@ check_args '1' "$#" 'SERVICE'
 #                       Action                             #
 #----------------------------------------------------------#
 
-service $service start >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    exit $E_RESTART
+if [ "$service" != 'iptables' ]; then
+    service $service start >/dev/null 2>&1
+    check_result $? "$service start failed" $E_RESTART
+else
+    $BIN/v-update-firewall
+    check_result $? "$service start failed" $E_RESTART
 fi
 
 

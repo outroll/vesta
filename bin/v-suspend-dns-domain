@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain_idn=$(idn -t --quiet -a "$domain")
@@ -25,7 +25,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '2' "$#" 'USER DOMAIN [RESTART]'
-validate_format 'user' 'domain'
+is_format_valid 'user' 'domain'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_valid 'dns' 'DOMAIN' "$domain"
@@ -46,15 +46,7 @@ update_object_value 'dns' 'DOMAIN' "$domain" '$SUSPENDED' 'yes'
 sed -i "s/SUSPENDED='no'/SUSPENDED='yes'/g" $USER_DATA/dns/$domain.conf
 increase_user_value "$user" '$SUSPENDED_DNS'
 
-# Restart named
-#if [ "$restart" != 'no' ]; then
-#    $BIN/v-restart-dns
-#    if [ $? -ne 0 ]; then
-#        exit $E_RESTART
-#    fi
-#fi
-
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

@@ -2,14 +2,14 @@
 # info: update domain bandwidth usage
 # options: USER DOMAIN
 #
-# The function recalculates bandwidth usage for speciefic domain.
+# The function recalculates bandwidth usage for specific domain.
 
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain_idn=$(idn -t --quiet -a "$domain")
@@ -25,7 +25,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '2' "$#" 'USER DOMAIN'
-validate_format 'user' 'domain'
+is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -79,6 +79,6 @@ bandwidth=$((U_BANDWIDTH + mb))
 update_object_value 'web' 'DOMAIN' "$domain" '$U_BANDWIDTH' "$bandwidth"
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

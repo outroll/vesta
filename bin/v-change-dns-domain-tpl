@@ -11,7 +11,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain_idn=$(idn -t --quiet -a "$domain")
@@ -29,13 +29,13 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN TEMPLATE [RESTART]'
-validate_format 'user' 'domain' 'template'
+is_format_valid 'user' 'domain' 'template'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'dns' 'DOMAIN' "$domain"
-is_dns_template_valid
+is_dns_template_valid "$template"
 
 
 #----------------------------------------------------------#
@@ -52,8 +52,31 @@ for nameserver in ${ns//,/ };do
     (( ++i))
 done
 
+# Reading template
+template_data=$(cat $DNSTPL/$template.tpl)
+
+# Deleting unused nameservers
+if [ -z "$ns3" ]; then
+    template_data=$(echo "$template_data" |grep -v %ns3%)
+fi
+if [ -z "$ns4" ]; then
+    template_data=$(echo "$template_data" |grep -v %ns4%)
+fi
+if [ -z "$ns5" ]; then
+    template_data=$(echo "$template_data" |grep -v %ns5%)
+fi
+if [ -z "$ns6" ]; then
+    template_data=$(echo "$template_data" |grep -v %ns6%)
+fi
+if [ -z "$ns7" ]; then
+    template_data=$(echo "$template_data" |grep -v %ns7%)
+fi
+if [ -z "$ns8" ]; then
+    template_data=$(echo "$template_data" |grep -v %ns8%)
+fi
+
 # Changing tpl
-cat $DNSTPL/$template.tpl |\
+echo "$template_data" |\
     sed -e "s/%ip%/$ip/g" \
         -e "s/%domain_idn%/$domain_idn/g" \
         -e "s/%domain%/$domain/g" \
@@ -67,6 +90,7 @@ records="$(wc -l $USER_DATA/dns/$domain.conf |cut -f 1 -d ' ')"
 
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+    update_domain_serial
     update_domain_zone
 fi
 
@@ -89,16 +113,14 @@ fi
 update_object_value 'dns' 'DOMAIN' "$domain" '$TPL' "$template"
 update_object_value 'dns' 'DOMAIN' "$domain" '$RECORDS' "$records"
 
-# Restart named
+# Restarting named
 if [ "$restart" != 'no' ]; then
     $BIN/v-restart-dns
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+    check_result $? "DNS restart failed" >/dev/null
 fi
 
 # Logging
 log_history "changed dns template for $domain to $template" '' 'admin'
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

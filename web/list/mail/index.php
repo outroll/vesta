@@ -1,5 +1,6 @@
 <?php
-session_start();
+error_reporting(NULL);
+
 $TAB = 'MAIL';
 
 // Main include
@@ -13,12 +14,6 @@ top_panel($user,$TAB);
 
 // Data
 if (empty($_GET['domain'])){
-
-    // SYS
-    exec (VESTA_CMD."v-list-sys-config json", $output, $return_var);
-    $sys = json_decode(implode('', $output), true);
-    unset($output);
-
     exec (VESTA_CMD."v-list-mail-domains $user json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
     $data = array_reverse($data, true);
@@ -29,7 +24,7 @@ if (empty($_GET['domain'])){
         include($_SERVER['DOCUMENT_ROOT'].'/templates/user/list_mail.html');
     }
 } else {
-    exec (VESTA_CMD."v-list-mail-accounts '".$user."' '".$_GET['domain']."' json", $output, $return_var);
+    exec (VESTA_CMD."v-list-mail-accounts '".$user."' '".escapeshellarg($_GET['domain'])."' json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
     $data = array_reverse($data, true);
     unset($output);

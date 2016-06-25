@@ -1,73 +1,64 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-        <title>Vesta - <?php echo "$TAB"; ?> </title>
-        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-        <link type="text/css" href="/css/main.css?ver=1396704430" rel="stylesheet" />
-        <!--[if IE 7]>
-            <link rel="stylesheet" type="text/css" href="/css/ie.css" />
-            <style type="text/css">
-                .data-col1 a {
-                    white-space: nowrap;
-                }
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+  <title>Vesta - <?="$TAB"?> </title>
+  <link rel="stylesheet" href="/css/styles.min.css?1446554103">
 
-                .submenu-button-block {
-                    width: 120px;
-                }
+  <link type="text/css" href="/css/jquery-custom-dialogs.css?1446554103" rel="stylesheet" />
+  <script type="text/javascript" src="/js/jquery-1.7.2.min.js?1446554103"></script>
+  <script type="text/javascript" src="/js/jquery.cookie.js?1446554103"></script>
+  <script type="text/javascript" src="/js/jquery-ui-1.8.20.custom.min.js?1446554103"></script>
+  <script type="text/javascript" src="/js/hotkeys.js?1446554103"></script>
+  <script type="text/javascript" src="/js/events.js?1446554103"></script>
 
-                .submenu-search-block {
-                    width:369px;
-                }
+  <script language="text/javascript" type="text/javascript">
+    var checked = false;
+    var frmname = '';
 
-                .submenu-select-block {
-                    width:239px;
-                }
+    function checkedAll(frmname) {
+        if ($('.l-unit.selected:not(.header)').length > 0) {
+            $('.l-unit:not(.header)').removeClass("selected");
+            $('.ch-toggle').attr("checked", false);
+            $('.toggle-all').removeClass('clicked-on');
+        }
+        else {
+            $('.l-unit:not(.header)').addClass("selected");
+            $('.ch-toggle').attr("checked", true);
+            $('.toggle-all').addClass('clicked-on');
+        }
+    }
 
-                .submenu-select-dropdown {
-                    position: relative;
-                    top: 2px;
-                }
-            </style>
-        <![endif]-->
-        <link type="text/css" href="/css/jquery-custom-dialogs.css" rel="stylesheet" />
-        <script type="text/javascript" src="/js/events.js"></script>
-        <script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
-        <script type="text/javascript" src="/js/jquery-ui-1.8.20.custom.min.js"></script>
-        <script language="JavaScript">
-            var checked=false;
-            var frmname='';
-            function checkedAll(frmname) {
-                var valus= document.getElementById(frmname);
-                if (checked==false) {
-                    checked=true;
-                } else {
-                    checked = false;
-                }
-                for (var i =0; i < valus.elements.length; i++) {
-                    valus.elements[i].checked=checked;
-                }
-            }
-        </script>
-        <script language="JavaScript">
-            $('document').ready(function() {
-                $('#vstobjects').bind('click', function(evt) { // observe change event on whole div#vstobjects
-                    var elm = evt.target; // grab element on which user clicked
-                    var parent = $(elm).hasClass('data-row') ? $(elm) : $(elm).parents('.data-row'); // check if outer element is row container and get it
-                    if (!$(parent).hasClass('selected')) {
-                        parent.addClass('selected'); // add class
-                        parent.find('.ch-toggle').attr('checked', true);
-                        // another actions on checked row
-                    }
-                    else {
-                        parent.removeClass('selected'); // remove class
-                        parent.find('.ch-toggle').attr('checked', false);
-                        // another actions on unchecked row
-                    }
-                });
-            });
-        </script>
-        <script type="text/javascript" src="/js/app.js"></script>
-        <script type="text/javascript" src="/js/templates.js"></script>
-    </head>
-    <body>
+    function doSearch(url) {
+        var url = url || '/search/';
+        var loc = url + '?q=' + $('.search-input').val();
+
+        location.href = loc;
+        return false;
+    }
+
+    $(document).ready(function(){
+        if($('.body-login')[0]){
+          $('input').first().focus();
+        }
+
+        $(".submenu-select-dropdown").each(function(){
+            $(this).wrap("<span class='submenu-select-wrapper'></span>");
+            $(this).after("<span class='holder'></span>");
+        });
+        $(".submenu-select-dropdown").change(function(){
+            var selectedOption = $(this).find(":selected").text();
+            $(this).next(".holder").text(selectedOption);
+        }).trigger('change');
+        $('.to-top').bind('click', function(evt) {
+            $("html, body").animate({ scrollTop: 0 }, "normal");
+        });
+    })
+
+  </script>
+  <script type="text/javascript" src="/js/app.js?1446554103"></script>
+  <script type="text/javascript" src="/js/templates.js?1446554103"></script>
+  <!-- script type="text/javascript" src="/js/i18n.js.php"></script -->
+</head>
+<body class="body-<?=strtolower($TAB)?> lang-<?=$_SESSION['language']?>">

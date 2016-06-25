@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$(idn -t --quiet -u "$2" )
 domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
@@ -27,7 +27,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN ACCOUNT'
-validate_format 'user' 'domain' 'account'
+is_format_valid 'user' 'domain' 'account'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -44,11 +44,11 @@ is_object_unsuspended "mail/$domain" 'ACCOUNT' "$account"
 if [[ "$MAIL_SYSTEM" =~ exim ]]; then
     aliases=$(get_object_value "mail/$domain" 'ACCOUNT' "$account" '$ALIAS')
     for al in ${aliases//,/ }; do
-        sed -i "/^$al@$domain:$account/d" \
+        sed -i "/^$al@$domain_idn:$account/d" \
             $HOMEDIR/$user/conf/mail/$domain/aliases
     done
 
-    sed -i "/^$account@$domain:/d" $HOMEDIR/$user/conf/mail/$domain/aliases
+    sed -i "/^$account@$domain_idn:/d" $HOMEDIR/$user/conf/mail/$domain/aliases
     sed -i "/^$account:/d" $HOMEDIR/$user/conf/mail/$domain/passwd
     rm -rf $HOMEDIR/$user/mail/$domain/$account
 fi
@@ -68,6 +68,6 @@ update_object_value 'mail' 'DOMAIN' "$domain" '$ACCOUNTS' "$accounts"
 
 # Logging
 log_history "deleted $account@$domain mail account"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit
