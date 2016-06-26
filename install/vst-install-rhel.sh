@@ -1089,7 +1089,7 @@ if [ "$clamd" = 'yes' ]; then
         systemctl --system daemon-reload
         
         # Should fix #645
-        сhown clam:mail /var/run/clamav/
+        сhown clam:clam /var/run/clamav/
     fi
     /usr/bin/freshclam
     chkconfig clamd on
