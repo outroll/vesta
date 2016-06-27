@@ -1,0 +1,105 @@
+#!/bin/bash
+# info: list dns template
+# options: TEMPLATE [FORMAT]
+#
+# The function for obtaining the DNS template parameters.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+template=$1
+format=${2-shell}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    i=1
+    objects=$(grep ID $DNSTPL/$template.tpl |wc -l)
+    echo "{"
+    while read str; do
+        eval $str
+        VALUE=$(echo "$VALUE" |sed -e 's/"/\\"/g' -e "s/%quote%/'/g")
+        echo -n '    "'$ID'": {
+        "RECORD": "'$RECORD'",
+        "TYPE": "'$TYPE'",
+        "PRIORITY": "'$PRIORITY'",
+        "VALUE": "'$VALUE'",
+        "ID": "'$ID'"
+    }'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done < <(cat $DNSTPL/$template.tpl)
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "ID^RECORD^TYPE^VALUE"
+    echo "--^------^----^-----"
+    while read str; do
+        eval $str
+        echo "$ID^$RECORD^$TYPE^$VALUE"
+    done < <(cat $DNSTPL/$template.tpl)
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    while read str; do
+        eval $str
+        VALUE=$(echo "$VALUE" |sed -e "s/%quote%/\\'/g")
+        echo -e "$ID\t$RECORD\t$TYPE\t$PRIORITY\t$VALUE"
+    done < <(cat $DNSTPL/$template.tpl)
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "ID,RECORD,TYPE,PRIORITY,VALUE"
+    while read str; do
+        eval $str
+        VALUE=$(echo "$VALUE" |sed -e "s/%quote%/\\'/g")
+        echo "$ID,$RECORD,$TYPE,$PRIORITY,\"$VALUE\""
+    done < <(cat $DNSTPL/$template.tpl)
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'TEMPLATE [FORMAT]'
+is_format_valid 'template'
+is_dns_template_valid "$template"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t -s '^';;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

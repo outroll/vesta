@@ -1,0 +1,48 @@
+#!/bin/bash
+# info: unsuspend databases
+# options: USER
+#
+# The function for unsuspending all user's databases.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/db.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER'
+is_format_valid 'user'
+is_system_enabled "$DB_SYSTEM" 'DB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Starting unsuspend loop
+for database in $(search_objects 'db' 'SUSPENDED' "yes" 'DB'); do
+    $BIN/v-unsuspend-database "$user" "$database"
+done
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

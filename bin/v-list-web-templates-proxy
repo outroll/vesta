@@ -1,0 +1,85 @@
+#!/bin/bash
+# info: listing proxy templates
+# options: [FORMAT]
+#
+# The function for obtaining the list of proxy templates available to a user.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# JSON list function
+json_list() {
+    objects=$(echo "$templates" |wc -w)
+    i=1
+    echo '['
+    for template in $templates; do
+        if [ "$i" -lt "$objects" ]; then
+            echo -e  "\t\"$template\","
+        else
+            echo -e  "\t\"$template\""
+        fi
+        (( ++i))
+    done
+    echo "]"
+}
+
+# SHELL list function
+shell_list() {
+    echo "TEMPLATE"
+    echo "--------"
+    for template in $templates; do
+        echo "$template"
+    done
+}
+
+# PLAIN list function
+plain_list() {
+    for template in $templates; do
+        echo "$template"
+    done
+}
+
+# CSV list function
+csv_list() {
+    echo "TEMPLATE"
+    for template in $templates; do
+        echo "$template"
+    done
+}
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Parsing proxy templates
+if [ ! -z "$PROXY_SYSTEM" ]; then
+    templates=$(ls -t $WEBTPL/$PROXY_SYSTEM |\
+        cut -f1 -d . |\
+        grep -v proxy_ip |\
+        sort -u )
+fi
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

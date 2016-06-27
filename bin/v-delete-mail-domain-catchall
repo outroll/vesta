@@ -1,0 +1,59 @@
+#!/bin/bash
+# info: delete mail domain catchall email
+# options: USER DOMAIN
+#
+# The function disables mail domain cathcall.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -a "$domain")
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_format_valid 'user' 'domain'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_value_exist 'mail' 'DOMAIN' "$domain" '$CATCHALL'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Delete cathcall alias
+if [[ "$MAIL_SYSTEM" =~ exim ]]; then
+    sed -i "/*@$domain_idn:/d" $HOMEDIR/$user/conf/mail/$domain/aliases
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Delete catchall in config
+update_object_value 'mail' 'DOMAIN' "$domain" '$CATCHALL' ''
+
+# Logging
+log_history "deleted catchall email on $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

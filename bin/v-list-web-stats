@@ -1,0 +1,80 @@
+#!/bin/bash
+# info: list web statistics
+# options: [FORMAT]
+#
+# The function for obtaining the list of web statistics analyzer.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# JSON list function
+json_list() {
+    objects=$(echo "$stats" | wc -w)
+    i=1
+    echo '['
+    for str in $stats; do
+        if [ "$i" -lt "$objects" ]; then
+            echo -e  "\t\"$str\","
+        else
+            echo -e  "\t\"$str\""
+        fi
+        (( ++i))
+    done
+    echo "]"
+}
+
+# SHELL list function
+shell_list() {
+    echo "PARSER"
+    echo "------"
+    for parser in $stats; do
+        echo "$parser"
+    done
+}
+
+# PLAIN list function
+plain_list() {
+    for parser in $stats; do
+        echo "$parser"
+    done
+}
+
+# CSV list function
+csv_list() {
+    echo "PARSER"
+    for parser in $stats; do
+        echo "$parser"
+    done
+}
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Parsing stats system
+stats=$(echo "none ${STATS_SYSTEM//,/ }")
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

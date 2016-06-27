@@ -1,0 +1,89 @@
+#!/bin/bash
+# info: list user nameservers
+# options: USER [FORMAT]
+#
+# Function for obtaining the list of user's DNS servers.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+format=${2-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    i=1
+    objects=$(echo -e "${ns//,/\\n}" |wc -l)
+    echo '['
+    for nameserver in ${ns//,/ };do
+        if [ "$i" -ne "$objects" ]; then
+            echo -e  "\t\"$nameserver\","
+        else
+            echo -e  "\t\"$nameserver\""
+        fi
+        (( ++i))
+    done
+    echo ']'
+}
+
+# SHELL list function
+shell_list() {
+    echo "NS"
+    echo "--"
+    for nameserver in ${ns//,/ };do
+        echo "$nameserver"
+    done
+}
+
+# PLAIN list function
+plain_list() {
+    for nameserver in ${ns//,/ };do
+        echo "$nameserver"
+    done
+}
+
+# CSV list function
+csv_list() {
+    echo "NAMESERVER"
+    for nameserver in ${ns//,/ };do
+        echo "$nameserver"
+    done
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER [FORMAT]'
+is_format_valid 'user'
+is_object_valid 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Parsing name servers
+ns=$(grep "^NS='" $USER_DATA/user.conf |cut -f 2 -d \')
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

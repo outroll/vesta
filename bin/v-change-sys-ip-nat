@@ -1,0 +1,85 @@
+#!/bin/bash
+# info: change ip nat address
+# options: IP NAT_IP [RESTART]
+#
+# The function for changing nat ip associated with ip.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+ip=$1
+nat_ip=$2
+restart=$3
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/ip.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'IP NAT_IP [RESTART]'
+is_format_valid 'ip'
+is_format_valid 'nat_ip'
+is_ip_valid "$ip"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Changing nat ip
+if [ -z "$(grep NAT= $VESTA/data/ips/$ip)" ]; then
+    sed -i "s/^TIME/NAT='$nat_ip'\nTIME/g" $VESTA/data/ips/$ip
+else
+    update_ip_value '$NAT' "$nat_ip"
+fi
+
+# Check ftp system
+if [ "$FTP_SYSTEM" = 'vsftpd' ]; then
+
+    # Find configuration
+    if [ -e '/etc/vsftpd/vsftpd.conf' ]; then
+        conf='/etc/vsftpd/vsftpd.conf'
+    fi
+
+    if [ -e '/etc/vsftpd.conf' ]; then
+        conf='/etc/vsftpd.conf'
+    fi
+
+    # Update config
+    if [ -z "$(grep pasv_address $conf)" ]; then
+        if [ ! -z "$nat_ip" ]; then
+            echo "pasv_address=$nat_ip" >> $conf
+        fi
+    else
+        if [ ! -z "$nat_ip" ]; then
+            sed -i "s/pasv_address=.*/pasv_address='$nat_ip'/g" $conf
+        else
+            sed -i "/pasv_address/d" $conf
+        fi
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Restart ftp server
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-ftp
+    check_result $? "FTP restart failed" >/dev/null
+fi
+
+# Logging
+log_history "changed associated nat address on $ip to $nat_ip" '' 'admin'
+log_event "$OK" "$ARGUMENTS"
+
+exit

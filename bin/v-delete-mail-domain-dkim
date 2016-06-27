@@ -1,0 +1,70 @@
+#!/bin/bash
+# info: delete mail domain dkim support
+# options: USER DOMAIN [DKIM_SIZE]
+#
+# The function delete DKIM domain pem.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_format_valid 'user' 'domain'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_value_exist 'mail' 'DOMAIN' "$domain" '$DKIM'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Deleting dkim
+if [[ "$MAIL_SYSTEM" =~ exim ]]; then
+    rm -f $USER_DATA/mail/$domain.pem
+    rm -f $USER_DATA/mail/$domain.pub
+    rm -f $HOMEDIR/$user/conf/mail/$domain/dkim.pem
+fi
+
+# Deleting dns record
+if [ ! -z "$DNS_SYSTEM" ] && [ -e "$USER_DATA/dns/$domain.conf" ]; then
+    records=$($BIN/v-list-dns-records $user $domain plain)
+    dkim_records=$(echo "$records" |grep -w '_domainkey' | cut -f 1 -d ' ')
+    for id in $dkim_records; do
+        $BIN/v-delete-dns-record $user $domain $id
+    done
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Updatoing config
+update_object_value 'mail' 'DOMAIN' "$domain" '$DKIM' 'no'
+decrease_user_value "$user" '$U_MAIL_DKMI'
+
+# Logging
+log_history "disabled DKIM support on $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

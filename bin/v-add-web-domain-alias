@@ -1,0 +1,102 @@
+#!/bin/bash
+# info: add web domain alias
+# options: USER DOMAIN ALIASES [RESTART]
+#
+# The call is intended for adding aliases to a domain (it is also called
+# "domain parking"). The function supports wildcards *.domain.tpl.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -a "$domain")
+dom_alias=$(idn -t --quiet -u "$3" )
+dom_alias=$(echo $dom_alias | sed -e 's/\.*$//g' -e 's/^\.*//g')
+dom_alias=$(echo $dom_alias | tr '[:upper:]' '[:lower:]')
+dom_alias_idn=$(idn -t --quiet -a "$dom_alias" )
+restart="$4"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/func/ip.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN ALIASES [RESTART]'
+is_format_valid 'user' 'domain' 'dom_alias'
+is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_domain_new 'web' "$dom_alias"
+is_package_full 'WEB_ALIASES'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Parsing domain values
+get_domain_values 'web'
+
+# Preparing domain values for the template substitution
+if [ -z "$ALIAS" ]; then
+    ALIAS="$dom_alias"
+else
+    ALIAS="$ALIAS,$dom_alias"
+fi
+prepare_web_domain_values
+
+# Rebuilding vhost
+del_web_config "$WEB_SYSTEM" "$TPL.tpl"
+add_web_config "$WEB_SYSTEM" "$TPL.tpl"
+if [ "$SSL" = 'yes' ]; then
+    del_web_config "$WEB_SYSTEM" "$TPL.stpl"
+    add_web_config "$WEB_SYSTEM" "$TPL.stpl"
+fi
+
+# Rebuilding proxy configuration
+if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
+    del_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+    add_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+    if [ "$SSL" = 'yes' ]; then
+        del_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+        add_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Adding new alias
+update_object_value 'web' 'DOMAIN' "$domain" '$ALIAS' "$ALIAS"
+increase_user_value "$user" '$U_WEB_ALIASES'
+
+# Restarting web server
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-web
+    check_result $? "Web restart failed" >/dev/null
+
+    if [ ! -z "$PROXY_SYSTEM" ]; then
+        $BIN/v-restart-proxy
+        check_result $? "Proxy restart failed" >/dev/null
+    fi
+fi
+
+log_history "added $dom_alias as alias for $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

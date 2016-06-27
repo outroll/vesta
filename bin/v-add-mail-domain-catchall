@@ -1,0 +1,61 @@
+#!/bin/bash
+# info: add mail domain catchall account
+# options: USER DOMAIN EMAIL
+#
+# The function enables catchall account for incoming emails.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -a "$domain")
+email="$3"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN EMAIL'
+is_format_valid 'user' 'domain' 'email'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_value_empty 'mail' 'DOMAIN' "$domain" '$CATCHALL'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Adding catchall alias
+if [[ "$MAIL_SYSTEM" =~ exim ]]; then
+    sed -i "/*@$domain_idn:/d" $HOMEDIR/$user/conf/mail/$domain/aliases
+    echo "*@$domain_idn:$email" >> $HOMEDIR/$user/conf/mail/$domain/aliases
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Adding antispam in config
+update_object_value 'mail' 'DOMAIN' "$domain" '$CATCHALL' "$email"
+
+# Logging
+log_history "added $email as catchall email for $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

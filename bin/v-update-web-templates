@@ -1,0 +1,83 @@
+#!/bin/bash
+# info: update web templates
+# options: [RESTART]
+#
+# The function for obtaining updated pack of web templates.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+restart=$1
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Defining config host
+chost='c.vestacp.com'
+
+# Detcing OS
+case $(head -n1 /etc/issue |cut -f 1 -d ' ') in
+    Debian)     version="debian" ;;
+    Ubuntu)     version="ubuntu" ;;
+    *)          version="rhel" ;;
+esac
+
+# Detecting release
+if [ "$version" = 'rhel' ]; then
+    release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
+fi
+if [ "$version" = 'ubuntu' ]; then
+    release=$(lsb_release -r |awk '{print $2}')
+fi
+if [ "$version" = 'debian' ]; then
+    release=$(cat /etc/issue|grep -o [0-9]|head -n1)
+fi
+
+# Defining download url
+vestacp="http://$chost/$version/$release"
+
+# Downloading template archive
+cd $(mktemp -d)
+wget $vestacp/templates.tar.gz -q
+
+check_result $? "can't download template.tar.gz" $E_CONNECT
+
+# Updating templates
+tar -xzpf templates.tar.gz -C $VESTA/data/ templates/web
+
+# Rebuilding web domains
+for user in $($BIN/v-list-sys-users plain); do
+    $BIN/v-rebuild-web-domains $user no
+done
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Restarting web server
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-web
+    check_result $? "restart" >/dev/null 2>&1
+
+    if [ ! -z "$PROXY_SYSTTEM" ]; then
+        $BIN/v-restart-proxy
+        check_result $? "restart" >/dev/null 2>&1
+    fi
+
+    if [ ! -z "$WEB_BACKEND" ]; then
+        $BIN/v-restart-proxy
+        check_result $? "restart" >/dev/null 2>&1
+    fi
+fi
+
+exit

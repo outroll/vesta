@@ -1,0 +1,63 @@
+#!/bin/bash
+# info: change dns domain expiration date
+# options: USER DOMAIN EXP
+#
+# The function of changing the term of expiration domain's registration. The
+# serial number will be refreshed automatically during update.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+exp=$3
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN EXP'
+is_format_valid 'user' 'domain' 'exp'
+is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Changing exp
+update_object_value 'dns' 'DOMAIN' "$domain" '$EXP' "$exp"
+
+# Updating dns-cluster queue
+if [ ! -z "$DNS_CLUSTER" ]; then
+    # Check for first sync
+    dlock=$(grep "domain $user $domain" $VESTA/data/queue/dns-cluster.pipe)
+    if [ -z "$dlock" ]; then
+        cmd="$BIN/v-change-remote-dns-domain-exp $user $domain $exp"
+        echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_history "changed whois expiration date for $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

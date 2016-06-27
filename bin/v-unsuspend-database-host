@@ -1,0 +1,47 @@
+#!/bin/bash
+# info: unsuspend database server
+# options: TYPE HOST
+#
+# The function for unsuspending a database server.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+type=$1
+host=$2
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'TYPE HOST'
+is_format_valid 'type' 'host'
+is_system_enabled "$DB_SYSTEM" 'DB_SYSTEM'
+is_object_valid "../../conf/$type" 'HOST' "$host"
+is_object_suspended "../../conf/$type" 'HOST' "$host"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Unsuspend database creation on a server
+update_object_value "../../conf/$type" 'HOST' "$host" '$SUSPENDED' 'no'
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

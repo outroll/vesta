@@ -1,0 +1,80 @@
+#!/bin/bash
+# info: list system interfaces
+# options: [FORMAT]
+#
+# The function for obtaining the list of network interfaces.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    objects=$(echo "$interfaces" |wc -l)
+    i=1
+    echo '['
+    for interface in $interfaces; do
+        echo -n '    "'$interfaces'"'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done
+    echo ']'
+}
+
+# SHELL list function
+shell_list() {
+    echo "INTERFACE"
+    echo "---------"
+    for interface in $interfaces; do
+        echo "$interface"
+    done
+}
+
+# PLAIN list function
+plain_list() {
+    for interface in $interfaces; do
+        echo "$interface"
+    done
+}
+
+# CSV list function
+csv_list() {
+    echo "INTERFACE"
+    for interface in $interfaces; do
+        echo "$interface"
+    done
+}
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Defining interface list
+interfaces=$(cat /proc/net/dev |grep : |cut -f 1 -d : |tr -d ' ' |grep -v lo)
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

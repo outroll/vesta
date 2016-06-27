@@ -1,0 +1,68 @@
+#!/bin/bash
+# info: update system queue
+# options: PIPE
+#
+# This function is responsible queue processing. Restarts of services,
+# scheduled backups, web log parsing and other heavy resource consuming
+# operations are handled by this script. It helps to optimize system behaviour.
+# In a nutshell Apache will be restarted only once even if 10 domains are
+# added or deleted.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+# Argument definition
+queue=$1
+
+# Importing system environment  as we run this script
+# mostly by cron wich not read it by itself
+source /etc/profile
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# Export PATH for cron
+PATH=$PATH:$BIN
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'QUEUE'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+b_task=$(ps auxf |grep -v "grep" |grep "$VESTA/bin/v-update-sys-queue backup")
+b_task=$(echo "$b_task" |grep -v sudo |wc -l)
+d_task=$(ps auxf |grep -v "grep" |grep "$VESTA/bin/v-update-sys-queue dns")
+d_task=$(echo "$d_task" |grep -v sudo |wc -l)
+if [ "$b_task" -gt 2 ] || [ "$d_task" -gt 2 ]; then
+    exit
+fi
+
+# Defining pipe functions
+case $queue in
+    restart)        bash $VESTA/data/queue/$queue.pipe ;;
+    webstats)       bash $VESTA/data/queue/$queue.pipe > /dev/null 2>&1 ;;
+    backup)         bash $VESTA/data/queue/$queue.pipe > /dev/null 2>&1 ;;
+    disk)           bash $VESTA/data/queue/$queue.pipe ;;
+    traffic)        bash $VESTA/data/queue/$queue.pipe ;;
+    dns-cluster)    bash $VESTA/data/queue/$queue.pipe > /dev/null 2>&1 ;;
+    *)              check_args '1' '0' 'QUEUE' ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# No Logging
+#log_event "$OK" "$ARGUMENTS"
+
+exit

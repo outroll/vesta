@@ -1,0 +1,128 @@
+    <div class="l-center edit">
+      <div class="l-sort clearfix">
+        <div class="l-sort-toolbar clearfix float-left">
+          <span class="title edit"><b><?=__('Editing DNS Record')?></b></span>
+            <?php
+              if (!empty($_SESSION['error_msg'])) {
+                echo "<span class=\"vst-error\"> → ".htmlentities($_SESSION['error_msg'])."</span>";
+              } else {
+                if (!empty($_SESSION['ok_msg'])) {
+                  echo "<span class=\"vst-ok\"> → ".$_SESSION['ok_msg']."</span>";
+                }
+              }
+            ?>
+        </div>
+
+      </div>
+      <? display_error_block() ?>
+    </div>
+
+    <div class="l-separator"></div>
+    <!-- /.l-separator -->
+
+    <div class="l-center">
+      <?php
+        $back = $_SESSION['back'];
+        if (empty($back)) {
+          $back = "location.href='/list/dns/?domain=".$_GET['domain']."'";
+        } else {
+          $back = "location.href='".$back."'";
+        }
+      ?>
+        <form id="vstobjects" name="v_edit_dns_rec" method="post"  class="<?=$v_status?>">
+            <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
+            <input type="hidden" name="save" value="save" />
+            <table class='data'>
+                <tr class="data-add">
+                    <td class="data-dotted">
+                        <table class="data-col1">
+                            <tr>
+                                <td>
+                                    <a class="data-date"><?=translate_date($v_date)?></a><br>
+                                    <a class="data-date"><?=$v_time?></a>
+                                </td>
+                            </tr>
+                            <tr><td class="data-<?php echo $v_status ?>"><b><?php echo __($v_status) ?></b></td></tr>
+                        </table>
+                    </td>
+                    <td class="data-dotted">
+                        <table class="data-col2">
+                            <tr>
+                                <td class="vst-text step-top">
+                                    <?php print __('Domain');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_domain" <?php echo "value=".htmlentities($v_domain);  ?> disabled >
+                                    <input type="hidden" name="v_domain" <?php echo "value=".htmlentities($v_domain); 	 ?>>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Record');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_rec" <?php if (!empty($v_rec)) echo "value=".htmlentities($v_rec); ?> disabled> <input type="hidden" name="v_record_id" <?php if (!empty($v_record_id)) echo "value=".htmlentities($v_record_id); ?>>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Type');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_type" <?php if (!empty($v_rec)) echo "value=".htmlentities($v_type); ?> disabled>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('IP or Value');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_val" <?php if (!empty($v_val)) echo "value='".htmlentities($v_val)."'"; ?>>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Priority');?> <span class="optional">(<?php print __('optional');?>)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_priority" <?php if (!empty($v_priority)) echo "value=".htmlentities($v_priority); ?>>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Record Number');?> <span class="optional">(<?=__('internal');?>)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_record_id" <?php if (!empty($v_record_id)) echo "value=".htmlentities($v_record_id); ?>>
+                                </td>
+                            </tr>
+
+                        </table>
+                        <table class="data-col2">
+                            <tr>
+                                <td class="step-top" width="116px">
+                                    <input type="submit" class="button" name="save" value="<?php print __('Save');?>">
+                                </td>
+                                <td class="step-top">
+                                    <input type="button" class="button cancel" value="<?php print __('Back');?>" onclick="<?php echo $back ?>">
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>

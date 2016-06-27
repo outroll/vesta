@@ -1,0 +1,54 @@
+#!/bin/bash
+# info: change user contact email
+# options: USER EMAIL
+#
+# The function for changing of e-mail associated with a certain user.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+email=$2
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER EMAIL'
+is_format_valid 'user' 'email'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Changing user contact email
+old_email=$(get_user_value '$CONTACT')
+update_user_value "$user" '$CONTACT' "$email"
+pw_str=$(grep -n "^$user:" /etc/passwd)
+str=$(echo "$pw_str" | cut -f 1 -d :)
+sed -i "$str s/$old_email/$email/g" /etc/passwd
+
+# Update crontab email
+$BIN/v-rebuild-cron-jobs $user > /dev/null 2>&1
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_history "changed contact email to $email"
+log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,0 +1,70 @@
+#!/bin/bash
+# info: deleting web domain proxy configuration
+# options: USER DOMAIN
+#
+# The function of deleting the virtualhost proxy configuration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+restart=$3
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_format_valid 'user' 'domain'
+is_system_enabled "$PROXY_SYSTEM" 'WEB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_value_exist 'web' 'DOMAIN' "$domain" '$PROXY'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Defining domain parameters
+get_domain_values 'web'
+del_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+
+# Checking SSL
+if [ "$SSL" = 'yes' ]; then
+    del_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Update config
+update_object_value 'web' 'DOMAIN' "$domain" '$PROXY' ''
+update_object_value 'web' 'DOMAIN' "$domain" '$PROXY_EXT' ''
+
+# Restart proxy server
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-proxy
+    check_result $? "Proxy restart failed" >/dev/null
+fi
+
+# Logging
+log_history "disabled proxy support for $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

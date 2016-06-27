@@ -1,0 +1,66 @@
+#!/bin/bash
+# info: change user language
+# options: USER LANGUAGE
+#
+# The function for changing language.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+language=$2
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+is_language_valid() {
+    if ! [[ "$1" =~ ^[[:alnum:]_-]+$ ]]; then
+        echo "Error: language $1 is not valid"
+        log_event "$E_INVALID" "$ARGUMENTS"
+        exit $E_INVALID
+    fi
+    if [ ! -e "$VESTA/web/inc/i18n/$1.php" ]; then
+        echo "Error: language $1 doesn't exist"
+        log_event "$E_NOTEXIST" "$ARGUMENTS"
+        exit $E_NOTEXIST
+    fi
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER LANGUAGE'
+is_format_valid 'user' 'language'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_language_valid $language
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Change language
+if [ -z "$(grep LANGUAGE $USER_DATA/user.conf)" ]; then
+    sed -i "s/^TIME/LANGUAGE='$language'\nTIME/g" $USER_DATA/user.conf
+else
+    update_user_value "$user" '$LANGUAGE' "$language"
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_history "changed language to $language"
+log_event "$OK" "$ARGUMENTS"
+
+exit

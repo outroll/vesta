@@ -1,0 +1,75 @@
+#!/bin/bash
+# info: list supported database types
+# options: [FORMAT]
+#
+# The function for obtaining the list of database types.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# JSON list function
+json_list() {
+    objects=$(echo "${DB_SYSTEM//,/ }" |wc -w)
+    i=1
+    echo '['
+    for type in ${DB_SYSTEM//,/ }; do
+        echo -n '    "'$type'"'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done
+    echo "]"
+}
+
+# SHELL list function
+shell_list() {
+    echo -e "TYPE\n----"
+    echo "$DB_SYSTEM" |sed -e "s/,/\n/"
+}
+
+# PLAIN list function
+plain_list() {
+    for type in ${DB_SYSTEM//,/ }; do
+        echo "$type"
+    done
+}
+
+# CSV list function
+csv_list() {
+    echo "TYPE"
+    for type in ${DB_SYSTEM//,/ }; do
+        echo "$type"
+    done
+}
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

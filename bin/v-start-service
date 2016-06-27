@@ -1,0 +1,43 @@
+#!/bin/bash
+# info: start service
+# options: service
+#
+# The function starts system service.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+service=$1
+
+# Includes
+source $VESTA/func/main.sh
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'SERVICE'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+if [ "$service" != 'iptables' ]; then
+    service $service start >/dev/null 2>&1
+    check_result $? "$service start failed" $E_RESTART
+else
+    $BIN/v-update-firewall
+    check_result $? "$service start failed" $E_RESTART
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

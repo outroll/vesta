@@ -1,0 +1,83 @@
+#!/bin/bash
+# info: change dns domain record id
+# options: USER DOMAIN ID NEWID [RESTART]
+#
+# The function for changing internal record id.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -a "$domain")
+id=$3
+newid=$4
+restart=$5
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '4' "$#" 'USER DOMAIN ID NEWID [RESTART]'
+is_format_valid 'user' 'domain' 'id' 'newid'
+is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+is_object_valid "dns/$domain" 'ID' "$id"
+is_object_new "dns/$domain" 'ID' "$newid"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Change id
+sed -i "s/^ID='$id'/ID='$newid'/" $USER_DATA/dns/$domain.conf
+
+# Sorting records
+sort_dns_records
+
+# Updating zone
+if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+    update_domain_serial
+    update_domain_zone
+fi
+
+# Updating dns-cluster queue
+if [ ! -z "$DNS_CLUSTER" ]; then
+    # Check for first sync
+    dlock=$(grep "domain $user $domain" $VESTA/data/queue/dns-cluster.pipe)
+    if [ -z "$dlock" ]; then
+        cmd="$BIN/v-add-remote-dns-domain $user $domain records"
+        echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Restarting named
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-dns
+    check_result $? "DNS restart failed" >/dev/null
+fi
+
+# Logging
+log_history "changed dns record id on $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

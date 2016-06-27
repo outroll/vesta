@@ -1,0 +1,99 @@
+#!/bin/bash
+# info: list mail domain account
+# options: USER DOMAIN ACCOUNT [FORMAT]
+#
+# The function of obtaining the list of account parameters.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+account=$3
+format=${4-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    echo '{'
+    echo '    "'$account'": {
+        "ALIAS": "'$ALIAS'",
+        "FWD": "'$FWD'",
+        "FWD_ONLY": "'$FWD_ONLY'",
+        "AUTOREPLY": "'$AUTOREPLY'",
+        "QUOTA": "'$QUOTA'",
+        "U_DISK": "'$U_DISK'",
+        "SUSPENDED": "'$SUSPENDED'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    echo "ACCOUNT:        $account"
+    echo "ALIAS:          $ALIAS"
+    echo "FORWARD:        $FWD"
+    echo "FORWARD_ONLY:   $FWD_ONLY"
+    echo "AUTOREPLY:      $AUTOREPLY"
+    echo "QUOTA:          $QUOTA"
+    echo "DISK:           $U_DISK"
+    echo "SUSPENDED:      $SUSPENDED"
+    echo "TIME:           $TIME"
+    echo "DATE:           $DATE"
+}
+
+# PLAIN list function
+plain_list() {
+    echo -ne "$account\t$ALIAS\t$FWD\t$FWD_ONLY\t$AUTOREPLY\t$QUOTA\t"
+    echo -e "$U_DISK\t$SUSPENDED\t$TIME\t$DATE"
+}
+
+# CSV list function
+csv_list() {
+    echo -n  "ACCOUNT,ALIAS,FWD,FWD_ONLY,AUTOREPLY,QUOTA,U_DISK"
+    echo "SUSPENDED,TIME,DATE"
+    echo -n "$ACCOUNT,\"$ALIAS\",\"$FWD\",$FWD_ONLY,$AUTOREPLY,$QUOTA,"
+    echo "$U_DISK,$SUSPENDED,$TIME,$DATE"
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN ACCOUNT [FORMAT]'
+is_format_valid 'user' 'domain' 'account'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_valid "mail/$domain" 'ACCOUNT' "$account"
+
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Parsing mail account
+eval $(grep "ACCOUNT='$account'" $USER_DATA/mail/$domain.conf)
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

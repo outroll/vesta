@@ -1,0 +1,79 @@
+#!/bin/bash
+# info: list dns templates
+# options: [FORMAT]
+#
+# The function for obtaining the list of all DNS templates available.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    objects=$(echo "$templates" |wc -l)
+    i=1
+    echo "["
+    for template in $templates; do
+        echo -n '    "'$template'"'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done
+    echo "]"
+
+}
+
+# SHELL list function
+shell_list() {
+    echo "TEMPLATE"
+    echo "--------"
+    ls -t $DNSTPL |grep '\.tpl' |cut -f 1 -d  '.'
+}
+
+# PLAIN list function
+plain_list() {
+    for template in $templates; do
+        echo "$template"
+    done
+}
+
+# CSV list function
+csv_list() {
+    echo "TEMPLATE"
+    for template in $templates; do
+        echo "$template"
+    done
+}
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Defining template list
+templates=$(ls -t $DNSTPL |grep '\.tpl' |cut -f 1 -d  '.')
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

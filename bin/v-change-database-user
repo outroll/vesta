@@ -1,0 +1,91 @@
+#!/bin/bash
+# info: change database username
+# options: USER DATABASE DBUSER [DBPASS]
+#
+# The function for changing database user. It uses the
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+database=$2
+dbuser="$user"_"$3"
+password=$4; HIDE=4
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/db.sh
+source $VESTA/func/rebuild.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DATABASE DBUSER [DBPASS]'
+is_format_valid 'user' 'database' 'dbuser'
+is_system_enabled "$DB_SYSTEM" 'DB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'db' 'DB' "$database"
+is_object_unsuspended 'db' 'DB' "$database"
+is_password_valid
+dbpass="$password"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Compare old and new user
+old_dbuser=$(get_object_value 'db' 'DB' "$database" '$DBUSER')
+if [ "$old_dbuser" = "$dbuser" ]; then
+    exit
+fi
+
+# Set new dbuser
+update_object_value 'db' 'DB' "$database" '$DBUSER' "$dbuser"
+
+# Get database values
+get_database_values
+
+# Rebuild datbase
+case $TYPE in
+    mysql) rebuild_mysql_database ;;
+    pgsql) rebuild_pgsql_database ;;
+esac
+
+# Change password
+if [ ! -z "$dbpass" ]; then
+    case $TYPE in
+        mysql) change_mysql_password ;;
+        pgsql) change_pgsql_password ;;
+    esac
+
+    # Update config value
+    update_object_value 'db' 'DB' "$database" '$MD5' "$md5"
+fi
+
+# Remove old user
+check_old_dbuser=$(grep "DBUSER='$old_dbuser'" $USER_DATA/db.conf)
+if [ -z "$check_old_dbuser" ]; then
+    case $TYPE in
+        mysql) delete_mysql_user ;;
+        pgsql) delete_pgsql_user ;;
+    esac
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_history "changed $database database user to $dbuser"
+log_event "$OK" "$ARGUMENTS"
+
+exit

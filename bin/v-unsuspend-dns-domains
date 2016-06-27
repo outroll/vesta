@@ -1,0 +1,48 @@
+#!/bin/bash
+# info: unsuspend dns domains
+# options: USER [RESTART]
+#
+# The function unsuspends all user's DNS domains.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+restart=$2
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER [RESTART]'
+is_format_valid 'user'
+is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Starting unsuspend loop
+for domain in $(search_objects 'dns' 'SUSPENDED' "yes" 'DOMAIN'); do
+    $BIN/v-unsuspend-dns-domain "$user" "$domain" 'no'
+done
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

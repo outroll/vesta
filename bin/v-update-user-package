@@ -1,0 +1,47 @@
+#!/bin/bash
+# info: update user package
+# options: PACKAGE
+#
+# The function propagates package to connected users.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+package=$1
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'PACKAGE'
+is_format_valid 'package'
+is_package_valid
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+for user in $(ls $VESTA/data/users); do
+    check_package=$(grep "PACKAGE='$package'" $USER_DATA/$user/user.conf)
+    if [ ! -z "$check_package" ]; then
+        $BIN/v-change-user-package $user $package 'yes'
+    fi
+done
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

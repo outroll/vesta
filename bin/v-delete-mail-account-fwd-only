@@ -1,0 +1,61 @@
+#!/bin/bash
+# info: delete mail account forward-only flag
+# options: USER DOMAIN ACCOUNT
+#
+# The function deletes fwd-only flag
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -a "$domain")
+account=$3
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN ACCOUNT'
+is_format_valid 'user' 'domain' 'account'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_valid "mail/$domain" 'ACCOUNT' "$account"
+is_object_unsuspended "mail/$domain" 'ACCOUNT' "$account"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Deleting account from fwd_only
+if [[ "$MAIL_SYSTEM" =~ exim ]]; then
+    sed -i "/^$account$/d" $HOMEDIR/$user/conf/mail/$domain/fwd_only
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Updating config
+update_object_value "mail/$domain" 'ACCOUNT' "$account"  '$FWD_ONLY' ''
+
+# Logging
+log_history "deleted fwd_only flag for $account@$domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,0 +1,77 @@
+#!/bin/bash
+# info: change dns domain soa record
+# options: USER DOMAIN SOA
+#
+# The function for changing SOA record. This type of records can not be
+# modified by v-change-dns-record call.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+soa=$(echo $3 | sed -e 's/\.*$//g' -e 's/^\.*//g')
+restart=$4
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN SOA'
+is_format_valid 'user' 'domain' 'soa'
+is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Changing soa
+update_object_value 'dns' 'DOMAIN' "$domain" '$SOA' "$soa"
+
+# Updating zone
+if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+    update_domain_serial
+    update_domain_zone
+fi
+
+# Updating dns-cluster queue
+if [ ! -z "$DNS_CLUSTER" ]; then
+    # Check for first sync
+    dlock=$(grep "domain $user $domain" $VESTA/data/queue/dns-cluster.pipe)
+    if [ -z "$dlock" ]; then
+        cmd="$BIN/v-change-remote-dns-domain-soa $user $domain $soa"
+        echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Restarting named
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-dns
+    check_result $? "DNS restart failed" >/dev/null
+fi
+
+# Logging
+log_history "changed soa record for $domain to $soa"
+log_event "$OK" "$ARGUMENTS"
+
+exit

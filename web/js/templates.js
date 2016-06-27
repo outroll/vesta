@@ -1,282 +1,234 @@
+/**
+ *
+ * @author: Malishev Dmitry <dima.malishev@gmail.com>
+ */
 App.Templates.html = {
-    help: {
-        DNS_form: ['<h1>Some Things You Just Can\'t Explain</h1>\
-            A farmer was sitting in the neighborhood bar getting drunk. A man came in and asked the farmer, "Hey, why are you sitting here on this beautiful day, getting drunk?" The farmer shook his head and replied, "Some things you just can\'t explain."\
-            "So what happened that\'s so horrible?" the man asked as he sat down next to the farmer.\
-            "Well," the farmer said, "today I was sitting by my cow, milking her. Just as I got the bucket full, she lifted her left leg and kicked over the bucket."\
-            "Okay," said the man, "but that\'s not so bad." "Some things you just can\'t explain," the farmer replied. "So what happened then?" the man asked. The farmer said, "I took her left leg and tied it to the post on the left."\
-            "And then?"\
-            "Well, I sat back down and continued to milk her. Just as I got the bucket full, she took her right leg and kicked over the bucket."\
-            The man laughed and said, "Again?" The farmer replied, "Some things you just can\'t explain." "So, what did you do then?" the man asked.\
-            "I took her right leg this time and tied it to the post on the right."\
-            "And then?"\
-            "Well, I sat back down and began milking her again. Just as I got the bucket full, the stupid cow knocked over the bucket with her tail."\
-            "Hmmm," the man said and nodded his head. "Some things you just can\'t explain," the farmer said.\
-            "So, what did you do?" the man asked.\
-            "Well," the farmer said, "I didn\'t have anymore rope, so I took off my belt and tied her tail to the rafter. In that moment, my pants fell down and my wife walked in ... Some things you just can\'t explain."']
+    WEB: {
+        hint: [''],
+        notification: [
+                    '<li class="~!:UNSEEN~!"><span class="mark-seen" id="notification-~!:ID~!">&nbsp;</span>\
+                        <span class="title"><span class="icon ~!:TYPE~!">&nbsp;</span>~!:TOPIC~!</span>\
+                        ~!:NOTICE~!\
+                    </li>'
+        ]
+
     },
-    general: {
-        loading: ['<div id="loading" style="top: 0;font-size:19px;font-weight: bol;position:absolute;width: 150px; background-color:yellow;z-index: 9999; padding: 8px;left: 50%;margin-left:-75px;">\
-                <center>Loading...</center>\
-                </div>'],
-        popup: ['<div class="black_overlay" id="popup-bg"></div>\
-                <div class="popup_content" id="popup"><button class="do_action_close_popup">close</button>~!:content~!</div>'],
-    },
-    popup: {
-        error: ['<div class="error"><center><h1 style="color: red;">Important: An Error Has Occured.</h1><hr></center>&nbsp;&nbsp;&nbsp;&nbsp;Something went wrong and some of your actions can be not saved in system. Mostly, it happens when you have network connection errors.<br>,&nbsp;&nbsp;&nbsp;&nbsp;However, please notify us about the situation. It would be helpfull if you will write us approximate time the error occured and last actions you were performing. You send your petition on <a href="mail_to">this email: BLABLA</a>,<br><br><center><span style="color: rgb(92, 92, 92);">Sorry for inconvinience. (We recommend you to reload the page)</span></center></div>']
-    },
-    dates: {
-        'lock_plan_date' : ['<button class="do.savePlanDate(~!:task_id~!)">Lock plan dates</button><button class="do.lockPlanDate(~!:task_id~!)">Lock plan dates</button>'],
-        'save_forecasted_date' : ['<button class="do.saveForecastedDate(~!:task_id~!)">save forecasted dates</button>']
-    },
-    dns: {
-        FORM: [
-            '<div style="margin-top: 25px;" class="b-new-entry b-new-entry_dns" id="~!:id~!">\
-                <input type="hidden" name="source" class="source" value=\'~!:source~!\'>\
-                    <input type="hidden" name="target" class="target" value=\'\'>\
-                    <div class="entry-header">~!:title~!</div>\
-                    <div class="errors">\
-                    </div>\
-                    <div class="form-row cc">\
-                            <input type="hidden" value="~!:DATE~!" class="DATE">\
-                            <label for="#" class="field-label">domain:</label>\
-                            <input type="text" name="DNS_DOMAIN" value="~!:DNS_DOMAIN~!" class="text-field DNS_DOMAIN">\
-                    </div>\
-                    <div class="form-row cc">\
-                            <label for="#" class="field-label">ip address:</label>\
-                            <div class="autocomplete-box">\
-                                    <input type="text" name="IP" value="~!:IP~!" class="text-field IP">\
-                                    <i class="arrow">&nbsp;</i>\
-                            </div>\
-                    </div>\
-                    <div class="form-row dns-template-box cc">\
-                            <label for="#" class="field-label">template:</label>\
-                            <span class="select" id="selecttemplate">~!:TPL_DEFAULT_VALUE~!</span>\
-                                <select name="TPL" class="styled">\
-                                       ~!:TPL~!\
-                                </select>\
-                            <span class="context-settings do_action_view_template_settings">View template settings</span>\
-                    </div>\
-                    <div class="form-row cc">\
-                            <label for="#" class="field-label">ttl:</label>\
-                            <input type="text" value="~!:TTL~!" name="TTL" class="text-field ttl-field">\
-                    </div>\
-                    <div class="form-row cc">\
-                            <label for="#" class="field-label">soa:</label>\
-                            <input type="text" value="~!:SOA~!" name="SOA" class="text-field">\
-                    </div>\
-                    <div class="form-row buttons-row cc">\
-                            <input type="submit" value="~!:save_button~!" class="add-entry-btn do_action_save_form" name="save">\
-                            <span class="cancel-btn do_action_cancel_form">Cancel</span>\
-                            <span class="help-btn do_action_form_help">Help</span>\
-                    </div>\
-            </div>'
+    // file manager
+    //
+
+    FM: {
+        reload_in_time: [
+                    '<div id="reload-in-time" class="warning-box reload">\
+                        <div class="message-small">'+App.Constants.FM_HIT+' <span>F5</span> '+App.Constants.FM_TO_RELOAD_THE_PAGE+'</div>\
+                    </div>'
         ],
-        SUSPENDED_TPL_ENABLED : ['<span class="ip-status-info ip-enabled-status"><span class="ip-status-text">enabled</span></span>\
-                                <span class="delete-entry"><span class="delete-entry-text do_action_delete_ip">delete</span></span>'],
-        SUSPENDED_TPL_DISABLED : ['<span class="ip-status-info ip-suspended-status do_action_delete_dns"><span class="ip-status-text">suspended</span></span>'],
-        ENTRIES_WRAPPER: ['<div class="dns-list">~!:content~!</div>'],
-        ENTRY: ['<div class="row dns-details-row ~!:CHECKED~!">\
-                            <input type="hidden" name="source" class="source" value=\'~!:source~!\'>\
-                            <input type="hidden" class="target" name="target" value="" />\
-                            <div class="row-actions-box cc">\
-                                        <div class="check-this check-control"></div>\
-                                        <div class="row-operations">\
-                                                ~!:SUSPENDED_TPL~!\
-                                                <span class="delete-entry"><span class="delete-entry-text">delete</span></span>\
-                                        </div>\
-                                </div>\
-                                <div class="row-meta">\
-                                        <div class="entry-created">~!:DATE~!</div>\
-                                </div>\
-                                <div class="row-details cc">\
-                                        <div class="props-main">\
-                                                <div class="names">\
-                                                        <strong class="domain-name primary do_action_edit">~!:DNS_DOMAIN~!</strong>\
-                                                </div>\
-                                                <div class="show-records do_action_show_subform">Show records</div>\
-                                        </div>\
-                                        <div class="props-additional">\
-                                                <div class="ip-adr-box">\
-                                                        <span class="ip-adr">~!:IP~!</span>\
-                                                        <span class="prop-box template-box">\
-                                                                <span class="prop-title">template:</span>\
-                                                                <span class="prop-value">~!:TPL~!</span>\
-                                                        </span>\
-                                                </div>\
-                                        </div>\
-                                        <div class="props-ext">\
-                                                <span class="prop-box ttl-box">\
-                                                        <span class="prop-title">ttl:</span>\
-                                                        <span class="prop-value">~!:TTL~!</span>\
-                                                </span>\
-                                                <span class="prop-box soa-box">\
-                                                        <span class="prop-title">soa:</span>\
-                                                        <span class="prop-value">~!:SOA~!</span>\
-                                                </span>\
-                                        </div>\
-                                </div><!-- // .row-details -->\
+        entry_line: ['<li class="dir">\
+                        <span class="marker">\
+                        </span>\
+                        <span class="icon ~!:ITEM_TYPE~!" ></span>\
+                        <input type="hidden" class="source" value=\'~!:SOURCE~!\'/>\
+                        <span class="filename-holder"><div class="filename ripple" ~!:CL_ACTION_1~!>~!:NAME~!</div></span>\
+                        <span class="mode">~!:PERMISSIONS~!</span>\
+                        <span class="owner">~!:OWNER~!</span>\
+                        <span class="size-unit">~!:SIZE_UNIT~!</span>\
+                        <span class="size-value">~!:SIZE_VALUE~!</span>\
+                        <span class="date">~!:DATE~!</span>\
+                        <span class="time">~!:TIME~!</span>\
+                        <!-- span class="subcontext-control ~!:SUBMENU_CLASS~!" onClick="FM.toggleSubContextMenu(this)">&#8226;&#8226;&#8226;&nbsp;\
+                        <ul class="subcontext-menu subcontext-menu-hidden"><li onClick="FM.downloadFileFromSubcontext(this);">Download</li><li onClick="FM.editFileFromSubcontext(this);">Edit</li></ul>\
+                        </span -->\
+                    </li>'],
+        popup_alert: ['<div class="confirm-box alarm popup-box">\
+                            <div class="message">~!:TEXT~!</div>\
+                                <div class="controls">\
+                            <p class="ok" onClick="FM.popupClose();">'+App.Constants.FM_CLOSE+'</p>\
+                            </div>\
                         </div>'],
-        SUBFORM: ['<div class="b-new-entry b-records-list subform">\
-                    <div class="entry-header">\
-                            <div class="hide-records do_action_close_subform">Hide records</div>\
-                    </div>\
-                    <div class="errors">\
-                    </div>\
-                    <div class="form-row add-box cc">\
-                            <a href="javascript:void(0)" class="add-btn do_action_add_subrecord_dns"><i class="add-btn-icon">&nbsp;</i>add dns record</a>\
-                    </div>\
-                    ~!:SUBRECORDS~!\
-                    <div class="form-row buttons-row cc">\
-                            <input type="submit" value="save" class="add-entry-btn do_action_save_dns_subrecords">\
-                            <span class="cancel-btn do_action_close_subform">Cancel</span>\
-                            <span class="help-btn">Help</span>\
-                    </div>\
-            </div>'],
-        SUBENTRY: ['<div class="subrow form-row form-row-line cc">\
-                            <input type="hidden" name="RECORD_ID" value="~!:RECORD_ID~!">\
-                            <div class="field-box dns-record-box">\
-                                    <label for="#" class="field-label">record:</label>\
-                                    <div class="field-box-inner cc">\
-                                            <input type="text" value="~!:RECORD~!" name="RECORD" class="text-field">\
-                                            <div class="field-devider">in</div>\
-                                    </div>\
+        popup_bulk_remove: ['<div class="confirm-box delete popup-box">\
+                            <div class="message">'+App.Constants.FM_CONFIRM_DELETE_BULK+' (~!:NUMBER_OF_ITEMS~!)?</div>\
+                            <div class="results"></div>\
+                                <div class="controls">\
+                            <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                            <p class="ok" onClick="FM.bulkRemoveDo();">'+App.Constants.FM_DELETE+'</p>\
                             </div>\
-                            <div class="field-box dns-type-box">\
-                                    <label for="#" class="field-label">type:</label>\
-                                    <span class="select RECORD_TYPE" id="selectRECORD_TYPE">~!:RECORD_TYPE_VALUE~!</span>\
-                                    <select name="RECORD_TYPE" class="styled">\
-                                        ~!:RECORD_TYPE~!\
-                                    </select>\
+                        </div>'],
+        popup_bulk_copy: ['<div class="confirm-box copy popup-box">\
+                            <div class="message">'+App.Constants.FM_COPY_BULK+' (~!:NUMBER_OF_ITEMS~!) '+ App.Constants.FM_INTO_KEYWORD +':</div>\
+                            <div class="actions">\
+                                <input type="text" id="copy_dest" value="~!:DST_FILENAME~!" class="new-title">\
                             </div>\
-                            <div class="field-box dns-value-box">\
-                                    <label for="#" class="field-label">value:</label>\
-                                    <input type="text" value="~!:RECORD_VALUE~!" class="text-field RECORD_VALUE">\
+                            <div class="results"></div>\
+                            <div class="warning">'+App.Constants.FM_EXISTING_FILES_WILL_BE_REPLACED+'</div>\
+                                <div class="controls">\
+                            <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                            <p class="ok" onClick="FM.bulkCopyDo();">'+App.Constants.FM_COPY+'</p>\
                             </div>\
-                            <div class="delete-record do_action_delete_subentry"></div>\
-                    </div>']
-    },
-    ip: {
-        FORM: ['\
-            <div class="b-new-entry b-new-entry_ip" id="~!:id~!">\
-                <input type="hidden" name="source" class="source" value=\'~!:source~!\'>\
-                <div class="entry-header">~!:title~!</div>\
-                <div class="errors">\
-		</div>\
-                <div class="form-row cc">\
-                        <label for="#" class="field-label">ip address:</label>\
-                        <input type="text" value="~!:IP_ADDRESS~!" name="IP_ADDRESS" class="text-field">\
-                </div>\
-                <div class="form-row cc">\
-                        <label for="#" class="field-label">owner:</label>\
-                        <span class="select" id="select2">vesta</span>\
-                        <select name="OWNER" class="styled OWNER">\
-                                ~!:owner_options~!\
-                        </select>\
-                </div>\
-                <div class="form-row cc">\
-                        <label for="#" class="field-label">status:</label>\
-                        <span class="select" id="select">shared</span>\
-                        <select class="styled status" name="STATUS">\
-                                ~!:status_options~!\
-                        </select>\
-                </div>\
-                <div class="form-row cc">\
-                        <label for="#" class="field-label">name:</label>\
-                        <input type="text" name="NAME" value="" class="text-field">\
-                </div>\
-                <div class="form-row cc">\
-                        <label for="#" class="field-label">interface:</label>\
-                        <span class="select" id="select">eth1</span>\
-                        <select class="styled interface" name="INTERFACE">\
-                                ~!:interface_options~!\
-                        </select>\
-                </div>\
-                <div class="form-row cc">\
-                        <label for="#" class="field-label">netmask:</label>\
-                        <div class="autocomplete-box">\
-                                <input type="text" value="~!:NETMASK~!" name="NETMASK" class="text-field">\
-                        </div>\
-                </div>\
-                <div class="form-row buttons-row cc">\
-                        <input type="submit" value="~!:save_button~!" name="save" class="add-entry-btn do_action_save_form">\
-                        <span class="cancel-btn do_action_cancel_form">Cancel</span>\
-                        <span class="help-btn">Help</span>\
-                </div>\
-        </div>\
-         '],
-        DOT: ['<span class="dot">.</span>'],
-        ENTRY: ['\
-            <div class="row first-row ip-details-row">\
-                <input type="hidden" class="source" name="source" value=\'~!:source~!\' />\
-                <input type="hidden" class="target" name="target" value="" />\
-                <div class="row-actions-box cc">\
-                        <div class="check-this"></div>\
-                        <div class="row-operations">\
-                        ~!:SUSPENDED_TPL~!\
-                        </div>\
-                </div>\
-                <div class="row-meta">\
-                        <div class="ip-created">~!:DATE~!</div>\
-                </div>\
-                <div class="row-details cc">\
-                        <div class="ip-props-main">\
-                                <div class="ip-adr-box">\
-                                        <span class="ip-adr">~!:IP_ADDRESS~!</span>\
-                                </div>\
-                                <span class="prop-box">\
-                                        <span class="prop-title">netmask:</span>\
-                                        <span class="prop-value">~!:NETMASK~!</span>\
-                                </span>\
-                                <span class="prop-box">\
-                                        <span class="prop-title">interface:</span>\
-                                        <span class="prop-value">~!:INTERFACE~!</span>\
-                                </span>\
-                                <span class="prop-box">\
-                                        <span class="prop-title">name:</span>\
-                                        <span class="prop-value">~!:NAME~!</span>\
-                                </span>\
-                        </div>\
-                        <div class="ip-props-additional">\
-                                <span class="prop-box">\
-                                        <span class="prop-title">owner:</span>\
-                                        <span class="prop-value">~!:OWNER~!</span>\
-                                </span>\
-                                <span class="prop-box">\
-                                        <span class="prop-title">status:</span>\
-                                        <span class="prop-value">~!:STATUS~!</span>\
-                                </span>\
-                        </div>\
-                        <div class="ip-props-ext">\
-                                <span class="prop-box">\
-                                        <span class="prop-title">sys users:</span>\
-                                        <span class="prop-value">~!:U_SYS_USERS~!</span>\
-                                </span>\
-                                <span class="prop-box">\
-                                        <span class="prop-title">web domains:</span>\
-                                        <span class="prop-value">~!:U_WEB_DOMAINS~!</span>\
-                                </span>\
-                        </div>\
-                </div><!-- // .row-details -->\
-        </div>\
-        '],
-        ENTRIES_WRAPPER: ['<div class="ip-list">~!:content~!</div>'],
-        SUSPENDED_TPL_ENABLED : ['<span class="ip-status-info ip-enabled-status"><span class="ip-status-text">enabled</span></span>\
-                                <span class="delete-entry"><span class="delete-entry-text do_action_delete_ip">delete</span></span>'],
-        SUSPENDED_TPL_DISABLED : ['<span class="ip-status-info ip-suspended-status do_action_delete_ip"><span class="ip-status-text">suspended</span></span>']
+                        </div>'],
+        /*popup_bulk: ['<div class="confirm-box alarm popup-box">\
+                            <div class="message">~!:ACTION~!: <br />~!:TEXT~!</div>\
+                            <div class="results"></div>\
+                                <div class="controls">\
+                            <!-- p class="ok" onClick="FM.popupClose();">'+App.Constants.FM_CLOSE+'</p -->\
+                            <p><img src="/images/in_progress.gif"></p>\
+                            </div>\
+                        </div>'],*/
+        popup_delete: ['<div class="confirm-box delete popup-box">\
+                            <div class="message">'+App.Constants.FM_CONFIRM_DELETE+' <span class="title">"~!:FILENAME~!"</span>?</div>\
+                            <div class="warning warning-message"></div>\
+                                <div class="controls">\
+                            <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                            <p class="ok" onClick="FM.confirmDelete();">'+App.Constants.FM_DELETE+'</p>\
+                            </div>\
+                        </div>'],
+        popup_copy: ['<div class="confirm-box copy popup-box">\
+                            <div class="message">'+App.Constants.FM_COPY+' <span class="title">"~!:SRC_FILENAME~!"</span> '+App.Constants.FM_INTO_KEYWORD+':</div>\
+                            <div class="actions">\
+                                <input type="text" id="copy_dest" value="~!:DST_FILENAME~!" class="new-title">\
+                            </div>\
+                            <div class="message">'+App.Constants.FM_EXISTING_FILES_WILL_BE_REPLACED+'</div>\
+                           <div class="warning warning-message"></div>\
+                                <div class="controls">\
+                            <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                            <p class="ok" onClick="FM.confirmCopyItems();">'+App.Constants.FM_COPY+'</p>\
+                            </div>\
+                        </div>'],
+        popup_rename: ['<div class="confirm-box rename warning">\
+                            <div class="message">'+App.Constants.FM_RENAME+': <span class="title">"~!:FILENAME~!"</span></div>\
+                            <div class="warning warning-message"></div>\
+                            <div class="actions">\
+                                <input type="text" id="rename-title" class="new-title"  value="~!:NEW_NAME~!" />\
+                            </div>\
+                            <div class="controls">\
+                                <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                                <p class="ok" onClick="FM.confirmRename();">'+App.Constants.FM_RENAME+'</p>\
+                            </div>\
+                            <div class="controls replace">\
+                                <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                                <p class="ok" onClick="FM.confirmRename();">'+App.Constants.FM_RENAME+'</p>\
+                            </div>\
+                        </div>'],
+
+        popup_chmod: ['<div class="confirm-box chmod warning">\
+                            <div class="message">'+App.Constants.FM_CHMOD+': <span class="title">"~!:FILENAME~!"</span></div>\
+                            <div class="warning warning-message"></div>\
+                            <div class="actions">\
+                                <ul>\
+                                    <li><label><input type="checkbox" name="read-by-owner" value="1" ~!:READ_BY_OWNER~! /> '+App.Constants.FM_READ_BY_OWNER+'</label></li>\
+                                    <li><label><input type="checkbox" name="write-by-owner" value="1" ~!:WRITE_BY_OWNER~! /> '+App.Constants.FM_WRITE_BY_OWNER+'</label></li>\
+                                    <li><label><input type="checkbox" name="execute-by-owner" value="1" ~!:EXECUTE_BY_OWNER~! /> '+App.Constants.FM_EXECUTE_BY_OWNER+'</label></li>\
+                                </ul><ul>\
+                                    <li><label><input type="checkbox" name="read-by-group" value="1" ~!:READ_BY_GROUP~! /> '+App.Constants.FM_READ_BY_GROUP+'</label></li>\
+                                    <li><label><input type="checkbox" name="write-by-group" value="1" ~!:WRITE_BY_GROUP~! /> '+App.Constants.FM_WRITE_BY_GROUP+'</label></li>\
+                                    <li><label><input type="checkbox" name="execute-by-group" value="1" ~!:EXECUTE_BY_GROUP~! /> '+App.Constants.FM_EXECUTE_BY_GROUP+'</label></li>\
+                                </ul><ul>\
+                                    <li><label><input type="checkbox" name="read-by-others" value="1" ~!:READ_BY_OTHERS~! /> '+App.Constants.FM_READ_BY_OTHERS+'</label></li>\
+                                    <li><label><input type="checkbox" name="write-by-others" value="1" ~!:WRITE_BY_OTHERS~! /> '+App.Constants.FM_WRITE_BY_OTHERS+'</label></li>\
+                                    <li><label><input type="checkbox" name="execute-by-others" value="1" ~!:EXECUTE_BY_OTHERS~! /> '+App.Constants.FM_EXECUTE_BY_OTHERS+'</label></li>\
+                                </ul>\
+                            </div>\
+                            <div class="controls">\
+                                <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                                <p class="ok" onClick="FM.confirmChmod();">'+App.Constants.FM_OK+'</p>\
+                            </div>\
+                        </div>'],
+        popup_bulk_chmod: ['<div class="confirm-box chmod warning">\
+                            <div class="message">'+App.Constants.FM_CHMOD+' (~!:NUMBER_OF_ITEMS~!)</div>\
+                            <div class="warning warning-message"></div>\
+                            <div class="actions">\
+                                <ul>\
+                                    <li><label><input type="checkbox" name="read-by-owner" value="1" checked /> '+App.Constants.FM_READ_BY_OWNER+'</label></li>\
+                                    <li><label><input type="checkbox" name="write-by-owner" value="1" checked /> '+App.Constants.FM_WRITE_BY_OWNER+'</label></li>\
+                                    <li><label><input type="checkbox" name="execute-by-owner" value="1" checked /> '+App.Constants.FM_EXECUTE_BY_OWNER+'</label></li>\
+                                </ul><ul>\
+                                    <li><label><input type="checkbox" name="read-by-group" value="1" checked /> '+App.Constants.FM_READ_BY_GROUP+'</label></li>\
+                                    <li><label><input type="checkbox" name="write-by-group" value="1" checked /> '+App.Constants.FM_WRITE_BY_GROUP+'</label></li>\
+                                    <li><label><input type="checkbox" name="execute-by-group" value="1" checked /> '+App.Constants.FM_EXECUTE_BY_GROUP+'</label></li>\
+                                </ul><ul>\
+                                    <li><label><input type="checkbox" name="read-by-others" value="1" checked /> '+App.Constants.FM_READ_BY_OTHERS+'</label></li>\
+                                    <li><label><input type="checkbox" name="write-by-others" value="1" checked /> '+App.Constants.FM_WRITE_BY_OTHERS+'</label></li>\
+                                    <li><label><input type="checkbox" name="execute-by-others" value="1" checked /> '+App.Constants.FM_EXECUTE_BY_OTHERS+'</label></li>\
+                                </ul>\
+                            </div>\
+                            <div class="controls">\
+                                <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                                <p class="ok" onClick="FM.confirmBulkChmod();">'+App.Constants.FM_OK+'</p>\
+                            </div>\
+                        </div>'],
+
+        popup_pack: ['<div class="confirm-box pack warning">\
+                            <div class="message">'+App.Constants.FM_PACK+' <span class="title">"~!:FILENAME~!"</span></div>\
+                            <div class="actions">\
+                                <input type="text" id="pack-destination" class="new-title" value="~!:DST_DIRNAME~!">\
+                            </div>\
+                            <div class="warning warning-message"></div>\
+                            <!-- div class="actions">\
+                                <label><input type="checkbox" name="overwrite" class="title" />Overwrite exising files</label>\
+                            </div -->\
+                            <div class="controls">\
+                                <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                                <p class="ok" onClick="FM.confirmPackItem();">'+App.Constants.FM_PACK_BUTTON+'</p>\
+                            </div>\
+                        </div>'],
+
+        popup_unpack: ['<div class="confirm-box unpack warning">\
+                            <div class="message">'+App.Constants.FM_EXTRACT+' <span class="title">"~!:FILENAME~!"</span> '+App.Constants.FM_INTO_KEYWORD+':</div>\
+                            <div class="actions">\
+                                <input type="text" id="unpack-destination" class="new-title" value="~!:DST_DIRNAME~!">\
+                            </div>\
+                            <div class="warning warning-message"></div>\
+                            <!-- div class="actions">\
+                                <label><input type="checkbox" name="overwrite" class="title" />Overwrite exising files</label>\
+                            </div -->\
+                            <div class="controls">\
+                                <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                                <p class="ok" onClick="FM.confirmUnpackItem();">'+App.Constants.FM_EXTRACT+'</p>\
+                            </div>\
+                        </div>'],
+
+
+        popup_create_file: ['<div class="confirm-box rename warning">\
+                            <div class="message">'+App.Constants.FM_CREATE_FILE+'</div>\
+                            <!-- div class="warning">File <span class="title">"reading.txt"</span> already exists</div -->\
+                            <div class="warning warning-message"></div>\
+                            <div class="actions">\
+                                <input type="text" id="rename-title" class="new-title" />\
+                            </div>\
+                            <div class="controls replace">\
+                                <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                                <p class="ok" onClick="FM.confirmCreateFile();">'+App.Constants.FM_CREATE+'</p>\
+                            </div>\
+                        </div>'],
+        popup_create_dir: ['<div class="confirm-box rename warning">\
+                            <div class="message">'+App.Constants.FM_CREATE_DIRECTORY+'</div>\
+                            <!-- div class="warning">File <span class="title">"reading.txt"</span> already exists</div -->\
+                            <div class="warning warning-message"></div>\
+                            <div class="actions">\
+                                <input type="text" id="rename-title" class="new-title" />\
+                            </div>\
+                            <div class="controls replace">\
+                                <p class="cancel" onClick="FM.popupClose();">'+App.Constants.FM_CANCEL+'</p>\
+                                <p class="ok" onClick="FM.confirmCreateDir();">'+App.Constants.FM_CREATE+'</p>\
+                            </div>\
+                        </div>'],
+        popup_no_file_selected: ['<div class="confirm-box no-file-selected">\
+                            <div class="message">Please select a file</div>\
+                            <div class="controls">\
+                                <p class="ok" onClick="FM.confirmCreateDir();">'+App.Constants.FM_OK+'</p>\
+                            </div>\
+                        </div>']
     }
-}
-
-
+};
 
 // Internals
 var Tpl = App.Templates;
 
-var Templator = function(){
-    var init = function(){
+var Templator = function()
+{
+    var init = function()
+    {
         fb.info('Templator work');
         Templator.splitThemAll();
-        Templator.freezeTplIndexes();        
+        Templator.freezeTplIndexes();
     };
 
 
@@ -285,12 +237,15 @@ var Templator = function(){
      */
     Templator.splitThemAll = function(){
         fb.info('splitting tpls');
-        $.each(App.Templates.html, function(o){
+        jQuery.each(App.Templates.html, function(o){
+            //try{
             var tpls = App.Templates.html[o];
-            $.each(tpls, function(t){
+            jQuery.each(tpls, function(t){
                 tpls[t] = tpls[t][0].split('~!');
             });
+            //}catch(e){fb.error('%o %o', o, e);}
         });
+
     },
 
     /**
@@ -298,16 +253,18 @@ var Templator = function(){
      */
     Templator.freezeTplIndexes = function(){
         fb.info('freezing tpl keys');
-        $.each(App.Templates.html, Templator.cacheTplIndexes);
+        jQuery.each(App.Templates.html, Templator.cacheTplIndexes);
     },
 
     /**
      * Grab the tpl group key and process it
      */
-    Templator.cacheTplIndexes = function(key){
+    Templator.cacheTplIndexes = function(key)
+    {
         var tpls = App.Templates.html[key];
 
-        $.each(tpls, function(o){
+        jQuery.each(tpls, function(o)
+        {
             var tpl = tpls[o];
             Templator.catchIndex(key, o, tpl);
         });
@@ -316,12 +273,14 @@ var Templator = function(){
     /**
      * Set the indexes
      */
-    Templator.catchIndex = function(key, ref_key, tpl){
+    Templator.catchIndex = function(key, ref_key, tpl)
+    {
         'undefined' == typeof App.Templates._indexes[key] ? App.Templates._indexes[key] = {} : false;
-        'undefined' == typeof App.Templates._indexes[key][ref_key] ? App.Templates._indexes[key][ref_key] = {} : false;
+        'undefined' == typeof App.Templates._indexes[key][ref_key] ?
+        App.Templates._indexes[key][ref_key] = {} : false;
 
-        $(tpl).each(function(index, o){
-            if(':' == o.charAt(0)){
+        jQuery(tpl).each(function(index, o) {
+            if (':' == o.charAt(0)) {
                 App.Templates._indexes[key][ref_key][o.toString()] = index;
             }
         });
@@ -333,10 +292,11 @@ var Templator = function(){
     init();
     return Templator;
 };
+
 Templator.getTemplate = function(ns, key){
     return [
-    App.Templates._indexes[ns][key],
-    App.Templates.html[ns][key].slice(0)
+        App.Templates._indexes[ns][key],
+        App.Templates.html[ns][key].slice(0)
     ];
 }
 // init templator

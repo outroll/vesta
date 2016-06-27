@@ -1,0 +1,60 @@
+        <center>
+            <table class="login">
+                <tr>
+                    <td>
+                        <table>
+                            <tr>
+                                <td style="padding: 0 10px 0 42px; height: 280px; width: 170px;">
+                                    <a href="/"><img border=0 src="/images/logo.png" width="124px" height="46px" alt="Vesta Control Panel" /></a>
+                                </td>
+                                <td style="padding: 10px 0 0 0;">
+                                    <form method="post">
+                                        <table class="login-box">
+                                            <tr>
+                                                <td style="padding: 12px 0 0 2px;">
+                                                    <input type="hidden" name="action" value="confirm" >
+                                                    <input type="hidden" name="user" value="<?php echo $_GET['user'];?>" >
+                                                    <input type="hidden" name="code" value="<?php echo $_GET['code'];?>" >
+                                                    <?php print __('New Password');?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input tabindex="1" type="password" size="20px" style="width:200px;" name="password" class="vst-input">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 12px 0 0 2px;">
+                                                    <?php print __('Confirm Password');?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input tabindex="2" type="password" size="20px"  style="width:200px;" name="password_confirm" class="vst-input">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 20px 0 12px 0;">
+                                                    <input tabindex="3" type="submit" value="<?php print __('Reset');?>" class="button">
+                                                    <input type="button" class="button cancel" value="<?php print __('Back');?>" onclick="location.href='/login/'">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=2>
+                                    <div class="login-bottom">
+                                        <div style="height:20px"><?php if (isset($ERROR)) echo $ERROR ?></div>
+                                        <a class="vestacp" href="http://vestacp.com" >vestacp.com</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </center>
+    </body>
+</html>

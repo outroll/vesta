@@ -1,0 +1,57 @@
+#!/bin/bash
+# info: schedule user backup restoration
+# options: USER BACKUP [WEB] [DNS] [MAIL] [DB] [CRON] [UDIR]
+#
+# The function for scheduling user backup restoration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+backup=$2
+web=$3
+dns=$4
+mail=$5
+db=$6
+cron=$7
+udir=$8
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER BACKUP [WEB] [DNS] [MAIL] [DB] [CRON] [UDIR]'
+is_format_valid 'user'
+is_system_enabled "$BACKUP_SYSTEM" 'BACKUP_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_backup_enabled
+is_backup_scheduled 'restore'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Adding restore task to  the queue
+log=$VESTA/log/restore.log
+options="'$web' '$dns' '$mail' '$db' '$cron' '$udir'"
+echo "$BIN/v-restore-user $user $backup $options  yes >> $log 2>&1" >>\
+    $VESTA/data/queue/backup.pipe
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

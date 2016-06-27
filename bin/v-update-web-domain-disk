@@ -1,0 +1,60 @@
+#!/bin/bash
+# info: update disk usage for domain
+# options: USER DOMAIN
+#
+# The function recalculates disk usage for specific webdomain.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_format_valid 'user' 'domain'
+is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Defining home directory
+home_dir="$HOMEDIR/$user/web/$domain/"
+
+# Checking home directory exist
+if [ -e "$home_dir" ]; then
+    disk_usage=$(nice -n 19 du -shm $home_dir | cut -f 1 )
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Updating disk value in config
+update_object_value 'web' 'DOMAIN' "$domain" '$U_DISK' "$disk_usage"
+recalc_user_disk_usage
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

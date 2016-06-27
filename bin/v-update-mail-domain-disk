@@ -1,0 +1,67 @@
+#!/bin/bash
+# info: update mail domain disk usage
+# options: USER DOMAIN
+#
+# The function updates domain disk usage.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -a "$domain")
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_format_valid 'user' 'domain'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+if [ -z "$MAIL_SYSTEM" ] || [ "$MAIL_SYSTEM" = 'remote' ]; then
+    exit
+fi
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Starting loop
+dom_diks=0
+for account in $(search_objects "mail/$domain" 'SUSPENDED' "no" 'ACCOUNT'); do
+    home_dir=$HOMEDIR/$user/mail/$domain/$account
+    if [ -e "$home_dir" ]; then
+        udisk=$(nice -n 19 du -shm $home_dir | cut -f 1 )
+    else
+        udisk=0
+    fi
+    update_object_value "mail/$domain" 'ACCOUNT' "$account"  '$U_DISK' "$udisk"
+    dom_diks=$((dom_diks + udisk))
+done
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+update_object_value 'mail' 'DOMAIN' "$domain" '$U_DISK' "$dom_diks"
+recalc_user_disk_usage
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

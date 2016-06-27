@@ -1,0 +1,63 @@
+#!/bin/bash
+# info: change user shell
+# options: USER SHELL
+#
+# The function changes system shell of a user. Shell gives ability to use ssh.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+shell=$2
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER SHELL'
+is_format_valid 'user' 'shell'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Get shell full path
+shell_path=$(grep -w "$shell" /etc/shells | head -n1)
+
+# Changing passwd file
+/usr/bin/chsh -s "$shell_path" "$user" >/dev/null 2>&1
+shell=$(basename $shell_path)
+
+# Adding jailed sftp env
+if [ ! -z "$SFTPJAIL_KEY" ]; then
+    if [[ "$shell" =~ nologin ]] || [[ "$shell" =~ rssh ]]; then
+        $BIN/v-add-user-sftp-jail $user >/dev/null 2>&1
+    else
+        $BIN/v-delete-user-sftp-jail $user >/dev/null 2>&1
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Changing user shell
+update_user_value "$user" '$SHELL' "$shell"
+
+# Logging
+log_history "changed $user shell to $shell" '' 'admin'
+log_event "$OK" "$ARGUMENTS"
+
+exit

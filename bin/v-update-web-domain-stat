@@ -1,0 +1,149 @@
+#!/bin/bash
+# info: update domain statistics
+# options: USER DOMAIN
+#
+# The function runs log analyzer for specific webdomain.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_format_valid 'user' 'domain'
+is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_value_exist 'web' 'DOMAIN' "$domain" '$STATS'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+get_domain_values 'web'
+
+# Checking config
+config="$HOMEDIR/$user/conf/web/$STATS.$domain.conf"
+if [ ! -e "$config" ]; then
+    check_result $E_NOTEXISTS "$config doesn't exist"
+fi
+
+# Checking statistics directory
+dir="$HOMEDIR/$user/web/$domain/stats"
+if [ ! -e "$dir" ]; then
+    mkdir -p $dir
+fi
+
+# Defining functions
+build_webalizer() {
+    /usr/bin/webalizer -c $config
+}
+
+build_awstats() {
+    if [ -e "/etc/redhat-release" ]; then
+        awstats="/usr/share/awstats/wwwroot/cgi-bin/awstats.pl"
+        wwwroot="/usr/share/awstats/wwwroot"
+        if [  ! -e "$awstats" ]; then
+            awstats="/var/www/awstats/awstats.pl"
+            wwwroot="/var/www/awstats"
+        fi
+    else
+        awstats="/usr/lib/cgi-bin/awstats.pl"
+        wwwroot="/usr/share/awstats"
+    fi
+    opts="-config=$domain_idn -staticlinks -update -output"
+    month=$(date "+%Y-%m")
+    output='alldomains allhosts lasthosts unknownip allrobots lastrobots
+        urldetail urlentry urlexit osdetail browserdetail unknownbrowser
+        unknownos refererse refererpages keyphrases keywords errors404'
+
+    # Checking statistics directory
+    if [ ! -e "$dir/$month" ]; then
+        mkdir -p $dir/$month
+    fi
+
+    # Logo check
+    if [ ! -e "$dir/logo.png" ]; then
+        cp -r $VESTA/web/images/logo.png $dir/
+    fi
+
+    # Icon directory check
+    if [ ! -e "$dir/icon" ]; then
+        cp -r $wwwroot/icon $dir/
+    fi
+
+    # Creating main awstats page
+    $awstats $opts | sed "s%awstats.$domain.%%g" > $dir/$month/index.html
+
+    # Creating suplemental awstats pages
+    for format in $output; do
+        $awstats $opts=$format |\
+            sed "s%awstats.$domain.%%g" > $dir/$month/$format.html
+    done
+
+    # Creating index page
+    cat $WEBTPL/awstats/index.tpl | sed "s/%month%/$month/g" >\
+        $dir/index.html
+
+    # Creating navigation page
+    months=$(find $dir -type d | sed -e "s%$dir/%%g" -e "s%$dir%%g" |\
+        grep -v icon | sort -r )
+    for link in $months; do
+        year=$(echo $link |cut -f 1 -d \-)
+        month=$(echo $link |cut -f 2 -d \-| sed -e "s/^0//")
+        case "$month" in
+            1) month='January';;
+            2) month='February';;
+            3) month='March';;
+            4) month='April';;
+            5) month='May';;
+            6) month='June';;
+            7) month='July';;
+            8) month='August';;
+            9) month='September';;
+            10) month='October';;
+            11) month='November';;
+            12) month='December';;
+        esac
+        select_m="$select_m<option value=$link>$month $year<\/option>\n"
+    done
+    cat $WEBTPL/awstats/nav.tpl | sed "s/%select_month%/$select_m/" >\
+        $dir/nav.html
+}
+
+# Switching on statistics type
+case $STATS in
+    webalizer) build_webalizer ;;
+    awstats) build_awstats ;;
+esac
+
+# Chown
+chown -R $user:$(groups $user| cut -f 3 -d ' ') $dir
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# No Logging
+#log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,0 +1,76 @@
+#!/bin/bash
+# info: change dns domain ttl
+# options: USER DOMAIN TTL
+#
+# The function for changing the time to live TTL parameter for all records.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+ttl=$3
+restart=$4
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN TTL'
+is_format_valid 'user' 'domain' 'ttl'
+is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Changing ttl
+update_object_value 'dns' 'DOMAIN' "$domain" '$TTL' "$ttl"
+
+# Updating zone
+if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+    update_domain_serial
+    update_domain_zone
+fi
+
+# Updating dns-cluster queue
+if [ ! -z "$DNS_CLUSTER" ]; then
+    # Check for first sync
+    dlock=$(grep "domain $user $domain" $VESTA/data/queue/dns-cluster.pipe)
+    if [ -z "$dlock" ]; then
+        cmd="$BIN/v-change-remote-dns-domain-ttl $user $domain $ttl"
+        echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Restarting named
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-dns
+    check_result $? "DNS restart failed" >/dev/null
+fi
+
+# Logging
+log_history "changed TTL for $domain to $ttl"
+log_event "$OK" "$ARGUMENTS"
+
+exit

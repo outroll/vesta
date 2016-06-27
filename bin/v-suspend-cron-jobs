@@ -1,0 +1,53 @@
+#!/bin/bash
+# info: Suspending sys cron jobs
+# options: USER [RESTART]
+#
+# The function suspends all user cron jobs.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+restart=$2
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER'
+is_format_valid 'user'
+is_object_valid 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Suspendn all jobs
+for job in $(search_objects 'cron' 'SUSPENDED' 'no' 'JOB'); do
+    $BIN/v-suspend-cron-job $user $job 'no'
+done
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Restarting crond
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-cron
+    check_result $? "Cron restart failed" >/dev/null
+fi
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,0 +1,74 @@
+#!/bin/bash
+# info: delete mail account alias aka nickname
+# options: USER DOMAIN ACCOUNT ALIAS
+#
+# The function deletes email account alias.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -a "$domain")
+account=$3
+malias=$4
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '4' "$#" 'USER DOMAIN ACCOUNT ALIAS'
+is_format_valid 'user' 'domain' 'account' 'malias'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_valid "mail/$domain" 'ACCOUNT' "$account"
+is_object_unsuspended "mail/$domain" 'ACCOUNT' "$account"
+aliases=$(get_object_value "mail/$domain" 'ACCOUNT' "$account" '$ALIAS')
+if [ -z "$(echo $aliases | grep -w $malias)" ]; then
+    echo "Error: alias $malias doesn't exist"
+    log_event "$E_NOTEXIST $ARGUMENTS"
+    exit $E_NOTEXIST
+fi
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+if [[ "$MAIL_SYSTEM" =~ exim ]]; then
+    sed -i "/^$malias@$domain_idn:$account/d" \
+        $HOMEDIR/$user/conf/mail/$domain/aliases
+fi
+
+aliases=$(echo "$aliases" |\
+    sed "s/,/\n/g"|\
+    sed "s/^$malias$//g"|\
+    sed "/^$/d"|\
+    sed ':a;N;$!ba;s/\n/,/g')
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Update config
+update_object_value "mail/$domain" 'ACCOUNT' "$account"  '$ALIAS' "$aliases"
+
+# Logging
+log_history "deleted alias $malias on $account@$domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

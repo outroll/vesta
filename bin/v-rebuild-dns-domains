@@ -1,0 +1,94 @@
+#!/bin/bash
+# info: rebuild dns domains
+# options: USER [RESTART] [UPDATE_SERIAL]
+#
+# The function rebuilds DNS configuration files.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+restart=$2
+update_serial=$3
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/func/rebuild.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER [RESTART] [UPDATE_SERIAL]'
+is_format_valid 'user'
+is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+if [ "$DNS_SYSTEM" = 'remote' ]; then
+    exit
+fi
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+user_domains=0
+user_records=0
+suspended_dns=0
+conf="$USER_DATA/dns.conf"
+
+# Defining user name servers
+ns=$(get_user_value '$NS')
+i=1
+for nameserver in ${ns//,/ };do
+    eval ns$i="$nameserver"
+    i=$((i + 1))
+done
+
+# Get dns config path
+if [ -e '/etc/named.conf' ]; then
+    dns_conf='/etc/named.conf'
+fi
+
+if [ -e '/etc/bind/named.conf' ]; then
+    dns_conf='/etc/bind/named.conf'
+fi
+
+# Remove old user's zone
+sed -i "/\/$user\/conf\/dns/d" $dns_conf
+
+# Starting loop
+for domain in $(search_objects 'dns' 'DOMAIN' "*" 'DOMAIN'); do
+   if [ "$update_serial" != 'no' ]; then
+        update_domain_serial
+    fi
+    rebuild_dns_domain_conf
+done
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Updating counters
+update_user_value "$user" '$U_DNS_DOMAINS' "$user_domains"
+update_user_value "$user" '$U_DNS_RECORDS' "$user_records"
+update_user_value "$user" '$SUSPENDED_DNS' "$suspended_dns"
+
+# Restarting named
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-dns
+    check_result $? "Bind restart failed" >/dev/null
+fi
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

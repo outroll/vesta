@@ -1,0 +1,633 @@
+#!/bin/bash
+# info: restore user
+# options: USER BACKUP [WEB] [DNS] [MAIL] [DB] [CRON] [UDIR] [NOTIFY]
+#
+# The function for resotring user from backup.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Import VESTA variable for cron launch
+source /etc/profile
+
+# Argument definition
+user=$1
+backup=$2
+web=$3
+dns=$4
+mail=$5
+db=$6
+cron=$7
+udir=$8
+notify=${9-no}
+
+# Define backup dir
+if [ -z "$BACKUP" ]; then
+    BACKUP=/backup
+fi
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/func/ip.sh
+source $VESTA/func/db.sh
+source $VESTA/func/rebuild.sh
+source $VESTA/conf/vesta.conf
+
+# Check backup function
+is_backup_valid() {
+    if [ ! -e "$1" ]; then
+        check_result $E_NOTEXIST "backup $1 doesn't exist"
+    fi
+}
+
+# Check backup ownership function
+is_backup_available() {
+    if ! [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]]; then
+         check_result $E_FORBIDEN "permission denied"
+    fi
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+args_usage='USER BACKUP [WEB] [DNS] [MAIL] [DB] [CRON] [UDIR] [NOTIFY]'
+check_args '2' "$#" "$args_usage"
+is_format_valid 'user' 'backup'
+is_backup_valid "$BACKUP/$backup"
+is_backup_available "$user" "$backup"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Checking user existance on the server
+check_user=$(is_object_valid 'user' 'USER' "$user")
+if [ -z "$check_user" ]; then
+    is_object_unsuspended 'user' 'USER' "$user"
+    subj="$user → restore failed"
+    email=$(get_user_value '$CONTACT')
+else
+    create_user="yes"
+    email=$(grep CONTACT $VESTA/data/users/admin/user.conf | cut -f2 -d \')
+fi
+
+
+# Checking avaiable disk space
+disk_usage=$(df $BACKUP |tail -n1 |tr ' ' '\n' |grep % |cut -f 1 -d %)
+if [ "$disk_usage" -ge "$BACKUP_DISK_LIMIT" ]; then
+    echo "Error: Not enough disk space" |$SENDMAIL -s "$subj" $email $notify
+    sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+    check_result $E_DISK "Not enough disk space"
+fi
+
+# Checking load average
+la=$(cat /proc/loadavg |cut -f 1 -d ' ' |cut -f 1 -d '.')
+i=0
+while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
+    echo -e "$(date "+%F %T") Load Average $la"
+    sleep 60
+    if [ "$i" -ge "15" ]; then
+        la_error="LoadAverage $la is above threshold"
+        echo "Error: $la_error" |$SENDMAIL -s "$subj" $email $notify
+        sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+        check_result $E_LA "$la_error"
+    fi
+    la=$(cat /proc/loadavg |cut -f 1 -d ' ' |cut -f 1 -d '.')
+    (( ++i))
+done
+
+# Creating temporary directory
+tmpdir=$(mktemp -p $BACKUP -d)
+if [ "$?" -ne 0 ]; then
+    echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notify
+    sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+    check_result "$E_NOTEXIST" "can't create tmp dir"
+fi
+
+# Restoring user account
+if [ "$create_user" = 'yes' ]; then
+    echo "-- USER --" |tee $tmpdir/restore.log
+    echo -e "$(date "+%F %T") $user" |tee -a $tmpdir/restore.log
+
+    # Unpacking user container
+    tar xf $BACKUP/$backup -C $tmpdir ./vesta
+    if [ "$?" -ne 0 ]; then
+        rm -rf $tmpdir
+        echo "Can't unpack user contaner" |$SENDMAIL -s "$subj" $email $notify
+        sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+        check_result "$E_PARSING" "can't unpack user contaner"
+    fi
+
+    # Restoring user.conf
+    mkdir $USER_DATA
+    cp $tmpdir/vesta/user.conf $USER_DATA/
+    cp -r  $tmpdir/vesta/ssl $USER_DATA/ >/dev/null 2>&1
+    cp $tmpdir/vesta/backup-excludes.conf $USER_DATA/ >/dev/null 2>&1
+
+    # Rebuilding user
+    rebuild_user_conf
+fi
+
+# Unpacking pam container
+tar xf $BACKUP/$backup -C $tmpdir ./pam
+if [ "$?" -ne 0 ]; then
+    rm -rf $tmpdir
+    echo "Can't unpack PAM contaner" |$SENDMAIL -s "$subj" $email $notify
+    sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+    check_result "$E_PARSING" "can't unpack PAM contaner"
+fi
+old_user=$(cut -f 1 -d : $tmpdir/pam/passwd)
+old_uid=$(cut -f 3 -d : $tmpdir/pam/passwd)
+new_uid=$(grep "^$user:" /etc/passwd |cut -f 3 -d :)
+
+
+# Restoring web domains
+if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
+    echo -e  "\n-- WEB --" |tee -a $tmpdir/restore.log
+
+    # Creating web domain restore list
+    backup_domains=$(tar -tf $BACKUP/$backup |grep "^./web")
+    backup_domains=$(echo "$backup_domains" |grep domain_data.tar.gz)
+    backup_domains=$(echo "$backup_domains" |cut -f 3 -d /)
+    if [ -z "$web" ] || [ "$web" = '*' ]; then
+        domains="$backup_domains"
+    else
+        echo "$web" |tr ',' '\n' > $tmpdir/selected.txt
+        domains=$(echo "$backup_domains" |egrep -f $tmpdir/selected.txt)
+    fi
+
+    # Restoring web domain
+    for domain in $domains; do
+        echo -e "$(date "+%F %T") $domain" |tee -a $tmpdir/restore.log
+
+        # Checking domain existance
+        check_config=$(grep "DOMAIN='$domain'" $USER_DATA/web.conf)
+        if [ -z "$check_config" ]; then
+            check_new=$(is_domain_new 'web' $domain)
+            if [ ! -z "$check_new" ]; then
+                rm -rf $tmpdir
+                error="$domain belongs to another user"
+                echo "$error" |$SENDMAIL -s "$subj" $email $notify
+                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                check_result "$E_PARSING" "$error"
+            fi
+        fi
+
+        # Unpacking domain container
+        tar xf $BACKUP/$backup -C $tmpdir ./web/$domain
+        if [ "$?" -ne 0 ]; then
+            rm -rf $tmpdir
+            error="Can't unpack $domain web container"
+            echo "$error" |$SENDMAIL -s "$subj" $email $notify
+            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+            check_result "$E_PARSING" "$error"
+        fi
+
+        # Restoring web.conf
+        if [ -z "$check_config" ]; then
+            eval $(cat $tmpdir/web/$domain/vesta/web.conf)
+
+            # Deleting conflicting aliases
+            for dom_alias in ${ALIAS//,/ }; do
+                check_new=$(is_domain_new 'web' $dom_alias)
+                if [ ! -z "$check_new" ]; then
+                    ALIAS=$(echo "$ALIAS" |\
+                        sed "s/,/\n/g"|\
+                        sed "s/^$dom_alias$//g"|\
+                        sed "/^$/d"|\
+                        sed ':a;N;$!ba;s/\n/,/g')
+                fi
+            done
+
+            # Checking ip address
+            check_ip=$(is_ip_valid $IP $user)
+            if [ ! -z "$check_ip" ]; then
+                local_ip=''
+                get_user_ip $user
+                old_ip=$IP
+                IP=$ip
+            fi
+
+            # Checking web template
+            check_tpl=$(is_web_template_valid $TPL)
+            if [ ! -z "$check_tpl" ]; then
+                TPL='default'
+            fi
+
+            # Checking proxy template
+            check_proxy_tpl=$(is_proxy_template_valid $PROXY)
+            if [ ! -z "$check_proxy_tpl" ]; then
+                PROXY='default'
+            fi
+
+            # Checking backend template
+            check_backend_tpl=$(is_backend_template_valid $BACKEND)
+            if [ ! -z "$check_proxy_tpl" ]; then
+                BACKEND='default'
+            fi
+
+            # Converting ftp users
+            if [ ! -z "$FTP_USER" ]; then
+                FTP_USER=$(echo "$FTP_USER"  |sed -e "s/${old_user}_//")
+                FTP_USER="${user}_${FTP_USER}"
+            fi
+
+            # Converting stats users
+            if [ ! -z "$STATS_USER" ]; then
+                STATS_USER=$(echo "$STATS_USER"  |sed -e "s/${old_user}_//")
+                STATS_USER="${user}_${STATS_USER}"
+            fi
+
+            # Copying ssl certificates
+            if [ "$SSL" = 'yes' ]; then
+                for crt in $(ls $tmpdir/web/$domain/conf |grep ssl); do
+                    crt=$(echo "$crt" |sed "s/ssl.//")
+                    cp -f $tmpdir/web/$domain/conf/ssl.$crt $USER_DATA/ssl/$crt
+                done
+            fi
+
+            # Concatenating web.conf keys
+            str="DOMAIN='$domain' IP='$IP' IP6='$IP6' ALIAS='$ALIAS'"
+            str="$str TPL='$TPL' SSL='$SSL' SSL_HOME='$SSL_HOME'"
+            str="$str FTP_USER='$FTP_USER' FTP_MD5='$FTP_MD5'"
+            str="$str BACKEND='$BACKEND' PROXY='$PROXY'"
+            str="$str PROXY_EXT='$PROXY_EXT' STATS='$STATS'"
+            str="$str STATS_USER='$STATS_USER' STATS_CRYPT='$STATS_CRYPT'"
+            str="$str U_DISK='$U_DISK' U_BANDWIDTH='0' SUSPENDED='no'"
+            str="$str TIME='$(date +%T)' DATE='$(date +%F)'"
+            echo $str >> $USER_DATA/web.conf
+
+            # Rebuilding backend
+            if [ ! -z "$WEB_BACKEND" ]; then
+                $BIN/v-add-web-domain-backend $user $domain $BACKEND
+            fi
+
+            # Rebuilding vhost
+            rebuild_web_domain_conf
+        fi
+
+        # Restoring web domain data
+        tar -xzpf $tmpdir/web/$domain/domain_data.tar.gz \
+            -C $HOMEDIR/$user/web/$domain/
+        if [ "$?" -ne 0 ]; then
+            rm -rf $tmpdir
+            error="can't unpack $domain data tarball"
+            echo "$error" |$SENDMAIL -s "$subj" $email $notify
+            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+            check_result "$E_PARSING" "$error"
+        fi
+
+        # Applying Fix for tar < 1.24
+        find $HOMEDIR/$user/web/$domain -type d \
+            -exec chown -h $user:$user {} \;
+
+        # Re-chowning files if uid differs
+        if [ "$old_uid" -ne "$new_uid" ]; then
+            find $HOMEDIR/$user/web/$domain/ -user $old_uid \
+                -exec chown -h $user:$user {} \;
+        fi
+    done
+
+    # Adding user to traff queue
+    sed -i "/ $user /d" $VESTA/data/queue/traffic.pipe
+    echo "$BIN/v-update-web-domains-traff $user" >>\
+        $VESTA/data/queue/traffic.pipe
+
+    # Restarting web server
+    $BIN/v-restart-web
+    check_result $? "Web restart failed"
+    if [ ! -z "$PROXY_SYSTEM" ]; then
+        $BIN/v-restart-proxy
+        check_result $? "Proxy restart failed"
+    fi
+fi
+
+# Restoring dns domains
+if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
+    echo -e  "\n-- DNS --" |tee -a $tmpdir/restore.log
+
+    # Creating dns domain restore list
+    backup_domains=$(tar -tf $BACKUP/$backup |grep "^./dns")
+    backup_domains=$(echo "$backup_domains" |grep domain_data.tar.gz)
+    backup_domains=$(echo "$backup_domains" |cut -f 3 -d /)
+    if [ -z "$dns" ] || [ "$dns" = '*' ]; then
+        domains="$backup_domains"
+    else
+        echo "$dns" |tr ',' '\n' > $tmpdir/selected.txt
+        domains=$(echo "$backup_domains" |egrep -f $tmpdir/selected.txt)
+    fi
+
+    # Restoring dns domain
+    for domain in $domains; do
+        echo -e "$(date "+%F %T") $domain" |tee -a $tmpdir/restore.log
+
+        # Checking domain existance
+        check_config=$(grep "DOMAIN='$domain'" $USER_DATA/dns.conf)
+        if [ -z "$check_config" ]; then
+            check_new=$(is_domain_new 'dns' $domain)
+            if [ ! -z "$check_new" ]; then
+                rm -rf $tmpdir
+                error="$domain belongs to another user"
+                echo "$error" |$SENDMAIL -s "$subj" $email $notify
+                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                check_result "$E_PARSING" "$error"
+            fi
+        fi
+
+        # Unpacking domain container
+        tar xf $BACKUP/$backup -C $tmpdir ./dns/$domain
+        if [ "$?" -ne 0 ]; then
+            rm -rf $tmpdir
+            error="Can't unpack $domain dns container"
+            echo "$error" |$SENDMAIL -s "$subj" $email $notify
+            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+            check_result "$E_PARSING" "$error"
+        fi
+
+        # Restoring dns.conf
+        if [ -z "$check_config" ]; then
+            eval $(cat $tmpdir/dns/$domain/vesta/dns.conf)
+
+            # Checking ip address
+            check_ip=$(is_ip_valid $IP $user)
+            if [ ! -z "$check_ip" ]; then
+                local_ip=''
+                get_user_ip $user
+                old_ip=$IP
+                IP=$ip
+            fi
+
+            # Checking dns template
+            check_tpl=$(is_dns_template_valid $TPL)
+            if [ ! -z "$check_tpl" ]; then
+                TPL='default'
+            fi
+
+            # Concatenating dns.conf keys
+            str="DOMAIN='$domain' IP='$IP' TPL='$TPL' TTL='$TTL' EXP='$EXP'"
+            str="$str SOA='$SOA' RECORDS='$RECORDS' SUSPENDED='no'"
+            str="$str TIME='$(date +%T)' DATE='$(date +%F)'"
+            echo $str >> $USER_DATA/dns.conf
+        fi
+
+        # Restoring dns records
+        cp -f $tmpdir/dns/$domain/vesta/$domain.conf $USER_DATA/dns/
+
+        # Rebuilding dns domain
+        rebuild_dns_domain_conf
+    done
+
+    # Restarting DNS
+    $BIN/v-restart-dns
+    check_result $? "DNS restart failed"
+fi
+
+# Restoring mail domains
+if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
+    echo -e  "\n-- MAIL --" |tee -a $tmpdir/restore.log
+
+    # Creating mail domain restore list
+    backup_domains=$(tar -tf $BACKUP/$backup |grep "^./mail")
+    backup_domains=$(echo "$backup_domains" |grep domain_data.tar.gz)
+    backup_domains=$(echo "$backup_domains" |cut -f 3 -d /)
+    if [ -z "$mail" ] || [ "$mail" = '*' ]; then
+        domains="$backup_domains"
+    else
+        echo "$mail" |tr ',' '\n' > $tmpdir/selected.txt
+        domains=$(echo "$backup_domains" |egrep -f $tmpdir/selected.txt)
+    fi
+
+    # Restoring dns domain
+    for domain in $domains; do
+        echo -e "$(date "+%F %T") $domain" |tee -a $tmpdir/restore.log
+
+        # Checking domain existance
+        check_config=$(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
+        if [ -z "$check_config" ]; then
+            check_new=$(is_domain_new 'mail' $domain)
+            if [ ! -z "$check_new" ]; then
+                rm -rf $tmpdir
+                error="$domain belongs to another user"
+                echo "$error" |$SENDMAIL -s "$subj" $email $notify
+                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                check_result "$E_PARSING" "$error"
+            fi
+        fi
+
+        # Unpacking domain container
+        tar xf $BACKUP/$backup -C $tmpdir ./mail/$domain
+        if [ "$?" -ne 0 ]; then
+            rm -rf $tmpdir
+            error="Can't unpack $domain mail container"
+            echo "$error" |$SENDMAIL -s "$subj" $email $notify
+            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+            check_result "$E_PARSING" "$error"
+        fi
+
+        # Restoring mail.conf
+        if [ -z "$check_config" ]; then
+            cat $tmpdir/mail/$domain/vesta/mail.conf >> $USER_DATA/mail.conf
+        fi
+
+        # Restoring DKIM
+        if [ -e "$tmpdir/mail/$domain/vesta/$domain.pem" ]; then
+            cp -f $tmpdir/mail/$domain/vesta/$domain.pem $USER_DATA/mail/
+            cp -f $tmpdir/mail/$domain/vesta/$domain.pub $USER_DATA/mail/
+        fi
+
+        # Restoring email accounts
+        cp -f $tmpdir/mail/$domain/vesta/$domain.conf $USER_DATA/mail/
+
+        # Rebuilding mail config
+        rebuild_mail_domain_conf
+
+        # Restoring emails
+        if [ -e "$tmpdir/mail/$domain/accounts.tar.gz" ]; then
+            tar -xzpf $tmpdir/mail/$domain/accounts.tar.gz \
+                -C $HOMEDIR/$user/mail/$domain_idn/
+            if [ "$?" -ne 0 ]; then
+                rm -rf $tmpdir
+                error="Can't unpack $domain mail account container"
+                echo "$error" |$SENDMAIL -s "$subj" $email $notify
+                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                check_result "$E_PARSING" "$error"
+            fi
+
+            # Re-chowning files if uid differs
+            if [ "$old_uid" -ne "$new_uid" ]; then
+                find $HOMEDIR/$user/mail/$domain_idn -user $old_uid \
+                    -exec chown -h $user:mail {} \;
+            fi
+        fi
+    done
+fi
+
+# Restoring databases
+if [ "$db" != 'no' ] && [ ! -z "$DB_SYSTEM" ]; then
+    echo -e  "\n-- DB --" |tee -a $tmpdir/restore.log
+
+    # Creating database restore list
+    backup_databases=$(tar -tf $BACKUP/$backup |grep "^./db")
+    backup_databases=$(echo "$backup_databases" |grep db.conf)
+    backup_databases=$(echo "$backup_databases" |cut -f 3 -d / |sort -u)
+    if [ -z "$db" ] || [ "$db" = '*' ]; then
+        databases="$backup_databases"
+    else
+        echo "$db" |tr ',' '\n' > $tmpdir/selected.txt
+        databases=$(echo "$backup_databases" |egrep -f $tmpdir/selected.txt)
+    fi
+
+    # Restoring database
+    for database in $databases; do
+        echo -e "$(date "+%F %T") $database" |tee -a $tmpdir/restore.log
+
+        # Checking database existance
+        check_config=$(grep "DB='$db'" $USER_DATA/db.conf)
+
+        # Unpacking database container
+        tar xf $BACKUP/$backup -C $tmpdir ./db/$database
+        if [ "$?" -ne 0 ]; then
+            rm -rf $tmpdir
+            error="Can't unpack $database database container"
+            echo "$error" |$SENDMAIL -s "$subj" $email $notify
+            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+            check_result "$E_PARSING" "$error"
+        fi
+
+        # Restore database config
+        if [ -z "$check_config" ]; then
+            eval $(cat $tmpdir/db/$database/vesta/db.conf)
+            DB=$(echo "$DB"  |sed -e "s/${old_user}_//")
+            DB="${user}_${DB}"
+            DBUSER=$(echo "$DBUSER" |sed -e "s/${old_user}_//")
+            DBUSER="${user}_${DBUSER}"
+            str="DB='$DB' DBUSER='$DBUSER' MD5='$MD5' HOST='$HOST'"
+            str="$str TYPE='$TYPE' CHARSET='$CHARSET' U_DISK='$U_DISK'"
+            str="$str SUSPENDED='no' TIME='$(date +%T)' DATE='$(date +%F)'"
+            echo $str >> $USER_DATA/db.conf
+        else
+            eval $(grep "DB='$database'" $USER_DATA/db.conf)
+        fi
+
+        # Unziping database dump
+        gzip -d $tmpdir/db/$database/$database.*.sql.gz
+
+        # Importing database dump
+        database_dump="$tmpdir/db/$database/$database.$TYPE.sql"
+        case $TYPE in
+            mysql) rebuild_mysql_database;
+                   import_mysql_database $database_dump ;;
+            pgsql) rebuild_pgsql_database;
+                   import_pgsql_database $database_dump ;;
+        esac
+    done
+fi
+
+# Restoring cron jobs
+if [ "$cron" != 'no' ] && [ ! -z "CRON_SYSTEM" ]; then
+    echo -e  "\n-- CRON --" |tee -a $tmpdir/restore.log
+
+    # Unpacking cron container
+    tar xf $BACKUP/$backup -C $tmpdir ./cron
+    if [ "$?" -ne 0 ]; then
+        rm -rf $tmpdir
+        error="Can't unpack cron container"
+        echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+        check_result "$E_PARSING" "$error"
+    fi
+
+    jobs=$(wc -l $tmpdir/cron/cron.conf |cut -f 1 -d' ')
+    if [ "$jobs" -eq 1 ]; then
+        echo -e "$(date "+%F %T") $jobs cron job" |tee -a $tmpdir/restore.log
+    else
+        echo -e "$(date "+%F %T") $jobs cron jobs"|tee -a $tmpdir/restore.log
+    fi
+
+    # Restoring cron jobs
+    cp $tmpdir/cron/cron.conf $USER_DATA/cron.conf
+
+    # Rebuilding cron jobs
+    sync_cron_jobs
+
+    # Restarting cron
+    $BIN/v-restart-cron
+    check_result $? "CRON restart failed"
+fi
+
+# Restoring user files and directories
+if [ "$udir" != 'no' ]; then
+    echo -e  "\n-- USER FILES --" |tee -a $tmpdir/restore.log
+
+    # Unpacking user dir container
+    if [ ! -z "$(tar -tf $BACKUP/$backup |grep './user_dir')" ]; then
+
+        # Creating user dir restore list
+        backup_dirs=$(tar -tf $BACKUP/$backup |grep "^./user_dir")
+        backup_dirs=$(echo "$backup_dirs" |grep tar.gz)
+        backup_dirs=$(echo "$backup_dirs" |cut -f 3 -d /)
+        backup_dirs=$(echo "$backup_dirs" |sed "s/.tar.gz//")
+        if [ -z "$udir" ] || [ "$udir" = '*' ]; then
+            user_dirs="$backup_dirs"
+        else
+            echo "$udir" |tr ',' '\n' > $tmpdir/selected.txt
+            user_dirs=$(echo "$backup_dirs" |egrep -f $tmpdir/selected.txt)
+        fi
+
+        for user_dir in $user_dirs; do
+            echo -e "$(date "+%F %T") $user_dir" |tee -a $tmpdir/restore.log
+            tar xf $BACKUP/$backup -C $tmpdir ./user_dir/$user_dir.tar.gz
+            if [ "$?" -ne 0 ]; then
+                error="can't unpack $user_dir user dir contaner"
+                echo "$error" |$SENDMAIL -s "$subj" $email $notify
+                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                check_result "$E_PARSING" "$error"
+            fi
+
+            tar xzf $tmpdir/user_dir/$user_dir.tar.gz -C $HOMEDIR/$user
+            if [ "$?" -ne 0 ]; then
+                error="can't unpack $user_dir user dir contaner"
+                echo "$error" |$SENDMAIL -s "$subj" $email $notify
+                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                check_result "$E_PARSING" "$error"
+            fi
+
+            # Re-chowning files if uid differs
+            if [ "$old_uid" -ne "$new_uid" ]; then
+                find $HOMEDIR/$user/$user_dir -user $old_uid \
+                    -exec chown -h $user:$user {} \;
+            fi
+        done
+    fi
+fi
+
+# Sending mail notification
+subj="$user → restore has been completed"
+cat $tmpdir/restore.log |$SENDMAIL -s "$subj" $email $notify
+
+# Deleting temporary data
+rm -rf $tmpdir
+
+# Cleaning restore queue
+sed -i "/v-restore-user $user /d" $VESTA/data/queue/backup.pipe
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Update user counters
+$BIN/v-update-user-counters $user
+$BIN/v-update-user-counters admin
+$BIN/v-update-sys-ip-counters
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,0 +1,84 @@
+#!/bin/bash
+# info: update domain bandwidth usage
+# options: USER DOMAIN
+#
+# The function recalculates bandwidth usage for specific domain.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_format_valid 'user' 'domain'
+is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Defining log file
+log_file="/var/log/$WEB_SYSTEM/domains/$domain.bytes"
+
+# Defining bytes
+bytes=0
+
+# Parsing log
+while read line; do
+    if  [[ "$line" =~ ^[0-9]+$ ]]; then
+        line=${line#0}
+        if [ ! -z "$line" ]; then
+            bytes=$(($bytes + $line))
+        fi
+    fi
+done < $log_file
+
+# Converting to Mb
+mb=$(echo "$bytes / 1024 / 1024"|bc)
+
+# Nulling log
+echo > $log_file
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Reset counter on the start of the month
+if [ "$(date +%d)" = '01' ]; then
+    update_object_value 'web' 'DOMAIN' "$domain" '$U_BANDWIDTH' '0'
+fi
+
+# Parsing old value
+get_domain_values 'web'
+
+# Defining new value
+bandwidth=$((U_BANDWIDTH + mb))
+
+# Updating bandwidth value in config
+update_object_value 'web' 'DOMAIN' "$domain" '$U_BANDWIDTH' "$bandwidth"
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

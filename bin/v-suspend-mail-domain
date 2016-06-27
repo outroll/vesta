@@ -1,0 +1,59 @@
+#!/bin/bash
+# info: suspend mail domain
+# options: USER DOMAIN
+#
+# The function suspends mail domain. 
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -a "$domain")
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_format_valid 'user' 'domain'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Deleting symbolic link
+if [[ "$MAIL_SYSTEM" =~ exim ]]; then
+    rm -f /etc/$MAIL_SYSTEM/domains/$domain
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Updating config
+update_object_value 'mail' 'DOMAIN' "$domain" '$SUSPENDED' 'yes'
+sed -i "s/SUSPENDED='no'/SUSPENDED='yes'/g" $USER_DATA/mail/$domain.conf
+increase_user_value "$user" '$SUSPENDED_MAIL'
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

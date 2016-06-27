@@ -1,0 +1,74 @@
+#!/bin/bash
+# info: change mail account quota
+# options: USER DOMAIN ACCOUNT QUOTA
+#
+# The function changes email account disk quota.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -a "$domain")
+account=$3
+quota=$4
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '4' "$#" 'USER DOMAIN ACCOUNT QUOTA'
+is_format_valid 'user' 'domain' 'account'
+if [ "$quota" != 'unlimited' ]; then
+    is_format_valid 'quota'
+fi
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_valid "mail/$domain" 'ACCOUNT' "$account"
+is_object_unsuspended "mail/$domain" 'ACCOUNT' "$account"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+md5=$(get_object_value "mail/$domain" 'ACCOUNT' "$account" '$MD5')
+if [[ "$MAIL_SYSTEM" =~ exim ]]; then
+    if [ "$quota" = 'unlimited' ]; then
+        quota=0
+    fi
+    sed -i "/^$account:/d" $HOMEDIR/$user/conf/mail/$domain/passwd
+    str="$account:$md5:$user:mail::$HOMEDIR/$user:$quota"
+    echo $str >> $HOMEDIR/$user/conf/mail/$domain/passwd
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+if [[ "$quota" -eq 0 ]]; then
+    quota='unlimited'
+fi
+
+# Update quota
+update_object_value "mail/$domain" 'ACCOUNT' "$account" '$QUOTA' "$quota"
+
+# Logging
+log_history "changed mail quota for $account@$domain to $quota"
+log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,0 +1,93 @@
+#!/bin/bash
+# info: list web domain access log
+# options: USER DOMAIN [LINES] [FORMAT]
+#
+# The function of obtaining raw access web domain logs.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+ttl=${3-70}
+format=${4-shell}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# JSON list function
+json_list() {
+    i=1
+    objects=$(echo "$lines" |wc -l)
+    echo '['
+    for str in $lines; do
+        str=$(echo "$str" |sed -e 's/"/\\"/g')
+        if [ "$i" -lt "$objects" ]; then
+            echo -e  "\t\"$str\","
+        else
+            echo -e  "\t\"$str\""
+        fi
+        (( ++i))
+    done
+    echo "]"
+}
+
+# SHELL list function
+shell_list() {
+    echo "$lines"
+}
+
+# PLAIN list function
+plain_list() {
+    echo "$lines"
+}
+
+# CSV list function
+csv_list() {
+    echo "LOG"
+    echo "$lines"
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [LINES] [FORMAT]'
+is_format_valid 'user' 'domain' 'ttl'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Check number of output lines
+if [ "$ttl" -gt '3000' ]; then
+    read_cmd="cat"
+else
+    read_cmd="tail -n $ttl"
+fi
+
+lines=$($read_cmd /var/log/$WEB_SYSTEM/domains/$domain.log)
+IFS=$'\n'
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

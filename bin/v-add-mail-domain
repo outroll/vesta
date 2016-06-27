@@ -1,0 +1,149 @@
+#!/bin/bash
+# info: add mail domain
+# options: USER DOMAIN [ANTISPAM] [ANTIVIRUS] [DKIM] [DKIM_SIZE]
+#
+# The function adds MAIL domain.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain=$(echo $domain | sed -e 's/\.*$//g' -e 's/^\.*//g')
+if [[ "$domain" =~ [[:upper:]] ]]; then
+    domain=$(echo "$domain" |tr '[:upper:]' '[:lower:]')
+fi
+domain_idn="$domain"
+if [[ "$domain" = *[![:ascii:]]* ]]; then
+    domain_idn=$(idn -t --quiet -a $domain)
+fi
+antispam=${3-yes}
+antivirus=${4-yes}
+dkim=${5-yes}
+dkim_size=${6-1024}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+# Define mail user
+if [ "$MAIL_SYSTEM" = 'exim4' ]; then
+    MAIL_USER=Debian-exim
+else
+    MAIL_USER=exim
+fi
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [ANTISPAM] [ANTIVIRUS] [DKIM] [DKIM_SIZE]'
+is_format_valid 'user' 'domain' 'antispam' 'antivirus' 'dkim' 'dkim_size'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_domain_new 'mail' "$domain"
+is_package_full 'MAIL_DOMAINS'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Generating timestamp
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+# Adding domain to mail.conf
+s="DOMAIN='$domain' ANTIVIRUS='$antivirus' ANTISPAM='$antispam' DKIM='$dkim'"
+s="$s CATCHALL='' ACCOUNTS='0' U_DISK='0' SUSPENDED='no' TIME='$time'"
+s="$s DATE='$date'"
+echo $s >> $USER_DATA/mail.conf
+touch $USER_DATA/mail/$domain.conf
+
+# Generating DKIM keys
+if [ "$dkim" = 'yes' ]; then
+    openssl genrsa -out $USER_DATA/mail/$domain.pem $dkim_size &>/dev/null
+    openssl rsa -pubout -in $USER_DATA/mail/$domain.pem \
+        -out $USER_DATA/mail/$domain.pub &>/dev/null
+fi
+
+# Set permissions
+chmod 660 $USER_DATA/mail/$domain.*
+chmod 660 $USER_DATA/mail.conf
+
+# Building exim configs
+if [[ "$MAIL_SYSTEM" =~ exim ]]; then
+    mkdir $HOMEDIR/$user/conf/mail/$domain
+    mkdir $HOMEDIR/$user/mail/$domain_idn
+    touch $HOMEDIR/$user/conf/mail/$domain/aliases
+    touch $HOMEDIR/$user/conf/mail/$domain/passwd
+    touch $HOMEDIR/$user/conf/mail/$domain/fwd_only
+    ln -s $HOMEDIR/$user/conf/mail/$domain \
+        /etc/$MAIL_SYSTEM/domains/$domain_idn
+
+    # Adding antispam protection
+    if [ "$antispam" = 'yes' ]; then
+        touch $HOMEDIR/$user/conf/mail/$domain/antispam
+    fi
+
+    # Adding antivirus protection
+    if [ "$antivirus" = 'yes' ]; then
+        touch $HOMEDIR/$user/conf/mail/$domain/antivirus
+    fi
+
+    # Adding dkim support
+    if [ "$dkim" = 'yes' ]; then
+        cp -f $USER_DATA/mail/$domain.pem \
+            $HOMEDIR/$user/conf/mail/$domain/dkim.pem
+    fi
+
+    # Set permission
+    chmod 771 $HOMEDIR/$user/conf/mail/$domain
+    chmod 660 $HOMEDIR/$user/conf/mail/$domain/*
+    chmod 771 /etc/$MAIL_SYSTEM/domains/$domain_idn
+    chmod 770 $HOMEDIR/$user/mail/$domain_idn
+
+    # Set ownership
+    chown -R $MAIL_USER:mail $HOMEDIR/$user/conf/mail/$domain
+    chown -R dovecot:mail $HOMEDIR/$user/conf/mail/$domain/passwd
+    chown $user:mail $HOMEDIR/$user/mail/$domain_idn
+fi
+
+# Adding dkim dns records
+if [ ! -z "$DNS_SYSTEM" ] && [ "$dkim" = 'yes' ]; then
+    check_dns_domain=$(is_object_valid 'dns' 'DOMAIN' "$domain")
+    if [ "$?" -eq 0 ]; then
+        p=$(cat $USER_DATA/mail/$domain.pub|grep -v ' KEY---'|tr -d '\n')
+        record='_domainkey'
+        policy="\"t=y; o=~;\""
+        $BIN/v-add-dns-record $user $domain $record TXT "$policy"
+
+        record='mail._domainkey'
+        selector="\"k=rsa\; p=$p\""
+        $BIN/v-add-dns-record $user $domain $record TXT "$selector"
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Increasing domain value
+increase_user_value "$user" '$U_MAIL_DOMAINS'
+if [ "$dkim" = 'yes' ]; then
+    increase_user_value "$user" '$U_MAIL_DKMI'
+fi
+
+# Logging
+log_history "added mail domain $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

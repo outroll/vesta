@@ -1,0 +1,83 @@
+#!/bin/bash
+# info: list mail domain dkim
+# options: USER DOMAIN [FORMAT]
+#
+# The function of obtaining domain dkim files.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+format=${3-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    echo '{'
+    echo -e "\t\"$domain\": {"
+    echo "        \"PEM\": \"$pem\","
+    echo "        \"PUB\": \"$pub\","
+    echo -e "\t}\n}"
+}
+
+# SHELL list function
+shell_list() {
+    echo -e "$pem"
+    echo -e "\n$pub"
+}
+
+# PLAIN list function
+plain_list() {
+    echo "$pem\t$pub"
+}
+
+# CSV list function
+csv_list() {
+    echo "PEM,PUB"
+    echo "\"$pem\",\"$pub\""
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [FORMAT]'
+is_format_valid 'user' 'domain'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Parsing domain keys
+if [ -e "$USER_DATA/mail/$domain.pem" ]; then
+    pem=$(cat $USER_DATA/mail/$domain.pem |sed ':a;N;$!ba;s/\n/\\n/g')
+fi
+
+if [ -e "$USER_DATA/mail/$domain.pub" ]; then
+    pub=$(cat $USER_DATA/mail/$domain.pub |sed ':a;N;$!ba;s/\n/\\n/g')
+fi
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

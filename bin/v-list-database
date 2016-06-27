@@ -1,0 +1,93 @@
+#!/bin/bash
+# info: list database
+# options: USER DATABASE [FORMAT]
+#
+# The function for obtaining of all database's parameters.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+database=$2
+format=${3-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    echo '{'
+    echo '    "'$database'": {
+        "DATABASE": "'$DB'",
+        "DBUSER": "'$DBUSER'",
+        "HOST": "'$HOST'",
+        "TYPE": "'$TYPE'",
+        "CHARSET": "'$CHARSET'",
+        "U_DISK": "'$U_DISK'",
+        "SUSPENDED": "'$SUSPENDED'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    echo "DATABASE:       $DB"
+    echo "DB USER:        $DBUSER"
+    echo "HOST:           $HOST"
+    echo "TYPE:           $TYPE"
+    echo "CHARSET:        $CHARSET"
+    echo "DISK:           $U_DISK"
+    echo "SUSPENDED:      $SUSPENDED"
+    echo "TIME:           $TIME"
+    echo "DATE:           $DATE"
+}
+
+# PLAIN list function
+plain_list() {
+    echo -ne "$DB\t$DBUSER\t$HOST\t$TYPE\t$CHARSET\t$U_DISK\t"
+    echo -e "$SUSPENDED\t$TIME\t$DATE"
+}
+
+# CSV list function
+csv_list() {
+    echo "DATABASE,DBUSER,HOST,TYPE,CHARSET,U_DISK,SUSPENDED,TIME,DATE"
+    echo "$DB,$DBUSER,$HOST,$TYPE,$CHARSET,$U_DISK,$SUSPENDED,$TIME,$DATE"
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DATABASE [FORMAT]'
+is_format_valid 'user' 'database'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'db' 'DB' "$database"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Parsing database
+eval $(grep "DB='$database'" $USER_DATA/db.conf)
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

@@ -1,0 +1,82 @@
+#!/bin/bash
+# info: list mail account autoreply
+# options: USER DOMAIN ACCOUNT [FORMAT]
+#
+# The function of obtaining mail account autoreply message.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+account=$3
+format=${4-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    i='1'       # iterator
+    echo '{'
+    echo -e "\t\"$account\": {"
+    echo "            \"MSG\": \"$msg\""
+    echo -e "\t}\n}"
+}
+
+# SHELL list function
+shell_list() {
+    echo "$msg"
+}
+
+# PLAIN list function
+plain_list() {
+    echo "$msg"
+}
+
+# CSV list function
+csv_list() {
+    echo "MSG"
+    echo "$msg"
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN ACCOUNT [FORMAT]'
+is_format_valid 'user' 'domain' 'account'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_valid "mail/$domain" 'ACCOUNT' "$account"
+is_object_unsuspended "mail/$domain" 'ACCOUNT' "$account"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+if [ -e "$USER_DATA/mail/$account@$domain.msg" ]; then
+    msg=$(cat $USER_DATA/mail/$account@$domain.msg |\
+        sed ':a;N;$!ba;s/\n/\\n/g' )
+fi
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

@@ -1,0 +1,82 @@
+#!/bin/bash
+# info: delete dns record
+# options: USER DOMAIN ID [RESTART]
+#
+# The function for deleting a certain record of DNS zone.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
+id=$3
+restart=$4
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN ID [RESTART]'
+is_format_valid 'user' 'domain' 'id'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+is_object_valid "dns/$domain" 'ID' "$id"
+is_dns_record_critical
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Deleting record
+sed -i "/^ID='$id'/d" $USER_DATA/dns/$domain.conf
+
+# Updating zone
+if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+    update_domain_serial
+    update_domain_zone
+fi
+
+# Updating dns-cluster queue
+if [ ! -z "$DNS_CLUSTER" ]; then
+    # Check for first sync
+    dlock=$(grep "domain $user $domain" $VESTA/data/queue/dns-cluster.pipe)
+    if [ -z "$dlock" ]; then
+        cmd="$BIN/v-delete-remote-dns-record $user $domain $id"
+        echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Upddate counters
+records="$(wc -l $USER_DATA/dns/$domain.conf | cut -f1 -d ' ')"
+update_object_value 'dns' 'DOMAIN' "$domain" '$RECORDS' "$records"
+decrease_user_value "$user" '$U_DNS_RECORDS'
+
+# Restarting named
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-dns
+    check_result $? "Bind restart failed" >/dev/null
+fi
+
+# Logging
+log_history "deleted dns record $id on $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,0 +1,98 @@
+#!/bin/bash
+# info: list backup host
+# options: TYPE HOST [FORMAT]
+#
+# The function for obtaining the list of backup host parameters.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+type=$1
+format=${2-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    echo '{'
+    echo '    "'$type'": {
+        "HOST": "'$HOST'",
+        "USERNAME": "'$USERNAME'",
+        "PORT": "'$PORT'",
+        "TYPE": "'$type'",
+        "BPATH": "'$BPATH'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    echo "HOST:           $HOST"
+    echo "USERNAME:       $USERNAME"
+    echo "PORT:           $PORT"
+    echo "TYPE:           $type"
+    echo "PATH:           $BPATH"
+    echo "TIME:           $TIME"
+    echo "DATE:           $DATE"
+}
+
+# PLAIN list function
+plain_list() {
+    echo -e "$HOST\t$USERNAME\t$PORT\t$type\t$BPATH\t$TIME\t$DATE"
+}
+
+# CSV list function
+csv_list() {
+    echo "HOST,USERNAME,PORT,TYPE,PATH,TIME,DATE"
+    echo "$HOST,$USERNAME,$PORT,$type,$BPATH,$TIME,$DATE"
+}
+
+# Type format validator
+is_type_format_valid() {
+    exclude="[!|#|$|^|&|(|)|+|=|{|}|:|@|<|>|?|/|\|\"|'|;|%|\`| ]|\."
+    if [[ "$1" =~ $exclude ]]; then
+        check_result $E_INVALID "invalid type extention format :: $1"
+    fi
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'TYPE [FORMAT]'
+is_type_format_valid "$type"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Checking backup config
+if [ ! -e "$VESTA/conf/$type.backup.conf" ]; then
+    exit
+fi
+
+# Parsing backup config
+source "$VESTA/conf/$type.backup.conf"
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

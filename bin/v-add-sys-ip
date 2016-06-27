@@ -1,0 +1,186 @@
+#!/bin/bash
+# info: add system ip address
+# options: IP NETMASK [INTERFACE] [USER] [IP_STATUS] [IP_NAME] [NAT_IP]
+#
+# The function adds ip address into a system. It also creates rc scripts. You
+# can specify ip name which will be used as root domain for temporary aliases.
+# For example, if you set a1.myhosting.com as name, each new domain created on
+# this  ip will automatically receive alias $domain.a1.myhosting.com. Of course
+# you must have wildcard record *.a1.myhosting.com pointed to ip. This feature 
+# is very handy when customer wants to test domain before dns migration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+ip=${1// /}
+netmask=$2
+interface="${3-eth0}"
+user="${4-admin}"
+ip_status="${5-shared}"
+ip_name=$6
+nat_ip=$7
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/ip.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'IP NETMASK [INTERFACE] [USER] [STATUS] [NAME] [NATED_IP]'
+is_format_valid 'ip' 'netmask' 'interface' 'user' 'ip_status'
+is_ip_free
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+if [ ! -z "$ip_name" ] ; then
+    is_format_valid 'ip_name'
+fi
+if [ ! -z "$nat_ip" ] ; then
+    is_format_valid 'nat_ip'
+fi
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+iface=$(get_ip_iface)
+cidr=$(convert_netmask $netmask)
+broadcast=$(get_broadcast $ip $netmask)
+
+sys_ip_check=$(/sbin/ip addr | grep "$ip")
+if [ -z "$sys_ip_check" ]; then
+    # Adding sys ip
+    /sbin/ip addr add $ip/$cidr dev $interface \
+        broadcast $broadcast label $iface
+
+    # Adding RHEL/CentOS/Fedora startup script
+    if [ -e "/etc/redhat-release" ]; then
+        sys_ip="# Added by vesta"
+        sys_ip="$sys_ip\nDEVICE=$iface"
+        sys_ip="$sys_ip\nBOOTPROTO=static"
+        sys_ip="$sys_ip\nONBOOT=yes"
+        sys_ip="$sys_ip\nIPADDR=$ip"
+        sys_ip="$sys_ip\nNETMASK=$netmask"
+        echo -e $sys_ip > /etc/sysconfig/network-scripts/ifcfg-$iface
+    fi
+
+    # Adding Debian/Ubuntu startup script
+    if [ -e "/etc/debian_version" ]; then
+        sys_ip="\n# Added by vesta"
+        sys_ip="$sys_ip\nauto $iface"
+        sys_ip="$sys_ip\niface $iface inet static"
+        sys_ip="$sys_ip\naddress $ip"
+        sys_ip="$sys_ip\nnetmask $netmask"
+        echo -e $sys_ip >> /etc/network/interfaces
+    fi
+fi
+
+# Generating timestamp
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+# Adding vesta ip
+echo "OWNER='$user'
+STATUS='$ip_status'
+NAME='$ip_name'
+U_SYS_USERS=''
+U_WEB_DOMAINS='0'
+INTERFACE='$interface'
+NETMASK='$netmask'
+NAT='$nat_ip'
+TIME='$time'
+DATE='$date'" > $VESTA/data/ips/$ip
+chmod 660 $VESTA/data/ips/$ip
+
+# WEB support
+if [ ! -z "$WEB_SYSTEM" ]; then
+    web_conf="/etc/$WEB_SYSTEM/conf.d/$ip.conf"
+    rm -f $web_conf
+
+    if [ "$WEB_SYSTEM" = 'httpd' ] || [ "$WEB_SYSTEM" = 'apache2' ]; then
+        if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
+            echo "NameVirtualHost $ip:$WEB_PORT" >  $web_conf
+        fi
+        echo "Listen $ip:$WEB_PORT" >> $web_conf
+    fi
+
+    if [ "$WEB_SSL" = 'mod_ssl' ]; then
+        if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
+            echo "NameVirtualHost $ip:$WEB_SSL_PORT" >> $web_conf
+        fi
+        echo "Listen $ip:$WEB_SSL_PORT" >> $web_conf
+    fi
+fi
+
+# Proxy support
+if [ ! -z "$PROXY_SYSTEM" ]; then
+    cat $WEBTPL/$PROXY_SYSTEM/proxy_ip.tpl |\
+        sed -e "s/%ip%/$ip/g" \
+            -e "s/%web_port%/$WEB_PORT/g" \
+            -e "s/%proxy_port%/$PROXY_PORT/g" \
+        > /etc/$PROXY_SYSTEM/conf.d/$ip.conf
+
+    # mod_extract_forwarded
+    fw_conf="/etc/$WEB_SYSTEM/conf.d/mod_extract_forwarded.conf"
+    if [ -e "$fw_conf" ]; then
+        ips=$(grep 'MEFaccept ' $fw_conf | grep -v '#' | head -n1)
+        sed -i "s/$ips/$ips $ip/g" $fw_conf
+    fi
+
+    # mod_rpaf
+    rpaf_conf="/etc/$WEB_SYSTEM/mods-enabled/rpaf.conf"
+    if [ -e "$rpaf_conf" ]; then
+        rpaf_str=$(grep RPAFproxy_ips $rpaf_conf)
+        rpaf_str="$rpaf_str $ip"
+        sed -i "s/.*RPAFproxy_ips.*/$rpaf_str/" $rpaf_conf
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Updating user counters
+increase_user_value "$user" '$IP_OWNED'
+if [ "$user" = 'admin' ]; then
+    if [ "$ip_status" = 'shared' ]; then
+        for user in $(ls $VESTA/data/users); do
+            increase_user_value "$user" '$IP_AVAIL'
+        done
+    else
+        increase_user_value 'admin' '$IP_AVAIL'
+    fi
+else
+    increase_user_value "$user" '$IP_AVAIL'
+    increase_user_value 'admin' '$IP_AVAIL'
+fi
+
+# Restarting web server
+$BIN/v-restart-web
+check_result $? "Web restart failed" >/dev/null
+
+# Restarting proxy server
+if [ ! -z "$PROXY_SYSTEM" ]; then
+    $BIN/v-restart-proxy
+    check_result $? "Proxy restart failed" >/dev/null
+fi
+
+# Restarting firewall
+if [ ! -z "$FIREWALL_SYSTEM" ]; then
+    $BIN/v-update-firewall
+fi
+
+# Logging
+log_history "added system ip address $ip" '' 'admin'
+log_event "$OK" "$ARGUMENTS"
+
+exit

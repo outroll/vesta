@@ -1,0 +1,49 @@
+#!/bin/bash
+# info: suspend firewall rule
+# options: RULE
+#
+# The function suspends a certain firewall rule.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+rule=$1
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'RULE'
+is_format_valid 'rule'
+is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
+is_object_valid '../../data/firewall/rules' 'RULE' "$rule"
+is_object_unsuspended '../../data/firewall/rules' 'RULE' "$rule"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Suspending rule
+update_object_value ../../data/firewall/rules RULE $rule '$SUSPENDED' yes
+
+# Updating system firewall
+$BIN/v-update-firewall
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

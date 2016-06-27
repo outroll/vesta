@@ -1,0 +1,65 @@
+#!/bin/bash
+# info: update user disk usage
+# options: USER
+#
+# The functions recalculates disk usage and updates database.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER'
+is_format_valid 'user'
+is_object_valid 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Saving old IFS
+OLDIFS=$IFS
+IFS=$(echo -en "\n\b")
+
+# Defining directory list
+dir_list=$(ls $HOMEDIR/$user/ |grep -v '^web$' | grep -v '^mail$' |\
+    grep -v '^conf$')
+
+# Starting update disk loop
+disk_usage='0'
+for dir in $dir_list; do
+    dir_disk=$(du -shm "$HOMEDIR/$user/$dir"|cut -f 1 )
+    disk_usage=$((disk_usage + dir_disk))
+done
+
+# Restoring old IFS
+IFS=$OLDIFS
+
+# Updating disk value in config
+update_user_value "$user" '$U_DISK_DIRS' "$disk_usage"
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Recalculating user disk space
+recalc_user_disk_usage
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

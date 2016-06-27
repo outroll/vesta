@@ -1,0 +1,77 @@
+#!/bin/bash
+# info: list system users
+# options: [FORMAT]
+#
+# The function for obtaining the list of system users without
+# detailed information.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    objects=$(grep @ /etc/passwd |wc -l)
+    i=1
+    echo '['
+    while read user; do
+        if [ "$i" -lt "$objects" ]; then
+            echo -e  "\t\"$user\","
+        else
+            echo -e  "\t\"$user\""
+        fi
+        (( ++i))
+    done < <(grep @ /etc/passwd |cut -f 1 -d :)
+    echo "]"
+}
+
+# SHELL list function
+shell_list() {
+    echo "USER"
+    echo "----"
+    while read user; do
+        echo "$user"
+    done < <(grep @ /etc/passwd |cut -f 1 -d :)
+}
+
+# PLAIN list function
+plain_list() {
+    while read user; do
+        echo "$user"
+    done < <(grep @ /etc/passwd |cut -f 1 -d :)
+}
+
+# CSV list function
+csv_list() {
+    echo "USER"
+    while read user; do
+        echo "$user"
+    done < <(grep @ /etc/passwd |cut -f 1 -d :)
+}
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

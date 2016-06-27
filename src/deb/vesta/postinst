@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Run SUDO trigger
+if [ -x "/usr/local/vesta/upd/add_sudo.sh" ]; then
+    /usr/local/vesta/upd/add_sudo.sh
+fi
+
+# Run Notification trigger
+if [ -x "/usr/local/vesta/upd/add_notifications.sh" ]; then
+    /usr/local/vesta/upd/add_notifications.sh
+fi
+
+# Run session save path trigger
+if [ -x "/usr/local/vesta/upd/fix_sessions.sh" ]; then
+    /usr/local/vesta/upd/fix_sessions.sh
+fi
+
+exit 0
