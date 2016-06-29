@@ -56,8 +56,8 @@
       ?>
 
 
-      <div class="l-unit <? if($data[$key]['SUSPENDED'] == 'yes') echo 'l-unit--suspended'; if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo ' l-unit--starred'; ?>" 
-v_unit_id="<?=$key?>" v_section="package" sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>" 
+      <div class="l-unit <? if($data[$key]['SUSPENDED'] == 'yes') echo 'l-unit--suspended'; if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo ' l-unit--starred'; ?>"
+v_unit_id="<?=$key?>" v_section="package" sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>"
 sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else echo '0'; ?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
@@ -118,7 +118,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('DNS domains')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['DNS_DOMAINS'])?></b>
+                      <b><?=$data[$key]['DNS_DOMAINS']?></b>
                     </div>
                   </div>
                 </td>
@@ -126,7 +126,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix last">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Backups')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['BACKUPS'])?></b>
+                      <b><?=$data[$key]['BACKUPS']?></b>
                     </div>
                   </div>
                 </td>
@@ -147,7 +147,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('DNS records')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['DNS_RECORDS'])?></b>
+                      <b><?=$data[$key]['DNS_RECORDS']?></b>
                     </div>
                   </div>
                 </td>
@@ -174,7 +174,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Mail Domains')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['MAIL_DOMAINS'])?></b>
+                      <b><?=$data[$key]['MAIL_DOMAINS']?></b>
                     </div>
                   </div>
                 </td>
@@ -201,7 +201,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Mail Accounts')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['MAIL_ACCOUNTS'])?></b>
+                      <b><?=$data[$key]['MAIL_ACCOUNTS']?></b>
                     </div>
                   </div>
                 </td>
@@ -220,7 +220,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Web Domains')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['WEB_DOMAINS'])?></b>
+                      <b><?=$data[$key]['WEB_DOMAINS']?></b>
                     </div>
                   </div>
                 </td>
@@ -228,7 +228,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Databases')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['DATABASES'])?></b>
+                      <b><?=$data[$key]['DATABASES']?></b>
                     </div>
                   </div>
                 </td>
@@ -241,7 +241,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Web Aliases')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['WEB_ALIASES'])?></b>
+                      <b><?=$data[$key]['WEB_ALIASES']?></b>
                     </div>
                   </div>
                 </td>
@@ -249,7 +249,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Cron Jobs')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['CRON_JOBS'])?></b>
+                      <b><?=$data[$key]['CRON_JOBS']?></b>
                     </div>
                   </div>
                 </td>
