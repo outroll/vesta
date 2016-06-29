@@ -693,7 +693,7 @@ $LANG['tr'] = array(
     'every two hours' => 'her iki saatte bir',
     'every minute' => 'her dakika',
     'every two minutes' => 'her iki dakikada bir',
-    'every' => 'sürekli',
+    'every' => 'her',
     'Generate' => 'Generate',
 
     'webalizer' => 'webalizer',
