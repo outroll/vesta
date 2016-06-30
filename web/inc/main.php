@@ -107,7 +107,7 @@ function top_panel($user, $TAB) {
     unset($output);
 
 
-    // getting notifications 
+    // getting notifications
     $command = VESTA_CMD."v-list-user-notifications '".$user."' 'json'";
     exec ($command, $output, $return_var);
     $notifications = json_decode(implode('', $output), true);
@@ -118,7 +118,7 @@ function top_panel($user, $TAB) {
         }
     }
     unset($output);
-    
+
 
     if ( $user == 'admin' ) {
         include(dirname(__FILE__).'/../templates/admin/panel.html');
