@@ -36,7 +36,7 @@ is_object_unsuspended 'user' 'USER' "$user"
 if [ ! -e "$USER_DATA/ssl/le.conf" ]; then
     check_result $E_NOTEXIST "LetsEncrypt key doesn't exist"
 fi
-check_domain=$(grep -w "$domain" $USER_DATA/web.conf)
+check_domain=$(grep -w "DOMAIN='$domain'" $USER_DATA/web.conf)
 if [ -z "$check_domain" ]; then
     check_result $E_NOTEXIST "domain $domain doesn't exist"
 fi
