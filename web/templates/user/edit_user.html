@@ -107,7 +107,7 @@
                                                 if (( $value == detect_user_language() ) && (empty($v_language))){
                                                     echo 'selected' ;
                                                 }
-                                                echo ">".htmlentities($value)."</option>\n";
+                                                echo ">".htmlentities(get_langName($value))."</option>\n";
                                             }
                                         ?> 
                                     </select>
