@@ -128,7 +128,7 @@ sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-disk="<?=$data[$key]['U_DI
                     unset($_SESSION['look_alert']);
                 }
               } else { ?>
-                <div class="actions-panel__col actions-panel__loginas shortcut-l" key-action="href"><a href="/login/?loginas=<?=$key?>&token=<?=$_SESSION['token']?>""><?=__('login as').' '.$key?> <i></i></a><span class="shortcut">&nbsp;L</span></div>
+                <div class="actions-panel__col actions-panel__loginas shortcut-l" key-action="href"><a href="/login/?loginas=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('login as').' '.$key?> <i></i></a><span class="shortcut">&nbsp;L</span></div>
               <?}?>
               <div class="actions-panel__col actions-panel__edit shortcut-enter" key-action="href"><a href="/edit/user/?user=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('edit')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
               <div class="actions-panel__col actions-panel__suspend shortcut-s" key-action="js">
@@ -200,7 +200,7 @@ sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-disk="<?=$data[$key]['U_DI
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Web Domains')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=$data[$key]['U_WEB_DOMAINS']?></b> / <?=$data[$key]['WEB_DOMAINS']?>
+                      <b><?=$data[$key]['U_WEB_DOMAINS']?></b> / <?=__($data[$key]['WEB_DOMAINS'])?>
                     </div>
                   </div>
                 </td>
@@ -226,7 +226,7 @@ sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-disk="<?=$data[$key]['U_DI
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('DNS Domains')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=$data[$key]['U_DNS_DOMAINS']?></b> / <?=$data[$key]['DNS_DOMAINS']?>
+                      <b><?=$data[$key]['U_DNS_DOMAINS']?></b> / <?=__($data[$key]['DNS_DOMAINS'])?>
                     </div>
                   </div>
                 </td>
@@ -257,7 +257,7 @@ sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-disk="<?=$data[$key]['U_DI
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Mail Domains')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=$data[$key]['U_MAIL_DOMAINS']?></b> / <?=$data[$key]['MAIL_DOMAINS']?>
+                      <b><?=$data[$key]['U_MAIL_DOMAINS']?></b> / <?=__($data[$key]['MAIL_DOMAINS'])?>
                     </div>
                   </div>
                 </td>
@@ -286,7 +286,7 @@ sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-disk="<?=$data[$key]['U_DI
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Databases')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=$data[$key]['U_DATABASES']?></b> / <?=$data[$key]['DATABASES']?>
+                      <b><?=$data[$key]['U_DATABASES']?></b> / <?=__($data[$key]['DATABASES'])?>
                     </div>
                   </div>
                 </td>
@@ -315,7 +315,7 @@ sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-disk="<?=$data[$key]['U_DI
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Cron Jobs')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=$data[$key]['U_CRON_JOBS']?></b> / <?=$data[$key]['CRON_JOBS']?>
+                      <b><?=$data[$key]['U_CRON_JOBS']?></b> / <?=__($data[$key]['CRON_JOBS'])?>
                     </div>
                   </div>
                 </td>

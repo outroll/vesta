@@ -81,8 +81,8 @@
       ?>
 
 
-      <div class="l-unit <? if($status == 'suspended') echo 'l-unit--suspended'; if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] == 1) echo ' l-unit--starred'; ?>" v_unit_id="<?=$key."@".$_GET['domain']?>" v_section="mail_acc" 
-sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>" sort-disk="<?$data[$key]['U_DISK']?>" 
+      <div class="l-unit <? if($status == 'suspended') echo 'l-unit--suspended'; if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] == 1) echo ' l-unit--starred'; ?>" v_unit_id="<?=$key."@".$_GET['domain']?>" v_section="mail_acc"
+sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>" sort-disk="<?$data[$key]['U_DISK']?>"
 sort-star="<? if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] == 1) echo '1'; else echo '0'; ?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
@@ -146,7 +146,7 @@ sort-star="<? if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] =
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Quota')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><? echo __($data[$key]['QUOTA'])?></b>
+                      <b><?=__($data[$key]['QUOTA'])?></b>
                     </div>
                   </div>
                 </td>
