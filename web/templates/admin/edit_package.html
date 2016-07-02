@@ -70,7 +70,7 @@
                                                 if ((!empty($v_web_template)) && ( $value == $_POST['v_web_template'])){
                                                     echo ' selected' ;
                                                 }
-                                                echo ">".htmlentities($value)."</option>\n";
+                                                echo ">".htmlentities(__($value))."</option>\n";
                                             }
                                         ?>
                                     </select>
@@ -94,7 +94,7 @@
                                                 if ((!empty($v_backend_template)) && ( $value == $_POST['v_backend_template'])){
                                                     echo ' selected' ;
                                                 }
-                                                echo ">".$value."</option>\n";
+                                                echo ">".htmlentities(__($value))."</option>\n";
                                             }
                                         ?>
                                     </select>
@@ -119,7 +119,7 @@
                                                 if ((!empty($v_proxy_template)) && ( $value == $_POST['v_proxy_template'])){
                                                     echo ' selected' ;
                                                 }
-                                                echo ">".htmlentities($value)."</option>\n";
+                                                echo ">".htmlentities(__($value))."</option>\n";
                                             }
                                         ?>
                                     </select>
@@ -143,7 +143,7 @@
                                                 if ((!empty($v_dns_template)) && ( $value == $_POST['v_dns_template'])){
                                                     echo ' selected' ;
                                                 }
-                                                echo ">".htmlentities($value)."</option>\n";
+                                                echo ">".htmlentities(__($value))."</option>\n";
                                             }
                                         ?>
                                     </select>
@@ -166,7 +166,7 @@
                                                 if ((!empty($v_shell)) && ( $value == $_POST['v_shell'])){
                                                     echo ' selected' ;
                                                 }
-                                                echo ">".htmlentities($value)."</option>\n";
+                                                echo ">".htmlentities(__($value))."</option>\n";
                                             }
                                         ?>
                                     </select>
