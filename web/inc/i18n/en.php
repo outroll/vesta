@@ -427,7 +427,7 @@ $LANG['en'] = array(
     'PACKAGE_CREATED_OK'  => 'Package <a href="/edit/package/?package=%s"><b>%s</b></a> has been created successfully.',
     'SSL_GENERATED_OK' => 'Certificate has been generated successfully.',
     'RULE_CREATED_OK' => 'Rule has been created successfully.',
-    'BANLIST_CREATED_OK' => 'IP address has been banned successfully',
+    'BANLIST_CREATED_OK' => 'IP address has been banned successfully',    // I'm not sure about this text
     'Autoupdate has been successfully enabled' => 'Autoupdate has been successfully enabled.',
     'Autoupdate has been successfully disabled' => 'Autoupdate has been successfully disabled.',
     'Cronjob email reporting has been successfully enabled' => 'Cronjob email reporting has been successfully enabled',
