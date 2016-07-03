@@ -231,6 +231,7 @@ $LANG['en'] = array(
     'Load Average'  => 'Load Average',
     'Memory Usage'  => 'Memory Usage',
     'HTTPD Usage'  => 'HTTPD Usage',
+    'APACHE2 Usage'  => 'APACHE2 Usage',
     'NGINX Usage'  => 'NGINX Usage',
     'MySQL Usage on localhost'  => 'MySQL Usage on localhost',
     'PostgreSQL Usage on localhost'  => 'PostgreSQL Usage on localhost',
