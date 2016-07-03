@@ -68,8 +68,8 @@
           }
       ?>
 
-      <div class="l-unit<? if($status == 'suspended') echo ' l-unit--suspended'; if($_SESSION['favourites']['DNS'][$key] == 1) echo ' l-unit--starred'; ?>" v_unit_id="<?=$key?>" v_section="dns" 
-sort-ip="<?=str_replace('.', '', $data[$key]['IP'])?>" sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>" 
+      <div class="l-unit<? if($status == 'suspended') echo ' l-unit--suspended'; if($_SESSION['favourites']['DNS'][$key] == 1) echo ' l-unit--starred'; ?>" v_unit_id="<?=$key?>" v_section="dns"
+sort-ip="<?=str_replace('.', '', $data[$key]['IP'])?>" sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>"
 sort-expire="<?=strtotime($data[$key]['EXP'])?>" sort-records="<?=(int)$data[$key]['RECORDS']?>" sort-star="<? if($_SESSION['favourites']['DNS'][$key] == 1) echo '1'; else echo '0';?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
@@ -139,7 +139,7 @@ sort-expire="<?=strtotime($data[$key]['EXP'])?>" sort-records="<?=(int)$data[$ke
                   <div class="l-unit__stat-cols clearfix last">
                     <div class="l-unit__stat-col l-unit__stat-col--left compact"><?=__('Template')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=$data[$key]['TPL']?></b>
+                      <b><?=__($data[$key]['TPL'])?></b>
                     </div>
                   </div>
                 </td>
