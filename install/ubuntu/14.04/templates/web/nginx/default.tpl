@@ -11,6 +11,7 @@ server {
             access_log     /var/log/%web_system%/domains/%domain%.bytes bytes;
             expires        max;
             try_files      $uri @fallback;
+            etag           on;
         }
     }
 
