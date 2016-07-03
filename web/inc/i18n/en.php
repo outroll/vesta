@@ -25,7 +25,7 @@ $LANG['en'] = array(
     'CRON'  => 'CRON',
     'BACKUP'  => 'BACKUP',
 
-    'LOGIN'  => '',
+    'LOGIN'  => 'LOGIN',
     'RESET PASSWORD'  => 'RESET PASSWORD',
     'SEARCH'  => 'SEARCH',
     'PACKAGE'  => 'PACKAGE',
@@ -105,7 +105,7 @@ $LANG['en'] = array(
     'reread IP' => 'reread IP',
     'enable autoupdate' => 'enable autoupdate',
     'disable autoupdate' => 'disable autoupdate',
-    'turn on notifications' => 'turn on notification',
+    'turn on notifications' => 'turn on notifications',
     'turn off notifications' => 'turn off notifications',
 
     'Adding User'  => 'Adding User',
@@ -504,7 +504,7 @@ $LANG['en'] = array(
     'Confirm Password'  => 'Confirm Password',
     'Reset'  => 'Reset',
     'Reset Code'  => 'Reset Code',
-    'RESET_NOTICE'  => '',
+    'RESET_NOTICE'  => '',    // should we add something here?
     'RESET_CODE_SENT'  => 'Password reset code has been sent to your email address<br>',
     'MAIL_RESET_SUBJECT'  => 'Password Reset at %s',
     'PASSWORD_RESET_REQUEST' => "To reset your control panel password, please follow this link:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nAlternatively, you may go to https://%s/reset/?action=code&user=%s and enter the following reset code:\n%s\n\nIf you did not request password reset, please ignore this message and accept our apologies.\n\n--\nVesta Control Panel\n",
