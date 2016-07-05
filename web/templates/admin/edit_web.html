@@ -129,7 +129,7 @@
                                                 if ((empty($v_backend_template)) && ($value == 'default')){
                                                     echo ' selected' ;
                                                 }
-                                                echo ">".$value."</option>\n";
+                                                echo ">".htmlentities($value)."</option>\n";
                                             }
                                         ?>
                                     </select>
