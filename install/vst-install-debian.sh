@@ -854,7 +854,7 @@ fi
 #----------------------------------------------------------#
 
 if [ "$phpfpm" = 'yes' ]; then
-    wget $vestacp/php5-fpm/www.conf -O /etc/php5/fpm/pool.d/www.conf
+    wget $vestacp/templates/web/nginx/php5-fpm/www.conf -O /etc/php5/fpm/pool.d/www.conf
     update-rc.d php5-fpm defaults
     service php5-fpm start
     check_result $? "php-fpm start failed"
