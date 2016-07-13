@@ -28,7 +28,7 @@ is_package_new() {
 }
 
 is_package_consistent() {
-    source $pkg_dir/$package.pkg
+    source <(curl -s $1)
     if [ "$WEB_DOMAINS" != 'unlimited' ]; then
         is_format_valid_int $WEB_DOMAINS 'WEB_DOMAINS'
     fi
