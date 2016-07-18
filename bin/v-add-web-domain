@@ -128,6 +128,9 @@ else
 fi
 prepare_web_domain_values
 
+# Defining variables for new vhost config
+prepare_web_domain_values
+
 # Adding web server config
 add_web_config "$WEB_SYSTEM" "$WEB_TEMPLATE.tpl"
 
