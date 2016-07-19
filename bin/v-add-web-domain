@@ -118,13 +118,15 @@ if [ ! -z "$WEB_BACKEND" ]; then
     fi
     $BIN/v-add-web-domain-backend "$user" "$domain" $BACKEND_TEMPLATE
     check_result $? "Backend error" >/dev/null
-    prepare_web_backend
 fi
 
-# Preparing domain aliases
+# Preparing domain variables
 if [ "$aliases" != 'none' ]; then
-    prepare_web_aliases "www.$domain,$aliases,$(get_ip_alias $domain)"
+    ALIAS="www.$domain,$aliases,$(get_ip_alias $domain)"
+else
+    ALIAS=''
 fi
+prepare_web_domain_values
 
 # Adding web server config
 add_web_config "$WEB_SYSTEM" "$WEB_TEMPLATE.tpl"
@@ -156,7 +158,7 @@ time=$(echo "$time_n_date" |cut -f 1 -d \ )
 date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Adding domain in web.conf
-echo "DOMAIN='$domain' IP='$ip' IP6='' ALIAS='$aliases' TPL='$WEB_TEMPLATE' \
+echo "DOMAIN='$domain' IP='$ip' IP6='' ALIAS='$ALIAS' TPL='$WEB_TEMPLATE' \
 SSL='no' SSL_HOME='same' FTP_USER='' FTP_MD5='' BACKEND='$BACKEND_TEMPLATE' \
 PROXY='$PROXY_TEMPLATE' PROXY_EXT='$PROXY_EXT' STATS='' STATS_USER='' \
 STATS_CRYPT='' U_DISK='0' U_BANDWIDTH='0' SUSPENDED='no' \
