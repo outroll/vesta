@@ -1125,6 +1125,14 @@ check_result $? "can't create admin user"
 $VESTA/bin/v-change-user-shell admin bash
 $VESTA/bin/v-change-user-language admin $lang
 
+# ClamAV permissions fix
+if [ "$clamd" = 'yes' ]; then
+	if [ ! -d "/var/run/clamav" ]; then
+		mkdir /var/run/clamav
+	fi
+	chown -R clamav:clamav /var/run/clamav
+fi
+
 # Configuring system ips
 $VESTA/bin/v-update-sys-ip
 
