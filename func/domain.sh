@@ -212,11 +212,11 @@ add_web_config() {
     chown root:$user $conf
     chmod 640 $conf
 
-    if [ -z "$(grep "$conf" /etc/$1/conf.d/vesta.conf)" ]; then
-        if [ "$1" != 'nginx' ]; then
-            echo "Include $conf" >> /etc/$1/conf.d/vesta.conf
+    if [ -z "$(grep "$conf" /etc/$WEB_SYSTEM/conf.d/vesta.conf)" ]; then
+        if [ "$WEB_SYSTEM" != 'nginx' ]; then
+            echo "Include $conf" >> /etc/$WEB_SYSTEM/conf.d/vesta.conf
         else
-            echo "include $conf;" >> /etc/$1/conf.d/vesta.conf
+            echo "include $conf;" >> /etc/$WEB_SYSTEM/conf.d/vesta.conf
         fi
     fi
 
