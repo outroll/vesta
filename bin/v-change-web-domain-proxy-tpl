@@ -51,18 +51,18 @@ get_domain_values 'web'
 local_ip=$(get_real_ip $IP)
 
 # Delete old vhost
-del_web_config "{$PROXY_SYSTEM}_${domain_idn}" "$PROXY.tpl"
+del_web_config "${PROXY_SYSTEM}_${domain_idn}" "$PROXY.tpl"
 if [ "$SSL" = 'yes' ]; then
-    del_web_config "{$PROXY_SYSTEM}_${domain_idn}" "$PROXY.stpl"
+    del_web_config "${PROXY_SYSTEM}_${domain_idn}" "$PROXY.stpl"
 fi
 
 # Add new vhost
 PROXY="$template"
 PROXY_EXT="$extentions"
 prepare_web_domain_values
-add_web_config "{$PROXY_SYSTEM}_${domain_idn}" "$PROXY.tpl"
+add_web_config "${PROXY_SYSTEM}_${domain_idn}" "$PROXY.tpl"
 if [ "$SSL" = 'yes' ]; then
-    add_web_config "{$PROXY_SYSTEM}_${domain_idn}" "$PROXY.stpl"
+    add_web_config "${PROXY_SYSTEM}_${domain_idn}" "$PROXY.stpl"
 fi
 
 

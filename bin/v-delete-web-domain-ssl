@@ -43,11 +43,11 @@ is_object_value_exist 'web' 'DOMAIN' "$domain" '$SSL'
 get_domain_values 'web'
 
 # Deleting domain
-del_web_config "{$WEB_SYSTEM}_${domain_idn}" "$TPL.stpl"
+del_web_config "${WEB_SYSTEM}_${domain_idn}" "$TPL.stpl"
 
 # Checking proxy
 if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
-    del_web_config "{$PROXY_SYSTEM}_${domain_idn}" "$PROXY.stpl"
+    del_web_config "${PROXY_SYSTEM}_${domain_idn}" "$PROXY.stpl"
 fi
 
 # Deleting old certificate

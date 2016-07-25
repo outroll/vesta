@@ -55,11 +55,11 @@ local_ip=$(get_real_ip $IP)
 
 # Preparing domain values for the template substitution
 PROXY_EXT="$extentions"
-add_web_config "{$PROXY_SYSTEM}_${domain_idn}" "$template.tpl"
+add_web_config "${PROXY_SYSTEM}_${domain_idn}" "$template.tpl"
 
 # Adding proxy for ssl
 if [ "$SSL" = 'yes' ]; then
-    add_web_config "{$PROXY_SYSTEM}_${domain_idn}" "$template.stpl"
+    add_web_config "${PROXY_SYSTEM}_${domain_idn}" "$template.stpl"
 fi
 
 
