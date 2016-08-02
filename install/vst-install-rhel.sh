@@ -605,7 +605,7 @@ fi
 
 # Installing rpm packages
 if [ -z "$disable_remi" ]; then 
-    yum -y --disablerepo=* --enablerepo="base,updates,nginx,epel,vesta,remi" \
+    yum -y --disablerepo=* --enablerepo="base,updates,nginx,epel,vesta,remi,remi-php55" \
         install $software
 else
     yum -y --disablerepo=* --enablerepo="base,updates,nginx,epel,vesta" \
