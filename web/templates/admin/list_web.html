@@ -178,7 +178,7 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
           </div>
           <!-- /.l-unit__name -->
           <div class="l-unit__ip">
-            <?=str_replace('.', '<span>.</span>', $data[$key]['IP'])?>
+            <?=empty($ips[$data[$key]['IP']]['NAT']) ? $data[$key]['IP'] : "{$ips[$data[$key]['IP']]['NAT']}"; ?>
           </div>
           <!-- /.l-unit__ip -->
           <div class="l-unit__stats">
