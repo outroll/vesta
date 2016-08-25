@@ -274,9 +274,9 @@ del_web_config() {
     web_domains=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
     if [ "$web_domains" -eq '0' ]; then
         if [[ "$3" =~ stpl$ ]]; then
-            sed -i "/.*\/$user\/.*${1}_${2}_ssl.conf/d" /etc/$1/conf.d/vesta.conf
+            sed -i "/.*\/$user\/${1}_${2}_ssl.conf/d" /etc/$1/conf.d/vesta.conf
         else
-            sed -i "/.*\/$user\/.*${1}_${2}.conf/d" /etc/$1/conf.d/vesta.conf
+            sed -i "/.*\/$user\/${1}_${2}.conf/d" /etc/$1/conf.d/vesta.conf
         fi
         rm -f $conf
     fi
