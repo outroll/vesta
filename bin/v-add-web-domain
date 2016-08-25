@@ -129,7 +129,7 @@ fi
 prepare_web_domain_values
 
 # Adding web server config
-add_web_config "${WEB_SYSTEM}_${domain_idn}" "$WEB_TEMPLATE.tpl"
+add_web_config "${WEB_SYSTEM}" "${domain_idn}" "$WEB_TEMPLATE.tpl"
 
 # Adding proxy config
 if [ ! -z "$PROXY_SYSTEM" ]; then
@@ -139,7 +139,7 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
         PROXY_EXT="$PROXY_EXT,exe,pdf,ppt,txt,odt,ods,odp,odf,tar,wav,bmp"
         PROXY_EXT="$PROXY_EXT,rtf,js,mp3,avi,mpeg,flv,html,htm"
     fi
-    add_web_config "${PROXY_SYSTEM}_${domain_idn}" "$PROXY_TEMPLATE.tpl"
+    add_web_config "${PROXY_SYSTEM}" "${domain_idn}" "$PROXY_TEMPLATE.tpl"
 fi
 
 

@@ -175,12 +175,12 @@ prepare_web_domain_values() {
 
 # Add web config
 add_web_config() {
-    conf="$HOMEDIR/$user/conf/web/$1.conf"
-    if [[ "$2" =~ stpl$ ]]; then
-        conf="$HOMEDIR/$user/conf/web/${1}_ssl.conf"
+    conf="$HOMEDIR/$user/conf/web/$2.conf"
+    if [[ "$3" =~ stpl$ ]]; then
+        conf="$HOMEDIR/$user/conf/web/${2}_ssl.conf"
     fi
 
-    cat $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$2 | \
+    cat $WEBTPL/$1/$WEB_BACKEND/$3 | \
         sed -e "s|%ip%|$local_ip|g" \
             -e "s|%domain%|$domain|g" \
             -e "s|%domain_idn%|$domain_idn|g" \
@@ -212,17 +212,17 @@ add_web_config() {
     chown root:$user $conf
     chmod 640 $conf
 
-    if [ -z "$(grep "$conf" /etc/$WEB_SYSTEM/conf.d/vesta.conf)" ]; then
-        if [ "$WEB_SYSTEM" != 'nginx' ]; then
-            echo "Include $conf" >> /etc/$WEB_SYSTEM/conf.d/vesta.conf
+    if [ -z "$(grep "$conf" /etc/$1/conf.d/vesta.conf)" ]; then
+        if [ "$1" != 'nginx' ]; then
+            echo "Include $conf" >> /etc/$1/conf.d/vesta.conf
         else
-            echo "include $conf;" >> /etc/$WEB_SYSTEM/conf.d/vesta.conf
+            echo "include $conf;" >> /etc/$1/conf.d/vesta.conf
         fi
     fi
 
     trigger="${2/.*pl/.sh}"
     if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
-        $WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$trigger \
+        $WEBTPL/$1/$WEB_BACKEND/$trigger \
             $user $domain $ip $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
     fi
 }

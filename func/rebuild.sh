@@ -197,12 +197,12 @@ rebuild_web_domain_conf() {
 
     # Adding vhost configuration
     conf="$HOMEDIR/$user/conf/web/${WEB_SYSTEM}_${domain_idn}.conf"
-    add_web_config "${WEB_SYSTEM}_${domain_idn}" "$TPL.tpl"
+    add_web_config "${WEB_SYSTEM}" "${domain_idn}" "$TPL.tpl"
 
     # Adding SSL vhost configuration
     if [ "$SSL" = 'yes' ]; then
         conf="$HOMEDIR/$user/conf/web/${WEB_SYSTEM}_${domain_idn}_ssl.conf"
-        add_web_config "${WEB_SYSTEM}_${domain_idn}" "$TPL.stpl"
+        add_web_config "${WEB_SYSTEM}" "${domain_idn}" "$TPL.stpl"
         cp -f $USER_DATA/ssl/$domain.crt \
             $HOMEDIR/$user/conf/web/ssl.$domain.crt
         cp -f $USER_DATA/ssl/$domain.key \
@@ -218,10 +218,10 @@ rebuild_web_domain_conf() {
     # Adding proxy configuration
     if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
         conf="$HOMEDIR/$user/conf/web/${PROXY_SYSTEM}_${domain_idn}.conf"
-        add_web_config "${PROXY_SYSTEM}_${domain_idn}" "$PROXY.tpl"
+        add_web_config "${PROXY_SYSTEM}" "${domain_idn}" "$PROXY.tpl"
         if [ "$SSL" = 'yes' ]; then
             conf="$HOMEDIR/$user/conf/web/${PROXY_SYSTEM}_${domain_idn}_ssl.conf"
-            add_web_config "${PROXY_SYSTEM}_${domain_idn}" "$PROXY.stpl"
+            add_web_config "${PROXY_SYSTEM}" "${domain_idn}" "$PROXY.stpl"
         fi
     fi
 

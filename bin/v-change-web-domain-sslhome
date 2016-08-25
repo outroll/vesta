@@ -51,11 +51,11 @@ case $SSL_HOME in
 esac
 
 # Changing sslhome directory
-replace_web_config "${WEB_SYSTEM}_${domain_idn}" "$WEB_SYSTEM" "$TPL.stpl"
+replace_web_config "${WEB_SYSTEM}" "${domain_idn}" "$WEB_SYSTEM" "$TPL.stpl"
 
 # Changing proxy vhost
 if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
-    replace_web_config "${WEB_SYSTEM}_${domain_idn}" "$PROXY_SYSTEM" "$PROXY.stpl"
+    replace_web_config "${WEB_SYSTEM}" "${domain_idn}" "$PROXY_SYSTEM" "$PROXY.stpl"
 fi
 
 
