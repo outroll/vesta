@@ -257,7 +257,7 @@ replace_web_config() {
     if [[ "$3" =~ stpl$ ]]; then
         conf="$HOMEDIR/$user/conf/web/${1}_${2}_ssl.conf"
     fi
-    get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
+    get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$3 $conf
     sed -i  "$top_line,$bottom_line s|$old|$new|g" $conf
 }
 
@@ -268,7 +268,7 @@ del_web_config() {
         conf="$HOMEDIR/$user/conf/web/${1}_${2}_ssl.conf"
     fi
 
-    get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
+    get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$3 $conf
     sed -i "$top_line,$bottom_line d" $conf
 
     web_domains=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
