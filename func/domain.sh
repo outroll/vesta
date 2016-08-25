@@ -175,7 +175,7 @@ prepare_web_domain_values() {
 
 # Add web config
 add_web_config() {
-    conf="$HOMEDIR/$user/conf/web/${1}_{$2}.conf"
+    conf="$HOMEDIR/$user/conf/web/${1}_${2}.conf"
     if [[ "$3" =~ stpl$ ]]; then
         conf="$HOMEDIR/$user/conf/web/${1}_${2}_ssl.conf"
     fi
