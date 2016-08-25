@@ -264,7 +264,7 @@ replace_web_config() {
 # Delete web configuartion
 del_web_config() {
     conf="$HOMEDIR/$user/conf/web/${1}_${2}.conf"
-    if [[ "$2" =~ stpl$ ]]; then
+    if [[ "$3" =~ stpl$ ]]; then
         conf="$HOMEDIR/$user/conf/web/${1}_${2}_ssl.conf"
     fi
 
