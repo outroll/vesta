@@ -175,12 +175,12 @@ prepare_web_domain_values() {
 
 # Add web config
 add_web_config() {
-    conf="$HOMEDIR/$user/conf/web/$1.conf"
-    if [[ "$2" =~ stpl$ ]]; then
-        conf="$HOMEDIR/$user/conf/web/s$1.conf"
+    conf="$HOMEDIR/$user/conf/web/${1}_${2}.conf"
+    if [[ "$3" =~ stpl$ ]]; then
+        conf="$HOMEDIR/$user/conf/web/${1}_${2}_ssl.conf"
     fi
 
-    cat $WEBTPL/$1/$WEB_BACKEND/$2 | \
+    cat $WEBTPL/$1/$WEB_BACKEND/$3 | \
         sed -e "s|%ip%|$local_ip|g" \
             -e "s|%domain%|$domain|g" \
             -e "s|%domain_idn%|$domain_idn|g" \
@@ -220,7 +220,7 @@ add_web_config() {
         fi
     fi
 
-    trigger="${2/.*pl/.sh}"
+    trigger="${3/.*pl/.sh}"
     if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
         $WEBTPL/$1/$WEB_BACKEND/$trigger \
             $user $domain $ip $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
@@ -253,27 +253,31 @@ get_web_config_lines() {
 
 # Replace web config
 replace_web_config() {
-    conf="$HOMEDIR/$user/conf/web/$1.conf"
-    if [[ "$2" =~ stpl$ ]]; then
-        conf="$HOMEDIR/$user/conf/web/s$1.conf"
+    conf="$HOMEDIR/$user/conf/web/${1}_${2}.conf"
+    if [[ "$3" =~ stpl$ ]]; then
+        conf="$HOMEDIR/$user/conf/web/${1}_${2}_ssl.conf"
     fi
-    get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
+    get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$3 $conf
     sed -i  "$top_line,$bottom_line s|$old|$new|g" $conf
 }
 
 # Delete web configuartion
 del_web_config() {
-    conf="$HOMEDIR/$user/conf/web/$1.conf"
-    if [[ "$2" =~ stpl$ ]]; then
-        conf="$HOMEDIR/$user/conf/web/s$1.conf"
+    conf="$HOMEDIR/$user/conf/web/${1}_${2}.conf"
+    if [[ "$3" =~ stpl$ ]]; then
+        conf="$HOMEDIR/$user/conf/web/${1}_${2}_ssl.conf"
     fi
 
-    get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
+    get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$3 $conf
     sed -i "$top_line,$bottom_line d" $conf
 
     web_domains=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
     if [ "$web_domains" -eq '0' ]; then
-        sed -i "/.*\/$user\/.*$1.conf/d" /etc/$1/conf.d/vesta.conf
+        if [[ "$3" =~ stpl$ ]]; then
+            sed -i "/.*\/$user\/conf\/web\/${1}_${2}_ssl.conf/d" /etc/$1/conf.d/vesta.conf
+        else
+            sed -i "/.*\/$user\/conf\/web\/${1}_${2}.conf/d" /etc/$1/conf.d/vesta.conf
+        fi
         rm -f $conf
     fi
 }
