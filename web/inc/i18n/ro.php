@@ -286,6 +286,7 @@ $LANG['ro'] = array(
     'DNS Support' => 'Support DNS',
     'Mail Support' => 'Support E-mail',
     'Advanced options' => 'Opțiuni avansate',
+    'Basic options'  => 'Basic options',
     'Aliases' => 'Aliasuri',
     'SSL Certificate' => 'Certificat SSL',
     'SSL Key' => 'Cheia SSL',
@@ -701,6 +702,9 @@ $LANG['ro'] = array(
 
     'Minutes' => 'Minutes',
     'Hourly' => 'Hourly',
+    'Daily' => 'Dayly',
+    'Weekly' => 'Weekly',
+    'Monthly' => 'Monthly',
     'Run Command' => 'Run Command',
     'every month' => 'every month',
     'every odd month' => 'every odd month',

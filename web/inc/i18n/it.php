@@ -286,6 +286,7 @@ $LANG['it'] = array(
     'DNS Support'  => 'Supporto DNS',
     'Mail Support'  => 'Supporto Mail',
     'Advanced options'  => 'Opzioni Avanzate',
+    'Basic options'  => 'Basic options',
     'Aliases'  => 'Alias Dominio',
     'SSL Certificate'  => 'Certificato SSL',
     'SSL Key'  => 'SSL Key',
@@ -701,6 +702,9 @@ $LANG['it'] = array(
 
     'Minutes' => 'Minutes',
     'Hourly' => 'Hourly',
+    'Daily' => 'Dayly',
+    'Weekly' => 'Weekly',
+    'Monthly' => 'Monthly',
     'Run Command' => 'Run Command',
     'every month' => 'every month',
     'every odd month' => 'every odd month',

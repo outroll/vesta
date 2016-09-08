@@ -286,6 +286,7 @@ $LANG['fi'] = array(
     'DNS Support' => 'Tarvitsee DNS:n',
     'Mail Support' => 'Tarvitsee Sähköpostin',
     'Advanced options' => 'Lisäasetukset',
+    'Basic options'  => 'Basic options',
     'Aliases' => 'Aliakset',
     'SSL Certificate' => 'SSL-sertifikaatti',
     'SSL Key' => 'SSL-avain',
@@ -701,6 +702,9 @@ $LANG['fi'] = array(
 
     'Minutes' => 'Minutes',
     'Hourly' => 'Hourly',
+    'Daily' => 'Dayly',
+    'Weekly' => 'Weekly',
+    'Monthly' => 'Monthly',
     'Run Command' => 'Run Command',
     'every month' => 'every month',
     'every odd month' => 'every odd month',

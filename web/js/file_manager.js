@@ -651,10 +651,13 @@ FM.generate_listing = function(reply, box) {
 
         var t_index = tab + '_' + i;
 
+        o.name = o.name.replace('"', '\"');
+        o.full_path = o.full_path.replace('"', '\"');
+
         var tpl = Tpl.get('entry_line', 'FM');
         tpl.set(':CL_ACTION_1', cl_act);
-        tpl.set(':SOURCE', $.toJSON(o));
         tpl.set(':NAME', o.name);
+        tpl.set(':SOURCE', $.toJSON(o));
         tpl.set(':PERMISSIONS', o.permissions);
         tpl.set(':OWNER', o.owner);
         tpl.set(':SIZE_VALUE', o.type == 'f' ? FM.humanFileSizeValue(o.size) : '&nbsp;');
@@ -1141,7 +1144,6 @@ FM.unpackItem = function() {
             App.Constants.FM_NO_FILE_SELECTED
         );
     }
-    
 
     var src = selected.find('.source').val();
     src = $.parseJSON(src);
@@ -1157,12 +1159,12 @@ FM.unpackItem = function() {
             App.Constants.FM_FILE_TYPE_NOT_SUPPORTED
         );
     }
-    
+
     var dst = FM['TAB_' + tab + '_CURRENT_PATH'];
     if (dst == '') {
         dst = GLOBAL.ROOT_DIR;
     }
-    
+
     var tpl = Tpl.get('popup_unpack', 'FM');
     tpl.set(':FILENAME', src.name);
     tpl.set(':DST_DIRNAME', (dst).replace('//', '/'));
@@ -1172,36 +1174,32 @@ FM.unpackItem = function() {
 FM.packItem = function() {
     var tab = FM.getTabLetter(FM.CURRENT_TAB);
     var box = FM['TAB_' + tab];
-    var selected = $(FM['TAB_' + tab] ).find('.dir.active');
+    var selected = $(FM['TAB_' + tab] ).find('.dir.selected');
     if (selected.length == 0) {
         return FM.displayError(
             App.Constants.FM_NO_FILE_SELECTED
         );
     }
-    
 
     var src = selected.find('.source').val();
     src = $.parseJSON(src);
-    
-    if (FM.isItemPseudo(src)) {
-        return FM.displayError(
-            App.Constants.FM_NO_FILE_OR_DIRECTORY_SELECTED
-        );
-    }
-    
-    if (FM.isItemPseudo(src)) {
+
+    if (FM.isItemPseudo(src) && selected.length <=1 ) {
         return FM.displayError(
             App.Constants.FM_NO_FILE_OR_DIRECTORY_SELECTED
         );
     }
 
-    
     var dst = FM['TAB_' + tab + '_CURRENT_PATH'];
     if (dst == '') {
         dst = GLOBAL.ROOT_DIR;
     }
-    
+
     var tpl = Tpl.get('popup_pack', 'FM');
+    if(selected.length > 1){
+        tpl = Tpl.get('popup_bulk_pack', 'FM');
+    }
+    tpl.set(':NUMBER_OF_ITEMS', selected.length);
     tpl.set(':FILENAME', src.name);
     tpl.set(':DST_DIRNAME', (dst + '/' + src.name + '.tar.gz').replace('//', '/'));
     FM.popupOpen(tpl.finalize());
@@ -1270,15 +1268,15 @@ FM.confirmRename = function() {
 
     var src = selected.find('.source').val();
     src = $.parseJSON(src);
-    
+
     var target_name = $('#rename-title').val();
-    
+
     if (target_name.trim().length == 0) {
         return FM.displayError(
             App.Constants.FM_FILE_NAME_CANNOT_BE_EMPTY
         );
     }
-    
+
     var action = FM.isItemFile(src) ? 'rename_file' : 'rename_directory';
 
     var params = {
@@ -1286,7 +1284,7 @@ FM.confirmRename = function() {
         target_name: target_name,
         dir:  FM['TAB_' + tab + '_CURRENT_PATH'] + '/'
     };
-    
+
     App.Ajax.request(action, params, function(reply) {
         if (reply.result == true) {
             FM.popupClose();
@@ -1847,7 +1845,6 @@ FM.confirmUnpackItem = function () {
 }
 
 FM.confirmPackItem = function () {
-
     var tab = FM.getTabLetter(FM.CURRENT_TAB);
     var box = FM['TAB_' + tab];
     var selected = $(FM['TAB_' + tab] ).find('.dir.active, .dir.selected');
@@ -1862,12 +1859,11 @@ FM.confirmPackItem = function () {
         src = $.parseJSON(src);
 
         if (FM.isItemPseudo(src)) {
-	    return FM.displayError(
-    		App.Constants.FM_NO_FILE_OR_DIRECTORY_SELECTED
-    	    );
-	}
+            return FM.displayError(
+                App.Constants.FM_NO_FILE_OR_DIRECTORY_SELECTED
+            );
+        }
     }
-
 
     if (selected.length > 0) {
         var files_arr = [];
@@ -1903,7 +1899,6 @@ FM.confirmPackItem = function () {
         if (reply.result == true) {
             FM.popupClose();
             FM.open(FM['TAB_' + tab + '_CURRENT_PATH'], FM['TAB_' + tab]);
-///            FM.open(FM['TAB_' + opposite_tab + '_CURRENT_PATH'], FM['TAB_' + opposite_tab]);
         }
         else {
             FM.showError('unpack_item', reply.message);

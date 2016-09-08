@@ -286,6 +286,7 @@ $LANG['ru'] = array(
     'DNS Support' => 'Поддержка DNS',
     'Mail Support' => 'Поддержка почты',
     'Advanced options' => 'Дополнительные опции',
+    'Basic options'  => 'Базовые опции',
     'Aliases' => 'Алиасы',
     'SSL Certificate' => 'SSL сертификат',
     'SSL Key' => 'Ключ SSL сертификата',
@@ -700,6 +701,9 @@ $LANG['ru'] = array(
     'This is a commercial module, you would need to purchace license key to enable it.' => 'Это коммерческий модуль, чтобы включить его, вам необходимо приобрести лицензию.',
 
     'Minutes' => 'по минутам',
+    'Daily' => 'ежедневно',
+    'Weekly' => 'еженедельно',
+    'Monthly' => 'ежемесячно',
     'Hourly' => 'по часам',
     'Run Command' => 'Выполнять',
     'every month' => 'каждый месяц',

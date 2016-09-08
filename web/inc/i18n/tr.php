@@ -286,6 +286,7 @@ $LANG['tr'] = array(
     'DNS Support'  => 'DNS Desteği',
     'Mail Support'  => 'Mail Desteği',
     'Advanced options'  => 'Gelişmiş seçenekler',
+    'Basic options'  => 'Basic options',
     'Aliases'  => 'Takma adlar (Alias)',
     'SSL Certificate'  => 'SSL Sertifikası',
     'SSL Key'  => 'SSL Anahtarı (Key)',
@@ -701,6 +702,9 @@ $LANG['tr'] = array(
 
     'Minutes' => 'Dakikalık',
     'Hourly' => 'Saatlik',
+    'Daily' => 'Dayly',
+    'Weekly' => 'Weekly',
+    'Monthly' => 'Monthly',
     'Run Command' => 'Komutu Çalıştır',
     'every month' => 'her ay',
     'every odd month' => 'her tek ay',

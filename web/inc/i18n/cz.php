@@ -286,6 +286,7 @@ $LANG['cz'] = array(
     'DNS Support'  => 'DNS podpora',
     'Mail Support'  => 'Mail podpora',
     'Advanced options'  => 'Pokročilé nastavení',
+    'Basic options'  => 'Basic options',
     'Aliases'  => 'Aliasy',
     'SSL Certificate'  => 'SSL certifikát',
     'SSL Key'  => 'SSL klíč',
@@ -701,6 +702,9 @@ $LANG['cz'] = array(
 
     'Minutes' => 'Minutes',
     'Hourly' => 'Hourly',
+    'Daily' => 'Dayly',
+    'Weekly' => 'Weekly',
+    'Monthly' => 'Monthly',
     'Run Command' => 'Run Command',
     'every month' => 'every month',
     'every odd month' => 'every odd month',

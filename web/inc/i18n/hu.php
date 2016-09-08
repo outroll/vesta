@@ -289,6 +289,7 @@ $LANG['hu'] = array(
     'DNS Support'  => 'DNS támogatás',
     'Mail Support'  => 'Mail támogatás',
     'Advanced options'  => 'Haladó beállítások',
+    'Basic options'  => 'Basic options',
     'Aliases'  => 'Aliaszok',
     'SSL Certificate'  => 'SSL igazolás',
     'SSL Key'  => 'SSL kulcs',
@@ -704,6 +705,9 @@ $LANG['hu'] = array(
 
     'Minutes' => 'Minutes',
     'Hourly' => 'Hourly',
+    'Daily' => 'Dayly',
+    'Weekly' => 'Weekly',
+    'Monthly' => 'Monthly',
     'Run Command' => 'Run Command',
     'every month' => 'every month',
     'every odd month' => 'every odd month',

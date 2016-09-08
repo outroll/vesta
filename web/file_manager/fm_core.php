@@ -158,9 +158,7 @@ class FileManager {
 	$items = implode(' ', $items_arr);
 
         $dst_item = $this->formatFullPath($dst_item);
-        $dst_item = str_replace('.tar.gz', '', $dst_item);
 
-//	echo VESTA_CMD . "v-add-fs-archive {$this->user} {$dst_item} {$items}";
         exec (VESTA_CMD . "v-add-fs-archive {$this->user} {$dst_item} {$items}", $output, $return_var);
 
         $error = self::check_return_code($return_var, $output);
@@ -239,9 +237,6 @@ class FileManager {
     }
 
     function renameFile($item, $target_name) {
-//        $item     = $this->formatFullPath($dir . '/' . $item);
-//        $dst_item = $this->formatFullPath($dir . '/' . $target_name);
-
         $item     = $this->formatFullPath($item);
         $dst_item = $this->formatFullPath($target_name);
 
@@ -368,7 +363,7 @@ class FileManager {
                 'owner'         => $info[$this->info_positions['OWNER']],
                 'group'         => $info[$this->info_positions['GROUP']],
                 'size'          => $info[$this->info_positions['SIZE']],
-                'name'          => $info[$this->info_positions['NAME']]
+                'name'          => htmlspecialchars($info[$this->info_positions['NAME']], ENT_QUOTES)
             );
         }
 

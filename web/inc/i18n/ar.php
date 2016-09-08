@@ -285,6 +285,7 @@ $LANG['ar'] = array(
     'DNS Support'  => 'إضافةإلى  بيانات DNS (افتراضي)',
     'Mail Support'  => 'إضافة إلى نطاقات البريد (افتراضي)',
     'Advanced options'  => 'المزيد من الخيارات المتقدمة',
+    'Basic options'  => 'Basic options',
     'Aliases'  => 'الأسماء البديلة (تعمل عمل الاسم الرئيسي)',
     'SSL Certificate'  => 'شهادة أمان SSL',
     'SSL Key'  => 'مفتاح شهادة أمان SSL',
@@ -700,6 +701,9 @@ $LANG['ar'] = array(
 
     'Minutes' => 'دقائق',
     'Hourly' => 'ساعي',
+    'Daily' => 'Dayly',
+    'Weekly' => 'Weekly',
+    'Monthly' => 'Monthly',
     'Run Command' => 'أمر التنفيذ',
     'every month' => 'كل شهر',
     'every odd month' => 'كل شهر فردي',

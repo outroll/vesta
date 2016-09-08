@@ -285,6 +285,7 @@ $LANG['se'] = array(
     'DNS Support'  => 'DNS-stöd',
     'Mail Support'  => 'Mail-stöd',
     'Advanced options'  => 'Avancerade inställningar',
+    'Basic options'  => 'Basic options',
     'Aliases'  => 'Alias',
     'SSL Certificate'  => 'SSL-certifikat',
     'SSL Key'  => 'SSL-nyckel',
@@ -700,6 +701,9 @@ $LANG['se'] = array(
 
     'Minutes' => 'Minutes',
     'Hourly' => 'Hourly',
+    'Daily' => 'Dayly',
+    'Weekly' => 'Weekly',
+    'Monthly' => 'Monthly',
     'Run Command' => 'Run Command',
     'every month' => 'every month',
     'every odd month' => 'every odd month',
