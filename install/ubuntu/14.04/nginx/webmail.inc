@@ -12,4 +12,7 @@ location /webmail {
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $request_filename;
     }
+    location ~* ^/webmail/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+        alias /var/lib/roundcube/$1;
+    }
 }
