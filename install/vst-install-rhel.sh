@@ -23,7 +23,7 @@ if [ "$release" -eq 7 ]; then
     php-bcmath php-gd php-imap php-mbstring php-mcrypt php-mysql php-pdo
     php-soap php-tidy php-xml php-xmlrpc php-fpm php-pgsql awstats webalizer
     vsftpd proftpd bind bind-utils bind-libs exim dovecot clamav-server
-    clamav-update spamassassin roundcubemail mariadb mariadb-server phpMyAdmin
+    clamav-update spamassassin roundcubemail mysql-community-server phpMyAdmin
     postgresql postgresql-server postgresql-contrib phpPgAdmin e2fsprogs
     openssh-clients ImageMagick curl mc screen ftp zip unzip flex sqlite pcre
     sudo bc jwhois mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype
@@ -323,7 +323,7 @@ fi
 # DB stack
 if [ "$mysql" = 'yes' ]; then
     if [ $release = 7 ]; then
-        echo '   - MariaDB Database Server'
+        echo '   - MySQL Database Server'
     else
         echo '   - MySQL Database Server'
     fi
@@ -517,7 +517,6 @@ cp -r /etc/dovecot/* $vst_backups/dovecot > /dev/null 2>&1
 # Backing up MySQL/MariaDB configuration and data
 service mysql stop > /dev/null 2>&1
 service mysqld stop > /dev/null 2>&1
-service mariadb stop > /dev/null 2>&1
 mv /var/lib/mysql $vst_backups/mysql/mysql_datadir >/dev/null 2>&1
 cp /etc/my.cnf $vst_backups/mysql > /dev/null 2>&1
 cp /etc/my.cnf.d $vst_backups/mysql > /dev/null 2>&1
@@ -606,6 +605,11 @@ fi
 #----------------------------------------------------------#
 
 # Installing rpm packages
+# Adicionando RPM do MySQL community
+if [ $release -ne 7 ]; then
+    rpm -Uvh http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
+fi
+
 if [ -z "$disable_remi" ]; then 
     yum -y --disablerepo=* --enablerepo="base,updates,nginx,epel,vesta,remi*"\
         install $software
@@ -960,7 +964,7 @@ if [ "$mysql" = 'yes' ]; then
     if [ $release -ne 7 ]; then
         service='mysqld'
     else
-        service='mariadb'
+        service='mysqld'
     fi
 
     wget $vestacp/$service/$mycnf -O /etc/my.cnf
