@@ -15,6 +15,7 @@
         AllowOverride All
         Options +Includes -Indexes +ExecCGI
         php_admin_value open_basedir %docroot%:%home%/%user%/tmp:/etc/pki:/etc/ssl:/usr/local:/usr/ssl:/opt/local:/usr/local:/usr/share/ssl
+        php_admin_value always_populate_raw_post_data -1
         php_admin_value upload_tmp_dir %home%/%user%/tmp
         php_admin_value session.save_path %home%/%user%/tmp
         php_admin_value sys_temp_dir %home%/%user%/tmp
