@@ -746,6 +746,6 @@ $LANG['pt-BR'] = array(
     'No encryption' => 'Nenhuma criptografia',
     'Do not use encryption' => 'Não usar criptografia',
 
-    'maximum characters length, including prefix' => 'maximum %s characters length, including prefix',
+    'maximum characters length, including prefix' => 'comprimento máximo de % caracteres, incluindo o prefixo',
 
 );
