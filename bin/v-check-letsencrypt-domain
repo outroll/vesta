@@ -62,7 +62,7 @@ protected=$(echo -n '{"nonce":"'"$nonce"'"}' |encode_base64)
 
 # Defining ACME query (request challenge)
 query='{"resource":"new-authz","identifier"'
-query=$query':{"type":"dns","value":"'"$idn_domain"'"}}'
+query=$query':{"type":"dns","value":"'"$domain_idn"'"}}'
 payload=$(echo -n "$query" |encode_base64)
 signature=$(printf "%s" "$protected.$payload" |\
     openssl dgst -sha256 -binary -sign "$key" |encode_base64)
@@ -86,7 +86,7 @@ uri=$(echo "$answer" |grep -A 3 http-01 |grep uri |cut -f 4 -d \")
 
 # Adding location wrapper for request challenge
 if [ "$WEB_SYSTEM" = 'nginx' ] || [ "$PROXY_SYSTEM" = 'nginx' ]; then
-    conf="$HOMEDIR/$user/conf/web/nginx.$idn_domain.conf_letsencrypt"
+    conf="$HOMEDIR/$user/conf/web/nginx.$domain_idn.conf_letsencrypt"
     if [ ! -e "$conf" ]; then
         echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' > $conf
         echo '    default_type text/plain;' >> $conf
