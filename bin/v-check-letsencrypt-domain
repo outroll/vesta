@@ -14,7 +14,7 @@ user=$1
 domain=$2
 
 domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
-domain_idn=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -u "$domain" )
 
 # Includes
 source $VESTA/func/main.sh
