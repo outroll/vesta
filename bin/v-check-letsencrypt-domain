@@ -11,8 +11,10 @@
 
 # Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
+domain=$2
+
 domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain_idn=$(idn -t --quiet -u "$2" )
 
 # Includes
 source $VESTA/func/main.sh
@@ -32,13 +34,10 @@ check_args '2' "$#" 'USER DOMAIN'
 is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
+is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'user' 'USER' "$user"
 if [ ! -e "$USER_DATA/ssl/le.conf" ]; then
     check_result $E_NOTEXIST "LetsEncrypt key doesn't exist"
-fi
-rdomain=$(egrep "'$domain'|'$domain,|,$domain,|,$domain'" $USER_DATA/web.conf)
-if [ -z "$rdomain" ]; then
-    check_result $E_NOTEXIST "domain $domain doesn't exist"
 fi
 
 
@@ -48,7 +47,6 @@ fi
 
 source $USER_DATA/ssl/le.conf
 api='https://acme-v01.api.letsencrypt.org'
-r_domain=$(echo "$rdomain" |cut -f 2 -d \')
 key="$USER_DATA/ssl/user.key"
 exponent="$EXPONENT"
 modulus="$MODULUS"
@@ -64,7 +62,7 @@ protected=$(echo -n '{"nonce":"'"$nonce"'"}' |encode_base64)
 
 # Defining ACME query (request challenge)
 query='{"resource":"new-authz","identifier"'
-query=$query':{"type":"dns","value":"'"$domain"'"}}'
+query=$query':{"type":"dns","value":"'"$idn_domain"'"}}'
 payload=$(echo -n "$query" |encode_base64)
 signature=$(printf "%s" "$protected.$payload" |\
     openssl dgst -sha256 -binary -sign "$key" |encode_base64)
@@ -88,7 +86,7 @@ uri=$(echo "$answer" |grep -A 3 http-01 |grep uri |cut -f 4 -d \")
 
 # Adding location wrapper for request challenge
 if [ "$WEB_SYSTEM" = 'nginx' ] || [ "$PROXY_SYSTEM" = 'nginx' ]; then
-    conf="$HOMEDIR/$user/conf/web/nginx.$r_domain.conf_letsencrypt"
+    conf="$HOMEDIR/$user/conf/web/nginx.$idn_domain.conf_letsencrypt"
     if [ ! -e "$conf" ]; then
         echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' > $conf
         echo '    default_type text/plain;' >> $conf
@@ -96,9 +94,9 @@ if [ "$WEB_SYSTEM" = 'nginx' ] || [ "$PROXY_SYSTEM" = 'nginx' ]; then
         echo '}' >> $conf
     fi
 else
-    acme="$HOMEDIR/$user/web/$r_domain/public_html/.well-known/acme-challenge"
+    acme="$HOMEDIR/$user/web/$domain/public_html/.well-known/acme-challenge"
     echo "$token" > $acme/$token.$thumb
-    chown -R $user:$user $HOMEDIR/$user/web/$r_domain/public_html/.well-known
+    chown -R $user:$user $HOMEDIR/$user/web/$domain/public_html/.well-known
 fi
 
 # Restarting web server
