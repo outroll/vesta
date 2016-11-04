@@ -49,6 +49,19 @@ if [ ! -e "/etc/redhat-release" ]; then
     type='ubuntu'
 fi
 
+# check if distro release is supported
+if [ $type == 'debian' ]; then
+    if [[ ! $(cut -f 3 -d ' ' < /etc/issue) =~ [78] ]]; then
+        echo "Error: Debian release version not supported."
+        exit 1
+    fi
+elif [ $type == 'ubuntu' ]; then
+    if  [[ ! $(cut -f 2 -d ' ' < /etc/issue) =~ (12\.04.*|14\.04.*|16\.04.*|16\.10.*) ]]; then
+        echo "Error: Ubuntu release version not supported."
+        exit 1
+    fi
+fi
+
 # Check wget
 if [ -e '/usr/bin/wget' ]; then
     wget http://vestacp.com/pub/vst-install-$type.sh -O vst-install-$type.sh
