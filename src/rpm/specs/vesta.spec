@@ -39,6 +39,10 @@ if [ $1 -ge 2 ]; then
     if [ -e /usr/local/vesta/upd/fix_sessions.sh ]; then
         /usr/local/vesta/upd/fix_sessions.sh
     fi
+    xdd=$(which xxd)
+    if [ $? -gt 0 ]; then
+        yum install -y vim-common
+    fi
 fi
 %files
 %{_vestadir}
