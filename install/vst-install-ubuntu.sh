@@ -18,7 +18,7 @@ release="$(lsb_release -r|awk '{print $2}')"
 codename="$(lsb_release -c|awk '{print $2}')"
 vestacp="http://$CHOST/$VERSION/$release"
 
-if [ "$release" = '16.04' ]; then
+if [ "$release" >= '16.04' ]; then
     software="nginx apache2 apache2-utils
         apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
         libapache2-mod-fcgid libapache2-mod-php php php-common php-cgi
@@ -501,7 +501,7 @@ killall -9 mysqld > /dev/null 2>&1
 mv /var/lib/mysql $vst_backups/mysql/mysql_datadir > /dev/null 2>&1
 cp -r /etc/mysql/* $vst_backups/mysql > /dev/null 2>&1
 mv -f /root/.my.cnf $vst_backups/mysql > /dev/null 2>&1
-if [ "$release" = '16.04' ] && [ -e '/etc/init.d/mysql' ]; then
+if [ "$release" >= '16.04' ] && [ -e '/etc/init.d/mysql' ]; then
     mkdir -p /var/lib/mysql > /dev/null 2>&1
     chown mysql:mysql /var/lib/mysql
     mysqld --initialize-insecure
