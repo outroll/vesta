@@ -13,7 +13,7 @@
     ErrorLog /var/log/%web_system%/domains/%domain%.error.log
     ErrorDocument 403 /error/404.html
     ErrorDocument 404 /error/404.html
-    ErrorDocument 500 /error/50x.html;
+    ErrorDocument 500 /error/50x.html
     
     <Directory %docroot%>
         AllowOverride All
