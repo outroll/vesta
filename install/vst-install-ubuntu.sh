@@ -19,7 +19,7 @@ codename="$(lsb_release -c|awk '{print $2}')"
 vestacp="http://$CHOST/$VERSION/$release"
 release_compare_1604=$(awk 'BEGIN{ print "'$release'">="'16.04'" }')
 
-if [ "$release_compare_1604" >= 1 ]; then
+if [ "$release_compare_1604" == 1 ]; then
     software="nginx apache2 apache2-utils
         apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
         libapache2-mod-fcgid libapache2-mod-php php php-common php-cgi
