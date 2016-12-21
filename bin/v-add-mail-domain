@@ -23,7 +23,7 @@ fi
 antispam=${3-yes}
 antivirus=${4-yes}
 dkim=${5-yes}
-dkim_size=${6-1024}
+dkim_size=${6-2048}
 
 # Includes
 source $VESTA/func/main.sh
