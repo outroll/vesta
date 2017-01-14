@@ -43,7 +43,7 @@ is_format_valid 'user' 'domain' 'antispam' 'antivirus' 'dkim' 'dkim_size'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_domain_new 'mail' "$domain"
+is_domain_new 'mail' "$domain_idn"
 is_package_full 'MAIL_DOMAINS'
 
 
@@ -114,7 +114,7 @@ fi
 
 # Adding dkim dns records
 if [ ! -z "$DNS_SYSTEM" ] && [ "$dkim" = 'yes' ]; then
-    check_dns_domain=$(is_object_valid 'dns' 'DOMAIN' "$domain")
+    check_dns_domain=$(is_object_valid 'dns' 'DOMAIN' "$domain_idn")
     if [ "$?" -eq 0 ]; then
         p=$(cat $USER_DATA/mail/$domain.pub|grep -v ' KEY---'|tr -d '\n')
         record='_domainkey'
