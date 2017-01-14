@@ -59,6 +59,7 @@ fi
 
 # Starting rebuild loop for each web domain
 for domain in $($BIN/v-list-web-domains $user plain |cut -f 1); do
+    format_domain_idn
     if [ ! -z "$WEB_BACKEND" ]; then
         template=$(get_object_value 'web' 'DOMAIN' "$domain_idn" '$BACKEND')
         $BIN/v-add-web-domain-backend $user $domain $template
