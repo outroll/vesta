@@ -44,14 +44,14 @@ fi
 
 # Starting loop
 dom_diks=0
-for account in $(search_objects "mail/$domain" 'SUSPENDED' "no" 'ACCOUNT'); do
+for account in $(search_objects "mail/$domain_idn" 'SUSPENDED' "no" 'ACCOUNT'); do
     home_dir=$HOMEDIR/$user/mail/$domain/$account
     if [ -e "$home_dir" ]; then
         udisk=$(nice -n 19 du -shm $home_dir | cut -f 1 )
     else
         udisk=0
     fi
-    update_object_value "mail/$domain" 'ACCOUNT' "$account"  '$U_DISK' "$udisk"
+    update_object_value "mail/$domain_idn" 'ACCOUNT' "$account"  '$U_DISK' "$udisk"
     dom_diks=$((dom_diks + udisk))
 done
 

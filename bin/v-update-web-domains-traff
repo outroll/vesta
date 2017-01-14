@@ -17,6 +17,9 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -38,7 +41,7 @@ for domain in $(search_objects 'web' 'SUSPENDED' "no" 'DOMAIN'); do
         update_object_value 'web' 'DOMAIN' "$domain_idn" '$U_BANDWIDTH' '0'
     fi
 
-    log_file="/var/log/$WEB_SYSTEM/domains/$domain.bytes"
+    log_file="/var/log/$WEB_SYSTEM/domains/$domain_idn.bytes"
     bytes=0
 
     # Parsing log

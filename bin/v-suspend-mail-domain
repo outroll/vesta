@@ -42,7 +42,7 @@ is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
 
 # Deleting symbolic link
 if [[ "$MAIL_SYSTEM" =~ exim ]]; then
-    rm -f /etc/$MAIL_SYSTEM/domains/$domain
+    rm -f /etc/$MAIL_SYSTEM/domains/$domain_idn
 fi
 
 

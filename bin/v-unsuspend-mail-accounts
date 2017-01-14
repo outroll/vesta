@@ -40,7 +40,7 @@ is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
 #----------------------------------------------------------#
 
 # Starting unsuspend loop
-for account in $(search_objects "mail/$domain" 'SUSPENDED' 'yes' 'ACCOUNT'); do
+for account in $(search_objects "mail/$domain_idn" 'SUSPENDED' 'yes' 'ACCOUNT'); do
     $BIN/v-unsuspend-mail-account "$user" "$domain" "$account"
 done
 

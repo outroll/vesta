@@ -17,10 +17,14 @@ format=${3-shell}
 # Includes
 source $VESTA/func/main.sh
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+
 # JSON list function
 json_list() {
     echo '{'
-    echo -e "\t\"$domain\": {"
+    echo -e "\t\"$domain_idn\": {"
     echo "        \"CRT\": \"$crt\","
     echo "        \"KEY\": \"$key\","
     echo "        \"CA\": \"$ca\","
@@ -106,7 +110,7 @@ is_object_valid 'web' 'DOMAIN' "$domain_idn"
 #----------------------------------------------------------#
 
 # Parsing domain SSL certificate
-if [ -e "$USER_DATA/ssl/$domain.crt" ]; then
+if [ -e "$USER_DATA/ssl/$domain_idn.crt" ]; then
     crt=$(cat $USER_DATA/ssl/$domain.crt |sed ':a;N;$!ba;s/\n/\\n/g')
 
     info=$(openssl x509 -text -in $USER_DATA/ssl/$domain.crt)
@@ -122,11 +126,11 @@ if [ -e "$USER_DATA/ssl/$domain.crt" ]; then
     alt_dns=$(echo "$alt_dns" |sed -e ':a;N;$!ba;s/\n/,/g')
 fi
 
-if [ -e "$USER_DATA/ssl/$domain.key" ]; then
+if [ -e "$USER_DATA/ssl/$domain_idn.key" ]; then
     key=$(cat $USER_DATA/ssl/$domain.key |sed ':a;N;$!ba;s/\n/\\n/g')
 fi
 
-if [ -e "$USER_DATA/ssl/$domain.ca" ]; then
+if [ -e "$USER_DATA/ssl/$domain_idn.ca" ]; then
     ca=$(cat $USER_DATA/ssl/$domain.ca |sed ':a;N;$!ba;s/\n/\\n/g')
 fi
 

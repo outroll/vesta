@@ -17,6 +17,10 @@ format=${3-shell}
 # Includes
 source $VESTA/func/main.sh
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+
 # JSON list function
 json_list() {
     echo '{'
@@ -80,7 +84,7 @@ is_object_valid 'dns' 'DOMAIN' "$domain_idn"
 #----------------------------------------------------------#
 
 # Parsing domain
-eval $(grep "DOMAIN='$domain'" $USER_DATA/dns.conf)
+eval $(grep "DOMAIN='$domain_idn'" $USER_DATA/dns.conf)
 
 # Listing data
 case $format in

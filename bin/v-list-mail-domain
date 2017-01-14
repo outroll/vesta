@@ -17,6 +17,11 @@ format=${3-shell}
 # Includes
 source $VESTA/func/main.sh
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+
+
 # JSON list function
 json_list() {
     eval $(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
@@ -79,7 +84,7 @@ is_object_valid 'mail' 'DOMAIN' "$domain_idn"
 #----------------------------------------------------------#
 
 # Parsing mail domain
-eval $(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
+eval $(grep "DOMAIN='$domain_idn'" $USER_DATA/mail.conf)
 
 # Listing data
 case $format in

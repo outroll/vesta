@@ -17,6 +17,10 @@ format=${3-shell}
 # Includes
 source $VESTA/func/main.sh
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+
 # JSON list function
 json_list() {
     echo '{'
@@ -66,7 +70,7 @@ is_object_valid 'mail' 'DOMAIN' "$domain_idn"
 #----------------------------------------------------------#
 
 # Parsing domain keys
-if [ -e "$USER_DATA/mail/$domain.pub" ]; then
+if [ -e "$USER_DATA/mail/$domain_idn.pub" ]; then
     pub=$(cat $USER_DATA/mail/$domain.pub |grep -v "KEY-----")
     pub=$(echo "$pub" |sed ':a;N;$!ba;s/\n/\\n/g')
 else

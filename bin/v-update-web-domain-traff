@@ -41,7 +41,7 @@ is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 #----------------------------------------------------------#
 
 # Defining log file
-log_file="/var/log/$WEB_SYSTEM/domains/$domain.bytes"
+log_file="/var/log/$WEB_SYSTEM/domains/$domain_idn.bytes"
 
 # Defining bytes
 bytes=0
