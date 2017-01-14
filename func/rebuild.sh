@@ -347,7 +347,8 @@ rebuild_dns_domain_conf() {
 
     # Get domain values
     get_domain_values 'dns'
-    domain_idn=$(idn -t --quiet -a "$domain")
+    format_domain_idn
+
 
     # Checking zone file
     if [ ! -e "$USER_DATA/dns/$domain.conf" ]; then
@@ -406,7 +407,7 @@ rebuild_dns_domain_conf() {
     user_domains=$((user_domains + 1))
     records=$(wc -l $USER_DATA/dns/$domain.conf | cut -f 1 -d ' ')
     user_records=$((user_records + records))
-    update_object_value 'dns' 'DOMAIN' "$domain" '$RECORDS' "$records"
+    update_object_value 'dns' 'DOMAIN' "$domain_idn" '$RECORDS' "$records"
 }
 
 # MAIL domain rebuild
@@ -522,8 +523,8 @@ rebuild_mail_domain_conf() {
     fi
 
     # Update counters
-    update_object_value 'mail' 'DOMAIN' "$domain" '$ACCOUNTS' "$accs"
-    update_object_value 'mail' 'DOMAIN' "$domain" '$U_DISK' "$dom_diks"
+    update_object_value 'mail' 'DOMAIN' "$domain_idn" '$ACCOUNTS' "$accs"
+    update_object_value 'mail' 'DOMAIN' "$domain_idn" '$U_DISK' "$dom_diks"
     U_MAIL_ACCOUNTS=$((U_MAIL_ACCOUNTS + accs))
     U_DISK_MAIL=$((U_DISK_MAIL + dom_diks))
     U_MAIL_DOMAINS=$((U_MAIL_DOMAINS + 1))
