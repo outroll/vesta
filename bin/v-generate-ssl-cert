@@ -125,15 +125,15 @@ openssl x509 -req -sha256 \
 
 
 # Listing certificates
-if [ -e "$domain.crt" ]; then
+if [ -e "$domain_idn.crt" ]; then
     crt=$(cat $domain.crt | sed ':a;N;$!ba;s/\n/\\n/g' )
 fi
 
-if [ -e "$domain.key" ]; then
+if [ -e "$domain_idn.key" ]; then
     key=$(cat $domain.key | sed ':a;N;$!ba;s/\n/\\n/g' )
 fi
 
-if [ -e "$domain.csr" ]; then
+if [ -e "$domain_idn.csr" ]; then
     csr=$(cat $domain.csr | sed ':a;N;$!ba;s/\n/\\n/g' )
 fi
 
