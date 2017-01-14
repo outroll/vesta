@@ -32,9 +32,9 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain"
-is_object_value_empty 'mail' 'DOMAIN' "$domain" '$ANTISPAM'
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
+is_object_value_empty 'mail' 'DOMAIN' "$domain_idn" '$ANTISPAM'
 
 
 #----------------------------------------------------------#
@@ -52,7 +52,7 @@ fi
 #----------------------------------------------------------#
 
 # Adding antispam in config
-update_object_value 'mail' 'DOMAIN' "$domain" '$ANTISPAM' 'yes'
+update_object_value 'mail' 'DOMAIN' "$domain_idn" '$ANTISPAM' 'yes'
 
 # Logging
 log_history "enabled antispam on $domain"

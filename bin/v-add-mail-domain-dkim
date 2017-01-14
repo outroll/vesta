@@ -40,9 +40,9 @@ is_format_valid 'user' 'domain' 'dkim_size'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain"
-is_object_value_empty 'mail' 'DOMAIN' "$domain" '$DKIM'
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
+is_object_value_empty 'mail' 'DOMAIN' "$domain_idn" '$DKIM'
 
 
 #----------------------------------------------------------#
@@ -80,7 +80,7 @@ fi
 #----------------------------------------------------------#
 
 # Adding dkim in config
-update_object_value 'mail' 'DOMAIN' "$domain" '$DKIM' 'yes'
+update_object_value 'mail' 'DOMAIN' "$domain_idn" '$DKIM' 'yes'
 increase_user_value "$user" '$U_MAIL_DKMI'
 
 # Logging

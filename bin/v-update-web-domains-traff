@@ -35,7 +35,7 @@ is_object_valid 'user' 'USER' "$user" "$user"
 for domain in $(search_objects 'web' 'SUSPENDED' "no" 'DOMAIN'); do
     # Reset BW counter on the start of the month
     if [ "$(date +%d)" = '01' ]; then
-        update_object_value 'web' 'DOMAIN' "$domain" '$U_BANDWIDTH' '0'
+        update_object_value 'web' 'DOMAIN' "$domain_idn" '$U_BANDWIDTH' '0'
     fi
 
     log_file="/var/log/$WEB_SYSTEM/domains/$domain.bytes"
@@ -61,7 +61,7 @@ for domain in $(search_objects 'web' 'SUSPENDED' "no" 'DOMAIN'); do
     bandwidth=$((U_BANDWIDTH + mb))
 
     # Updating bandwidth value in config
-    update_object_value 'web' 'DOMAIN' "$domain" '$U_BANDWIDTH' "$bandwidth"
+    update_object_value 'web' 'DOMAIN' "$domain_idn" '$U_BANDWIDTH' "$bandwidth"
 
 done
 

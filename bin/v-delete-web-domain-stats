@@ -33,9 +33,9 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_object_value_exist 'web' 'DOMAIN' "$domain" '$STATS'
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
+is_object_value_exist 'web' 'DOMAIN' "$domain_idn" '$STATS'
 
 
 #----------------------------------------------------------#
@@ -64,7 +64,7 @@ rm -f $HOMEDIR/$user/conf/web/$STATS.$domain.conf
 sed -i "/ $domain$/d" $VESTA/data/queue/webstats.pipe
 
 # Update config
-update_object_value 'web' 'DOMAIN' "$domain" '$STATS' ''
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$STATS' ''
 
 # Logging
 log_history "disabled web log analyzer for $domain"
