@@ -405,8 +405,8 @@ update_domain_serial() {
     else
         serial="$(date +'%Y%m%d01')"
     fi
-    add_object_key "dns" 'DOMAIN' "$domain" 'SERIAL' 'RECORDS'
-    update_object_value 'dns' 'DOMAIN' "$domain" '$SERIAL' "$serial"
+    add_object_key "dns" 'DOMAIN' "$domain_idn" 'SERIAL' 'RECORDS'
+    update_object_value 'dns' 'DOMAIN' "$domain_idn" '$SERIAL' "$serial"
 }
 
 # Get next DNS record ID
