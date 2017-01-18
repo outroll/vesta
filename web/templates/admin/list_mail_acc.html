@@ -13,7 +13,8 @@
               <td class="step-right">
                 <?
                   list($http_host, $port) = explode(':', $_SERVER["HTTP_HOST"].":");
-                  $webmail = "http://".$http_host."/webmail/";
+                  if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { $protocol = "https"; } else { $protocol = "http"; }
+                  $webmail = $protocol."://".$http_host."/webmail/";
                   if (!empty($_SESSION['MAIL_URL'])) $webmail = $_SESSION['MAIL_URL'];
                 ?>
                 <a class="vst" href="<?=$webmail?>" target="_blank"><?=__('open webmail')?> <i></i></a>
