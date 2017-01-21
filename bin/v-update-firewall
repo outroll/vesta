@@ -73,7 +73,10 @@ fi
 
 # Handling local traffic
 for ip in $(ls $VESTA/data/ips); do
-    echo "$iptables -A INPUT -s $ip -j ACCEPT" >> $tmp
+    source $VESTA/data/ips/$ip
+    if [ "4" = "$VERSION" ]; then
+        echo "$iptables -A INPUT -s $ip -j ACCEPT" >> $tmp
+    fi
 done
 echo "$iptables -A INPUT -s 127.0.0.1 -j ACCEPT" >> $tmp
 

@@ -29,6 +29,7 @@ fi
 
 # Stopping firewall
 $BIN/v-stop-firewall
+$BIN/v-stop-firewall-ipv6
 
 # Updating FIREWALL_SYSTEM value
 if [ -z "$(grep FIREWALL_SYSTEM $VESTA/conf/vesta.conf)" ]; then

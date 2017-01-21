@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: change web domain ip
-# options: USER DOMAIN DOMAIN [RESTART]
+# options: USER DOMAIN IP [RESTART]
 #
 # The call is used for changing domain ip
 
@@ -31,14 +31,20 @@ format_domain_idn
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN IP [RESTART]'
-is_format_valid 'user' 'domain' 'ip'
+is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_ip_valid "$ip" "$user"
-
+if [ "$ip" != "no" ]; then
+    is_format_valid 'ip'
+fi
+if [ "$ip" != "no" ]; then
+    is_ip_valid "$ip" "$user"
+else
+    ip=''
+fi
 
 #----------------------------------------------------------#
 #                       Action                             #
@@ -49,20 +55,63 @@ get_domain_values 'web'
 old=$(get_real_ip $IP)
 new=$ip
 
-# Replacing vhost
-replace_web_config "$WEB_SYSTEM" "$TPL.tpl"
-if [ "$SSL" = 'yes' ]; then
-    replace_web_config "$WEB_SYSTEM" "$TPL.stpl"
-fi
+if [ -z "$old" ]; then
+    #Create new configs
+    # Preparing domain variables
+    prepare_web_domain_values
 
-# Replacing proxy vhost
-if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
-    replace_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+    local_ip=$ip
+    # Adding web server config
+    add_web_config "$WEB_SYSTEM" "$TPL.tpl"
     if [ "$SSL" = 'yes' ]; then
-        replace_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+        add_web_config "$WEB_SYSTEM" "$TPL.stpl"
+    fi
+
+    # Adding proxy config
+    if [ ! -z "$PROXY_SYSTEM" ]; then
+        add_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+        if [ "$SSL" = 'yes' ]; then
+            add_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+        fi
+    fi
+else
+    if [ ! -z "$new" ]; then
+        # Preparing domain variables
+        prepare_web_domain_values
+        
+        # Replacing vhost
+        replace_web_config "$WEB_SYSTEM" "$TPL.tpl"
+        if [ "$SSL" = 'yes' ]; then
+            replace_web_config "$WEB_SYSTEM" "$TPL.stpl"
+        fi
+
+        # Replacing proxy vhost
+        if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
+            replace_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+            if [ "$SSL" = 'yes' ]; then
+                replace_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+            fi
+        fi
+    else
+        #Delete configs ...
+        # Preparing domain variables
+        prepare_web_domain_values
+        
+        # Replacing vhost
+        del_web_config "$WEB_SYSTEM" "$TPL.tpl"
+        if [ "$SSL" = 'yes' ]; then
+            del_web_config "$WEB_SYSTEM" "$TPL.stpl"
+        fi
+
+        # Replacing proxy vhost
+        if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
+            del_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+            if [ "$SSL" = 'yes' ]; then
+                del_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+            fi
+        fi
     fi
 fi
-
 
 #----------------------------------------------------------#
 #                       Vesta                              #
@@ -73,7 +122,7 @@ increase_ip_value "$new"
 decrease_ip_value "$old"
 
 # Update config
-update_object_value 'web' 'DOMAIN' "$domain" '$IP' "$3"
+update_object_value 'web' 'DOMAIN' "$domain" '$IP' "$ip"
 
 # Restart web server
 $BIN/v-restart-web $restart
@@ -83,7 +132,7 @@ $BIN/v-restart-proxy $restart
 check_result $? "Proxy restart failed" >/dev/null
 
 # Logging
-log_history "changed web domain $domain ip to $3"
+log_history "changed web domain $domain ip to $ip"
 log_event "$OK" "$ARGUMENTS"
 
 exit

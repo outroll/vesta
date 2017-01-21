@@ -141,9 +141,11 @@ date=$(echo "$time_n_date" |cut -f 2 -d \ )
 # Filling user config
 if [ "$user" != 'admin' ]; then
     ip_avail=$($BIN/v-list-user-ips admin plain |grep -w shared|wc -l)
+    ipv6_avail=$($BIN/v-list-user-ipv6s admin plain |grep -w shared|wc -l)
     u_users=0
 else
     ip_avail=0
+    ipv6_avail=0
     u_users=1
 fi
 
@@ -163,7 +165,9 @@ SUSPENDED_MAIL='0'
 SUSPENDED_DB='0'
 SUSPENDED_CRON='0'
 IP_AVAIL='$ip_avail'
+IPV6_AVAIL='$ipv6_avail'
 IP_OWNED='0'
+IPV6_OWNED='0'
 U_USERS='$u_users'
 U_DISK='0'
 U_DISK_DIRS='0'

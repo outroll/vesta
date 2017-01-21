@@ -28,6 +28,7 @@ unset($output);
 $v_username = $user;
 $v_domain = $_GET['domain'];
 $v_ip = $data[$v_domain]['IP'];
+$v_ipv6 = $data[$v_domain]['IP6'];
 $v_template = $data[$v_domain]['TPL'];
 $v_aliases = str_replace(',', "\n", $data[$v_domain]['ALIAS']);
 $valiases = explode(",", $data[$v_domain]['ALIAS']);
@@ -76,8 +77,12 @@ $v_time = $data[$v_domain]['TIME'];
 $v_date = $data[$v_domain]['DATE'];
 
 // List ip addresses
-exec (VESTA_CMD."v-list-user-ips ".$user." json", $output, $return_var);
+exec (VESTA_CMD."v-list-user-ips ".$user." json 4", $output, $return_var);
 $ips = json_decode(implode('', $output), true);
+unset($output);
+
+exec (VESTA_CMD."v-list-user-ips ".$user." json 6", $output, $return_var);
+$ip6s = json_decode(implode('', $output), true);
 unset($output);
 
 // List web templates
@@ -115,21 +120,43 @@ if (!empty($_POST['save'])) {
     }
 
     // Change web domain IP
-    if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
-        $v_ip = escapeshellarg($_POST['v_ip']);
-        exec (VESTA_CMD."v-change-web-domain-ip ".$v_username." ".$v_domain." ".$v_ip." 'no'", $output, $return_var);
+    if (($v_ip != $_POST['v_ip'] || (empty($_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg']))) {
+        $ip = escapeshellarg($_POST['v_ip']); //set v_ip to $ip because 'change DNS domain IP' won't get executed.
+        exec (VESTA_CMD."v-change-web-domain-ip ".$v_username." ".$v_domain." ".$ip." 'no'", $output, $return_var);
         check_return_code($return_var,$output);
         $restart_web = 'yes';
         $restart_proxy = 'yes';
         unset($output);
     }
 
-    // Chane dns domain IP
-    if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg'])))  {
+    // Change web domain IP6
+    if (($v_ipv6 != $_POST['v_ipv6'] || (empty($_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg']))) {
+        $ipv6 = escapeshellarg($_POST['v_ipv6']);
+        exec (VESTA_CMD."v-change-web-domain-ipv6 ".$v_username." ".$v_domain." ".$ipv6." 'no'", $output, $return_var);
+        check_return_code($return_var,$output);
+        $restart_web = 'yes';
+        $restart_proxy = 'yes';
+        unset($output);
+    }
+
+    // Change dns domain IP
+    if (($v_ip != $_POST['v_ip'] || (empty($_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg'])))  {
         exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
         unset($output);
         if ($return_var == 0 ) {
-            exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." ".$v_domain." ".$v_ip." 'no'", $output, $return_var);
+            exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." ".$v_domain." ".$ip." 'no'", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            $restart_dns = 'yes';
+        }
+    }
+
+    // Change dns domain IP6
+    if (($v_ipv6 != $_POST['v_ipv6'] || (empty($_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg'])))  {
+        exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
+        unset($output);
+        if ($return_var == 0 ) {
+            exec (VESTA_CMD."v-change-dns-domain-ipv6 ".$v_username." ".$v_domain." ".$ipv6." 'no'", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             $restart_dns = 'yes';
@@ -137,17 +164,39 @@ if (!empty($_POST['save'])) {
     }
 
     // Change dns ip for each alias
-    if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
+    if (($v_ip != $_POST['v_ip'] || (empty($_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg']))) {
         foreach($valiases as $v_alias ){
             exec (VESTA_CMD."v-list-dns-domain ".$v_username." '".$v_alias."' json", $output, $return_var);
             unset($output);
             if ($return_var == 0 ) {
-                exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." '".$v_alias."' ".$v_ip, $output, $return_var);
+                exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." '".$v_alias."' ".$ip, $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
                 $restart_dns = 'yes';
             }
         }
+    }
+
+    // Change dns ip for each alias
+    if (($v_ipv6 != $_POST['v_ipv6'] || (empty($_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg']))) {
+        foreach($valiases as $v_alias ){
+            exec (VESTA_CMD."v-list-dns-domain ".$v_username." '".$v_alias."' json", $output, $return_var);
+            unset($output);
+            if ($return_var == 0 ) {
+                exec (VESTA_CMD."v-change-dns-domain-ipv6 ".$v_username." '".$v_alias."' ".$ipv6, $output, $return_var);
+                check_return_code($return_var,$output);
+                unset($output);
+                $restart_dns = 'yes';
+            }
+        }
+    }
+    
+    //switch variables
+    if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
+        $v_ip = $ip;
+    }
+    if (($v_ipv6 != $_POST['v_ipv6']) && (empty($_SESSION['error_msg']))) {
+        $v_ipv6 = $ipv6;
     }
 
     // Change template (admin only)

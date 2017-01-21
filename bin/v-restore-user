@@ -32,6 +32,7 @@ fi
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/func/db.sh
 source $VESTA/func/rebuild.sh
 source $VESTA/conf/vesta.conf
@@ -327,6 +328,15 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
                 old_ip=$IP
                 IP=$ip
             fi
+            
+            # Checking ip address
+            check_ipv6=$(is_ipv6_valid $IP6 $user)
+            if [ ! -z "$check_ipv6" ]; then
+                local_ipv6=''
+                get_user_ipv6 $user
+                old_ipv6=$IP6
+                IP6=$ipv6
+            fi
 
             # Checking web template
             check_tpl=$(is_web_template_valid $TPL)
@@ -471,10 +481,18 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
             # Checking ip address
             check_ip=$(is_ip_valid $IP $user)
             if [ ! -z "$check_ip" ]; then
-                local_ip=''
+                local_ipv6=''
                 get_user_ip $user
                 old_ip=$IP
                 IP=$ip
+            fi
+            # Checking ipv6 address
+            check_ipv6=$(is_ipv6_valid $IP6 $user)
+            if [ ! -z "$check_ipv6" ]; then
+                local_ip6=''
+                get_user_ipv6 $user
+                old_ipv6=$IP6
+                IP=$ipv6
             fi
 
             # Checking dns template
@@ -484,7 +502,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
             fi
 
             # Concatenating dns.conf keys
-            str="DOMAIN='$domain' IP='$IP' TPL='$TPL' TTL='$TTL' EXP='$EXP'"
+            str="DOMAIN='$domain' IP='$IP' IP6='$IP6' TPL='$TPL' TTL='$TTL' EXP='$EXP'"
             str="$str SOA='$SOA' RECORDS='$RECORDS' SUSPENDED='no'"
             str="$str TIME='$(date +%T)' DATE='$(date +%F)'"
             echo $str >> $USER_DATA/dns.conf

@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: list user ips
-# options: USER [FORMAT]
+# options: USER [FORMAT] [VERSION]
 #
 # The function for obtaining the list of available ip addresses.
 
@@ -12,6 +12,7 @@
 # Argument definition
 user=$1
 format=${2-shell}
+version=${3-all}
 
 # Includes
 source $VESTA/func/main.sh
@@ -27,6 +28,7 @@ json_list() {
         "OWNER": "'$OWNER'",
         "STATUS": "'$STATUS'",
         "NAME": "'$NAME'",
+        "VERSION": "'$VERSION'",
         "NAT": "'$NAT'"
         }'
         if [ "$i" -lt "$ip_count" ]; then
@@ -41,8 +43,8 @@ json_list() {
 
 # SHELL list function
 shell_list() {
-    echo "IP  NAT  OWNER   STATUS   NAME"
-    echo "--  ---  -----   ------   ---"
+    echo "IP  NAT  OWNER   STATUS   NAME   VERSION"
+    echo "--  ---  -----   ------   ----   -------"
     for IP in $ips; do
         source $VESTA/data/ips/$IP
         if [ -z "$NAT" ]; then
@@ -51,7 +53,7 @@ shell_list() {
         if [ -z "$NAME" ]; then
             NAME='no'
         fi
-        echo "$IP $NAT $OWNER $STATUS $NAME"
+        echo "$IP $NAT $OWNER $STATUS $NAME $VERSION"
     done
 }
 
@@ -59,16 +61,16 @@ shell_list() {
 plain_list() {
     for IP in $ips; do
         source $VESTA/data/ips/$IP
-        echo -e "$IP\t$OWNER\t$STATUS\t$NAME\t$NAT"
+        echo -e "$IP\t$OWNER\t$STATUS\t$NAME\t$NAT\t$VERSION"
     done
 }
 
 # CSV list function
 csv_list() {
-    echo "IP,OWNER,STATUS,NAME,NAT"
+    echo "IP,OWNER,STATUS,NAME,NAT,VERSION"
     for IP in $ips; do
         source $VESTA/data/ips/$IP
-        echo "$IP,$OWNER,$STATUS,$NAME,$NAT"
+        echo "$IP,$OWNER,$STATUS,$NAME,$NAT,$VERSION"
     done
 }
 
@@ -87,14 +89,34 @@ is_object_valid 'user' 'USER' "$user"
 #----------------------------------------------------------#
 
 # Defining fileds to select
-owner='admin'
-owner_ips=$(grep -A 1 -H  "OWNER='$owner'" $VESTA/data/ips/*)
-owner_ips=$(echo "$owner_ips" |grep "STATUS='shared'")
-owner_ips=$(echo "$owner_ips" |cut -f 7 -d / |cut -f 1 -d -)
-user_ips=$(grep -H "OWNER='$user'" $VESTA/data/ips/*)
-user_ips=$(echo "$user_ips" |cut -f 7 -d / |cut -f 1 -d :)
-ips=$(echo -e "$user_ips\n$owner_ips" |sort -u |sed "/^$/d")
-fields='$IP $OWNER $STATUS $NAME $NAT'
+if [ "$version" == "6" ]; then
+    owner='admin'
+    owner_ips=$(grep -A 10 -H  "OWNER='$owner'" $VESTA/data/ips/*)
+    owner_ips=$(echo "$owner_ips" |grep -A 10 "STATUS='shared'" |grep "VERSION='6'")
+    owner_ips=$(echo "$owner_ips" |cut -f 7 -d / |cut -f 1 -d -)
+    user_ips=$(grep -A 10 -H "OWNER='$user'" $VESTA/data/ips/* |grep "VERSION='6'")
+    user_ips=$(echo "$user_ips" |cut -f 1 -d '-' |cut -f 7 -d / |awk -F ':OWNER' '{print $1}')
+    ips=$(echo -e "$user_ips\n$owner_ips" |sort -u |sed "/^$/d")
+    fields='$IP $OWNER $STATUS $NAME $NAT'
+elif [ "$version" == "4" ]; then
+    owner='admin'
+    owner_ips=$(grep -A 10 -H  "OWNER='$owner'" $VESTA/data/ips/*)
+    owner_ips=$(echo "$owner_ips" |grep -A 10 "STATUS='shared'" |grep "VERSION='4'")
+    owner_ips=$(echo "$owner_ips" |cut -f 7 -d / |cut -f 1 -d -)
+    user_ips=$(grep -A 10 -H "OWNER='$user'" $VESTA/data/ips/* |grep "VERSION='4'")
+    user_ips=$(echo "$user_ips" |cut -f 1 -d '-' |cut -f 7 -d / |awk -F ':OWNER' '{print $1}')
+    ips=$(echo -e "$user_ips\n$owner_ips" |sort -u |sed "/^$/d")
+    fields='$IP $OWNER $STATUS $NAME $NAT'
+else
+    owner='admin'
+    owner_ips=$(grep -A 1 -H  "OWNER='$owner'" $VESTA/data/ips/*)
+    owner_ips=$(echo "$owner_ips" |grep "STATUS='shared'")
+    owner_ips=$(echo "$owner_ips" |cut -f 7 -d / |cut -f 1 -d -)
+    user_ips=$(grep -H "OWNER='$user'" $VESTA/data/ips/*)
+    user_ips=$(echo "$user_ips" |cut -f 1 -d '-' |cut -f 7 -d / |awk -F ':OWNER' '{print $1}')
+    ips=$(echo -e "$user_ips\n$owner_ips" |sort -u |sed "/^$/d")
+    fields='$IP $OWNER $STATUS $NAME $NAT'
+fi
 
 # Listing data
 case $format in

@@ -30,7 +30,8 @@ json_list() {
         "NETMASK": "'$NETMASK'",
         "NAT": "'$NAT'",
         "TIME": "'$TIME'",
-        "DATE": "'$DATE'"
+        "DATE": "'$DATE'",
+        "VERSION": "'$VERSION'"
         }'
     echo '}'
 }
@@ -48,20 +49,21 @@ shell_list() {
     echo "DOMAINS:        $U_WEB_DOMAINS"
     echo "TIME:           $TIME"
     echo "DATE:           $DATE"
+    echo "VERSION:        $VERSION"
 }
 
 # PLAIN list function
 plain_list() {
     echo -ne "$IP\t$OWNER\t$STATUS\t$NAME\t$U_SYS_USERS\t$U_WEB_DOMAINS\t"
-    echo -e "$INTERFACE\t$NETMASK\t$NAT\t$TIME\t$DATE"
+    echo -e "$INTERFACE\t$NETMASK\t$NAT\t$TIME\t$DATE\t$VERSION"
 }
 
 # CSV list function
 csv_list() {
     echo -n "IP,OWNER,STATUS,NAME,U_SYS_USERS,U_WEB_DOMAINS,INTERFACE"
-    echo "NETMASK,NAT,TIME,DATE"
+    echo "NETMASK,NAT,TIME,DATE,VERSION"
     echo -n "$IP,$OWNER,$STATUS,$NAME,\"$U_SYS_USERS\",$U_WEB_DOMAINS,"
-    echo "$INTERFACE, $NETMASK,$NAT,$TIME,$DATE"
+    echo "$INTERFACE, $NETMASK,$NAT,$TIME,$DATE,$VERSION"
 }
 
 
@@ -70,7 +72,7 @@ csv_list() {
 #----------------------------------------------------------#
 
 check_args '1' "$#" 'IP [FORMAT]'
-is_format_valid 'ip'
+is_format_valid 'ip46'
 if [ ! -e "$VESTA/data/ips/$ip" ]; then
     check_result $E_NOTEXIST "ip $ip doesn't exist"
 fi

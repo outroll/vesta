@@ -118,7 +118,7 @@
                     ?>
 
       <div class="l-unit <? if($data[$key]['SUSPENDED'] == 'yes') echo 'l-unit--suspended'; if($_SESSION['favourites']['WEB'][$key] == 1) echo ' l-unit--starred'; ?>" v_section="web" v_unit_id="<?=$key?>"
-id="web-unit-<?=$i?>"  sort-ip="<?=str_replace('.', '', $data[$key]['IP'])?>"
+id="web-unit-<?=$i?>"  sort-ip="<?=str_replace('.', '', $data[$key]['IP'])?>" sort-ip6="<?=str_replace(':', '', $data[$key]['IP6'])?>"
 sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>"
 sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-disk="<?=$data[$key]['U_DISK']?>" sort-star="<? if($_SESSION['WEB'][$key] == 1) echo '1'; else echo '0';?>">
         <div class="l-unit-toolbar clearfix">
@@ -179,6 +179,7 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
           <!-- /.l-unit__name -->
           <div class="l-unit__ip">
             <?=empty($ips[$data[$key]['IP']]['NAT']) ? $data[$key]['IP'] : "{$ips[$data[$key]['IP']]['NAT']}"; ?>
+            - <?= $data[$key]['IP6']; ?>
           </div>
           <!-- /.l-unit__ip -->
           <div class="l-unit__stats">

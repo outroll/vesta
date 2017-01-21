@@ -15,6 +15,7 @@ user=$2
 
 # Includes
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
@@ -98,6 +99,10 @@ if [ ! -z "$dns_data" ]; then
     if [ ! -z "$ip" ]; then
         dns_data=$(echo "$dns_data" | sed "s/IP='$IP'/IP='$ip'/")
         sed -i "s/$IP/$ip/g" $VESTA/data/users/$owner/dns/$domain.conf
+    fi
+    if [ ! -z "$ipv6" ]; then
+        dns_data=$(echo "$dns_data" | sed "s/IP6='$IPV6'/IP6='$ipv6'/")
+        sed -i "s/$IP6/$ipv6/g" $VESTA/data/users/$owner/dns/$domain.conf
     fi
 
     # Move config
