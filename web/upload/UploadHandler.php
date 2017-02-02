@@ -1134,7 +1134,7 @@ class UploadHandler
                 //    $this->handle_image_file($file_path, $file);
                 //}
             } else {
-                //$file->size = $file_size;
+                $file->size = $file_size;
                 //if (!$content_range && $this->options['discard_aborted_uploads']) {
                 //    unlink($file_path);
                 //    $file->error = $this->get_error_message('abort');
