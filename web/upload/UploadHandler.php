@@ -1103,7 +1103,7 @@ class UploadHandler
                 } else {
                     chmod($uploaded_file, 0644);
 //                    move_uploaded_file($uploaded_file, $file_path);
-                    exec (VESTA_CMD . "v-copy-fs-file ". USERNAME ." {$uploaded_file} {$file_path}", $output, $return_var);
+                    exec (VESTA_CMD . "v-copy-fs-file ". USERNAME ." {$uploaded_file} ".escapeshellarg($file_path), $output, $return_var);
 
                     $error = check_return_code($return_var, $output);
                     if ($return_var != 0) {
