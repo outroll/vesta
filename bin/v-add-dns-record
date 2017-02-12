@@ -84,7 +84,7 @@ time=$(echo "$time_n_date" |cut -f 1 -d \ )
 date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Adding record
-zone="$USER_DATA/dns/$domain.conf"
+zone="$USER_DATA/dns/$domain_idn.conf"
 dns_rec="ID='$id' RECORD='$record' TYPE='$rtype' PRIORITY='$priority'"
 dns_rec="$dns_rec VALUE='$dvalue' SUSPENDED='no' TIME='$time' DATE='$date'"
 echo "$dns_rec" >> $zone
@@ -102,9 +102,9 @@ fi
 # Updating dns-cluster queue
 if [ ! -z "$DNS_CLUSTER" ]; then
     # Check for first sync
-    dlock=$(grep "domain $user $domain" $VESTA/data/queue/dns-cluster.pipe)
+    dlock=$(grep "domain $user $domain_idn" $VESTA/data/queue/dns-cluster.pipe)
     if [ -z "$dlock" ]; then
-        cmd="$BIN/v-add-remote-dns-record $user $domain $id"
+        cmd="$BIN/v-add-remote-dns-record $user $domain_idn $id"
         echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
     fi
 fi
@@ -115,7 +115,7 @@ fi
 #----------------------------------------------------------#
 
 # Update counters
-records="$(wc -l $USER_DATA/dns/$domain.conf | cut -f1 -d ' ')"
+records="$(wc -l $USER_DATA/dns/$domain_idn.conf | cut -f1 -d ' ')"
 update_object_value 'dns' 'DOMAIN' "$domain_idn" '$RECORDS' "$records"
 increase_user_value "$user" '$U_DNS_RECORDS'
 
