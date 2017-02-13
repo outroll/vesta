@@ -137,10 +137,10 @@ prepare_web_domain_values() {
     fi
     group="$user"
     email="info@$domain"
-    docroot="$HOMEDIR/$user/web/$domain/public_html"
+    docroot="$HOMEDIR/$user/web/$domain_idn/public_html"
     sdocroot="$docroot"
     if [ "$SSL_HOME" = 'single' ]; then
-        sdocroot="$HOMEDIR/$user/web/$domain/public_shtml" ;
+        sdocroot="$HOMEDIR/$user/web/$domain_idn/public_shtml" ;
     fi
 
     if [ ! -z "$WEB_BACKEND" ]; then
@@ -152,11 +152,11 @@ prepare_web_domain_values() {
     aliases_idn=''
     prepare_web_aliases $ALIAS
 
-    ssl_crt="$HOMEDIR/$user/conf/web/ssl.$domain.crt"
-    ssl_key="$HOMEDIR/$user/conf/web/ssl.$domain.key"
-    ssl_pem="$HOMEDIR/$user/conf/web/ssl.$domain.pem"
-    ssl_ca="$HOMEDIR/$user/conf/web/ssl.$domain.ca"
-    if [ ! -e "$USER_DATA/ssl/$domain.ca" ]; then
+    ssl_crt="$HOMEDIR/$user/conf/web/ssl.$domain_idn.crt"
+    ssl_key="$HOMEDIR/$user/conf/web/ssl.$domain_idn.key"
+    ssl_pem="$HOMEDIR/$user/conf/web/ssl.$domain_idn.pem"
+    ssl_ca="$HOMEDIR/$user/conf/web/ssl.$domain_idn.ca"
+    if [ ! -e "$USER_DATA/ssl/$domain_idn.ca" ]; then
         ssl_ca_str='#'
     fi
     if [ "$SUSPENDED" = 'yes' ]; then
@@ -405,8 +405,8 @@ update_domain_serial() {
     else
         serial="$(date +'%Y%m%d01')"
     fi
-    add_object_key "dns" 'DOMAIN' "$domain" 'SERIAL' 'RECORDS'
-    update_object_value 'dns' 'DOMAIN' "$domain" '$SERIAL' "$serial"
+    add_object_key "dns" 'DOMAIN' "$domain_idn" 'SERIAL' 'RECORDS'
+    update_object_value 'dns' 'DOMAIN' "$domain_idn" '$SERIAL' "$serial"
 }
 
 # Get next DNS record ID
@@ -536,5 +536,5 @@ is_domain_new() {
 
 # Get domain variables
 get_domain_values() {
-    eval $(grep "DOMAIN='$domain'" $USER_DATA/$1.conf)
+    eval $(grep "DOMAIN='$domain_idn'" $USER_DATA/$1.conf)
 }

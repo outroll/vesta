@@ -35,8 +35,8 @@ is_format_valid 'user' 'domain' 'soa'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'dns' 'DOMAIN' "$domain"
-is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+is_object_valid 'dns' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -44,7 +44,7 @@ is_object_unsuspended 'dns' 'DOMAIN' "$domain"
 #----------------------------------------------------------#
 
 # Changing soa
-update_object_value 'dns' 'DOMAIN' "$domain" '$SOA' "$soa"
+update_object_value 'dns' 'DOMAIN' "$domain_idn" '$SOA' "$soa"
 
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then

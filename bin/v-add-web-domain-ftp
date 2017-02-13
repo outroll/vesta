@@ -35,8 +35,8 @@ is_format_valid 'user' 'domain' 'ftp_user'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 check_ftp_user=$(grep "^$ftp_user:" /etc/passwd)
 if [ ! -z "$check_ftp_user" ] && [ "$FTP_USER" != "$ftp_user" ]; then
     echo "Error: ftp user $ftp_user already exists"
@@ -110,12 +110,12 @@ if [ ! -z "$FTP_USER" ]; then
 fi
 
 # Adding new key into web.conf
-add_object_key "web" 'DOMAIN' "$domain" 'FTP_PATH' 'PROXY'
+add_object_key "web" 'DOMAIN' "$domain_idn" 'FTP_PATH' 'PROXY'
 
 # Updating config
-update_object_value 'web' 'DOMAIN' "$domain" '$FTP_USER' "$ftp_user"
-update_object_value 'web' 'DOMAIN' "$domain" '$FTP_MD5' "$ftp_md5"
-update_object_value 'web' 'DOMAIN' "$domain" '$FTP_PATH' "$ftp_path"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$FTP_USER' "$ftp_user"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$FTP_MD5' "$ftp_md5"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$FTP_PATH' "$ftp_path"
 
 # Logging
 log_history "added ftp account ${1}_${3}@$domain"

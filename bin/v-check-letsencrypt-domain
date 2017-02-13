@@ -11,7 +11,7 @@
 
 # Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
+domain=$2
 domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
 
 # Includes
@@ -23,6 +23,9 @@ encode_base64() {
     cat |base64 |tr '+/' '-_' |tr -d '\r\n='
 }
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -89,12 +92,10 @@ uri=$(echo "$answer" |grep -A 3 http-01 |grep uri |cut -f 4 -d \")
 # Adding location wrapper for request challenge
 if [ "$WEB_SYSTEM" = 'nginx' ] || [ "$PROXY_SYSTEM" = 'nginx' ]; then
     conf="$HOMEDIR/$user/conf/web/nginx.$r_domain.conf_letsencrypt"
-    if [ ! -e "$conf" ]; then
-        echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' > $conf
-        echo '    default_type text/plain;' >> $conf
-        echo '    return 200 "$1.'$thumb'";' >> $conf
-        echo '}' >> $conf
-    fi
+    echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' > $conf
+    echo '    default_type text/plain;' >> $conf
+    echo '    return 200 "$1.'$thumb'";' >> $conf
+    echo '}' >> $conf
 else
     acme="$HOMEDIR/$user/web/$r_domain/public_html/.well-known/acme-challenge"
     if [ ! -d "$acme" ]; then

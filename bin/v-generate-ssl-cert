@@ -54,7 +54,9 @@ shell_list_ssl() {
     echo -e "\nDirectory: $workdir"
 }
 
-
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -69,11 +71,6 @@ is_format_valid 'domain_alias' 'format'
 #                       Action                             #
 #----------------------------------------------------------#
 
-if [[ "$domain" = *[![:ascii:]]* ]]; then
-    domain_idn=$(idn -t --quiet -a $domain)
-else
-    domain_idn=$domain
-fi
 if [[ "$email" = *[![:ascii:]]* ]]; then
     email=$(idn -t --quiet -a $email)
 fi
