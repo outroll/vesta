@@ -38,7 +38,7 @@ else
         proftpd-basic bind9 exim4 exim4-daemon-heavy clamav-daemon
         spamassassin dovecot-imapd dovecot-pop3d roundcube-core
         roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
+        mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect"
@@ -576,7 +576,7 @@ if [ "$mysql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/mysql-client//')
     software=$(echo "$software" | sed -e 's/mysql-common//')
     software=$(echo "$software" | sed -e 's/php5-mysql//')
-    software=$(echo "$software" | sed -e 's/phpMyAdmin//')
+    software=$(echo "$software" | sed -e 's/phpmyadmin//')
     software=$(echo "$software" | sed -e 's/php-mysql//')
     software=$(echo "$software" | sed -e 's/phpmyadmin//')
 fi
