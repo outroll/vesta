@@ -60,8 +60,8 @@ fi
 #----------------------------------------------------------#
 
 # Updatoing config
-update_object_value 'mail' 'DOMAIN' "$domain_idn" '$DKIM' 'no'
-decrease_user_value "$user" '$U_MAIL_DKMI'
+update_object_value 'mail' 'DOMAIN' "$domain" '$DKIM' 'no'
+decrease_user_value "$user" '$U_MAIL_DKIM'
 
 # Logging
 log_history "disabled DKIM support on $domain"
