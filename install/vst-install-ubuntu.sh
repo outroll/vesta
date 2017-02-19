@@ -17,9 +17,10 @@ os='ubuntu'
 release="$(lsb_release -r|awk '{print $2}')"
 codename="$(lsb_release -c|awk '{print $2}')"
 vestacp="http://$CHOST/$VERSION/$release"
+release_compare_1604=$(awk 'BEGIN{ print "'$release'">="'16.04'" }')
 
-if [ "$release" = '16.04' ]; then
-    software="nginx apache2 apache2-utils apache2.2-common
+if [ "$release_compare_1604" == 1 ]; then
+    software="nginx apache2 apache2-utils
         apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
         libapache2-mod-fcgid libapache2-mod-php php php-common php-cgi
         php-mysql php-curl php-fpm php-pgsql awstats webalizer vsftpd
@@ -514,7 +515,7 @@ killall -9 mysqld > /dev/null 2>&1
 mv /var/lib/mysql $vst_backups/mysql/mysql_datadir > /dev/null 2>&1
 cp -r /etc/mysql/* $vst_backups/mysql > /dev/null 2>&1
 mv -f /root/.my.cnf $vst_backups/mysql > /dev/null 2>&1
-if [ "$release" = '16.04' ] && [ -e '/etc/init.d/mysql' ]; then
+if [ "$release_compare_1604" == 1 ] && [ -e '/etc/init.d/mysql' ]; then
     mkdir -p /var/lib/mysql > /dev/null 2>&1
     chown mysql:mysql /var/lib/mysql
     mysqld --initialize-insecure
@@ -1124,7 +1125,7 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost IDENTIFIED BY '$r'"
     sed -i "s/%password%/$r/g" /etc/roundcube/db.inc.php
 
-    if [ "$release" = '16.04' ]; then
+    if [ "$release_compare_1604" == 1 ]; then
         mv /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
         mv /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
     fi
