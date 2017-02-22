@@ -130,16 +130,20 @@
 
       <div class="l-unit <? if($status == 'suspended') echo 'l-unit--suspended';?>">
         <div class="l-unit-toolbar clearfix">
+		 <?php if($key != 'iptables'){?>
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
             <input id="check<?php echo $i ?>" class="ch-toggle" type="checkbox" name="service[]" value="<?php echo $key ?>">
             <label for="check<?php echo $i ?>" class="check-label"></label>
           </div>
-          <!-- l-unit-toolbar__col -->
+		  <!-- l-unit-toolbar__col -->
+		 <?php } ?>
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
               <div class="actions-panel__col actions-panel__configure shortcut-enter" key-action="href"><a href="/edit/server/<? echo $key ?>/"><?=__('configure')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
-              <div class="actions-panel__col actions-panel__<?=$action?> shortcut-s" key-action="href"><a href="/<?php echo $action ?>/service/?srv=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__($action)?> <i></i></a><span class="shortcut">&nbsp;S</span></div>
+              <?php if($key != 'iptables'){?>
+			  <div class="actions-panel__col actions-panel__<?=$action?> shortcut-s" key-action="href"><a href="/<?php echo $action ?>/service/?srv=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__($action)?> <i></i></a><span class="shortcut">&nbsp;S</span></div>
               <div class="actions-panel__col actions-panel__restart shortcut-r" key-action="href"><a href="/restart/service/?srv=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('restart')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
+			  <?php } ?>
             </div>
             <!-- /.actions-panel -->
           </div>
@@ -157,10 +161,10 @@
             <?=$key?>
           </div>
 
-
-          <div class="l-unit__stats">
+		  
+          <div class="l-unit__stats">	  
             <table>
-
+			
                <tr>
                 <td>
                   <div class="l-unit__stat-cols clearfix">
@@ -168,6 +172,7 @@
                     <div class="l-unit__stat-col l-unit__stat-col--right"></div>
                   </div>
                 </td>
+				<?php if($key != 'iptables'){?>
                 <td>
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('CPU')?>: <b><?=$cpu?></b></div>
@@ -180,18 +185,19 @@
                     <div class="l-unit__stat-col l-unit__stat-col--right"></div>
                   </div>
                 </td>
+				<?php } ?>
               </tr>
-
+			  
             </table>
           </div>
-          <!-- /.l-unit__stats -->
+          <!-- /.l-unit__stats -->	  
         </div>
         <!-- /.l-unit__col -->
       </div>
       <!-- /.l-unit -->
       <!-- div class="l-separator"></div -->
       <!-- /.l-separator -->
-      <?}?>
+      <?php } ?>
 
     </div>
 
