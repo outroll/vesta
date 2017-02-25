@@ -272,45 +272,45 @@ del_web_config() {
 
 # SSL certificate verification
 is_web_domain_cert_valid() {
-    if [ ! -e "$ssl_dir/$domain.crt" ]; then
-        check_result $E_NOTEXIST "$ssl_dir/$domain.crt not found"
+    if [ ! -e "$ssl_dir/$domain_idn.crt" ]; then
+        check_result $E_NOTEXIST "$ssl_dir/$domain_idn.crt not found"
     fi
 
-    if [ ! -e "$ssl_dir/$domain.key" ]; then
-        check_result $E_NOTEXIST "$ssl_dir/$domain.key not found"
+    if [ ! -e "$ssl_dir/$domain_idn.key" ]; then
+        check_result $E_NOTEXIST "$ssl_dir/$domain_idn.key not found"
     fi
 
-    crt_vrf=$(openssl verify $ssl_dir/$domain.crt 2>&1)
+    crt_vrf=$(openssl verify $ssl_dir/$domain_idn.crt 2>&1)
     if [ ! -z "$(echo $crt_vrf |grep 'unable to load')" ]; then
         check_result $E_INVALID "SSL Certificate is not valid"
     fi
 
     if [ ! -z "$(echo $crt_vrf |grep 'unable to get local issuer')" ]; then
-        if [ ! -e "$ssl_dir/$domain.ca" ]; then
+        if [ ! -e "$ssl_dir/$domain_idn.ca" ]; then
             check_result $E_NOTEXIST "Certificate Authority not found"
         fi
     fi
 
-    if [ -e "$ssl_dir/$domain.ca" ]; then
-        s1=$(openssl x509 -text -in $ssl_dir/$domain.crt 2>/dev/null)
+    if [ -e "$ssl_dir/$domain_idn.ca" ]; then
+        s1=$(openssl x509 -text -in $ssl_dir/$domain_idn.crt 2>/dev/null)
         s1=$(echo "$s1" |grep Issuer  |awk -F = '{print $6}' |head -n1)
-        s2=$(openssl x509 -text -in $ssl_dir/$domain.ca 2>/dev/null)
+        s2=$(openssl x509 -text -in $ssl_dir/$domain_idn.ca 2>/dev/null)
         s2=$(echo "$s2" |grep Subject  |awk -F = '{print $6}' |head -n1)
         if [ "$s1" != "$s2" ]; then
             check_result $E_NOTEXIST "SSL intermediate chain is not valid"
         fi
     fi
 
-    key_vrf=$(grep 'PRIVATE KEY' $ssl_dir/$domain.key |wc -l)
+    key_vrf=$(grep 'PRIVATE KEY' $ssl_dir/$domain_idn.key |wc -l)
     if [ "$key_vrf" -ne 2 ]; then
         check_result $E_INVALID "SSL Key is not valid"
     fi
-    if [ ! -z "$(grep 'ENCRYPTED' $ssl_dir/$domain.key)" ]; then
+    if [ ! -z "$(grep 'ENCRYPTED' $ssl_dir/$domain_idn.key)" ]; then
         check_result $E_FORBIDEN "SSL Key is protected (remove pass_phrase)"
     fi
 
-    openssl s_server -quiet -cert $ssl_dir/$domain.crt \
-        -key $ssl_dir/$domain.key >> /dev/null 2>&1 &
+    openssl s_server -quiet -cert $ssl_dir/$domain_idn.crt \
+        -key $ssl_dir/$domain_idn.key >> /dev/null 2>&1 &
     pid=$!
     sleep 0.5
     disown &> /dev/null
@@ -357,7 +357,7 @@ update_domain_zone() {
     else
         domain_idn=$domain
     fi
-    zn_conf="$HOMEDIR/$user/conf/dns/$domain.db"
+    zn_conf="$HOMEDIR/$user/conf/dns/$domain_idn.db"
     echo "\$TTL $TTL
 @    IN    SOA    $SOA.    root.$domain_idn. (
                                             $SERIAL
@@ -381,12 +381,12 @@ update_domain_zone() {
         if [ "$SUSPENDED" != 'yes' ]; then
             eval echo -e "\"$fields\""|sed "s/%quote%/'/g" >> $zn_conf
         fi
-    done < $USER_DATA/dns/$domain.conf
+    done < $USER_DATA/dns/$domain_idn.conf
 }
 
 # Update zone serial
 update_domain_serial() {
-    zn_conf="$HOMEDIR/$user/conf/dns/$domain.db"
+    zn_conf="$HOMEDIR/$user/conf/dns/$domain_idn.db"
     if [ -e $zn_conf ]; then
         zn_serial=$(head $zn_conf |grep 'SOA' -A1 |tail -n 1 |sed "s/ //g")
         s_date=$(echo ${zn_serial:0:8})
@@ -412,7 +412,7 @@ update_domain_serial() {
 # Get next DNS record ID
 get_next_dnsrecord(){
     if [ -z "$id" ]; then
-        curr_str=$(grep "ID=" $USER_DATA/dns/$domain.conf | cut -f 2 -d \' |\
+        curr_str=$(grep "ID=" $USER_DATA/dns/$domain_idn.conf | cut -f 2 -d \' |\
             sort -n|tail -n1)
         id="$((curr_str +1))"
     fi
@@ -420,17 +420,17 @@ get_next_dnsrecord(){
 
 # Sort DNS records
 sort_dns_records() {
-    conf="$USER_DATA/dns/$domain.conf"
+    conf="$USER_DATA/dns/$domain_idn.conf"
     cat $conf |sort -n -k 2 -t \' >$conf.tmp
     mv -f $conf.tmp $conf
 }
 
 # Check if this is a last record
 is_dns_record_critical() {
-    str=$(grep "ID='$id'" $USER_DATA/dns/$domain.conf)
+    str=$(grep "ID='$id'" $USER_DATA/dns/$domain_idn.conf)
     eval $str
     if [ "$TYPE" = 'A' ] || [ "$TYPE" = 'NS' ]; then
-        records=$(grep "TYPE='$TYPE'" $USER_DATA/dns/$domain.conf| wc -l)
+        records=$(grep "TYPE='$TYPE'" $USER_DATA/dns/$domain_idn.conf| wc -l)
         if [ $records -le 1 ]; then
             echo "Error: at least one $TYPE record should remain active"
             log_event "$E_INVALID" "$ARGUMENTS"
@@ -467,7 +467,7 @@ is_dns_nameserver_valid() {
     t=$2
     r=$3
     if [ "$t" = 'NS' ]; then
-        remote=$(echo $r |grep ".$domain.$")
+        remote=$(echo $r |grep ".$domain_idn.$")
         if [ ! -z "$remote" ]; then
             zone=$USER_DATA/dns/$d.conf
             a_record=$(echo $r |cut -f 1 -d '.')
@@ -501,11 +501,11 @@ is_mail_domain_new() {
 
 # Checking mail account existance
 is_mail_new() {
-    check_acc=$(grep "ACCOUNT='$1'" $USER_DATA/mail/$domain.conf)
+    check_acc=$(grep "ACCOUNT='$1'" $USER_DATA/mail/$domain_idn.conf)
     if [ ! -z "$check_acc" ]; then
         check_result $E_EXISTS "mail account $1 is already exists"
     fi
-    check_als=$(awk -F "ALIAS='" '{print $2}' $USER_DATA/mail/$domain.conf )
+    check_als=$(awk -F "ALIAS='" '{print $2}' $USER_DATA/mail/$domain_idn.conf )
     check_als=$(echo "$check_als" | cut -f 1 -d "'" | grep -w $1)
     if [ ! -z "$check_als" ]; then
         check_result $E_EXISTS "mail alias $1 is already exists"
