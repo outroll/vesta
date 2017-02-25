@@ -39,7 +39,7 @@ fi
 # Add trailing dot at the end of NS/CNAME/MX/PTR/SRV record
 if [[ $rtype =~ NS|CNAME|MX|PTR|SRV ]]; then
     trailing_dot=$(echo $dvalue | grep "\.$")
-    if [ -z $trailing_dot ]; then
+    if [ -z "$trailing_dot" ]; then
         dvalue="$dvalue."
     fi
 fi
@@ -108,6 +108,16 @@ if [ ! -z "$DNS_CLUSTER" ]; then
         echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
     fi
 fi
+
+# remove trailing dot at the end of NS/CNAME/MX/PTR/SRV record
+
+if [[ $rtype =~ NS|CNAME|MX|PTR|SRV ]]; then
+    trailing_dot2=$(echo $record | grep "\.$")
+    if [ ! -z $trailing_dot2 ]; then
+        record=$(echo "${record::-1}")
+    fi
+fi
+
 
 
 #----------------------------------------------------------#
