@@ -12,7 +12,10 @@
 # Argument definition
 user=$1
 domain=$2
-domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 # Includes
 source $VESTA/func/main.sh
