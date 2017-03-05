@@ -2,3 +2,10 @@
 *.zip
 *.gzip
 *.gz
+conf
+data
+log
+nginx
+php
+ssl
+web/rrd/
