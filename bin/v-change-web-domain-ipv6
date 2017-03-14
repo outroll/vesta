@@ -1,0 +1,138 @@
+#!/bin/bash
+# info: change web domain ipv6
+# options: USER DOMAIN IPV6 [RESTART]
+#
+# The call is used for changing domain ip
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+ipv6=$3
+restart=$4
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/func/ipv6.sh
+source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+format_domain
+format_domain_idn
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN IPV6 [RESTART]'
+is_format_valid 'user' 'domain'
+is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+if [ "$ipv6" != "no" ]; then
+    is_format_valid 'ipv6'
+fi
+if [ "$ipv6" != "no" ]; then
+    is_ipv6_valid "$ipv6" "$user"
+else
+    ipv6=''
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Preparing variables for vhost replace
+get_domain_values 'web'
+old=$IP6
+new=$ipv6
+
+if [ -z "$old" ]; then
+    #Create new configs
+    # Preparing domain variables
+    prepare_web_domain_values
+
+    local_ip=""
+    # Adding web server config
+    add_web_config "$WEB_SYSTEM" "$TPL.tpl"
+    if [ "$SSL" = 'yes' ]; then
+        add_web_config "$WEB_SYSTEM" "$TPL.stpl"
+    fi
+
+    # Adding proxy config
+    if [ ! -z "$PROXY_SYSTEM" ]; then
+        add_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+        if [ "$SSL" = 'yes' ]; then
+            add_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+        fi
+    fi
+else
+    if [ ! -z "$new" ]; then
+        # Preparing domain variables
+        prepare_web_domain_values
+        
+        # Replacing vhost
+        replace_web_config "$WEB_SYSTEM" "$TPL.tpl"
+        if [ "$SSL" = 'yes' ]; then
+            replace_web_config "$WEB_SYSTEM" "$TPL.stpl"
+        fi
+
+        # Replacing proxy vhost
+        if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
+            replace_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+            if [ "$SSL" = 'yes' ]; then
+                replace_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+            fi
+        fi
+    else
+        #Delete configs ...
+        # Preparing domain variables
+        prepare_web_domain_values
+        
+        # Replacing vhost
+        del_web_config "$WEB_SYSTEM" "$TPL.tpl"
+        if [ "$SSL" = 'yes' ]; then
+            del_web_config "$WEB_SYSTEM" "$TPL.stpl"
+        fi
+
+        # Replacing proxy vhost
+        if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
+            del_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+            if [ "$SSL" = 'yes' ]; then
+                del_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+            fi
+        fi
+    fi
+fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Update counters
+increase_ipv6_value "$new"
+decrease_ipv6_value "$old"
+
+# Update config
+update_object_value 'web' 'DOMAIN' "$domain" '$IP6' "$ipv6"
+
+# Restart web server
+$BIN/v-restart-web $restart
+check_result $? "WEB restart failed" >/dev/null
+
+$BIN/v-restart-proxy $restart
+check_result $? "Proxy restart failed" >/dev/null
+
+# Logging
+log_history "changed web domain $domain ipv6 to $ipv6"
+log_event "$OK" "$ARGUMENTS"
+
+exit

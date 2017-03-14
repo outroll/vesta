@@ -143,6 +143,7 @@ rebuild_web_domain_conf() {
 
     get_domain_values 'web'
     is_ip_valid $IP
+    is_ipv6_valid $IP6
     prepare_web_domain_values
 
     # Rebuilding domain directories
@@ -232,6 +233,7 @@ rebuild_web_domain_conf() {
         fi
         cat $WEBTPL/$STATS/$STATS.tpl |\
             sed -e "s|%ip%|$local_ip|g" \
+                -e "s|%ipv6%|$ipv6|g" \
                 -e "s|%web_system%|$WEB_SYSTEM|g" \
                 -e "s|%domain_idn%|$domain_idn|g" \
                 -e "s|%domain%|$domain|g" \
@@ -354,8 +356,9 @@ rebuild_dns_domain_conf() {
 
     # Checking zone file
     if [ ! -e "$USER_DATA/dns/$domain.conf" ]; then
-        cat $DNSTPL/$TPL.tpl |\
+        cat $DNSTPL/$TPL.tpl | grep -v '%ip' |\
             sed -e "s/%ip%/$IP/g" \
+                -e "s/%ipv6%/$IP6/g" \
                 -e "s/%domain_idn%/$domain_idn/g" \
                 -e "s/%domain%/$domain/g" \
                 -e "s/%ns1%/$ns1/g" \
@@ -364,6 +367,33 @@ rebuild_dns_domain_conf() {
                 -e "s/%ns4%/$ns4/g" \
                 -e "s/%time%/$TIME/g" \
                 -e "s/%date%/$DATE/g" > $USER_DATA/dns/$domain.conf
+        if [ ! -z $IP ] && [ "$IP" != "no" ]; then
+            cat $DNSTPL/$TPL.tpl |grep "%ip%" |\
+            sed -e "s/%ip%/$IP/g" \
+                -e "s/%ipv6%/$IP6/g" \
+                -e "s/%domain_idn%/$domain_idn/g" \
+                -e "s/%domain%/$domain/g" \
+                -e "s/%ns1%/$ns1/g" \
+                -e "s/%ns2%/$ns2/g" \
+                -e "s/%ns3%/$ns3/g" \
+                -e "s/%ns4%/$ns4/g" \
+                -e "s/%time%/$TIME/g" \
+                -e "s/%date%/$DATE/g" >> $USER_DATA/dns/$domain.conf
+        fi
+
+        if [ ! -z $IP6 ] && [ "$IP6" != "no" ]; then
+            cat $DNSTPL/$TPL.tpl |grep "%ipv6%" |\
+            sed -e "s/%ip%/$IP/g" \
+                -e "s/%ipv6%/$IP6/g" \
+                -e "s/%domain_idn%/$domain_idn/g" \
+                -e "s/%domain%/$domain/g" \
+                -e "s/%ns1%/$ns1/g" \
+                -e "s/%ns2%/$ns2/g" \
+                -e "s/%ns3%/$ns3/g" \
+                -e "s/%ns4%/$ns4/g" \
+                -e "s/%time%/$TIME/g" \
+                -e "s/%date%/$DATE/g" >> $USER_DATA/dns/$domain.conf
+        fi
     fi
 
     # Sorting records

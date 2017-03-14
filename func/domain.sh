@@ -171,39 +171,71 @@ add_web_config() {
     if [[ "$2" =~ stpl$ ]]; then
         conf="$HOMEDIR/$user/conf/web/s$1.conf"
     fi
-
     if [ -z "$domain_idn" ]; then
         format_domain_idn
     fi
-
-    cat $WEBTPL/$1/$WEB_BACKEND/$2 | \
-        sed -e "s|%ip%|$local_ip|g" \
-            -e "s|%domain%|$domain|g" \
-            -e "s|%domain_idn%|$domain_idn|g" \
-            -e "s|%alias%|${aliases//,/ }|g" \
-            -e "s|%alias_idn%|${aliases_idn//,/ }|g" \
-            -e "s|%alias_string%|$alias_string|g" \
-            -e "s|%email%|info@$domain|g" \
-            -e "s|%web_system%|$WEB_SYSTEM|g" \
-            -e "s|%web_port%|$WEB_PORT|g" \
-            -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \
-            -e "s|%backend_lsnr%|$backend_lsnr|g" \
-            -e "s|%rgroups%|$WEB_RGROUPS|g" \
-            -e "s|%proxy_system%|$PROXY_SYSTEM|g" \
-            -e "s|%proxy_port%|$PROXY_PORT|g" \
-            -e "s|%proxy_ssl_port%|$PROXY_SSL_PORT|g" \
-            -e "s/%proxy_extentions%/${PROXY_EXT//,/|}/g" \
-            -e "s|%user%|$user|g" \
-            -e "s|%group%|$user|g" \
-            -e "s|%home%|$HOMEDIR|g" \
-            -e "s|%docroot%|$docroot|g" \
-            -e "s|%sdocroot%|$sdocroot|g" \
-            -e "s|%ssl_crt%|$ssl_crt|g" \
-            -e "s|%ssl_key%|$ssl_key|g" \
-            -e "s|%ssl_pem%|$ssl_pem|g" \
-            -e "s|%ssl_ca_str%|$ssl_ca_str|g" \
-            -e "s|%ssl_ca%|$ssl_ca|g" \
-    >> $conf
+    if [ ! -z $local_ip ]; then
+        cat $WEBTPL/$1/$WEB_BACKEND/$2 | \
+            sed -e "s|%ip%|$local_ip|g" \
+                -e "s|%ipv6%|$ipv6|g" \
+                -e "s|%domain%|$domain|g" \
+                -e "s|%domain_idn%|$domain_idn|g" \
+                -e "s|%alias%|${aliases//,/ }|g" \
+                -e "s|%alias_idn%|${aliases_idn//,/ }|g" \
+                -e "s|%alias_string%|$alias_string|g" \
+                -e "s|%email%|info@$domain|g" \
+                -e "s|%web_system%|$WEB_SYSTEM|g" \
+                -e "s|%web_port%|$WEB_PORT|g" \
+                -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \
+                -e "s|%backend_lsnr%|$backend_lsnr|g" \
+                -e "s|%rgroups%|$WEB_RGROUPS|g" \
+                -e "s|%proxy_system%|$PROXY_SYSTEM|g" \
+                -e "s|%proxy_port%|$PROXY_PORT|g" \
+                -e "s|%proxy_ssl_port%|$PROXY_SSL_PORT|g" \
+                -e "s/%proxy_extentions%/${PROXY_EXT//,/|}/g" \
+                -e "s|%user%|$user|g" \
+                -e "s|%group%|$user|g" \
+                -e "s|%home%|$HOMEDIR|g" \
+                -e "s|%docroot%|$docroot|g" \
+                -e "s|%sdocroot%|$sdocroot|g" \
+                -e "s|%ssl_crt%|$ssl_crt|g" \
+                -e "s|%ssl_key%|$ssl_key|g" \
+                -e "s|%ssl_pem%|$ssl_pem|g" \
+                -e "s|%ssl_ca_str%|$ssl_ca_str|g" \
+                -e "s|%ssl_ca%|$ssl_ca|g" \
+        >> $conf
+    fi
+    
+    if [ ! -z $ipv6 ] && [ "$ipv6" != "no" ]; then
+        cat $WEBTPL/$1/$WEB_BACKEND/$2 | \
+            sed -e "s|%ip%|[$ipv6]|g" \
+                -e "s|%domain%|$domain|g" \
+                -e "s|%domain_idn%|$domain_idn|g" \
+                -e "s|%alias%|${aliases//,/ }|g" \
+                -e "s|%alias_idn%|${aliases_idn//,/ }|g" \
+                -e "s|%alias_string%|$alias_string|g" \
+                -e "s|%email%|info@$domain|g" \
+                -e "s|%web_system%|$WEB_SYSTEM|g" \
+                -e "s|%web_port%|$WEB_PORT|g" \
+                -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \
+                -e "s|%backend_lsnr%|$backend_lsnr|g" \
+                -e "s|%rgroups%|$WEB_RGROUPS|g" \
+                -e "s|%proxy_system%|$PROXY_SYSTEM|g" \
+                -e "s|%proxy_port%|$PROXY_PORT|g" \
+                -e "s|%proxy_ssl_port%|$PROXY_SSL_PORT|g" \
+                -e "s/%proxy_extentions%/${PROXY_EXT//,/|}/g" \
+                -e "s|%user%|$user|g" \
+                -e "s|%group%|$user|g" \
+                -e "s|%home%|$HOMEDIR|g" \
+                -e "s|%docroot%|$docroot|g" \
+                -e "s|%sdocroot%|$sdocroot|g" \
+                -e "s|%ssl_crt%|$ssl_crt|g" \
+                -e "s|%ssl_key%|$ssl_key|g" \
+                -e "s|%ssl_pem%|$ssl_pem|g" \
+                -e "s|%ssl_ca_str%|$ssl_ca_str|g" \
+                -e "s|%ssl_ca%|$ssl_ca|g" \
+        >> $conf
+    fi
 
     chown root:$user $conf
     chmod 640 $conf
@@ -219,12 +251,19 @@ add_web_config() {
     trigger="${2/.*pl/.sh}"
     if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
         $WEBTPL/$1/$WEB_BACKEND/$trigger \
-            $user $domain $local_ip $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
+            $user $domain $local_ip $ipv6 $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
     fi
 }
 
 # Get config top and bottom line number
 get_web_config_lines() {
+    v_ip=""
+    if [ ! -z $old ]; then
+        v_ip=$old
+    fi
+    if [ -z "$v_ip" ]; then
+        check_result $E_PARSING "V_IP in get_web_config_lines is empty"
+    fi
     tpl_lines=$(egrep -ni "name %domain_idn%" $1 |grep -w %domain_idn%)
     tpl_lines=$(echo "$tpl_lines" |cut -f 1 -d :)
     tpl_last_line=$(wc -l $1 |cut -f 1 -d ' ')
@@ -235,9 +274,9 @@ get_web_config_lines() {
     if [ -z "$domain_idn" ]; then
         format_domain_idn
     fi
-    vhost_lines=$(grep -niF "name $domain_idn" $2)
+    vhost_lines=$(grep -ni -A2 "$v_ip" $2| grep -iF "name $domain_idn")
     vhost_lines=$(echo "$vhost_lines" |egrep "$domain_idn($| |;)") #"
-    vhost_lines=$(echo "$vhost_lines" |cut -f 1 -d :)
+    vhost_lines=$(echo "$vhost_lines" |cut -f 1 -d : |cut -f 1 -d \-)
     if [ -z "$vhost_lines" ]; then
         check_result $E_PARSING "can't parse config $2"
     fi
@@ -486,7 +525,128 @@ is_dns_nameserver_valid() {
     fi
 }
 
+# Add DNS config
+add_dns_config() {
+    spfip4=""
+    spfip6=""
+    if [ ! -z $ip ]; then
+        spfipv4="ip4:$ip";
+    fi
+    if [ ! -z $ipv6 ]; then
+        spfipv6="ip6:$ipv6";
+    fi
+    echo $spfipv4
+    echo $spfipv6
+    
+    # Adding dns zone to the user config
+    echo "$template_data" | grep -v '%ip' |\
+        sed -e "s/%ip%/$ip/g" \
+            -e "s/%ipv6%/$ipv6/g" \
+            -e "s/%domain_idn%/$domain_idn/g" \
+            -e "s/%domain%/$domain/g" \
+            -e "s/%spfip4%/$spfipv4/g" \
+            -e "s/%spfip6%/$spfipv6/g" \
+            -e "s/%ns1%/$ns1/g" \
+            -e "s/%ns2%/$ns2/g" \
+            -e "s/%ns3%/$ns3/g" \
+            -e "s/%ns4%/$ns4/g" \
+            -e "s/%ns5%/$ns5/g" \
+            -e "s/%ns6%/$ns6/g" \
+            -e "s/%ns7%/$ns7/g" \
+            -e "s/%ns8%/$ns8/g" \
+            -e "s/%time%/$time/g" \
+            -e "s/%date%/$date/g" > $USER_DATA/dns/$domain.conf
+    if [ ! -z $ip ]; then
+      echo "$template_data" |grep "%ip%" |\
+          sed -e "s/%ip%/$ip/g" \
+              -e "s/%ipv6%/$ipv6/g" \
+              -e "s/%domain_idn%/$domain_idn/g" \
+              -e "s/%domain%/$domain/g" \
+              -e "s/%ns1%/$ns1/g" \
+              -e "s/%ns2%/$ns2/g" \
+              -e "s/%ns3%/$ns3/g" \
+              -e "s/%ns4%/$ns4/g" \
+              -e "s/%ns5%/$ns5/g" \
+              -e "s/%ns6%/$ns6/g" \
+              -e "s/%ns7%/$ns7/g" \
+              -e "s/%ns8%/$ns8/g" \
+              -e "s/%time%/$time/g" \
+              -e "s/%date%/$date/g" >> $USER_DATA/dns/$domain.conf
+    fi
 
+    if [ ! -z $ipv6 ]; then
+      echo "$template_data" |grep "%ipv6%" |\
+          sed -e "s/%ip%/$ip/g" \
+              -e "s/%ipv6%/$ipv6/g" \
+              -e "s/%domain_idn%/$domain_idn/g" \
+              -e "s/%domain%/$domain/g" \
+              -e "s/%ns1%/$ns1/g" \
+              -e "s/%ns2%/$ns2/g" \
+              -e "s/%ns3%/$ns3/g" \
+              -e "s/%ns4%/$ns4/g" \
+              -e "s/%ns5%/$ns5/g" \
+              -e "s/%ns6%/$ns6/g" \
+              -e "s/%ns7%/$ns7/g" \
+              -e "s/%ns8%/$ns8/g" \
+              -e "s/%time%/$time/g" \
+              -e "s/%date%/$date/g" >> $USER_DATA/dns/$domain.conf
+    fi
+}
+
+#Add DNS records
+add_dns_config_records() {
+    template_data=$(cat $DNSTPL/$TPL.tpl)
+
+    # Adding dns zone to the user config
+    template_data=$(echo "$template_data" |grep -v "v=spf1" |egrep "%ip(v6)?%")
+    if [ ! -z "$ip" ]; then
+        template_data=$(echo "$template_data" |grep "%ip%")
+    fi
+    if [ ! -z "$ipv6" ]; then
+        template_data=$(echo "$template_data" |grep "%ipv6%")
+    fi
+
+    new_lines=$(echo "$template_data" |\
+        sed -e "s/%ip%/$ip/g" \
+            -e "s/%ipv6%/$ipv6/g" \
+            -e "s/%time%/$time/g" \
+            -e "s/%date%/$date/g" \
+        |awk -F 'ID=' '{print $2}' \
+        |cut -d\' --complement -s -f1,2)
+
+    echo "$new_lines"\
+    | while read line; do
+        id=""
+        get_next_dnsrecord
+        echo "ID='$id' $line" >> $USER_DATA/dns/$domain.conf
+    done
+}
+
+#Remove DNS records
+remove_dns_config_records() {
+    template_data=$(cat $DNSTPL/$TPL.tpl)
+    
+    # Adding dns zone to the user config
+    template_data=$(echo "$template_data" |grep -v "v=spf1" |egrep "%ip(v6)?%")
+    if [ -z "$ip" ]; then
+        template_data=$(echo "$template_data" |grep "%ip%")
+    fi
+    if [ -z "$ipv6" ]; then
+        template_data=$(echo "$template_data" |grep "%ipv6%")
+    fi
+    
+    delete_lines=$(echo "$template_data" |\
+        sed -e "s/%ip%/$old/g" \
+            -e "s/%ipv6%/$old/g" \
+        |awk -F 'ID=' '{print $2}' \
+        |cut -d\' --complement -s -f1,2 \
+        |awk -F 'TIME=' '{print $1}');
+    
+    echo "$delete_lines"\
+    | while read line; do
+        sed -i '/$line/d' $USER_DATA/dns/$domain.conf
+    done
+}
 
 #----------------------------------------------------------#
 #                       MAIL                               #

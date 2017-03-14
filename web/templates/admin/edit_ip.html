@@ -79,6 +79,19 @@
                             </tr>
                             <tr>
                                 <td class="vst-text input-label">
+                                    <?php print __('Version');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="vst-list" name="v_version" disabled>
+                                        <option value="4" <?php if ($v_version == 4) echo "SELECTED" ?>><?php print __('IPv4'); ?></option>
+                                        <option value="6" <?php if ($v_version == 6) echo "SELECTED" ?>><?php print __('IPv6'); ?></option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
                                     <label><input type="checkbox" size="20" class="vst-checkbox" name="v_shared" <?php if (empty($v_dedicated)) echo "checked=yes" ?> onclick="javascript:elementHideShow('usrtable');"> <?=__('Shared')?></label>
                                 </td>
                             </tr>

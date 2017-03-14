@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add web domain
-# options: USER DOMAIN [IP] [ALIASES] [PROXY_EXTENSIONS] [RESTART]
+# options: USER DOMAIN [IP] [IPV6] [ALIASES] [PROXY_EXTENSIONS] [RESTART]
 #
 # The function adds virtual host to a server. In cases when ip is
 # undefined in the script, "default" template will be used. The alias of
@@ -20,14 +20,16 @@ user=$1
 domain=$2
 domain_idn=$2
 ip=$3
-restart=$4      # will be moved to the end soon
-aliases=$5
-proxy_ext=$6
+ipv6=$4
+restart=$5      # will be moved to the end soon
+aliases=$6
+proxy_ext=$7
 
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 # Additional argument formatting
@@ -41,18 +43,39 @@ format_aliases
 #----------------------------------------------------------#
 
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
-check_args '2' "$#" 'USER DOMAIN [IP] [RESTART] [ALIASES] [PROXY_EXTENSIONS]'
-is_format_valid 'user' 'domain' 'aliases' 'ip' 'proxy_ext'
+check_args '2' "$#" 'USER DOMAIN [IP] [IPV6] [RESTART] [ALIASES] [PROXY_EXTENSIONS]'
+is_format_valid 'user' 'domain' 'aliases' 'proxy_ext'
+
+if [ -z "$ip" ] && [ "$ip" != "no" ]; then
+    is_format_valid 'ip'
+fi
+
+if [ -z "$ipv6" ] && [ "$ipv6" != "no" ]; then
+    is_format_valid 'ipv6'
+fi
+
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_package_full 'WEB_DOMAINS' 'WEB_ALIASES'
 is_domain_new 'web' "$domain,$aliases"
-if [ ! -z "$ip" ]; then
-    is_ip_valid "$ip" "$user"
+if [ "$ip" != "no" ]; then
+    if [ ! -z "$ip" ]; then
+        is_ip_valid "$ip" "$user"
+    else
+        get_user_ip
+    fi
 else
-    get_user_ip
+    ip=""
 fi
-
+if [ "$ipv6" != "no" ]; then
+    if [ ! -z "$ipv6" ]; then
+        is_ipv6_valid "$ipv6" "$user"
+    else
+        get_user_ipv6
+    fi
+else
+    ipv6=""
+fi
 
 #----------------------------------------------------------#
 #                       Action                             #
@@ -114,9 +137,15 @@ else
     if [ ! -z "$aliases" ]; then
         ALIAS="$ALIAS,$aliases"
     fi
+    
     ip_alias=$(get_ip_alias $domain)
     if [ ! -z "$ip_alias" ]; then
         ALIAS="$ALIAS,$ip_alias"
+    fi
+    
+    ipv6_alias=$(get_ipv6_alias $domain)
+    if [ ! -z "$ipv6_alias" ]; then
+        ALIAS="$ALIAS,$ipv6_alias"
     fi
 fi
 
@@ -137,13 +166,13 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
     add_web_config "$PROXY_SYSTEM" "$PROXY_TEMPLATE.tpl"
 fi
 
-
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
 # Increasing counters
 increase_ip_value "$local_ip"
+increase_ipv6_value "$ipv6"
 increase_user_value "$user" '$U_WEB_DOMAINS'
 increase_user_value "$user" '$U_WEB_ALIASES' "$alias_number"
 
@@ -153,7 +182,7 @@ time=$(echo "$time_n_date" |cut -f 1 -d \ )
 date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Adding domain in web.conf
-echo "DOMAIN='$domain' IP='$ip' IP6='' ALIAS='$ALIAS' TPL='$WEB_TEMPLATE'\
+echo "DOMAIN='$domain' IP='$ip' IP6='$ipv6' ALIAS='$ALIAS' TPL='$WEB_TEMPLATE'\
  SSL='no' SSL_HOME='same' LETSENCRYPT='no' FTP_USER='' FTP_MD5=''\
  BACKEND='$BACKEND_TEMPLATE' PROXY='$PROXY_TEMPLATE' PROXY_EXT='$PROXY_EXT'\
  STATS='' STATS_USER='' STATS_CRYPT='' U_DISK='0' U_BANDWIDTH='0'\

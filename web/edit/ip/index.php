@@ -37,6 +37,7 @@ if ($v_ipstatus == 'dedicated') $v_dedicated = 'yes';
 $v_owner = $data[$v_ip]['OWNER'];
 $v_date = $data[$v_ip]['DATE'];
 $v_time = $data[$v_ip]['TIME'];
+$v_version = $data[$v_ip]['VERSION'];
 $v_suspended = $data[$v_ip]['SUSPENDED'];
 if ( $v_suspended == 'yes' ) {
     $v_status =  'suspended';
@@ -55,13 +56,21 @@ if (!empty($_POST['save'])) {
 
     // Change Status
     if (($v_ipstatus == 'shared') && (empty($_POST['v_shared'])) && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." 'dedicated'", $output, $return_var);
+        if($v_version == 6) {
+            exec (VESTA_CMD."v-change-sys-ipv6-status ".$v_ip." 'dedicated'", $output, $return_var);
+        } else {
+            exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." 'dedicated'", $output, $return_var);
+        }
         check_return_code($return_var,$output);
         unset($output);
         $v_dedicated = 'yes';
     }
     if (($v_ipstatus == 'dedicated') && (!empty($_POST['v_shared'])) && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." 'shared'", $output, $return_var);
+        if($v_version == 6) {
+            exec (VESTA_CMD."v-change-sys-ipv6-status ".$v_ip." 'shared'", $output, $return_var);
+        } else {
+            exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." 'shared'", $output, $return_var);
+        }
         check_return_code($return_var,$output);
         unset($output);
         unset($v_dedicated);
@@ -70,7 +79,11 @@ if (!empty($_POST['save'])) {
     // Change owner
     if (($v_owner != $_POST['v_owner']) && (empty($_SESSION['error_msg']))) {
         $v_owner = escapeshellarg($_POST['v_owner']);
-        exec (VESTA_CMD."v-change-sys-ip-owner ".$v_ip." ".$v_owner, $output, $return_var);
+        if($v_version == 6) {
+            exec (VESTA_CMD."v-change-sys-ip-owner ".$v_ip." ".$v_owner, $output, $return_var);
+        } else {
+            exec (VESTA_CMD."v-change-sys-ip-owner ".$v_ip." ".$v_owner, $output, $return_var);
+        }
         check_return_code($return_var,$output);
         $v_owner = $_POST['v_owner'];
         unset($output);
@@ -79,13 +92,17 @@ if (!empty($_POST['save'])) {
     // Change associated domain
     if (($v_name != $_POST['v_name']) && (empty($_SESSION['error_msg']))) {
         $v_name = escapeshellarg($_POST['v_name']);
-        exec (VESTA_CMD."v-change-sys-ip-name ".$v_ip." ".$v_name, $output, $return_var);
+        if($v_version == 6) {
+            exec (VESTA_CMD."v-change-sys-ipv6-name ".$v_ip." ".$v_name, $output, $return_var);
+        } else {
+            exec (VESTA_CMD."v-change-sys-ip-name ".$v_ip." ".$v_name, $output, $return_var);
+        }
         check_return_code($return_var,$output);
         unset($output);
     }
 
     // Change NAT address
-    if (($v_nat != $_POST['v_nat']) && (empty($_SESSION['error_msg']))) {
+    if (($v_nat != $_POST['v_nat']) && (empty($_SESSION['error_msg'])) && $v_version == 4) {
         $v_nat = escapeshellarg($_POST['v_nat']);
         exec (VESTA_CMD."v-change-sys-ip-nat ".$v_ip." ".$v_nat, $output, $return_var);
         check_return_code($return_var,$output);

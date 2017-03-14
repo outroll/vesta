@@ -55,7 +55,7 @@ update_ip_value() {
 
 # Get ip name
 get_ip_alias() {
-    ip_name=$(grep "NAME=" $VESTA/data/ips/$local_ip |cut -f 2 -d \')
+    ip_name=$(grep "NAME=" $VESTA/data/ips/$local_ip 2>/dev/null |cut -f 2 -d \')
     if [ ! -z "$ip_name" ]; then
         echo "${1//./-}.$ip_name"
     fi
@@ -64,64 +64,68 @@ get_ip_alias() {
 # Increase ip value
 increase_ip_value() {
     sip=${1-ip}
-    USER=$user
-    web_key='U_WEB_DOMAINS'
-    usr_key='U_SYS_USERS'
-    current_web=$(grep "$web_key=" $VESTA/data/ips/$sip |cut -f 2 -d \')
-    current_usr=$(grep "$usr_key=" $VESTA/data/ips/$sip |cut -f 2 -d \')
-    if [ -z "$current_web" ]; then
-        echo "Error: Parsing error"
-        log_event "$E_PARSING" "$ARGUMENTS"
-        exit $E_PARSING
-    fi
-    new_web=$((current_web + 1))
-    if [ -z "$current_usr" ]; then
-        new_usr="$USER"
-    else
-        check_usr=$(echo -e "${current_usr//,/\n}" |grep -w $USER)
-        if [ -z "$check_usr" ]; then
-            new_usr="$current_usr,$USER"
-        else
-            new_usr="$current_usr"
+    if [ "$sip" != "no" ] && [ ! -z "$sip" ]; then
+        USER=$user
+        web_key='U_WEB_DOMAINS'
+        usr_key='U_SYS_USERS'
+        current_web=$(grep "$web_key=" $VESTA/data/ips/$sip |cut -f 2 -d \')
+        current_usr=$(grep "$usr_key=" $VESTA/data/ips/$sip |cut -f 2 -d \')
+        if [ -z "$current_web" ]; then
+            echo "Error: Parsing error"
+            log_event "$E_PARSING" "$ARGUMENTS"
+            exit $E_PARSING
         fi
-    fi
+        new_web=$((current_web + 1))
+        if [ -z "$current_usr" ]; then
+            new_usr="$USER"
+        else
+            check_usr=$(echo -e "${current_usr//,/\n}" |grep -w $USER)
+            if [ -z "$check_usr" ]; then
+                new_usr="$current_usr,$USER"
+            else
+                new_usr="$current_usr"
+            fi
+        fi
 
-    sed -i "s/$web_key='$current_web'/$web_key='$new_web'/g" \
-        $VESTA/data/ips/$sip
-    sed -i "s/$usr_key='$current_usr'/$usr_key='$new_usr'/g" \
-        $VESTA/data/ips/$sip
+        sed -i "s/$web_key='$current_web'/$web_key='$new_web'/g" \
+            $VESTA/data/ips/$sip
+        sed -i "s/$usr_key='$current_usr'/$usr_key='$new_usr'/g" \
+            $VESTA/data/ips/$sip
+    fi
 }
 
 # Decrease ip value
 decrease_ip_value() {
     sip=${1-ip}
-    USER=$user
-    web_key='U_WEB_DOMAINS'
-    usr_key='U_SYS_USERS'
+    if [ "$sip" != "no" ] && [ ! -z "$sip" ]; then
+        USER=$user
+        web_key='U_WEB_DOMAINS'
+        usr_key='U_SYS_USERS'
 
-    current_web=$(grep "$web_key=" $VESTA/data/ips/$sip |cut -f 2 -d \')
-    current_usr=$(grep "$usr_key=" $VESTA/data/ips/$sip |cut -f 2 -d \')
+        current_web=$(grep "$web_key=" $VESTA/data/ips/$sip |cut -f 2 -d \')
+        current_usr=$(grep "$usr_key=" $VESTA/data/ips/$sip |cut -f 2 -d \')
 
-    if [ -z "$current_web" ]; then
-        check_result $E_PARSING "Parsing errpr"
+        if [ -z "$current_web" ]; then
+            check_result $E_PARSING "Parsing error"
+        fi
+
+        new_web=$((current_web - 1))
+        check_ip=$(grep $sip $USER_DATA/web.conf |wc -l)
+        if [ "$check_ip" -lt 2 ]; then
+            new_usr=$(echo "$current_usr" |\
+                sed "s/,/\n/g"|\
+                sed "s/^$user$//g"|\
+                sed "/^$/d"|\
+                sed ':a;N;$!ba;s/\n/,/g')
+        else
+            new_usr="$current_usr"
+        fi
+
+        sed -i "s/$web_key='$current_web'/$web_key='$new_web'/g" \
+            $VESTA/data/ips/$sip
+        sed -i "s/$usr_key='$current_usr'/$usr_key='$new_usr'/g" \
+            $VESTA/data/ips/$sip
     fi
-
-    new_web=$((current_web - 1))
-    check_ip=$(grep $sip $USER_DATA/web.conf |wc -l)
-    if [ "$check_ip" -lt 2 ]; then
-        new_usr=$(echo "$current_usr" |\
-            sed "s/,/\n/g"|\
-            sed "s/^$user$//g"|\
-            sed "/^$/d"|\
-            sed ':a;N;$!ba;s/\n/,/g')
-    else
-        new_usr="$current_usr"
-    fi
-
-    sed -i "s/$web_key='$current_web'/$web_key='$new_web'/g" \
-        $VESTA/data/ips/$sip
-    sed -i "s/$usr_key='$current_usr'/$usr_key='$new_usr'/g" \
-        $VESTA/data/ips/$sip
 }
 
 # Get ip address value
@@ -195,10 +199,10 @@ get_broadcast() {
 
 # Get user ips
 get_user_ips() {
-    dedicated=$(grep -H "OWNER='$user'" $VESTA/data/ips/*)
-    dedicated=$(echo "$dedicated" |cut -f 1 -d : |sed 's=.*/==')
-    shared=$(grep -H -A1 "OWNER='admin'" $VESTA/data/ips/* |grep shared)
-    shared=$(echo "$shared" |cut -f 1 -d : |sed 's=.*/==' |cut -f 1 -d \-)
+    dedicated=$(grep -H -A10 "OWNER='$user'" $VESTA/data/ips/* |grep "VERSION='4'")
+    dedicated=$(echo "$dedicated" |cut -f 1 -d '-' |sed 's=.*/==')
+    shared=$(grep -H -A10 "OWNER='admin'" $VESTA/data/ips/* |grep -A10 shared |grep "VERSION='4'")
+    shared=$(echo "$shared" |cut -f 1 -d '-' |sed 's=.*/==' |cut -f 1 -d \-)
     for dedicated_ip in $dedicated; do
         shared=$(echo "$shared" |grep -v $dedicated_ip)
     done

@@ -27,8 +27,8 @@ if [ "$release" -eq 7 ]; then
     postgresql postgresql-server postgresql-contrib phpPgAdmin e2fsprogs
     openssh-clients ImageMagick curl mc screen ftp zip unzip flex sqlite pcre
     sudo bc jwhois mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype
-    fail2ban rsyslog iptables-services which vesta vesta-nginx vesta-php
-    vim-common expect"
+    fail2ban rsyslog iptables-services iptables-ipv6 which vesta vesta-nginx
+    vesta-php vim-common expect"
 else
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
     php php-common php-cli php-bcmath php-gd php-imap php-mbstring php-mcrypt
@@ -643,6 +643,7 @@ fi
 
 # Disable iptables
 service iptables stop
+service ip6tables stop
 
 # Configuring NTP synchronization
 echo '#!/bin/sh' > /etc/cron.daily/ntpdate
@@ -668,7 +669,6 @@ if [ "$release" -eq '7' ]; then
     echo "DefaultStartLimitBurst=60" >> /etc/systemd/system.conf
     systemctl daemon-reexec
 fi
-
 
 #----------------------------------------------------------#
 #                     Configure VESTA                      #
@@ -814,6 +814,12 @@ chkconfig firewalld off >/dev/null 2>&1
 wget $vestacp/firewall.tar.gz -O firewall.tar.gz
 tar -xzf firewall.tar.gz
 rm -f firewall.tar.gz
+
+# Downloading firewall ipv6 rules
+chkconfig firewalld off >/dev/null 2>&1
+wget $vestacp/firewallv6.tar.gz -O firewallv6.tar.gz
+tar -xzf firewallv6.tar.gz
+rm -f firewallv6.tar.gz
 
 # Configuring server hostname
 $VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
@@ -1190,6 +1196,7 @@ if [ "$fail2ban" = 'yes' ]; then
     wget $vestacp/fail2ban.tar.gz -O fail2ban.tar.gz
     tar -xzf fail2ban.tar.gz
     rm -f fail2ban.tar.gz
+
     if [ "$dovecot" = 'no' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n dovecot-iptables -A 2)
         fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
@@ -1234,19 +1241,30 @@ $VESTA/bin/v-change-user-language admin $lang
 # Configuring system ips
 $VESTA/bin/v-update-sys-ip
 
+# Get main ipv6
+ipv6=$(ip addr show | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | grep -ve "^fe80" | tail -1)
+if [ ! -z "$ipv6" ]; then
+    netmask="ip addr show | grep '$ipv6' | awk -F '/' '{print $2}' | awk '{print $1}'"
+    netmask=$(eval $netmask)
+    $VESTA/bin/v-add-sys-ipv6 $ipv6 $netmask
+fi
+
+
 # Get main ip
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
+# Get public ip
+pub_ip=$(wget vestacp.com/what-is-my-ip/ -O - 2>/dev/null)
+if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
+    $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
+fi
+if [ -z "$pub_ip" ]; then
+    ip=$main_ip
+fi
 
 # Firewall configuration
 if [ "$iptables" = 'yes' ]; then
     $VESTA/bin/v-update-firewall
-fi
-
-# Get public ip
-pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
-if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
-    $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
-    ip=$pub_ip
+    $VESTA/bin/v-update-firewall-ipv6
 fi
 
 # Configuring mysql host

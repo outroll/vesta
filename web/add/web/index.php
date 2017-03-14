@@ -18,6 +18,7 @@ if (!empty($_POST['ok'])) {
     // Check for empty fields
     if (empty($_POST['v_domain'])) $errors[] = __('domain');
     if (empty($_POST['v_ip'])) $errors[] = __('ip');
+    if (empty($_POST['v_ipv6'])) $errors[] = __('ipv6');
     if ((!empty($_POST['v_ssl'])) && (empty($_POST['v_ssl_crt']))&& (empty($_POST['v_letsencrypt']))) $errors[] = __('ssl certificate');
     if ((!empty($_POST['v_ssl'])) && (empty($_POST['v_ssl_key']))&& (empty($_POST['v_letsencrypt']))) $errors[] = __('ssl key');
     if (!empty($errors[0])) {
@@ -46,18 +47,24 @@ if (!empty($_POST['ok'])) {
 
     // Define domain ip address
     $v_ip = escapeshellarg($_POST['v_ip']);
+    $v_ipv6 = escapeshellarg($_POST['v_ipv6']);
 
     // Using public IP instead of internal IP when creating DNS 
     // Gets public IP from 'v-list-user-ips' command (that reads /vesta/data/ips/ip), precisely from 'NAT' field
     $v_public_ip = $v_ip;
     $v_clean_ip = $_POST['v_ip'];  // clean_ip = IP without quotas
-    exec (VESTA_CMD."v-list-user-ips ".$user." json", $output, $return_var);
+    exec (VESTA_CMD."v-list-user-ips ".$user." json 4", $output, $return_var);
     $ips = json_decode(implode('', $output), true);
     unset($output);
     if (isset($ips[$v_clean_ip]) && isset($ips[$v_clean_ip]['NAT']) && trim($ips[$v_clean_ip]['NAT'])!='') {
         $v_public_ip = trim($ips[$v_clean_ip]['NAT']);
         $v_public_ip = escapeshellarg($v_public_ip);
     }
+    
+    $v_clean_ip = $_POST['v_ipv6'];  // clean_ip = IP without quotas
+    exec (VESTA_CMD."v-list-user-ips ".$user." json 6", $output, $return_var);
+    $ip6s = json_decode(implode('', $output), true);
+    unset($output);
 
     // Define domain aliases
     $v_aliases = $_POST['v_aliases'];
@@ -118,25 +125,25 @@ if (!empty($_POST['ok'])) {
 
     // Add web domain
     if (empty($_SESSION['error_msg'])) {
-        exec (VESTA_CMD."v-add-web-domain ".$user." ".$v_domain." ".$v_ip." 'no' ".$aliases." ".$proxy_ext, $output, $return_var);
+        exec (VESTA_CMD."v-add-web-domain ".$user." ".$v_domain." ".$v_ip." ".$v_ipv6." 'no' ".$aliases." ".$proxy_ext, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $domain_added = empty($_SESSION['error_msg']);
     }
-
+    
     // Add DNS domain
     if (($_POST['v_dns'] == 'on') && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_public_ip." '' '' '' '' '' '' '' '' 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_public_ip." ".$v_ipv6." '' '' '' '' '' '' '' '' 'no'", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
-
+    
     // Add DNS for domain aliases
     if (($_POST['v_dns'] == 'on') && (empty($_SESSION['error_msg']))) {
         foreach ($aliases_arr as $alias) {
             if ($alias != "www.".$_POST['v_domain']) {
                 $alias = escapeshellarg($alias);
-                exec (VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." 'no'", $output, $return_var);
+                exec (VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." ".$v_ipv6." 'no'", $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
             }
@@ -351,8 +358,12 @@ $v_ftp_user_prepath = $panel[$user]['HOME'] . "/web";
 $v_ftp_email = $panel[$user]['CONTACT'];
 
 // List IP addresses
-exec (VESTA_CMD."v-list-user-ips ".$user." json", $output, $return_var);
+exec (VESTA_CMD."v-list-user-ips ".$user." json 4", $output, $return_var);
 $ips = json_decode(implode('', $output), true);
+unset($output);
+
+exec (VESTA_CMD."v-list-user-ips ".$user." json 6", $output, $return_var);
+$ip6s = json_decode(implode('', $output), true);
 unset($output);
 
 // List web stat engines

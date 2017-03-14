@@ -29,10 +29,15 @@ fi
 
 # Adding firewall directory
 mkdir -p $VESTA/data/firewall/
+mkdir -p $VESTA/data/firewallv6/
 
 # Adding default ruleset
 if [ ! -e "$VESTA/data/firewall/rules.conf" ]; then
-    cp $VESTA/install/rhel/7/* $VESTA/data/firewall/
+    cp $VESTA/install/rhel/7/firewall/* $VESTA/data/firewall/
+fi
+
+if [ ! -e "$VESTA/data/firewallv6/rules.conf" ]; then
+    cp $VESTA/install/rhel/7/firewallv6/* $VESTA/data/firewallv6/
 fi
 
 # Updating FIREWAL_SYSTEM value
@@ -45,6 +50,7 @@ fi
 
 # Updating firewall rules
 $BIN/v-update-firewall
+$BIN/v-update-firewall-ipv6
 
 
 #----------------------------------------------------------#

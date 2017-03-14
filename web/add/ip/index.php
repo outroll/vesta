@@ -26,6 +26,7 @@ if (!empty($_POST['ok'])) {
     if (empty($_POST['v_netmask'])) $errors[] = __('netmask');
     if (empty($_POST['v_interface'])) $errors[] = __('interface');
     if (empty($_POST['v_owner'])) $errors[] = __('assigned user');
+    if (empty($_POST['v_version'])) $errors[] = __('version');
     if (!empty($errors[0])) {
         foreach ($errors as $i => $error) {
             if ( $i == 0 ) {
@@ -45,6 +46,7 @@ if (!empty($_POST['ok'])) {
     $v_interface = escapeshellarg($_POST['v_interface']);
     $v_owner = escapeshellarg($_POST['v_owner']);
     $v_shared = $_POST['v_shared'];
+    $v_version = escapeshellarg($_POST['v_version']);
 
     // Check shared checkmark
     if ($v_shared == 'on') {
@@ -57,7 +59,11 @@ if (!empty($_POST['ok'])) {
 
     // Add IP
     if (empty($_SESSION['error_msg'])) {
-        exec (VESTA_CMD."v-add-sys-ip ".$v_ip." ".$v_netmask." ".$v_interface."  ".$v_owner." '".$ip_status."' ".$v_name." ".$v_nat, $output, $return_var);
+        if($v_version == "6") {
+            exec (VESTA_CMD."v-add-sys-ipv6 ".$v_ip." ".$v_netmask." ".$v_interface."  ".$v_owner." '".$ip_status."' ".$v_name." ".$v_nat, $output, $return_var);
+        } else {
+            exec (VESTA_CMD."v-add-sys-ip ".$v_ip." ".$v_netmask." ".$v_interface."  ".$v_owner." '".$ip_status."' ".$v_name, $output, $return_var);
+        }
         check_return_code($return_var,$output);
         unset($output);
         $v_owner = $_POST['v_owner'];
