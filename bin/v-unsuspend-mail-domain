@@ -33,8 +33,8 @@ check_args '2' "$#" 'USER DOMAIN'
 is_format_valid 'user' 'domain'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
-is_object_suspended 'mail' 'DOMAIN' "$domain"
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
+is_object_suspended 'mail' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -43,7 +43,7 @@ is_object_suspended 'mail' 'DOMAIN' "$domain"
 
 # Add symbolic link
 if [[ "$MAIL_SYSTEM" =~ exim ]]; then
-    ln -s $HOMEDIR/$user/conf/mail/$domain /etc/$MAIL_SYSTEM/domains/
+    ln -s $HOMEDIR/$user/conf/mail/$domain_idn /etc/$MAIL_SYSTEM/domains/
 fi
 
 
@@ -52,7 +52,7 @@ fi
 #----------------------------------------------------------#
 
 # Updating config
-update_object_value 'mail' 'DOMAIN' "$domain" '$SUSPENDED' 'no'
+update_object_value 'mail' 'DOMAIN' "$domain_idn" '$SUSPENDED' 'no'
 sed -i "s/SUSPENDED='yes'/SUSPENDED='no'/g" $USER_DATA/mail/$domain.conf
 decrease_user_value "$user" '$SUSPENDED_MAIL'
 

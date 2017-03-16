@@ -33,8 +33,8 @@ is_format_valid 'user' 'domain' 'dom_alias'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 get_domain_values 'web'
 if [ -z "$(echo $ALIAS |tr ',' '\n' |grep ^$dom_alias$)" ]; then
     check_result $E_NOTEXIST "alias $dom_alias doesn't exist"
@@ -78,7 +78,7 @@ fi
 #----------------------------------------------------------#
 
 # Update config
-update_object_value 'web' 'DOMAIN' "$domain" '$ALIAS' "$ALIAS"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$ALIAS' "$ALIAS"
 decrease_user_value "$user" '$U_WEB_ALIASES'
 
 # Restarting web server

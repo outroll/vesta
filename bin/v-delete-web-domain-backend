@@ -34,8 +34,8 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#

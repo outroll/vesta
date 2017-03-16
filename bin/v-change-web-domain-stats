@@ -36,9 +36,9 @@ is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_type_valid "$STATS_SYSTEM" "$type"
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_object_value_exist 'web' 'DOMAIN' "$domain" '$STATS'
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
+is_object_value_exist 'web' 'DOMAIN' "$domain_idn" '$STATS'
 
 
 #----------------------------------------------------------#
@@ -97,7 +97,7 @@ fi
 #----------------------------------------------------------#
 
 # Update config
-update_object_value 'web' 'DOMAIN' "$domain" '$STATS' "$type"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$STATS' "$type"
 
 # Logging
 log_history "changed web log stats for $domain to $type"

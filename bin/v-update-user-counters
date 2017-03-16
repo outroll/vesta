@@ -143,7 +143,7 @@ for user in $user_list; do
         if [ "$SUSPENDED" = 'yes' ]; then
             SUSPENDED_DNS=$((SUSPENDED_DNS + 1))
         fi
-        update_object_value 'dns' 'DOMAIN' "$DOMAIN" '$RECORDS' "$records"
+        update_object_value 'dns' 'DOMAIN' "$domain_idn" '$RECORDS' "$records"
     done
 
     # Checking mail system
@@ -159,7 +159,7 @@ for user in $user_list; do
         if [ "$SUSPENDED" = 'yes' ]; then
             SUSPENDED_MAIL=$((SUSPENDED_MAIL + 1))
         fi
-        update_object_value 'mail' 'DOMAIN' "$DOMAIN" '$ACCOUNTS' "$accounts"
+        update_object_value 'mail' 'DOMAIN' "$domain_idn" '$ACCOUNTS' "$accounts"
     done
     DISK=$((DISK + U_DISK_MAIL))
 

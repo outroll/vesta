@@ -18,6 +18,9 @@ source $VESTA/func/main.sh
 source $VESTA/func/remote.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
