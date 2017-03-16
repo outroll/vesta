@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM phusion/baseimage:0.9.15
 MAINTAINER "Made I.T." <tjebbe.lievens@madeit.be>
 
 ENV VESTA /usr/local/vesta
