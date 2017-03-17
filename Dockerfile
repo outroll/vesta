@@ -12,6 +12,8 @@ ADD test /vesta/test
 ADD upd /vesta/upd
 ADD web /vesta/web
 
+RUN ls -la /vesta
+
 RUN chmod +x /vesta/install/vst-install*
 RUN /vesta/install/vst-install-ubuntu-docker.sh --nginx yes --apache yes \
   --phpfpm no --named yes --remi yes --vsftpd no --proftpd no --iptables no \
