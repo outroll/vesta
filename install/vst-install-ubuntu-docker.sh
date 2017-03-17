@@ -1058,12 +1058,8 @@ fi
 
 if [ "$dovecot" = 'yes' ]; then
     gpasswd -a dovecot mail
-    cp $vestacpinstalldir/dovecot.tar.gz /etc/dovecot.tar.gz
+    cp $vestacpinstalldir/dovecot /etc/dovecot
     cp $vestacpinstalldir/logrotate/dovecot /etc/logrotate.d/dovecot
-    cd /etc
-    rm -rf dovecot dovecot.conf
-    tar -xzf dovecot.tar.gz
-    rm -f dovecot.tar.gz
     chown -R root:root /etc/dovecot*
     update-rc.d dovecot defaults
     service dovecot start
