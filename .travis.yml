@@ -4,13 +4,7 @@ services:
   - docker
 
 before_install:
-#- apt-get -o Dpkg::Options::="--force-confold" upgrade -q -y --force-yes && apt-get -o Dpkg::Options::="--force-confold" dist-upgrade -q -y --force-yes
-#- sudo bash install/vst-install.sh --nginx yes --apache yes --phpfpm no --named yes --remi yes --vsftpd yes --proftpd no --iptables yes --fail2ban yes --quota no --exim yes --dovecot yes --spamassassin yes --clamav yes --mysql yes --postgresql no --hostname example.com --email admin@example.com --password admin --interactive no --force
   - docker build -t tpwebcp .
-  - docker run -d --restart=always -p 2222:22 -p 80:80 -p 8083:8083 -p 3306:3306 -p 443:443 -p 25:25 -p 993:993 -p 110:110 -p 53:53 -p 54:54 tpwebcp
-#  - docker run -d -p 127.0.0.1:80:4567 carlad/sinatra /bin/sh -c "cd /root/sinatra; bundle exec foreman start;"
-#  - docker ps -a
-#  - docker run carlad/sinatra /bin/sh -c "cd /root/sinatra; bundle exec rake test"
 
 script:
   - docker run -d --restart=always -p 2222:22 -p 80:80 -p 8083:8083 -p 3306:3306 -p 443:443 -p 25:25 -p 993:993 -p 110:110 -p 53:53 -p 54:54 tpwebcp bash /usr/local/vesta/test_actions.sh
