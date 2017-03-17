@@ -1,7 +1,7 @@
 sudo: required
 
-#services:
-#  - docker
+services:
+  - docker
 
 before_install:
 #- apt-get -o Dpkg::Options::="--force-confold" upgrade -q -y --force-yes && apt-get -o Dpkg::Options::="--force-confold" dist-upgrade -q -y --force-yes
