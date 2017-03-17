@@ -5,7 +5,7 @@ ENV VESTA /usr/local/vesta
 
 RUN apt-get update \
  && apt-get -y upgrade \
- && apt-get -y install git unzip nano \
+ && apt-get -y install git unzip nano wget \
  && apt-get clean
 
 RUN echo "deb http://nginx.org/packages/mainline/ubuntu/ 16.10 nginx" > /etc/apt/sources.list.d/nginx.list \
