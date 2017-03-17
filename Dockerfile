@@ -8,7 +8,6 @@ RUN apt-get update \
  && apt-get -y install git unzip nano \
  && apt-get clean
 
-apt=/etc/apt/sources.list.d
 RUN echo "deb http://nginx.org/packages/mainline/ubuntu/ 16.10 nginx" > /etc/apt/sources.list.d/nginx.list \
  && wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key \
  && apt-key add /tmp/nginx_signing.key
