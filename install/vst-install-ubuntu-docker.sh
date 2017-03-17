@@ -1189,7 +1189,7 @@ $VESTA/bin/v-change-user-shell admin bash
 $VESTA/bin/v-change-user-language admin $lang
 
 # Configuring system IPs
-$VESTA/bin/v-update-sys-ip
+#$VESTA/bin/v-update-sys-ip
 
 # Get main ipv6
 ipv6=$(ip addr show | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | grep -ve "^fe80" | tail -1)
@@ -1200,7 +1200,8 @@ if [ ! -z "$ipv6" ]; then
 fi
 
 # Get main IP
-ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
+ip="127.0.0.1"
+$VESTA/bin/v-add-sys-ip "127.0.0.1" "255.255.255.255"
 
 # Configuring firewall
 if [ "$iptables" = 'yes' ]; then
@@ -1208,12 +1209,6 @@ if [ "$iptables" = 'yes' ]; then
     $VESTA/bin/v-update-firewall-ipv6
 fi
 
-# Get public IP
-pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
-if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
-    $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
-    ip=$pub_ip
-fi
 
 # Configuring MySQL/MariaDB host
 if [ "$mysql" = 'yes' ]; then
