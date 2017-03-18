@@ -34,6 +34,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
 
     // Build query
     $cmdquery = VESTA_CMD.$cmd." ";
+    ksort($_POST);
     foreach($_POST as $k => $v) {
         if(preg_match('/arg\d+/',$k)) {
 		    $cmdquery = $cmdquery.escapeshellarg($v)." "; }
