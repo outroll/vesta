@@ -5,6 +5,8 @@ EXPOSE 22 80 8083 3306 443 25 993 110 53 54
 RUN apt-get update -y --fix-missing
 RUN apt-get install -y wget lsb-release
 
+ENV VESTA /usr/local/vesta
+
 ADD bin /vesta/bin
 ADD func /vesta/func
 ADD install /vesta/install
