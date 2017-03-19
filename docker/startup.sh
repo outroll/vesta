@@ -8,5 +8,5 @@ cd /etc/init.d/ \
 && ./mysql start \
 && ./nginx start \
 && ./exim4 start \
-&& ./php7.0-fpm start \
+&& ./apache2 start \
 && ./dovecot start
