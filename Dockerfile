@@ -26,3 +26,4 @@ RUN /vesta/install/vst-install-ubuntu-docker.sh --nginx yes --apache yes \
 #    && cd /home/admin/conf/web && sed -i -- 's/172.*.*.*:80;/80;/g' * && sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' *
 
 RUN chmod +x /vesta/docker/startup.sh
+CMD ["/vesta/docker/startup.sh"]
