@@ -133,7 +133,7 @@ echo_result "CRON: Rebuilding cron jobs" "$?" "$tmpfile" "$cmd"
 
 # List network interfaces
 cmd="v-list-sys-interfaces plain"
-interface=$($cmd > $tmpfile | head -n 1)
+interface=$($cmd 2> $tmpfile | head -n 1)
 if [ -z "$interface" ]; then
     echo_result "IP: Listing network interfaces" "1" "$tmpfile" "$cmd"
 else
