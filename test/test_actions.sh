@@ -104,6 +104,11 @@ echo_result "CRON: Deleting cron job" "$?" "$tmpfile" "$cmd"
 # Add cron job
 cmd="v-add-cron-job $user 1 1 1 1 1 echo 1"
 $cmd > $tmpfile 2>&1
+echo_result "CRON: Adding cron job" "$?" "$tmpfile" "$cmd"
+
+# Add cron job
+cmd="v-add-cron-job $user 1 1 1 1 1 echo 1"
+$cmd > $tmpfile 2>&1
 if [ "$?" -eq 4 ]; then
     retval=0
 else
@@ -167,7 +172,7 @@ echo_result "IP: Adding ip 198.18.0.125" "$?" "$tmpfile" "$cmd"
 # Add web domain
 domain="test-$(random 4).vestacp.com"
 cmd="v-add-web-domain $user $domain 198.18.0.125"
-$cmd > $tmpfile 2>> $tmpfile
+$cmd > $tmpfile 2>&1
 echo_result "WEB: Adding domain $domain on 198.18.0.125" "$?" "$tmpfile" "$cmd"
 
 # Add duplicate
@@ -180,12 +185,7 @@ fi
 echo_result "WEB: Duplicate web domain check" "$retval" "$tmpfile" "$cmd"
 
 # Add web domain alias
-<<<<<<< HEAD
-cmd="v_add_web_domain_alias $user $domain v3.$domain"
-$cmd > $tmpfile 2>> $tmpfile
-=======
 cmd="v-add-web-domain-alias $user $domain v3.$domain"
->>>>>>> cef45df... Fix tests
 $cmd > $tmpfile 2>&1
 echo_result "WEB: Adding alias v3.$domain" "$?" "$tmpfile" "$cmd"
 
@@ -227,7 +227,7 @@ echo_result "WEB: Unsuspending web domain" "$?" "$tmpfile" "$cmd"
 cp $V_TEST/ssl/crt /tmp/$domain.crt
 cp $V_TEST/ssl/key /tmp/$domain.key
 cmd="v-add-web-domain-ssl $user $domain /tmp"
-$cmd > $tmpfile 2>> $tmpfile
+$cmd > $tmpfile 2>&1
 echo_result "WEB: Adding ssl support" "$?" "$tmpfile" "$cmd"
 
 # Rebuild web domains
@@ -315,32 +315,6 @@ echo_result "Adding mysql database $database" "$?" "$tmpfile" "$cmd"
 #cmd="v-add-database $user $database $database dbp4ssw0rd pgsql"
 #$cmd > $tmpfile 2>&1
 #echo_result "Adding pgsql database $database" "$?" "$tmpfile" "$cmd"
-<<<<<<< HEAD
-
-# Rebuild user configs
-cmd="v-rebuild-user $user yes"
-$cmd > $tmpfile 2>&1
-echo_result "Rebuilding user config" "$?" "$tmpfile" "$cmd"
-
-# Delete user
-cmd="v-delete-user $user"
-$cmd > $tmpfile 2>&1
-echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
-
-# Delete ip address
-cmd="v-delete-sys-ip 198.18.0.125"
-$cmd > $tmpfile 2>&1
-cmd="v-add-database $user $database $database dbp4ssw0rd mysql"
-$cmd > $tmpfile 2>&1
-echo_result "Adding mysql database $database" "$?" "$tmpfile" "$cmd"
-
-# Add pgsql database
-database=d$(random 4)
-cmd="v-add-database $user $database $database dbp4ssw0rd pgsql"
-$cmd > $tmpfile 2>&1
-echo_result "Adding pgsql database $database" "$?" "$tmpfile" "$cmd"
-=======
->>>>>>> 074712f... Fix tests
 
 # Rebuild user configs
 cmd="v-rebuild-user $user yes"
@@ -356,4 +330,3 @@ echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
 cmd="v-delete-sys-ip 198.18.0.125"
 $cmd > $tmpfile 2>&1
 echo_result "Deleting ip 198.18.0.125" "$?" "$tmpfile" "$cmd"
-
