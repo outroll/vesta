@@ -4,6 +4,10 @@
 source /etc/profile.d/vesta.sh
 echo $VESTA
 echo $PATH
+PATH=$PATH:/usr/local/vesta/bin
+export PATH
+echo $VESTA
+echo $PATH
 V_BIN="$VESTA/bin"
 V_TEST="$VESTA/test"
 
