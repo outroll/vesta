@@ -255,9 +255,9 @@ fi
 echo_result "DNS: Duplicate domain check" "$retval" "$tmpfile" "$cmd"
 
 # Add dns domain record
-cmd="v-add-dns-domain-record $user $domain test A 198.18.0.125 20"
+cmd="v-add-dns-record $user $domain test A 198.18.0.125 20"
 $cmd > $tmpfile 2>&1
-echo_result "DNS: Adding dns domain record" "$?" "$tmpfile" "$cmd"
+echo_result "DNS: Adding dns record" "$?" "$tmpfile" "$cmd"
 
 # Add duplicate
 $cmd > $tmpfile 2>&1
