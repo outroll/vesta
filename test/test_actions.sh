@@ -3,6 +3,7 @@
 # Define some variables
 source /etc/profile.d/vesta.sh
 export PATH=$PATH:/usr/local/vesta/bin
+echo $PATH
 V_BIN="$VESTA/bin"
 V_TEST="$VESTA/test"
 
