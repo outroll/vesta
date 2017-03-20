@@ -209,9 +209,9 @@ $cmd > $tmpfile 2>&1
 echo_result "WEB: Adding webalizer uzer" "$?" "$tmpfile" "$cmd"
 
 # Add web domain nginx
-cmd="v-add-web-domain-nginx $user $domain"
-$cmd > $tmpfile 2>&1
-echo_result "WEB: Enabling nginx support" "$?" "$tmpfile" "$cmd"
+#cmd="v-add-web-domain-nginx $user $domain"
+#$cmd > $tmpfile 2>&1
+#echo_result "WEB: Enabling nginx support" "$?" "$tmpfile" "$cmd"
 
 # Suspend web domain
 cmd="v-suspend-web-domain $user $domain"
