@@ -2,12 +2,7 @@
 
 # Define some variables
 source /etc/profile.d/vesta.sh
-echo $VESTA
-echo $PATH
-PATH=$PATH:/usr/local/vesta/bin
-export PATH
-echo $VESTA
-echo $PATH
+export PATH=$PATH:/usr/local/vesta/bin
 V_BIN="$VESTA/bin"
 V_TEST="$VESTA/test"
 
