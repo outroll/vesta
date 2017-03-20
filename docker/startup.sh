@@ -2,7 +2,7 @@
 
 export TERM=xterm
 
-PATH=$PATH:$VESTA/bin
+PATH=$PATH:/usr/local/vesta/bin
 export PATH
 
 #starting Vesta
