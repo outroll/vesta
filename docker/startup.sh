@@ -2,6 +2,9 @@
 
 export TERM=xterm
 
+PATH=$PATH:'$VESTA'/bin'
+export PATH
+
 #starting Vesta
 cd /etc/init.d/ \
 && ./vesta start \
