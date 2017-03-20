@@ -269,7 +269,7 @@ fi
 echo_result "DNS: Duplicate record check" "$retval" "$tmpfile" "$cmd"
 
 # Delete dns domain record
-cmd="v-delete-dns-domain-record $user $domain 20"
+cmd="v-delete-dns-record $user $domain 20"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Deleteing dns domain record" "$?" "$tmpfile" "$cmd"
 
@@ -311,10 +311,10 @@ $cmd > $tmpfile 2>&1
 echo_result "Adding mysql database $database" "$?" "$tmpfile" "$cmd"
 
 # Add pgsql database
-database=d$(random 4)
-cmd="v-add-database $user $database $database dbp4ssw0rd pgsql"
-$cmd > $tmpfile 2>&1
-echo_result "Adding pgsql database $database" "$?" "$tmpfile" "$cmd"
+#database=d$(random 4)
+#cmd="v-add-database $user $database $database dbp4ssw0rd pgsql"
+#$cmd > $tmpfile 2>&1
+#echo_result "Adding pgsql database $database" "$?" "$tmpfile" "$cmd"
 
 # Rebuild user configs
 cmd="v-rebuild-user $user yes"
