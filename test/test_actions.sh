@@ -185,7 +185,7 @@ fi
 echo_result "WEB: Duplicate web domain check" "$retval" "$tmpfile" "$cmd"
 
 # Add web domain alias
-cmd="v_add_web_domain_alias $user $domain v3.$domain"
+cmd="v-add-web-domain-alias $user $domain v3.$domain"
 $cmd > $tmpfile 2>&1
 echo_result "WEB: Adding alias v3.$domain" "$?" "$tmpfile" "$cmd"
 
@@ -197,16 +197,6 @@ else
     retval=1
 fi
 echo_result "WEB: Duplicate web alias check" "$retval" "$tmpfile" "$cmd"
-
-# Add web domain elog
-cmd="v-add-web-domain-elog $user $domain"
-$cmd > $tmpfile 2>&1
-echo_result "WEB: Enabling error logging support" "$?" "$tmpfile" "$cmd"
-
-# Disabling cgi
-cmd="v-delete-web-domain-cgi $user $domain"
-$cmd > $tmpfile 2>&1
-echo_result "WEB: Disabling cgi support" "$?" "$tmpfile" "$cmd"
 
 # Add web domain stats
 cmd="v-add-web-domain-stats $user $domain webalizer"
