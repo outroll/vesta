@@ -8,5 +8,25 @@ before_install:
   - docker ps
 
 script:
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
   - docker run --cap-add=NET_ADMIN tpwebcp /bin/bash -c "/vesta/docker/startup.sh; sudo su -; /usr/local/vesta/test/test_actions.sh; exit $?"
+=======
+  - docker run tpwebcp /bin/bash -c "/vesta/docker/startup.sh; /usr/local/vesta/test/test_actions.sh"
+  - docker run tpwebcp /bin/bash -c "/vesta/docker/startup.sh; echo $VESTA; echo $PATH"
+  - docker run tpwebcp /bin/bash -c "/vesta/docker/startup.sh; /usr/local/vesta/bin/v-list-sys-services"
+>>>>>>> 588dc19... Dockerfile
+=======
+  - docker run tpwebcp /bin/bash -c "/vesta/docker/startup.sh; /usr/local/vesta/test/test_actions.sh; exit $?"
+  - docker run tpwebcp /bin/bash -c "/vesta/docker/startup.sh; sudo su -; echo $VESTA; echo $PATH"
+  - docker run tpwebcp /bin/bash -c "/vesta/docker/startup.sh; /usr/local/vesta/bin/v-list-sys-services; exit $?"
+>>>>>>> aad950b... Dockerfile
+=======
+  - docker run tpwebcp /bin/bash -c "/vesta/docker/startup.sh; sudo su -; /usr/local/vesta/test/test_actions.sh; exit $?"
+>>>>>>> a4a1122... Dockerfile
+=======
+  - docker run --cap-add=NET_ADMIN tpwebcp /bin/bash -c "/vesta/docker/startup.sh; sudo su -; /usr/local/vesta/test/test_actions.sh; exit $?"
+>>>>>>> 23c8197... Fix tests + docker permissioné
   #--restart=always -p 2222:22 -p 80:80 -p 8083:8083 -p 3306:3306 -p 443:443 -p 25:25 -p 993:993 -p 110:110 -p 53:53 -p 54:54

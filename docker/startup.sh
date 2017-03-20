@@ -2,7 +2,19 @@
 
 export TERM=xterm
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 PATH=$PATH:/usr/local/vesta/bin
+=======
+PATH=$PATH:'$VESTA'/bin'
+>>>>>>> 2f0bf7e... Dockerfile
+=======
+PATH=$PATH:$VESTA/bin
+>>>>>>> e87c2a9... Dockerfile
+=======
+PATH=$PATH:/usr/local/vesta/bin
+>>>>>>> 8565a1b... Dockerfile
 export PATH
 
 #starting Vesta
