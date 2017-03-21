@@ -27,9 +27,9 @@ v-list-user-ns admin json
 v-list-user-packages json
 v-list-users json
 v-list-web-domains admin json
-v-list-web-domain admin default.vesta.domain json
+v-list-web-domain admin example.com json
 v-list-web-templates admin json
-v-list-web-templates-nginx admin json'
+v-list-web-templates-proxy admin json'
 
 IFS=$'\n'
 for cmd in $commands; do
