@@ -8,6 +8,8 @@ export PATH=$PATH:/usr/local/vesta/bin
 V_BIN="$VESTA/bin"
 V_TEST="$VESTA/test"
 
+OUTPUT=0
+
 # Define functions
 random() {
     MATRIX='0123456789'
@@ -36,6 +38,10 @@ echo_result() {
         echo -n ']'
     fi
     echo -ne '\r\n'
+    
+    if [ "$2" -gt "$OUTPUT" ]; then
+        OUTPUT=$2
+    fi
 }
 
 # Create random username
@@ -330,3 +336,5 @@ echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
 cmd="v-delete-sys-ip 198.18.0.125"
 $cmd > $tmpfile 2>&1
 echo_result "Deleting ip 198.18.0.125" "$?" "$tmpfile" "$cmd"
+
+exit $OUTPUT;
