@@ -7,7 +7,7 @@ export PATH=$PATH:/usr/local/vesta/bin
 V_BIN="$VESTA/bin"
 V_TEST="$VESTA/test"
 
-commands='v-list-cron_jobs admin json
+commands='v-list-cron-jobs admin json
 v-list_databases admin json
 v-list-database admin admin_vesta json
 v-list-database-server mysql localhost json
@@ -29,7 +29,7 @@ v-list-users json
 v-list-web-domains admin json
 v-list-web-domain admin default.vesta.domain json
 v-list-web-templates admin json
-v-list-web-templates_nginx admin json'
+v-list-web-templates-nginx admin json'
 
 IFS=$'\n'
 for cmd in $commands; do
@@ -40,7 +40,7 @@ for cmd in $commands; do
     $V_BIN/$script $arg1 $arg2 $arg3 | $V_TEST/json.sh >/dev/null 2>/dev/null
     retval="$?"
     echo -en  "$cmd"
-    echo -en '\033[60G'
+    #echo -en '\033[60G'
     echo -n '['
 
     if [ "$retval" -ne 0 ]; then
