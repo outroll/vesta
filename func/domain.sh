@@ -456,7 +456,7 @@ update_domain_serial() {
 }
 
 # Get next DNS record ID
-get_next_dnsrecord(){
+get_next_dnsrecord() {
     if [ -z "$id" ]; then
         curr_str=$(grep "ID=" $USER_DATA/dns/$domain_idn.conf | cut -f 2 -d \' |\
             sort -n|tail -n1)
