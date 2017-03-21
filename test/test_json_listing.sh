@@ -6,6 +6,7 @@ export PATH=$PATH:/usr/local/vesta/bin
 
 V_BIN="$VESTA/bin"
 V_TEST="$VESTA/test"
+OUTPUT=0
 
 commands='v-list-cron-jobs admin json
 v-list_databases admin json
@@ -53,7 +54,12 @@ for cmd in $commands; do
         echo -n ']'
     fi
     echo -ne '\r\n'
+    
+    
+    if [ "$retval" -ne 0 ]; then
+        OUTPUT=1
+    fi
 
 done
 
-exit 0
+exit $OUTPUT
