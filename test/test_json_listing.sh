@@ -12,7 +12,7 @@ commands='v-list-cron-jobs admin json
 v-list-databases admin json
 v-list-database admin admin_default json
 v-list-database-host mysql localhost json
-v-list-database-hosts mysql json
+v-list-database-hosts json
 v-list-dns-domains admin json
 v-list-mail-domains admin json
 v-list-dns-templates json
