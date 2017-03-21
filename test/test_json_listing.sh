@@ -28,8 +28,8 @@ v-list-user-packages json
 v-list-users json
 v-list-web-domains admin json
 v-list-web-domain admin example.com json
-v-list-web-templates admin json
-v-list-web-templates-proxy admin json'
+v-list-web-templates json
+v-list-web-templates-proxy json'
 
 IFS=$'\n'
 for cmd in $commands; do
