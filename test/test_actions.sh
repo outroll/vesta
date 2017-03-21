@@ -23,7 +23,7 @@ random() {
 
 echo_result() {
     echo -e  "$1"
-    echo -en '\033[60G'
+    #echo -en '\033[60G'
     echo -n '['
 
     if [ "$2" -ne 0 ]; then
@@ -336,5 +336,5 @@ echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
 cmd="v-delete-sys-ip 198.18.0.125"
 $cmd > $tmpfile 2>&1
 echo_result "Deleting ip 198.18.0.125" "$?" "$tmpfile" "$cmd"
-
+echo $OUTPUT;
 exit $OUTPUT;
