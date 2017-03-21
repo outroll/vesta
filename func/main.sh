@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Internal variables
+DATE=$(date +%F)
+TIME=$(date +%T)
+SCRIPT=$(basename $0)
 HOMEDIR='/home'
 BACKUP='/backup'
 BACKUP_GZIP=9
