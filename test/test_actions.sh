@@ -39,8 +39,8 @@ echo_result() {
     fi
     echo -ne '\r\n'
     
-    if [ "$2" -gt "$OUTPUT" ]; then
-        OUTPUT=$2
+    if [ "$2" -ne 0 ]; then
+        OUTPUT=1
     fi
 }
 
