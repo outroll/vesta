@@ -336,5 +336,5 @@ echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
 cmd="v-delete-sys-ip 198.18.0.125"
 $cmd > $tmpfile 2>&1
 echo_result "Deleting ip 198.18.0.125" "$?" "$tmpfile" "$cmd"
-
-exit $OUTPUT;
+echo "OUTPUT: $OUTPUT"
+exit $OUTPUT

@@ -56,4 +56,4 @@ for cmd in $commands; do
 
 done
 
-exit
+exit 0
