@@ -70,7 +70,11 @@ done
 
 # Check if there are failed temporary directories in the backup directory
 # Delete temporary directories when they are older than 1 day
-find $BACKUP/tmp.* -mtime +1 -type f -exec rm -f {} \;
+echo "-- check tmp directories older than 1 day --"
+find $BACKUP/tmp.* -mtime +1 -print -type f -exec rm -f {} \;
+echo "-- end list tmp directories  --"
+echo ""
+echo ""
 
 # Creating temporary directory
 tmpdir=$(mktemp -p $BACKUP -d)
