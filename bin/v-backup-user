@@ -68,6 +68,10 @@ while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
     (( ++i))
 done
 
+# Check if there are failed temporary directories in the backup directory
+# Delete temporary directories when they are older than 1 day
+find $BACKUP/tmp.* -mtime +1 -type f -exec rm -f {} \;
+
 # Creating temporary directory
 tmpdir=$(mktemp -p $BACKUP -d)
 if [ "$?" -ne 0 ]; then
