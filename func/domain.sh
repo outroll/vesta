@@ -386,6 +386,7 @@ update_domain_zone() {
 
 # Update zone serial
 update_domain_serial() {
+    format_domain_idn
     zn_conf="$HOMEDIR/$user/conf/dns/$domain.db"
     if [ -e $zn_conf ]; then
         zn_serial=$(head $zn_conf |grep 'SOA' -A1 |tail -n 1 |sed "s/ //g")
