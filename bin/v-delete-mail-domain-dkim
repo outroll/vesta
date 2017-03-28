@@ -11,7 +11,7 @@
 
 # Argument definition
 user=$1
-domain=$2
+domain=$(idn -t --quiet -u "$2" )
 domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
 
 # Includes
@@ -29,9 +29,9 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain_idn"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
-is_object_value_exist 'mail' 'DOMAIN' "$domain_idn" '$DKIM'
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_value_exist 'mail' 'DOMAIN' "$domain" '$DKIM'
 
 
 #----------------------------------------------------------#
@@ -60,8 +60,8 @@ fi
 #----------------------------------------------------------#
 
 # Updatoing config
-update_object_value 'mail' 'DOMAIN' "$domain_idn" '$DKIM' 'no'
-decrease_user_value "$user" '$U_MAIL_DKMI'
+update_object_value 'mail' 'DOMAIN' "$domain" '$DKIM' 'no'
+decrease_user_value "$user" '$U_MAIL_DKIM'
 
 # Logging
 log_history "disabled DKIM support on $domain"
