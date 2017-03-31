@@ -119,7 +119,7 @@ else
     cd source
     mkdir vesta
     #cp -r ../../* ./vesta/
-    rsync -av --progress ../../ ./vesta --exclude build
+    rsync -av --progress ../../ ./vesta --exclude build > /dev/null
     cd vesta
     rm -rf .git
     cd ..
