@@ -1,7 +1,8 @@
 [Vesta Control Panel](http://vestacp.com/)
 ==================================================
 
-[![Join the chat at https://gitter.im/vesta-cp/Lobby](https://badges.gitter.im/vesta-cp/Lobby.svg)](https://gitter.im/vesta-cp/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/madeITBelgium/vesta.svg?branch=master)](https://travis-ci.org/madeITBelgium/vesta)
+[![GitHub version](https://badge.fury.io/gh/madeITBelgium%2Fvesta.svg)](https://badge.fury.io/gh/madeITBelgium%2Fvesta)
 
 * Vesta is an open source hosting control panel.
 * Vesta has a clean and focused interface without the clutter.
@@ -38,5 +39,5 @@ bash vst-install.sh
 
 License
 ----------------------------
-Vesta is licensed under  [GPL v3 ](https://github.com/serghey-rodin/vesta/blob/master/LICENSE) license
+Vesta is licensed under  [GPL v3 ](https://github.com/madeITBelgium/vesta/blob/master/LICENSE) license
 
