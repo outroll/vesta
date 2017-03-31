@@ -10,5 +10,5 @@ before_install:
 script:
   - docker run --cap-add=NET_ADMIN tpwebcp /bin/bash -c "/vesta/docker/startup.sh; sudo su -; /usr/local/vesta/test/test_actions.sh; (exit \$?)"
   - docker run --cap-add=NET_ADMIN tpwebcp /bin/bash -c "/vesta/docker/startup.sh; sudo su -; /usr/local/vesta/test/test_json_listing.sh;  (exit \$?)"
-  - docker run --cap-add=NET_ADMIN tpwebcp /bin/bash -c "/vesta/docker/startup.sh; sudo su -; /usr/local/vesta/build.sh -ipnc;  (exit \$?)"
+  - sudo su -; build.sh -ipnc
   #--restart=always -p 2222:22 -p 80:80 -p 8083:8083 -p 3306:3306 -p 443:443 -p 25:25 -p 993:993 -p 110:110 -p 53:53 -p 54:54
