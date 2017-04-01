@@ -32,9 +32,6 @@ if [[ "${domain_idn}" =~ .*\.$ ]]; then
     domain=$(echo "${domain_idn}" |sed -e "s/\.$//")
 fi
 
-domain=$(idn -t --quiet -u "${domain_idn}" )
-domain_idn=$(idn -t --quiet -a "${domain_idn}")
-
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
