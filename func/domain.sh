@@ -277,45 +277,45 @@ del_web_config() {
 
 # SSL certificate verification
 is_web_domain_cert_valid() {
-    if [ ! -e "$ssl_dir/$domain.crt" ]; then
-        check_result $E_NOTEXIST "$ssl_dir/$domain.crt not found"
+    if [ ! -e "$ssl_dir/${domain_idn}.crt" ]; then
+        check_result $E_NOTEXIST "$ssl_dir/${domain_idn}.crt not found"
     fi
 
-    if [ ! -e "$ssl_dir/$domain.key" ]; then
-        check_result $E_NOTEXIST "$ssl_dir/$domain.key not found"
+    if [ ! -e "$ssl_dir/${domain_idn}.key" ]; then
+        check_result $E_NOTEXIST "$ssl_dir/${domain_idn}.key not found"
     fi
 
-    crt_vrf=$(openssl verify $ssl_dir/$domain.crt 2>&1)
+    crt_vrf=$(openssl verify $ssl_dir/${domain_idn}.crt 2>&1)
     if [ ! -z "$(echo $crt_vrf |grep 'unable to load')" ]; then
         check_result $E_INVALID "SSL Certificate is not valid"
     fi
 
     if [ ! -z "$(echo $crt_vrf |grep 'unable to get local issuer')" ]; then
-        if [ ! -e "$ssl_dir/$domain.ca" ]; then
+        if [ ! -e "$ssl_dir/${domain_idn}.ca" ]; then
             check_result $E_NOTEXIST "Certificate Authority not found"
         fi
     fi
 
-    if [ -e "$ssl_dir/$domain.ca" ]; then
-        s1=$(openssl x509 -text -in $ssl_dir/$domain.crt 2>/dev/null)
+    if [ -e "$ssl_dir/${domain_idn}.ca" ]; then
+        s1=$(openssl x509 -text -in $ssl_dir/${domain_idn}.crt 2>/dev/null)
         s1=$(echo "$s1" |grep Issuer  |awk -F = '{print $6}' |head -n1)
-        s2=$(openssl x509 -text -in $ssl_dir/$domain.ca 2>/dev/null)
+        s2=$(openssl x509 -text -in $ssl_dir/${domain_idn}.ca 2>/dev/null)
         s2=$(echo "$s2" |grep Subject  |awk -F = '{print $6}' |head -n1)
         if [ "$s1" != "$s2" ]; then
             check_result $E_NOTEXIST "SSL intermediate chain is not valid"
         fi
     fi
 
-    key_vrf=$(grep 'PRIVATE KEY' $ssl_dir/$domain.key |wc -l)
+    key_vrf=$(grep 'PRIVATE KEY' $ssl_dir/${domain_idn}.key |wc -l)
     if [ "$key_vrf" -ne 2 ]; then
         check_result $E_INVALID "SSL Key is not valid"
     fi
-    if [ ! -z "$(grep 'ENCRYPTED' $ssl_dir/$domain.key)" ]; then
+    if [ ! -z "$(grep 'ENCRYPTED' $ssl_dir/${domain_idn}.key)" ]; then
         check_result $E_FORBIDEN "SSL Key is protected (remove pass_phrase)"
     fi
 
-    openssl s_server -quiet -cert $ssl_dir/$domain.crt \
-        -key $ssl_dir/$domain.key >> /dev/null 2>&1 &
+    openssl s_server -quiet -cert $ssl_dir/${domain_idn}.crt \
+        -key $ssl_dir/${domain_idn}.key >> /dev/null 2>&1 &
     pid=$!
     sleep 0.5
     disown &> /dev/null
