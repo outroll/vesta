@@ -56,9 +56,9 @@ is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_system_enabled "$WEB_SSL" 'SSL_SUPPORT'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "${domain_idn}_idn"
-is_object_unsuspended 'web' 'DOMAIN' "${domain_idn}_idn"
-is_object_value_empty 'web' 'DOMAIN' "${domain_idn}_idn" '$SSL'
+is_object_valid 'web' 'DOMAIN' "${domain_idn}"
+is_object_unsuspended 'web' 'DOMAIN' "${domain_idn}"
+is_object_value_empty 'web' 'DOMAIN' "${domain_idn}" '$SSL'
 is_web_domain_cert_valid
 
 
@@ -110,8 +110,8 @@ fi
 increase_user_value "$user" '$U_WEB_SSL'
 
 # Adding ssl values
-update_object_value 'web' 'DOMAIN' "${domain_idn}_idn" '$SSL_HOME' "$SSL_HOME"
-update_object_value 'web' 'DOMAIN' "${domain_idn}_idn" '$SSL' "yes"
+update_object_value 'web' 'DOMAIN' "${domain_idn}" '$SSL_HOME' "$SSL_HOME"
+update_object_value 'web' 'DOMAIN' "${domain_idn}" '$SSL' "yes"
 
 # Restarting web server
 $BIN/v-restart-web $restart
