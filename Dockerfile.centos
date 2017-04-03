@@ -2,9 +2,11 @@ FROM centos/systemd
 
 EXPOSE 22 80 8083 3306 443 25 993 110 53 54
 
-RUN yum update -y && yum install -y wget initscripts && yum clean all
-
+VOLUME /sys/fs/cgroup /run /tmp
+ENV container=docker
 ENV VESTA /usr/local/vesta
+
+RUN yum update -y && yum install -y wget initscripts && yum clean all
 
 ADD bin /vesta/bin
 ADD func /vesta/func

@@ -2,9 +2,6 @@ FROM ubuntu:latest
 
 EXPOSE 22 80 8083 3306 443 25 993 110 53 54
 
-VOLUME /sys/fs/cgroup /run /tmp
-ENV container=docker
-
 RUN apt-get update -y --fix-missing
 RUN apt-get install -y wget lsb-release
 
