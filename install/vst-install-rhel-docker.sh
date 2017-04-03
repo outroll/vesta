@@ -857,7 +857,7 @@ if [ "$nginx" = 'yes' ]; then
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
     chkconfig nginx on
-    service nginx start
+    #service nginx start
     check_result $? "nginx start failed"
 
     # Workaround for OpenVZ/Virtuozzo
@@ -895,7 +895,7 @@ if [ "$apache" = 'yes'  ]; then
     mkdir -p /var/log/httpd/domains
     chmod 751 /var/log/httpd/domains
     chkconfig httpd on
-    service httpd start
+    #service httpd start
     check_result $? "httpd start failed"
 
     # Workaround for OpenVZ/Virtuozzo
@@ -913,7 +913,7 @@ fi
 if [ "$phpfpm" = 'yes' ]; then
     wget $vestacp/php-fpm/www.conf -O /etc/php-fpm.d/www.conf
     chkconfig php-fpm on
-    service php-fpm start
+    #service php-fpm start
     check_result $? "php-fpm start failed"
 fi
 
@@ -942,7 +942,7 @@ done
 if [ "$vsftpd" = 'yes' ]; then
     wget $vestacp/vsftpd/vsftpd.conf -O /etc/vsftpd/vsftpd.conf
     chkconfig vsftpd on
-    service vsftpd start
+    #service vsftpd start
     check_result $? "vsftpd start failed"
 
     # To be deleted after release 0.9.8-18
@@ -957,7 +957,7 @@ fi
 if [ "$proftpd" = 'yes' ]; then
     wget $vestacp/proftpd/proftpd.conf -O /etc/proftpd.conf
     chkconfig proftpd on
-    service proftpd start
+    #service proftpd start
     check_result $? "proftpd start failed"
 fi
 
@@ -987,13 +987,13 @@ if [ "$mysql" = 'yes' ]; then
 
     wget $vestacp/$service/$mycnf -O /etc/my.cnf
     chkconfig $service on
-    service $service start
+    #service $service start
     if [ "$?" -ne 0 ]; then
         if [ -e "/proc/user_beancounters" ]; then
             # Fix for aio on OpenVZ
             sed -i "s/#innodb_use_native/innodb_use_native/g" /etc/my.cnf
         fi
-        service $service start
+        #service $service start
         check_result $? "$service start failed"
     fi
 
@@ -1022,15 +1022,15 @@ fi
 
 if [ "$postgresql" = 'yes' ]; then
     if [ $release = 5 ]; then
-        service postgresql start
+        #service postgresql start
         sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$vpass'"
-        service postgresql stop
+        #service postgresql stop
         wget $vestacp/postgresql/pg_hba.conf -O /var/lib/pgsql/data/pg_hba.conf
-        service postgresql start
+        #service postgresql start
     else
         service postgresql initdb
         wget $vestacp/postgresql/pg_hba.conf -O /var/lib/pgsql/data/pg_hba.conf
-        service postgresql start
+        #service postgresql start
         sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$vpass'"
     fi
     # Configuring phpPgAdmin
@@ -1050,7 +1050,7 @@ if [ "$named" = 'yes' ]; then
     chown root:named /etc/named.conf
     chmod 640 /etc/named.conf
     chkconfig named on
-    service named start
+    #service named start
     check_result $? "named start failed"
 fi
 
@@ -1085,7 +1085,7 @@ if [ "$exim" = 'yes' ]; then
     service postfix stop 2>/dev/null
 
     chkconfig exim on
-    service exim start
+    #service exim start
     check_result $? "exim start failed"
 fi
 
@@ -1104,7 +1104,7 @@ if [ "$dovecot" = 'yes' ]; then
     rm -f dovecot.tar.gz
     chown -R root:root /etc/dovecot*
     chkconfig dovecot on
-    service dovecot start
+    #service dovecot start
     check_result $? "dovecot start failed"
 fi
 
@@ -1134,7 +1134,7 @@ if [ "$clamd" = 'yes' ]; then
         systemctl daemon-reload
     fi
     chkconfig clamd on
-    service clamd start
+    #service clamd start
     #check_result $? "clamd start failed"
 fi
 
@@ -1145,7 +1145,7 @@ fi
 
 if [ "$spamd" = 'yes' ]; then
     chkconfig spamassassin on
-    service spamassassin start
+    #service spamassassin start
     check_result $? "spamassassin start failed"
     if [ "$release" -eq '7' ]; then
         groupadd -g 1001 spamd
@@ -1211,7 +1211,7 @@ if [ "$fail2ban" = 'yes' ]; then
     /bin/mkdir -p /var/run/fail2ban
     sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/fail2ban/g" /usr/lib/systemd/system/fail2ban.service
     systemctl daemon-reload
-    service fail2ban start
+    #service fail2ban start
     check_result $? "fail2ban start failed"
 fi
 
@@ -1297,7 +1297,7 @@ command="sudo $VESTA/bin/v-update-user-stats"
 $VESTA/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
 command="sudo $VESTA/bin/v-update-sys-rrd"
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
-service crond restart
+#service crond restart
 
 # Building inititall rrd images
 $VESTA/bin/v-update-sys-rrd
@@ -1309,7 +1309,7 @@ fi
 
 # Starting vesta service
 chkconfig vesta on
-service vesta start
+#service vesta start
 check_result $? "vesta start failed"
 chown admin:admin $VESTA/data/sessions
 
