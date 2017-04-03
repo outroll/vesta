@@ -927,7 +927,7 @@ fi
 
 if [ "$proftpd" = 'yes' ]; then
     echo "127.0.0.1 $servername" >> /etc/hosts
-    cp $vestacpinstalldir/proftpd/proftpd.conf -O /etc/proftpd/proftpd.conf
+    cp $vestacpinstalldir/proftpd/proftpd.conf /etc/proftpd/proftpd.conf
     update-rc.d proftpd defaults
     service proftpd start
     check_result $? "proftpd start failed"
@@ -1058,7 +1058,7 @@ fi
 
 if [ "$dovecot" = 'yes' ]; then
     gpasswd -a dovecot mail
-    cp $vestacpinstalldir/dovecot /etc/dovecot
+    cp -r $vestacpinstalldir/dovecot /etc/dovecot
     cp $vestacpinstalldir/logrotate/dovecot /etc/logrotate.d/dovecot
     chown -R root:root /etc/dovecot*
     update-rc.d dovecot defaults

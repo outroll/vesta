@@ -17,6 +17,7 @@ os=$(cut -f 1 -d ' ' /etc/redhat-release)
 release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
 vestacp="http://$CHOST/$VERSION/$release"
+vestacpinstalldir="/vesta/install/$VERSION/$release"
 
 if [ "$release" -eq 7 ]; then
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid php php-common php-cli
@@ -676,7 +677,7 @@ fi
 
 # Downlading sudo configuration
 mkdir -p /etc/sudoers.d
-wget $vestacp/sudo/admin -O /etc/sudoers.d/admin
+cp $vestacpinstalldir/sudo/admin /etc/sudoers.d/admin
 chmod 440 /etc/sudoers.d/admin
 
 # Configuring system env
@@ -688,7 +689,7 @@ echo 'export PATH' >> /root/.bash_profile
 source /root/.bash_profile
 
 # Configuring logrotate for vesta logs
-wget $vestacp/logrotate/vesta -O /etc/logrotate.d/vesta
+cp $vestacpinstalldir/logrotate/vesta /etc/logrotate.d/vesta
 
 # Buidling directory tree and creating some blank files for vesta
 mkdir -p $VESTA/conf $VESTA/log $VESTA/ssl $VESTA/data/ips \
@@ -796,14 +797,10 @@ echo "VERSION='0.9.8'" >> $VESTA/conf/vesta.conf
 
 # Downloading hosting packages
 cd $VESTA/data
-wget $vestacp/packages.tar.gz -O packages.tar.gz
-tar -xzf packages.tar.gz
-rm -f packages.tar.gz
+cp -r $vestacpinstalldir/packages .
 
 # Downloading templates
-wget $vestacp/templates.tar.gz -O templates.tar.gz
-tar -xzf templates.tar.gz
-rm -f templates.tar.gz
+cp -r $vestacpinstalldir/templates .
 
 # Copying index.html to default documentroot
 cp templates/web/skel/public_html/index.html /var/www/html/
@@ -811,15 +808,11 @@ sed -i 's/%domain%/It worked!/g' /var/www/html/index.html
 
 # Downloading firewall rules
 chkconfig firewalld off >/dev/null 2>&1
-wget $vestacp/firewall.tar.gz -O firewall.tar.gz
-tar -xzf firewall.tar.gz
-rm -f firewall.tar.gz
+cp -r $vestacpinstalldir/firewall .
 
 # Downloading firewall ipv6 rules
 chkconfig firewalld off >/dev/null 2>&1
-wget $vestacp/firewallv6.tar.gz -O firewallv6.tar.gz
-tar -xzf firewallv6.tar.gz
-rm -f firewallv6.tar.gz
+cp -r $vestacpinstalldir/firewallv6 .
 
 # Configuring server hostname
 $VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
@@ -848,12 +841,12 @@ rm /tmp/vst.pem
 
 if [ "$nginx" = 'yes' ]; then
     rm -f /etc/nginx/conf.d/*.conf
-    wget $vestacp/nginx/nginx.conf -O /etc/nginx/nginx.conf
-    wget $vestacp/nginx/status.conf -O /etc/nginx/conf.d/status.conf
-    wget $vestacp/nginx/phpmyadmin.inc -O /etc/nginx/conf.d/phpmyadmin.inc
-    wget $vestacp/nginx/phppgadmin.inc -O /etc/nginx/conf.d/phppgadmin.inc
-    wget $vestacp/nginx/webmail.inc -O /etc/nginx/conf.d/webmail.inc
-    wget $vestacp/logrotate/nginx -O /etc/logrotate.d/nginx
+    cp $vestacpinstalldir/nginx/nginx.conf /etc/nginx/nginx.conf
+    cp $vestacpinstalldir/nginx/status.conf /etc/nginx/conf.d/status.conf
+    cp $vestacpinstalldir/nginx/phpmyadmin.inc /etc/nginx/conf.d/phpmyadmin.inc
+    cp $vestacpinstalldir/nginx/phppgadmin.inc /etc/nginx/conf.d/phppgadmin.inc
+    cp $vestacpinstalldir/nginx/webmail.inc /etc/nginx/conf.d/webmail.inc
+    cp $vestacpinstalldir/logrotate/nginx /etc/logrotate.d/nginx
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
     chkconfig nginx on
@@ -874,11 +867,11 @@ fi
 
 if [ "$apache" = 'yes'  ]; then
     cd /etc/httpd
-    wget $vestacp/httpd/httpd.conf -O conf/httpd.conf
-    wget $vestacp/httpd/status.conf -O conf.d/status.conf
-    wget $vestacp/httpd/ssl.conf -O conf.d/ssl.conf
-    wget $vestacp/httpd/ruid2.conf -O conf.d/ruid2.conf
-    wget $vestacp/logrotate/httpd -O /etc/logrotate.d/httpd
+    cp $vestacpinstalldir/httpd/httpd.conf conf/httpd.conf
+    cp $vestacpinstalldir/httpd/status.conf conf.d/status.conf
+    cp $vestacpinstalldir/httpd/ssl.conf conf.d/ssl.conf
+    cp $vestacpinstalldir/httpd/ruid2.conf conf.d/ruid2.conf
+    cp $vestacpinstalldir/logrotate/httpd /etc/logrotate.d/httpd
     if [ $release -ne 7 ]; then
         echo "MEFaccept 127.0.0.1" >> conf.d/mod_extract_forwarded.conf
         echo > conf.d/proxy_ajp.conf
@@ -911,7 +904,7 @@ fi
 #----------------------------------------------------------#
 
 if [ "$phpfpm" = 'yes' ]; then
-    wget $vestacp/php-fpm/www.conf -O /etc/php-fpm.d/www.conf
+    cp $vestacpinstalldir/php-fpm/www.conf /etc/php-fpm.d/www.conf
     chkconfig php-fpm on
     service php-fpm start
     check_result $? "php-fpm start failed"
@@ -940,7 +933,7 @@ done
 #----------------------------------------------------------#
 
 if [ "$vsftpd" = 'yes' ]; then
-    wget $vestacp/vsftpd/vsftpd.conf -O /etc/vsftpd/vsftpd.conf
+    cp $vestacpinstalldir/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf
     chkconfig vsftpd on
     service vsftpd start
     check_result $? "vsftpd start failed"
@@ -955,7 +948,7 @@ fi
 #----------------------------------------------------------#
 
 if [ "$proftpd" = 'yes' ]; then
-    wget $vestacp/proftpd/proftpd.conf -O /etc/proftpd.conf
+    cp $vestacpinstalldir/proftpd/proftpd.conf /etc/proftpd.conf
     chkconfig proftpd on
     service proftpd start
     check_result $? "proftpd start failed"
@@ -985,7 +978,7 @@ if [ "$mysql" = 'yes' ]; then
         service='mariadb'
     fi
 
-    wget $vestacp/$service/$mycnf -O /etc/my.cnf
+    cp $vestacpinstalldir/$service/$mycnf /etc/my.cnf
     chkconfig $service on
     service $service start
     if [ "$?" -ne 0 ]; then
@@ -1009,9 +1002,9 @@ if [ "$mysql" = 'yes' ]; then
 
     # Configuring phpMyAdmin
     if [ "$apache" = 'yes' ]; then
-        wget $vestacp/pma/phpMyAdmin.conf -O /etc/httpd/conf.d/phpMyAdmin.conf
+        cp $vestacpinstalldir/pma/phpMyAdmin.conf /etc/httpd/conf.d/phpMyAdmin.conf
     fi
-    wget $vestacp/pma/config.inc.conf -O /etc/phpMyAdmin/config.inc.php
+    cp $vestacpinstalldir/pma/config.inc.conf /etc/phpMyAdmin/config.inc.php
     sed -i "s/%blowfish_secret%/$(gen_pass)/g" /etc/phpMyAdmin/config.inc.php
 fi
 
@@ -1025,19 +1018,19 @@ if [ "$postgresql" = 'yes' ]; then
         service postgresql start
         sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$vpass'"
         service postgresql stop
-        wget $vestacp/postgresql/pg_hba.conf -O /var/lib/pgsql/data/pg_hba.conf
+        cp $vestacpinstalldir/postgresql/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
         service postgresql start
     else
         service postgresql initdb
-        wget $vestacp/postgresql/pg_hba.conf -O /var/lib/pgsql/data/pg_hba.conf
+        cp $vestacpinstalldir/postgresql/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
         service postgresql start
         sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$vpass'"
     fi
     # Configuring phpPgAdmin
     if [ "$apache" = 'yes' ]; then
-        wget $vestacp/pga/phpPgAdmin.conf -O /etc/httpd/conf.d/phpPgAdmin.conf
+        cp $vestacpinstalldir/pga/phpPgAdmin.conf /etc/httpd/conf.d/phpPgAdmin.conf
     fi
-    wget $vestacp/pga/config.inc.php -O /etc/phpPgAdmin/config.inc.php
+    cp $vestacpinstalldir/pga/config.inc.php /etc/phpPgAdmin/config.inc.php
 fi
 
 
@@ -1046,7 +1039,7 @@ fi
 #----------------------------------------------------------#
 
 if [ "$named" = 'yes' ]; then
-    wget $vestacp/named/named.conf -O /etc/named.conf
+    cp $vestacpinstalldir/named/named.conf /etc/named.conf
     chown root:named /etc/named.conf
     chmod 640 /etc/named.conf
     chkconfig named on
@@ -1061,9 +1054,9 @@ fi
 
 if [ "$exim" = 'yes' ]; then
     gpasswd -a exim mail
-    wget $vestacp/exim/exim.conf -O /etc/exim/exim.conf
-    wget $vestacp/exim/dnsbl.conf -O /etc/exim/dnsbl.conf
-    wget $vestacp/exim/spam-blocks.conf -O /etc/exim/spam-blocks.conf
+    cp $vestacpinstalldir/exim/exim.conf /etc/exim/exim.conf
+    cp $vestacpinstalldir/exim/dnsbl.conf /etc/exim/dnsbl.conf
+    cp $vestacpinstalldir/exim/spam-blocks.conf /etc/exim/spam-blocks.conf
     touch /etc/exim/white-blocks.conf
 
     if [ "$spamd" = 'yes' ]; then
@@ -1096,18 +1089,14 @@ fi
 
 if [ "$dovecot" = 'yes' ]; then
     gpasswd -a dovecot mail
-    wget $vestacp/dovecot.tar.gz -O /etc/dovecot.tar.gz
-    wget $vestacp/logrotate/dovecot -O /etc/logrotate.d/dovecot
-    cd /etc
-    rm -rf dovecot dovecot.conf
-    tar -xzf dovecot.tar.gz
-    rm -f dovecot.tar.gz
+    
+    cp -r $vestacpinstalldir/dovecot /etc/dovecot
+    cp $vestacpinstalldir/logrotate/dovecot /etc/logrotate.d/dovecot
     chown -R root:root /etc/dovecot*
     chkconfig dovecot on
     service dovecot start
     check_result $? "dovecot start failed"
 fi
-
 
 #----------------------------------------------------------#
 #                     Configure ClamAV                     #
@@ -1117,15 +1106,14 @@ if [ "$clamd" = 'yes' ]; then
     useradd clam -s /sbin/nologin -d /var/lib/clamav 2>/dev/null
     gpasswd -a clam exim
     gpasswd -a clam mail
-    wget $vestacp/clamav/clamd.conf -O /etc/clamd.conf
-    wget $vestacp/clamav/freshclam.conf -O /etc/freshclam.conf
+    cp $vestacpinstalldir/clamav/clamd.conf /etc/clamd.conf
+    cp $vestacpinstalldir/clamav/freshclam.conf /etc/freshclam.conf
     mkdir -p /var/log/clamav
     mkdir -p /var/run/clamav
     chown clam:clam /var/log/clamav /var/run/clamav
     chown -R clam:clam /var/lib/clamav
     if [ "$release" -eq '7' ]; then
-        wget $vestacp/clamav/clamd.service -O \
-            /usr/lib/systemd/system/clamd.service
+        cp $vestacpinstalldir/clamav/clamd.service /usr/lib/systemd/system/clamd.service
         systemctl --system daemon-reload
     fi
     /usr/bin/freshclam
@@ -1163,13 +1151,12 @@ fi
 
 if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     if [ "$apache" = 'yes' ]; then
-        wget $vestacp/roundcube/roundcubemail.conf \
-            -O /etc/httpd/conf.d/roundcubemail.conf
+        cp $vestacpinstalldir/roundcube/roundcubemail.conf /etc/httpd/conf.d/roundcubemail.conf
     fi
-    wget $vestacp/roundcube/main.inc.php -O /etc/roundcubemail/config.inc.php
+    cp $vestacpinstalldir/roundcube/main.inc.php /etc/roundcubemail/config.inc.php
     cd /usr/share/roundcubemail/plugins/password
-    wget $vestacp/roundcube/vesta.php -O drivers/vesta.php
-    wget $vestacp/roundcube/config.inc.php -O config.inc.php
+    cp $vestacpinstalldir/roundcube/vesta.php drivers/vesta.php
+    cp $vestacpinstalldir/roundcube/config.inc.php config.inc.php
     sed -i "s/localhost/$servername/g" /usr/share/roundcubemail/plugins/password/config.inc.php
     chmod a+r /etc/roundcubemail/*
     chmod -f 777 /var/log/roundcubemail
@@ -1193,9 +1180,7 @@ fi
 
 if [ "$fail2ban" = 'yes' ]; then
     cd /etc
-    wget $vestacp/fail2ban.tar.gz -O fail2ban.tar.gz
-    tar -xzf fail2ban.tar.gz
-    rm -f fail2ban.tar.gz
+    cp -r $vestacpinstalldir/fail2ban /etc/fail2ban
 
     if [ "$dovecot" = 'no' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n dovecot-iptables -A 2)
