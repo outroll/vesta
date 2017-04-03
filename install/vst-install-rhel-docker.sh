@@ -1280,7 +1280,7 @@ if [ "$postgresql" = 'yes' ]; then
 fi
 
 # Adding default domain
-$VESTA/bin/v-add-domain admin $servername
+$VESTA/bin/v-add-domain admin $servername $ip $ipv6 no
 check_result $? "can't create $servername domain"
 
 command="sudo $VESTA/bin/v-update-sys-queue disk"
