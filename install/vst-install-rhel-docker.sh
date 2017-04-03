@@ -1232,6 +1232,17 @@ if [ ! -z "$(grep ^admin: /etc/group)" ] && [ "$force" = 'yes' ]; then
     groupdel admin > /dev/null 2>&1
 fi
 
+#Move bin files
+rm -rf /usr/local/vesta/bin /usr/local/vesta/func \
+ /usr/local/vesta/install /usr/local/vesta/test \
+ /usr/local/vesta/upd /usr/local/vesta/web
+cp -rf /vesta/bin /usr/local/vesta/bin
+cp -rf /vesta/func /usr/local/vesta/func
+cp -rf /vesta/install /usr/local/vesta/install
+cp -rf /vesta/test /usr/local/vesta/test
+cp -rf /vesta/upd /usr/local/vesta/upd
+cp -rf /vesta/web /usr/local/vesta/web
+
 # Adding vesta account
 $VESTA/bin/v-add-user admin $vpass $email default System Administrator
 check_result $? "can't create admin user"
