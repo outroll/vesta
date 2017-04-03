@@ -1,4 +1,4 @@
-FROM centos/systemd:latest
+FROM centos/systemd
 
 EXPOSE 22 80 8083 3306 443 25 993 110 53 54
 
@@ -15,6 +15,7 @@ ADD upd /vesta/upd
 ADD web /vesta/web
 ADD docker /vesta/docker
 
+RUN /usr/sbin/init
 RUN chmod +x /vesta/install/vst-install*
 RUN /vesta/install/vst-install-rhel-docker.sh --nginx yes --apache yes \
   --phpfpm no --named yes --remi yes --vsftpd no --proftpd no --iptables no \
@@ -29,5 +30,4 @@ RUN /vesta/install/vst-install-rhel-docker.sh --nginx yes --apache yes \
 
 RUN chmod +x /vesta/docker/startup-centos.sh
 RUN /bin/bash -c "source /etc/profile.d/vesta.sh"
-RUN /usr/sbin/init
 RUN /vesta/docker/startup.sh
