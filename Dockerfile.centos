@@ -40,7 +40,7 @@ RUN chmod +x /vesta/install/vst-install*
 #    && cd /etc/nginx/conf.d && sed -i -- 's/172.*.*.*:80;/80;/g' * && sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' * \
 #    && cd /home/admin/conf/web && sed -i -- 's/172.*.*.*:80;/80;/g' * && sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' *
 
-#RUN chmod +x /vesta/docker/startup-centos.sh
+RUN chmod +x /vesta/docker/startup-centos.sh
 #RUN /bin/bash -c "source /etc/profile.d/vesta.sh"
 #RUN /vesta/docker/startup-centos.sh
 CMD /usr/sbin/init
