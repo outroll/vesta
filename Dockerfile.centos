@@ -16,7 +16,7 @@ rm -f /lib/systemd/system/anaconda.target.wants/*;
 VOLUME /sys/fs/cgroup /run /tmp
 ENV VESTA /usr/local/vesta
 
-RUN yum update -y && yum install -y wget initscripts && yum clean all
+RUN yum update -y && yum install -y sudo wget initscripts && yum clean all
 
 RUN nohup /usr/sbin/init &
 
