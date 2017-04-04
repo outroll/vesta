@@ -42,5 +42,5 @@ RUN chmod +x /vesta/install/vst-install*
 
 #RUN chmod +x /vesta/docker/startup-centos.sh
 #RUN /bin/bash -c "source /etc/profile.d/vesta.sh"
-#RUN /vesta/docker/startup.sh
+#RUN /vesta/docker/startup-centos.sh
 CMD /usr/sbin/init
