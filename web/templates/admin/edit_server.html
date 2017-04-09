@@ -521,6 +521,7 @@
                                                             <select class="vst-list" name="v_backup_type">
                                                                 <option value='ftp'><?php print __('ftp'); ?></option>
                                                                 <option value='sftp' <?php if((!empty($v_backup_type)) && ($v_backup_type  == 'sftp')) echo 'selected' ?> ><?php print __('sftp'); ?></option>
+                                                                <option value='s3' <?php if((!empty($v_backup_type)) && ($v_backup_type  == 's3')) echo 'selected' ?> ><?php print __('S3'); ?></option>
                                                             </select>
                                                             <br><br>
                                                         </td>
@@ -532,7 +533,26 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" size="20" class="vst-input" name="v_backup_host" value="<?=trim($v_backup_host, "'")?>">
+                                                            <?php if($v_backup_type == 's3'): ?>
+                                                            <select class="vst-list" name="v_backup_host">
+                                                                <?php foreach(array('us-east-1','us-west-1','us-west-2','eu-west-1','eu-central-1','ap-northeast-1','ap-southeast-1','ap-southeast-2','sa-east-1') as $region): ?>
+                                                                    <option value='<?= $region ?>' <?php if((!empty($v_backup_type)) && (trim($v_backup_host, "'") == $region)) echo 'selected' ?>><?php print __($region); ?></option>
+                                                                <?php endforeach; ?>
+                                                            </select>
+                                                            <?php else: ?>
+                                                                <input type="text" size="20" class="vst-input" name="v_backup_host" value="<?=trim($v_backup_host, "'")?>">
+                                                            <?php endif ?>
+                                                            <br><br>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="hidden">
+                                                        <td class="vst-text">
+                                                            <?php print __('Bucket') ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="hidden">
+                                                        <td>
+                                                            <input type="text" size="20" class="vst-input" name="v_backup_bucket" value="<?=trim($v_backup_bucket, "'")?>">
                                                             <br><br>
                                                         </td>
                                                     </tr>

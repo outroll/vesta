@@ -146,6 +146,15 @@ google_download() {
     fi
 }
 
+# Google backup download function
+s3_download() {
+    source $VESTA/conf/s3.backup.conf
+    s3cmd --region="$HOST" --access_key="$USERNAME" --secret_key="$PASSWORD" get s3://$BUCKET${BPATH}$1 $BACKUP/ > /dev/null 2>&1
+    if [ "$?" -ne 0 ]; then
+        check_result "$E_CONNECT" "s3cmd failed to download $1"
+    fi
+}
+
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -165,6 +174,10 @@ is_backup_available "$user" "$backup"
 if [ ! -e "$BACKUP/$backup" ]; then
     if [[ "$BACKUP_SYSTEM" =~ "google" ]]; then
         google_download $backup
+        downloaded='yes'
+    fi
+     if [[ "$BACKUP_SYSTEM" =~ "s3" ]]; then
+        s3_download $backup
         downloaded='yes'
     fi
     if [[ "$BACKUP_SYSTEM" =~ "sftp" ]] && [ -z "$downloaded" ]; then
