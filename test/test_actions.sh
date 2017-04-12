@@ -327,9 +327,9 @@ $cmd > $tmpfile 2>&1
 echo_result "Rebuilding user config" "$?" "$tmpfile" "$cmd"
 
 # Delete user
-#cmd="v-delete-user $user"
-#$cmd > $tmpfile 2>&1
-#echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
+cmd="v-delete-user $user"
+$cmd > $tmpfile 2>&1
+echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
 
 # Delete ip address
 cmd="v-delete-sys-ip 198.18.0.125"
@@ -339,13 +339,22 @@ echo_result "Deleting ip 198.18.0.125" "$?" "$tmpfile" "$cmd"
 #----------------------------------------------------------#
 #                          IPv6                            #
 #----------------------------------------------------------#
+cmd="v-add-user $user $user $user@vestacp.com default Super Test"
+$cmd > $tmpfile 2>&1
+echo_result "USER: Adding new user $user" "$?" "$tmpfile" "$cmd"
+
 
 # Add ip address
+cmd="v-add-sys-ip 198.18.0.125 255.255.255.255 $interface $user"
+$cmd > $tmpfile 2>&1
+echo_result "IP: Adding ip 198.18.0.125" "$?" "$tmpfile" "$cmd"
+
+# Add ipv6 address
 cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a116 64 $interface $user"
 $cmd > $tmpfile 2>&1
 echo_result "IP6: Adding ipv6 2001:1620:28:1:b6f:8bca:93:a116" "$?" "$tmpfile" "$cmd"
 
-# Add duplicate ip
+# Add duplicate ipv6
 $cmd > $tmpfile 2>&1
 if [ "$?" -eq 4 ]; then
     retval=0
@@ -370,7 +379,7 @@ echo_result "IP: Adding ip 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cm
 
 # Add web domain
 domain="test-$(random 4).vestacp.com"
-cmd="v-add-web-domain $user $domain '' 2001:1620:28:1:b6f:8bca:93:a111"
+cmd="v-add-web-domain $user $domain '198.18.0.125' 2001:1620:28:1:b6f:8bca:93:a111"
 $cmd > $tmpfile 2>&1
 echo_result "WEB: Adding domain $domain on 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cmd"
 
@@ -435,7 +444,7 @@ echo_result "WEB: rebuilding web domains" "$?" "$tmpfile" "$cmd"
 #----------------------------------------------------------#
 
 # Add dns domain
-cmd="v-add-dns-domain $user $domain '' 2001:1620:28:1:b6f:8bca:93:a111"
+cmd="v-add-dns-domain $user $domain '198.18.0.125' 2001:1620:28:1:b6f:8bca:93:a111"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Adding dns domain $domain" "$?" "$tmpfile" "$cmd"
 
