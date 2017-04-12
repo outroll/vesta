@@ -24,6 +24,8 @@ encode_base64() {
 }
 
 # Additional argument formatting
+
+format_domain
 format_domain_idn
 
 #----------------------------------------------------------#

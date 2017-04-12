@@ -40,7 +40,6 @@ is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
 is_object_valid "mail/$domain_idn" 'ACCOUNT' "$account"
 is_object_suspended "mail/$domain_idn" 'ACCOUNT' "$account"
 
-
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
