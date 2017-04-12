@@ -334,7 +334,7 @@ echo_result "Rebuilding user config" "$?" "$tmpfile" "$cmd"
 cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a116 64 $interface $user"
 $cmd > $tmpfile 2>&1
 echo_result "IP6: Adding ipv6 2001:1620:28:1:b6f:8bca:93:a116" "$?" "$tmpfile" "$cmd"
-cat /etc/nginx/conf.d/2001:1620:28:1:b6f:8bca:93:a116.conf
+/usr/nginx/sbin/nginx -t -c /etc/nginx/nginx.conf
 # Add duplicate ipv6
 $cmd > $tmpfile 2>&1
 if [ "$?" -eq 4 ]; then
