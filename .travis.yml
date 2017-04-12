@@ -4,13 +4,13 @@ services:
   - docker
 
 before_install:
-#  - docker build -t vestacp -f Dockerfile .
-  - docker build -t vestacp-centos -f Dockerfile.centos .
+  - docker build -t vestacp -f Dockerfile .
+#  - docker build -t vestacp-centos -f Dockerfile.centos .
 #  - docker ps
 
 script:
-#  - docker run --cap-add=NET_ADMIN vestacp /bin/bash -c "/vesta/docker/startup-ubuntu.sh; sudo su -; /usr/local/vesta/test/test_actions.sh; (exit \$?)"
-#  - docker run --cap-add=NET_ADMIN vestacp /bin/bash -c "/vesta/docker/startup-ubuntu.sh; sudo su -; /usr/local/vesta/test/test_json_listing.sh;  (exit \$?)"
-  - docker run --cap-add=NET_ADMIN vestacp-centos /bin/bash -c "/vesta/docker/startup-centos.sh; sudo su -; /usr/local/vesta/test/test_actions.sh; (exit \$?)"
-  - docker run --cap-add=NET_ADMIN vestacp-centos /bin/bash -c "/vesta/docker/startup-centos.sh; sudo su -; /usr/local/vesta/test/test_json_listing.sh;  (exit \$?)"
-  #--restart=always -p 2222:22 -p 80:80 -p 8083:8083 -p 3306:3306 -p 443:443 -p 25:25 -p 993:993 -p 110:110 -p 53:53 -p 54:54
+  - docker run --cap-add=NET_ADMIN vestacp /bin/bash -c "/vesta/docker/startup-ubuntu.sh; sudo su -; /usr/local/vesta/test/test_actions.sh; (exit \$?)"
+  - docker run --cap-add=NET_ADMIN vestacp /bin/bash -c "/vesta/docker/startup-ubuntu.sh; sudo su -; /usr/local/vesta/test/test_json_listing.sh;  (exit \$?)"
+#  - docker run --cap-add=NET_ADMIN vestacp-centos /bin/bash -c "/vesta/docker/startup-centos.sh; sudo su -; /usr/local/vesta/test/test_actions.sh; (exit \$?)"
+#  - docker run --cap-add=NET_ADMIN vestacp-centos /bin/bash -c "/vesta/docker/startup-centos.sh; sudo su -; /usr/local/vesta/test/test_json_listing.sh;  (exit \$?)"
+#  --restart=always -p 2222:22 -p 80:80 -p 8083:8083 -p 3306:3306 -p 443:443 -p 25:25 -p 993:993 -p 110:110 -p 53:53 -p 54:54
