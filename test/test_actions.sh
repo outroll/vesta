@@ -347,12 +347,12 @@ echo_result "IP: Duplicate ip address check" "$retval" "$tmpfile" "$cmd"
 # Delete ip address
 cmd="v-delete-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a116"
 $cmd > $tmpfile 2>&1
-echo_result "IP: Deleting ip 2001:1620:28:1:b6f:8bca:93:a116" "$?" "$tmpfile" "$cmd"
+echo_result "IP6: Deleting ip 2001:1620:28:1:b6f:8bca:93:a116" "$?" "$tmpfile" "$cmd"
 
 # Add ip address
-cmd="v-add-sys-ip 2001:1620:28:1:b6f:8bca:93:a111 64 $interface $user"
+cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a111 64 $interface $user"
 $cmd > $tmpfile 2>&1
-echo_result "IP: Adding ip 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cmd"
+echo_result "IP6: Adding ip 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cmd"
 
 #----------------------------------------------------------#
 #                         WEB                              #
