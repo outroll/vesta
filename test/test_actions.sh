@@ -327,9 +327,9 @@ $cmd > $tmpfile 2>&1
 echo_result "Rebuilding user config" "$?" "$tmpfile" "$cmd"
 
 # Delete user
-cmd="v-delete-user $user"
-$cmd > $tmpfile 2>&1
-echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
+#cmd="v-delete-user $user"
+#$cmd > $tmpfile 2>&1
+#echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
 
 # Delete ip address
 cmd="v-delete-sys-ip 198.18.0.125"
