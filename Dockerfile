@@ -29,4 +29,4 @@ RUN /vesta/install/vst-install-ubuntu-docker.sh --nginx yes --apache yes \
 
 RUN chmod +x /vesta/docker/startup-ubuntu.sh
 RUN /bin/bash -c "source /etc/profile.d/vesta.sh"
-RUN /vesta/docker/startup.sh
+RUN /vesta/docker/startup-ubuntu.sh
