@@ -8,7 +8,7 @@
 export PATH=$PATH:/sbin
 RHOST='repo.tpweb.org'
 CHOST='cp.tpweb.org'
-REPO='cmmnt'
+REPO='rhel'
 VERSION='rhel'
 VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
