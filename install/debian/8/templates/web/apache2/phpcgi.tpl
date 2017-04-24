@@ -18,6 +18,7 @@
         php_admin_value upload_tmp_dir %home%/%user%/tmp
         php_admin_value session.save_path %home%/%user%/tmp
         Action phpcgi-script /cgi-bin/php
+        php_admin_value sys_temp_dir %home%/%user%/tmp
         <Files *.php>
             SetHandler phpcgi-script
         </Files>

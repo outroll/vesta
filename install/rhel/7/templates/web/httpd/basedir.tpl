@@ -18,6 +18,7 @@
         php_admin_value upload_tmp_dir %home%/%user%/tmp
         php_admin_value session.save_path %home%/%user%/tmp
         php_admin_value sendmail_path "/usr/sbin/sendmail -t -i -f info@%domain_idn%"
+        php_admin_value sys_temp_dir %home%/%user%/tmp
     </Directory>
     <Directory %home%/%user%/web/%domain%/stats>
         AllowOverride All
