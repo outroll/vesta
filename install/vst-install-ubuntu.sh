@@ -514,7 +514,7 @@ killall -9 mysqld > /dev/null 2>&1
 mv /var/lib/mysql $vst_backups/mysql/mysql_datadir > /dev/null 2>&1
 cp -r /etc/mysql/* $vst_backups/mysql > /dev/null 2>&1
 mv -f /root/.my.cnf $vst_backups/mysql > /dev/null 2>&1
-if [[ "$release" = '16.04' ] || [ "$release" = '16.10' ] || [ "$release" = '17.04' ]] && [ -e '/etc/init.d/mysql' ]; then
+if [[ ("$release" = '16.04' || "$release" = '16.10' || "$release" = '17.04') ]] && [ -e '/etc/init.d/mysql' ]; then
     mkdir -p /var/lib/mysql > /dev/null 2>&1
     chown mysql:mysql /var/lib/mysql
     mysqld --initialize-insecure
@@ -952,7 +952,7 @@ if [ "$mysql" = 'yes' ]; then
 
     # Configuring MySQL/MariaDB
     wget $vestacp/mysql/$mycnf -O /etc/mysql/my.cnf
-    if [ "$release" != '16.04' ] && [ "$release" != '16.10' ] && [ "$release" != '17.04' ]; then
+    if [[ "$release" != '16.04' && "$release" != '16.10' && "$release" != '17.04' ]]; then
         mysql_install_db
     fi
     update-rc.d mysql defaults
@@ -1125,7 +1125,7 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     mysql -e "CREATE DATABASE roundcube"
     mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost IDENTIFIED BY '$r'"
     sed -i "s/%password%/$r/g" /etc/roundcube/db.inc.php
-    if [ "$release" = '16.04' ] || [ "$release" = '16.10' ] || [ "$release" = '17.04' ]; then
+    if [[ "$release" = '16.04' || "$release" = '16.10' || "$release" = '17.04' ]]; then
         mv /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
         mv /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
         chmod 640 /etc/roundcube/debian-db-roundcube.php
