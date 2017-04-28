@@ -53,7 +53,7 @@ BUILD_NGINX="no"
 BUILD_CORE="no"
 INSTALL="no"
 INSTALL_GIT="no"
-while getopts "h?pnci" opt; do
+while getopts "h?pgnci" opt; do
     case "$opt" in
     h|\?)
         echo "-h help"
