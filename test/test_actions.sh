@@ -326,6 +326,7 @@ cmd="v-rebuild-user $user yes"
 $cmd > $tmpfile 2>&1
 echo_result "Rebuilding user config" "$?" "$tmpfile" "$cmd"
 
+exit $OUTPUT
 #----------------------------------------------------------#
 #                          IPv6                            #
 #----------------------------------------------------------#
