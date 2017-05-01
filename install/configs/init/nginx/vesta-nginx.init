@@ -137,21 +137,4 @@ case "$1" in
     *)
         echo $"Usage: $0 {start|stop|restart|reload|status}"
         exit 3
-esac-nginx
-}
-
-case "$1" in
-    start)
-        start;;
-    stop)
-        stop;;
-    restart)
-        restart;;
-    reload)
-        reload;;
-    status)
-        rh_status;;
-    *)
-        echo $"Usage: $0 {start|stop|restart|reload|status}"
-        exit 3
 esac
