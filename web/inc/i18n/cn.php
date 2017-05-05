@@ -1,7 +1,7 @@
 <?php
 /**
  * Vesta language file
- * 浩浩 (github@myrevery.com)
+ * 浩浩 (github@myrevery.com) Feedback: https://myrevery.com/tag/vestacp
  * Kevin (kevin@kvm.la)
  */
 
@@ -196,7 +196,7 @@ $LANG['cn'] = array(
     'SSL Home Directory' => 'SSL主目录',
     'Lets Encrypt Support'  => 'Let&#39s Encrypt 支持',
     'Lets Encrypt'  => 'Let&#39s Encrypt',
-    'Your certificate will be automatically issued in 5 minutes' => '你的证书将在5分钟后自动签发完成',
+    'Your certificate will be automatically issued in 5 minutes' => '你的证书将在5分钟内自动签发完成',
     'Proxy Support' => '代理支持',
     'Proxy Extensions' => '代理扩展名',
     'Web Statistics' => '网站统计',
@@ -254,7 +254,7 @@ $LANG['cn'] = array(
     'PostgreSQL Usage on localhost'  => 'PostgreSQL用量 (localhost)',
     'Bandwidth Usage eth0'  => '网络流量 (eth0)',
     'Bandwidth Usage eth1'  => '网络流量 (eth1)',
-    'Bandwidth Usage venet0'  => '网络流量 (venet0)', //For CentOS
+    'Bandwidth Usage venet0'  => '网络流量 (venet0)',
     'Bandwidth Usage venet1'  => '网络流量 (venet1)',
     'Exim Usage'  => 'Exim 用量',
     'FTP Usage'  => 'FTP 用量',
@@ -298,8 +298,8 @@ $LANG['cn'] = array(
     'Basic options'  => '基本选项',
     'Aliases'  => '别名',
     'SSL Certificate'  => 'SSL证书',
-    'SSL Key'  => 'SSL密匙',
-    'SSL Certificate Authority / Intermediate'  => 'SSL签发机构 / 中级',
+    'SSL Key'  => 'SSL密钥',
+    'SSL Certificate Authority / Intermediate'  => 'SSL颁发机构 / 中级',
     'SSL CSR' => 'SSL CSR',
     'optional'  => '可选',
     'internal' => '内部',
@@ -368,7 +368,7 @@ $LANG['cn'] = array(
     'last name'  => '姓氏',
     'account'  => '账户',
     'ssl certificate'  => 'SSL证书',
-    'ssl key'  => 'SSL密匙',
+    'ssl key'  => 'SSL密钥',
     'stats user password'  => '统计用户账户密码',
     'stats username'  => '统计用户名称',
     'stats password'  => '统计密码',
@@ -739,13 +739,13 @@ $LANG['cn'] = array(
     'awstats' => 'AWStats',
 
     'Vesta SSL' => 'Vesta SSL',
-    'SUBJECT' => 'SUBJECT',
-    'ALIASES' => 'ALIASES',
-    'NOT_BEFORE' => 'NOT_BEFORE',
-    'NOT_AFTER' => 'NOT_AFTER',
-    'SIGNATURE' => 'SIGNATURE',
-    'PUB_KEY' => 'PUB_KEY',
-    'ISSUER' => 'ISSUER',
+    'SUBJECT' => '颁发给',
+    'ALIASES' => '可选名称',
+    'NOT_BEFORE' => '有效期从',
+    'NOT_AFTER' => '有效期到',
+    'SIGNATURE' => '签名算法',
+    'PUB_KEY' => '密钥位数',
+    'ISSUER' => '颁发者',
 
     'Use server hostname' => '采用服务器主机名',
     'Use domain hostname' => '采用域名',
@@ -756,5 +756,5 @@ $LANG['cn'] = array(
 
     'maximum characters length, including prefix' => '最多 %s 个字符，包含前缀',
 
-    'Email Credentials' => 'Email Credentials',
+    'Email Credentials' => '电子邮件证书',
 );
