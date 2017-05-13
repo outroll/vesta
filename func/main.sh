@@ -737,7 +737,7 @@ is_cron_format_valid() {
             fi
         done
     fi
-    if [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -lt $limit ]; then
+    if [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -le $limit ]; then
         check_format='ok'
     fi
     if [ "$check_format" != 'ok' ]; then
@@ -864,6 +864,9 @@ format_domain() {
 }
 
 format_domain_idn() {
+    if [ -z "$domain_idn" ]; then
+        domain_idn=$domain
+    fi
     if [[ "$domain_idn" = *[![:ascii:]]* ]]; then
         domain_idn=$(idn -t --quiet -a $domain_idn)
     fi
