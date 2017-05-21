@@ -35,8 +35,8 @@ is_format_valid 'user' 'domain' 'ftp_user'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 get_domain_values 'web'
 if [ -z "$(echo $FTP_USER | tr ':' '\n' | grep ^$ftp_user$)" ]; then
     echo "Error: account $ftp_user doesn't exist"
@@ -77,9 +77,9 @@ ftp_path=$(echo $FTP_PATH |tr ':' '\n' |grep -n '' |grep -v "^$position:" |\
     cut -f 2 -d :| sed -e ':a;N;$!ba;s/\n/:/g')
 
 # Update config
-update_object_value 'web' 'DOMAIN' "$domain" '$FTP_USER' "$ftp_user"
-update_object_value 'web' 'DOMAIN' "$domain" '$FTP_MD5' "$ftp_md5"
-update_object_value 'web' 'DOMAIN' "$domain" '$FTP_PATH' "$ftp_path"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$FTP_USER' "$ftp_user"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$FTP_MD5' "$ftp_md5"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$FTP_PATH' "$ftp_path"
 
 # Logging
 log_history "deleted ftp account ${3} for $domain"

@@ -33,8 +33,8 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
 if [ -z "$MAIL_SYSTEM" ] || [ "$MAIL_SYSTEM" = 'remote' ]; then
     exit
 fi
@@ -62,7 +62,7 @@ done
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-update_object_value 'mail' 'DOMAIN' "$domain" '$U_DISK' "$dom_diks"
+update_object_value 'mail' 'DOMAIN' "$domain_idn" '$U_DISK' "$dom_diks"
 recalc_user_disk_usage
 
 # Logging

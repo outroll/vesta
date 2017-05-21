@@ -37,8 +37,8 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 check_new_domain=$(grep "DOMAIN='$new_domain'" $VESTA/data/users/*/web.conf)
 if [ ! -z "$check_new_domain" ]; then
     check_result $E_EXISTS "$new_domain already exists"

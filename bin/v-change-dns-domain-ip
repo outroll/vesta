@@ -36,8 +36,8 @@ is_format_valid 'user' 'domain' 'ip'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'dns' 'DOMAIN' "$domain"
-is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+is_object_valid 'dns' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -49,7 +49,7 @@ get_domain_values 'dns'
 old=$IP
 
 # Changing ip
-update_object_value 'dns' 'DOMAIN' "$domain" '$IP' "$ip"
+update_object_value 'dns' 'DOMAIN' "$domain_idn" '$IP' "$ip"
 
 # Changing records
 sed -i "s/$old/$ip/g" $USER_DATA/dns/$domain.conf
