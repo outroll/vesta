@@ -79,3 +79,6 @@ randomString = function() {
     }
     document.v_add_db.v_password.value = randomstring;
 }
+
+//Set Maximum Length of User Input
+document.getElementsByName('v_dbuser')[0].setAttribute('maxlength', maxLength = 16 - GLOBAL.DB_USER_PREFIX.length);
