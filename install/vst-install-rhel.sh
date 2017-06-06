@@ -1280,6 +1280,9 @@ command="sudo $VESTA/bin/v-update-user-stats"
 $VESTA/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
 command="sudo $VESTA/bin/v-update-sys-rrd"
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-letsencrypt-ssl"
+$VESTA/bin/v-add-cron-job 'admin' '0' '0' '*' '*' '*' "$command"
+
 service crond restart
 
 # Building inititall rrd images
