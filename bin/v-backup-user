@@ -800,7 +800,7 @@ s3_backup() {
         backups_rm_number=$((backups_count - BACKUPS + 1))
         for backup in $(echo "$backup_list" |head -n $backups_rm_number | awk '{print $4}'); do
             echo -e "$(date "+%F %T") Roated s3 backup: $backup"
-            s3cmd $options del $backup > /dev/null 2>&1
+            s3cmd ${options[@]} del $backup > /dev/null 2>&1
         done
     fi
 
