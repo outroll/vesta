@@ -40,16 +40,16 @@ server {
     location ~* ^/.well-known/ {
         allow all;
     }
-    
+
     # Block access to "hidden" files and directories whose names begin with a
     # period. This includes directories used by version control systems such
     # as Subversion or Git to store control files.
     location ~ (^|/)\. {
-            return 403;
+        return 403;
     }
 
     location / {
-        try_files $uri @rewrite; # For Drupal <= 6
+        try_files $uri /index.php?$query_string; # For Drupal >= 7
     }
 
     location @rewrite {
@@ -89,7 +89,7 @@ server {
     }
 
     # Fighting with Styles? This little gem is amazing.
-    location ~ ^/sites/.*/files/imagecache/ { # For Drupal <= 6
+    location ~ ^/sites/.*/files/styles/ { # For Drupal >= 7
         try_files $uri @rewrite;
     }
 

@@ -1,15 +1,11 @@
 server {
-    listen      %ip%:%web_ssl_port%;
+    listen      %ip%:%web_port%;
     server_name %domain_idn% %alias_idn%;
     root        %docroot%;
     index       index.php index.html index.htm;
     access_log  /var/log/nginx/domains/%domain%.log combined;
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
     error_log   /var/log/nginx/domains/%domain%.error.log error;
-
-    ssl         on;
-    ssl_certificate      %ssl_pem%;
-    ssl_certificate_key  %ssl_key%;
 
     location = /favicon.ico {
         log_not_found off;
@@ -40,16 +36,16 @@ server {
     location ~* ^/.well-known/ {
         allow all;
     }
-    
+
     # Block access to "hidden" files and directories whose names begin with a
     # period. This includes directories used by version control systems such
     # as Subversion or Git to store control files.
     location ~ (^|/)\. {
-            return 403;
+        return 403;
     }
 
     location / {
-        try_files $uri @rewrite; # For Drupal <= 6
+        try_files $uri /index.php?$query_string; # For Drupal >= 7
     }
 
     location @rewrite {
@@ -89,7 +85,7 @@ server {
     }
 
     # Fighting with Styles? This little gem is amazing.
-    location ~ ^/sites/.*/files/imagecache/ { # For Drupal <= 6
+    location ~ ^/sites/.*/files/styles/ { # For Drupal >= 7
         try_files $uri @rewrite;
     }
 
