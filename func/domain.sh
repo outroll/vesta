@@ -240,11 +240,18 @@ get_web_config_lines() {
         check_result $E_PARSING "can't parse config $2"
     fi
 
-    top_line=$((vhost_lines + 1 - tpl_lines))
-    bottom_line=$((top_line - 1 + tpl_last_line))
-    multi=$(sed -n "$top_line,$bottom_line p" $2 |grep ServerAlias |wc -l)
-    if [ "$multi" -ge 2 ]; then
-        bottom_line=$((bottom_line + multi -1))
+    if [[ $2 == *"apache2.conf" ]] || [[ $2 == *"httpd.conf" ]]; then
+        top_line=$((vhost_lines + 1 - tpl_lines))
+        bottom_line=$(tail -n +$top_line $2 | grep -niF "</VirtualHost>")
+        bottom_line=$(echo "$bottom_line" | sed -n 1p |cut -f 1 -d :)
+        bottom_line=$((top_line+bottom_line));
+    else
+        top_line=$((vhost_lines + 1 - tpl_lines))
+        bottom_line=$((top_line - 1 + tpl_last_line))
+        multi=$(sed -n "$top_line,$bottom_line p" $2 |grep ServerAlias |wc -l)
+        if [ "$multi" -ge 2 ]; then
+            bottom_line=$((bottom_line + multi -1))
+        fi
     fi
 }
 
