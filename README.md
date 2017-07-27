@@ -36,6 +36,10 @@ Then run it:
 bash vst-install.sh
 ```
 
+How to install (with advanced settings)
+----------------------------
+Go to [VestaCP Install page](http://vestacp.com/install/), scroll to **ADVANCED INSTALL SETTINGS** section and generate your own install command.
+
 License
 ----------------------------
 Vesta is licensed under  [GPL v3 ](https://github.com/serghey-rodin/vesta/blob/master/LICENSE) license
