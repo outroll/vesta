@@ -89,15 +89,22 @@ uri=$(echo "$answer" |grep -A 3 http-01 |grep uri |cut -f 4 -d \")
 # Adding location wrapper for request challenge
 if [ "$WEB_SYSTEM" = 'nginx' ] || [ "$PROXY_SYSTEM" = 'nginx' ]; then
     conf="$HOMEDIR/$user/conf/web/nginx.$r_domain.conf_letsencrypt"
+    sconf="$HOMEDIR/$user/conf/web/snginx.$r_domain.conf_letsencrypt"
     if [ ! -e "$conf" ]; then
         echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' > $conf
         echo '    default_type text/plain;' >> $conf
         echo '    return 200 "$1.'$thumb'";' >> $conf
         echo '}' >> $conf
     fi
+    if [ ! -e "$sconf" ]; then
+        ln -s "$conf" "$sconf"
+    fi
 else
     acme="$HOMEDIR/$user/web/$r_domain/public_html/.well-known/acme-challenge"
-    echo "$token" > $acme/$token.$thumb
+    if [ ! -d "$acme" ]; then
+        mkdir -p $acme
+    fi
+    echo "$token.$thumb" > $acme/$token
     chown -R $user:$user $HOMEDIR/$user/web/$r_domain/public_html/.well-known
 fi
 
@@ -110,7 +117,6 @@ else
     $BIN/v-restart-web
     check_result $? "Web restart failed" >/dev/null
 fi
-sleep 30
 
 # Defining ACME query (request validation)
 query='{"resource":"challenge","type":"http-01","keyAuthorization"'
@@ -125,11 +131,18 @@ data=$data'"payload":"'"$payload"'","signature":"'"$signature"'"}'
 answer=$(curl -s -i -d "$data" "$uri")
 
 # Checking domain validation status
-status=$(echo $answer |grep status |cut -f 4 -d \")
+i=1
+status=$(echo $answer |tr ',' '\n' |grep status |cut -f 4 -d \")
 location=$(echo "$answer" |grep Location: |awk '{print $2}' |tr -d '\r\n')
-while [ "$status" = 'pending' ] ; do
+while [ "$status" = 'pending' ]; do
     answer=$(curl -s -i "$location")
+    detail="$(echo $answer |tr ',' '\n' |grep detail |cut -f 4 -d \")"
     status=$(echo "$answer" |tr ',' '\n' |grep status |cut -f 4 -d \")
+    sleep 1
+    i=$((i + 1))
+    if [ "$i" -gt 60 ]; then
+        check_result $E_CONNECT "$detail"
+    fi
 done
 if [ "$status" = 'invalid' ]; then
     detail="$(echo $answer |tr ',' '\n' |grep detail |cut -f 4 -d \")"

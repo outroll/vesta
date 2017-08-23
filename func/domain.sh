@@ -84,17 +84,9 @@ is_web_alias_new() {
 
 # Prepare web backend
 prepare_web_backend() {
-    if [ -d "/etc/php-fpm.d" ]; then
-        pool="/etc/php-fpm.d"
-    fi
-    if [ -d "/etc/php5/fpm/pool.d" ]; then
-        pool="/etc/php5/fpm/pool.d"
-    fi
+    pool=$(find /etc/php* -type d \( -name "pool.d" -o -name "*fpm.d" \))
     if [ ! -e "$pool" ]; then
-        pool=$(find /etc/php* -type d \( -name "pool.d" -o -name "*fpm.d" \))
-        if [ ! -e "$pool" ]; then
-            check_result $E_NOTEXIST "php-fpm pool doesn't exist"
-        fi
+        check_result $E_NOTEXIST "php-fpm pool doesn't exist"
     fi
 
     backend_type="$domain"
@@ -180,6 +172,9 @@ add_web_config() {
         conf="$HOMEDIR/$user/conf/web/s$1.conf"
     fi
 
+    domain_idn=$domain
+    format_domain_idn
+
     cat $WEBTPL/$1/$WEB_BACKEND/$2 | \
         sed -e "s|%ip%|$local_ip|g" \
             -e "s|%domain%|$domain|g" \
@@ -236,6 +231,8 @@ get_web_config_lines() {
         check_result $E_PARSING "can't parse template $1"
     fi
 
+    domain_idn=$domain
+    format_domain_idn
     vhost_lines=$(grep -niF "name $domain_idn" $2)
     vhost_lines=$(echo "$vhost_lines" |egrep "$domain_idn($| |;)") #"
     vhost_lines=$(echo "$vhost_lines" |cut -f 1 -d :)

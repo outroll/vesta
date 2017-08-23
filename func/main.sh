@@ -2,7 +2,7 @@
 # Internal variables
 HOMEDIR='/home'
 BACKUP='/backup'
-BACKUP_GZIP=5
+BACKUP_GZIP=9
 BACKUP_DISK_LIMIT=95
 BACKUP_LA_LIMIT=5
 RRD_STEP=300
@@ -109,6 +109,7 @@ is_system_enabled() {
         check_result $E_DISABLED "$2 is not enabled"
     fi
 }
+
 
 # User package check
 is_package_full() {
@@ -365,6 +366,40 @@ decrease_user_value() {
         new=0
     fi
     sed -i "s/$key='$old'/$key='$new'/g" $conf
+}
+
+# Notify user
+send_notice() {
+    topic=$1
+    notice=$2
+
+    if [ "$notify" = 'yes' ]; then
+        touch $USER_DATA/notifications.conf
+        chmod 660 $USER_DATA/notifications.conf
+
+        time_n_date=$(date +'%T %F')
+        time=$(echo "$time_n_date" |cut -f 1 -d \ )
+        date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+        nid=$(grep "NID=" $USER_DATA/notifications.conf |cut -f 2 -d \')
+        nid=$(echo "$nid" |sort -n |tail -n1)
+        if [ ! -z "$nid" ]; then
+            nid="$((nid +1))"
+        else
+            nid=1
+        fi
+
+        str="NID='$nid' TOPIC='$topic' NOTICE='$notice' TYPE='$type'"
+        str="$str ACK='no' TIME='$time' DATE='$date'"
+
+        echo "$str" >> $USER_DATA/notifications.conf
+
+        if [ -z "$(grep NOTIFICATIONS $USER_DATA/user.conf)" ]; then
+            sed -i "s/^TIME/NOTIFICATIONS='yes'\nTIME/g" $USER_DATA/user.conf
+        else
+            update_user_value "$user" '$NOTIFICATIONS' "yes"
+        fi
+    fi
 }
 
 # Recalculate U_DISK value
@@ -692,17 +727,18 @@ is_cron_format_valid() {
             check_format='ok'
         fi
     fi
-    if [[ "$1" =~ ^[0-9][-|,|0-9]{0,28}[0-9]$ ]]; then
+    if [[ "$1" =~ ^[0-9][-|,|0-9]{0,70}[\/][0-9]$ ]]; then
         check_format='ok'
         crn_values=${1//,/ }
         crn_values=${crn_values//-/ }
+        crn_values=${crn_values//\// }
         for crn_vl in $crn_values; do
             if [ "$crn_vl" -gt $limit ]; then
                 check_format='invalid'
             fi
         done
     fi
-    if [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -lt $limit ]; then
+    if [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -le $limit ]; then
         check_format='ok'
     fi
     if [ "$check_format" != 'ok' ]; then
@@ -807,4 +843,41 @@ is_format_valid() {
             esac
         fi
     done
+}
+
+# Domain argument formatting
+format_domain() {
+    if [[ "$domain" = *[![:ascii:]]* ]]; then
+        if [[ "$domain" =~ [[:upper:]] ]]; then
+            domain=$(echo "$domain" |sed 's/[[:upper:]].*/\L&/')
+        fi
+    else
+        if [[ "$domain" =~ [[:upper:]] ]]; then
+            domain=$(echo "$domain" |tr '[:upper:]' '[:lower:]')
+        fi
+    fi
+    if [[ "$domain" =~ ^www\..* ]]; then
+        domain=$(echo "$domain" |sed -e "s/^www.//")
+    fi
+    if [[ "$domain" =~ .*\.$ ]]; then
+        domain=$(echo "$domain" |sed -e "s/\.$//")
+    fi
+}
+
+format_domain_idn() {
+    if [ -z "$domain_idn" ]; then
+        domain_idn=$domain
+    fi
+    if [[ "$domain_idn" = *[![:ascii:]]* ]]; then
+        domain_idn=$(idn -t --quiet -a $domain_idn)
+    fi
+}
+
+format_aliases() {
+    if [ ! -z "$aliases" ] && [ "$aliases" != 'none' ]; then
+        aliases=$(echo $aliases |tr '[:upper:]' '[:lower:]' |tr ',' '\n')
+        aliases=$(echo "$aliases" |sed -e "s/\.$//" |sort -u)
+        aliases=$(echo "$aliases" |grep -v www.$domain |sed -e "/^$/d")
+        aliases=$(echo "$aliases" |tr '\n' ',' |sed -e "s/,$//")
+    fi
 }

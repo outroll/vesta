@@ -47,6 +47,18 @@ if (!empty($_POST['ok'])) {
     // Define domain ip address
     $v_ip = escapeshellarg($_POST['v_ip']);
 
+    // Using public IP instead of internal IP when creating DNS 
+    // Gets public IP from 'v-list-user-ips' command (that reads /vesta/data/ips/ip), precisely from 'NAT' field
+    $v_public_ip = $v_ip;
+    $v_clean_ip = $_POST['v_ip'];  // clean_ip = IP without quotas
+    exec (VESTA_CMD."v-list-user-ips ".$user." json", $output, $return_var);
+    $ips = json_decode(implode('', $output), true);
+    unset($output);
+    if (isset($ips[$v_clean_ip]) && isset($ips[$v_clean_ip]['NAT']) && trim($ips[$v_clean_ip]['NAT'])!='') {
+        $v_public_ip = trim($ips[$v_clean_ip]['NAT']);
+        $v_public_ip = escapeshellarg($v_public_ip);
+    }
+
     // Define domain aliases
     $v_aliases = $_POST['v_aliases'];
     $aliases = preg_replace("/\n/", ",", $v_aliases);
@@ -114,7 +126,7 @@ if (!empty($_POST['ok'])) {
 
     // Add DNS domain
     if (($_POST['v_dns'] == 'on') && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_ip, $output, $return_var);
+        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_public_ip." '' '' '' '' '' '' '' '' 'no'", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
@@ -147,16 +159,12 @@ if (!empty($_POST['ok'])) {
     }
 
     // Add Lets Encrypt support
-
      if ((!empty($_POST['v_letsencrypt'])) && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-list-web-domain ".$user." ".$v_domain." json", $output, $return_var);
-        $data = json_decode(implode('', $output), true);
-        exec (VESTA_CMD."v-add-letsencrypt-domain ".$user." ".$v_domain." '".$data['ALIAS']."' 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-schedule-letsencrypt-domain ".$user." ".$v_domain, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
-     }
-     else {
-         // Add SSL certificates only if Lets Encrypt is off
+     } else {
+        // Add SSL certificates only if Lets Encrypt is off
          if ((!empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
              exec ('mktemp -d', $output, $return_var);
              $tmpdir = $output[0];
@@ -191,8 +199,8 @@ if (!empty($_POST['ok'])) {
              check_return_code($return_var,$output);
              unset($output);
          }
-
      }
+
     // Add web stats
     if ((!empty($_POST['v_stats'])) && ($_POST['v_stats'] != 'none' ) && (empty($_SESSION['error_msg']))) {
         $v_stats = escapeshellarg($_POST['v_stats']);
@@ -228,13 +236,6 @@ if (!empty($_POST['ok'])) {
         check_return_code($return_var,$output);
         unset($output);
     }
-
-    // Restart backend server
-    //if ((!empty($_SESSION['WEB_BACKEND'])) && (empty($_SESSION['error_msg']))) {
-    //    exec (VESTA_CMD."v-restart-web-backend", $output, $return_var);
-    //    check_return_code($return_var,$output);
-    //    unset($output);
-    //}
 
     // Restart proxy server
     if ((!empty($_SESSION['PROXY_SYSTEM'])) && ($_POST['v_proxy'] == 'on') && (empty($_SESSION['error_msg']))) {
@@ -332,7 +333,7 @@ if (!empty($_POST['ok'])) {
 
     // Flush field values on success
     if (empty($_SESSION['error_msg'])) {
-        $_SESSION['ok_msg'] = __('WEB_DOMAIN_CREATED_OK',htmlentities($_POST[v_domain]),htmlentities($_POST[v_domain]));
+        $_SESSION['ok_msg'] = __('WEB_DOMAIN_CREATED_OK',htmlentities($_POST['v_domain']),htmlentities($_POST['v_domain']));
         unset($v_domain);
         unset($v_aliases);
         unset($v_ssl);
@@ -344,7 +345,6 @@ if (!empty($_POST['ok'])) {
         unset($v_ftp);
     }
 }
-
 
 // Define user variables
 $v_ftp_user_prepath = $panel[$user]['HOME'] . "/web";

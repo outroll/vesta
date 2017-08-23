@@ -916,16 +916,18 @@ input[type="checkbox"] {
 
 .l-stat {
   margin: 0 auto;
-  display: table;
   margin: 34px auto;
   position: fixed;
   background-color: #fff;
   z-index: 100;
   padding-top: 30px;
+  width: 100%;
+  overflow: hidden;
 }
 .l-stat__col {
-  display: table-cell;
+  display: block;
   vertical-align: top;
+  float: left;
 }
 .l-stat__col a {
   display: inline-block;
@@ -2351,7 +2353,7 @@ body.mobile .l-icon-shortcuts {
   color: #BE5ABF;
   font-weight: bold;
   display: inline-block;
-  height: 16px;
+  height: 17px;
   overflow: hidden;
   padding-top: 6px;
   width: 593px;
@@ -2361,7 +2363,7 @@ body.mobile .l-icon-shortcuts {
   color: #9fbf0c;
   font-weight: bold;
   display: inline-block;
-  height: 16px;
+  height: 17px;
   overflow: hidden;
   padding-top: 6px;
   max-width: 600px;
@@ -2432,6 +2434,11 @@ body.mobile .l-icon-shortcuts {
 label {
   cursor: pointer;
 }
+
+label:hover {
+  color: #333;
+}
+
 .vst-input {
   background-color: #fff;
   border: 1px solid #cfcfcf;
@@ -2507,7 +2514,7 @@ label {
 }
 
 .vst-list.flat {
-  border: 1px solid #fff; 
+  border: 1px solid #fff;
   color: #2c9491;
   text-transform: uppercase;
   font-weight: bold;
@@ -3118,13 +3125,14 @@ form#vstobjects.suspended {
   background: rgba(50, 50, 50, 0.9);
   display: inline-block;
   position: fixed;
-  right: 20%;
+  left: 50%;
   bottom: 0;
   color: #eee;
   width: 800px;
   border: 1px solid #333;
   font-size: 13px;
   z-index: 120;
+  transform: translate(-50%, 0);
 }
 .shortcuts .header {
   border-bottom: 1px solid #333;

@@ -27,7 +27,7 @@
           $back = "location.href='".$back."'";
         }
       ?>
-        <form id="vstobjects" name="v_edit_mail_acc" method="post"  class="<?=$v_status?>">
+      <form id="vstobjects" name="v_edit_mail_acc" method="post"  class="<?=$v_status?>">
             <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
             <input type="hidden" name="save" value="save" />
 
@@ -45,7 +45,7 @@
                         </table>
                     </td>
                     <td class="data-dotted">
-                    <table class="data-col2" width="600px">
+                      <table class="data-col2" width="600px">
                         <tr>
                             <td class="vst-text step-top input-label">
                                 <?php print __('Account');?>
@@ -53,19 +53,19 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="text" size="20" class="vst-input" name="v_email" <?php if (!empty($v_account)) echo "value=".htmlentities($_GET['account'])."@".htmlentities($_GET['domain']); ?> disabled >
-                                <input type="hidden" name="v_domain" <?php echo "value=".htmlentities($v_domain); ?>>
-                                <input type="hidden" name="v_account" <?php if (!empty($v_account)) echo "value=".htmlentities($v_account); ?> >
+                                <input type="text" size="20" class="vst-input" name="v_email" value="<?=htmlentities($_GET['account'])."@".htmlentities($_GET['domain'])?>" disabled >
+                                <input type="hidden" name="v_domain" value="<?=htmlentities(trim($v_domain, "'"))?>">
+                                <input type="hidden" name="v_account" value="<?=htmlentities(trim($v_account, "'"))?>">
                             </td>
                         </tr>
                         <tr>
                             <td class="vst-text input-type input-label">
-                                <?php print __('Password');?> / <a href="javascript:randomString();" class="generate"><?php print __('generate');?></a>
+                                <?php print __('Password');?> / <a href="javascript:randomString();" class="generate"><?=__('generate')?></a>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <input type="text" size="20" class="vst-input password" name="v_password" <?php if (!empty($v_password)) echo "value=".htmlentities($v_password); ?>
+                                <input type="text" size="20" class="vst-input password" name="v_password" value="<?=htmlentities(trim($v_password, "'"))?>">
                             </td>
                          </tr>
                         <tr>
@@ -74,8 +74,8 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                <input type="text" size="20" class="vst-input" name="v_quota" <?php if (!empty($v_quota)) {echo "value=".htmlentities($v_quota);} else { echo "value=0";}; ?>>
+                          <td>
+                                <input type="text" size="20" class="vst-input" name="v_quota" value="<? if (!empty($v_quota)) {echo htmlentities(trim($v_quota, "'"));} else { echo "0"; } ?>">
                                 <img class="unlim-trigger" id="unlim-quota" src="/images/unlim.png" />
                             </td>
                         </tr>
@@ -86,7 +86,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <textarea size="20" class="vst-textinput short" name="v_aliases"><?php if (!empty($v_aliases)) echo htmlentities($v_aliases);  ?></textarea>
+                                <textarea size="20" class="vst-textinput short" name="v_aliases"><?=htmlentities(trim($v_aliases, "'"))?></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -96,7 +96,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <textarea size="20" class="vst-textinput" name="v_fwd"><?php if (!empty($v_fwd)) echo htmlentities($v_fwd);  ?></textarea>
+                                <textarea size="20" class="vst-textinput" name="v_fwd"><?=htmlentities(trim($v_fwd, "'"))?></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -111,7 +111,7 @@
                         </tr>
                         <tr>
                             <td class="step-left">
-                                <table style="display:<?php if ($v_autoreply == 'no') { echo 'none';} else {echo 'block';}?> ;" id="autoreplytable">
+                                <table style="display:<?php if ($v_autoreply == 'yes') { echo 'block';} else {echo 'none';}?> ;" id="autoreplytable">
                                     <tr>
                                         <td class="vst-text" style="padding: 12px 0 0 0;">
                                             <?php print __('Message');?>
@@ -119,25 +119,35 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <textarea size="20" class="vst-textinput" name="v_autoreply_message"><?php if (!empty($v_autoreply_message)) echo htmlentities($v_autoreply_message); ?></textarea>
+                                            <textarea size="20" class="vst-textinput" name="v_autoreply_message"><?=htmlentities(trim($v_autoreply_message, "'"))?></textarea>
                                         </td>
                                     </tr>
                                 </table>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="vst-text input-label">
+                            <?php print __('Send login credentials to email address') ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text"  class="vst-input" name="v_send_email" value="<?=htmlentities(trim($v_send_email, "'"))?>">
+                            <input type="hidden" name="v_credentials" id="v_credentials">
+                        </td>
+                    </tr>
                     </table>
                     <table class="data-col2">
                         <tr>
                             <td class="step-top" width="116px">
-                                <input type="submit" name="save" value="<?php print __('Save');?>" class="button">
+                                <input type="submit" name="save" value="<?=__('Save')?>" class="button">
                             </td>
                             <td class="step-top">
-                                <input type="button" class="button cancel" value="<?php print __('Back');?>" onclick="<?php echo $back ?>">
+                                <input type="button" class="button cancel" value="<?=__('Back')?>" onclick="<?=$back?>">
                             </td>
                         </tr>
                     </table>
                 </td>
-
             <td class="mail-infoblock-td">
                 <div class="mail-infoblock">
                     <table>
@@ -148,14 +158,14 @@
                                     <option v_type="hostname" domain="<?=$hostname?>"><?=__('Use server hostname')?></option>
                                     <option v_type="hostname" domain="<?=$v_domain?>"><?=__('Use domain hostname')?></option>
                                     <option v_type="starttls"><?=__('Use STARTTLS')?></option>
-                                    <option v_type="ssl"><?=__('Use SSL')?></option>
-                                    <option v_type="no_encryption" domain="<?=$v_domain?>" encryption="<?=__('No encryption')?>"><?=__('No encryption')?></option>
+                                    <option v_type="ssl"><?=__('Use SSL / TLS')?></option>
+                                    <option v_type="no_encryption" domain="<?=htmlentities(trim($v_domain, "'"))?>" no_encryption="<?=__('No encryption')?>"><?=__('No encryption')?></option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
                             <td><?=__('Username')?>:</td>
-                            <td><div><span id="v_account">william.cage</span>@<?=htmlentities($v_domain)?></div></td>
+                            <td><div><span id="v_account">william.cage</span>@<?=htmlentities(trim($v_domain, "'"))?></div></td>
                         </tr>
                         <tr>
                             <td><?=__('Password')?>:</td>
@@ -178,7 +188,7 @@
                             <td><div><?=__('Normal password')?></div></td>
                         </tr>
                         <tr>
-                            <td><?=__('SMTP hostname')?></td>
+                            <td><?=__('SMTP hostname')?>:</td>
                             <td><div id="td_smtp_hostname"><?=$hostname?></div></td>
                         </tr>
                         <tr>
@@ -193,15 +203,15 @@
                             <td><?=__('SMTP auth method')?>:</td>
                             <td><div><?=__('Normal password')?></div></td>
                         </tr>
-			<?
-			  list($http_host, $port) = explode(':', $_SERVER["HTTP_HOST"].":");
-			  $webmail = "http://".$http_host."/webmail/";
-			  if (!empty($_SESSION['MAIL_URL'])) $webmail = $_SESSION['MAIL_URL'];
-			  ?>
+                        <?
+                          list($http_host, $port) = explode(':', $_SERVER["HTTP_HOST"].":");
+                          $webmail = "http://".$http_host."/webmail/";
+                          if (!empty($_SESSION['MAIL_URL'])) $webmail = $_SESSION['MAIL_URL'];
+                          ?>
                         <tr>
                             <td><?=__('Webmail URL')?>:</td>
                             <td><div><a class="vst" href="<?=$webmail?>" target="_blank"><?=$webmail?> <i></i></a></div></td>
-			</tr>
+                        </tr>
                     </table>
                 </div>
             </td>

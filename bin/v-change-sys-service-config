@@ -44,6 +44,7 @@ case $service in
     proftpd)        dst=$(find /etc/proftpd* -name 'proftpd.conf');;
     php)            dst=$(find /etc/php* -name php.ini);;
     mysql)          dst=$(find /etc/my* -name my.cnf);;
+    mysqld)         dst=$(find /etc/my* -name my.cnf);;
     mariadb)        dst=$(find /etc/my* -name my.cnf);;
     postgresql)     dst=$($BIN/v-list-sys-pgsql-config plain |cut -f 1);;
     postgresql-hba) dst=$($BIN/v-list-sys-pgsql-config plain |cut -f 2);;
@@ -88,21 +89,23 @@ done
 
 # Restarting service
 if [ "$update" = 'yes' ] && [ "$restart" != 'no' ]; then
+    if [[ "$service" =~ - ]]; then
+        service=$(echo ${service%-*})
+    fi
+
     if [ "$service" = 'php' ]; then
         if [ "$WEB_SYSTEM" = "nginx" ]; then
-            service=$WEB_BACKEND
+            service=$(ls /usr/sbin/php*fpm* |cut -f 4 -d /)
         else
             service=$WEB_SYSTEM
         fi
-    fi
-    if [[ "$service" =~ - ]]; then
-        service=$(echo ${service%-*})
     fi
 
     service $service restart >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         for config in $dst; do
-            mv -f $config.vst.back $config
+            cat $config.vst.back > $config
+            rm -f $config.vst.back
         done
         check_result $E_RESTART "$service failed to start with new config"
     fi
