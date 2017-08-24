@@ -12,7 +12,7 @@ Type here, e.g. php-fpm, apache, nginx, mysql
 
 ### Steps to Reproduce:
 
-Type here, e.g. install vesta and type rm -rf / --no-preserve-root
+Type here, e.g. install vesta and edited /etc/nginx/nginx.conf
 
 ### Related Issues/Forum Threads:
 

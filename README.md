@@ -1,42 +1,28 @@
-[Vesta Control Panel](http://vestacp.com/)
+Hestia Control Panel
 ==================================================
+(a fork of the [Vesta Control Panel](https://github.com/serghey-rodin/vesta))
 
-[![Join the chat at https://gitter.im/vesta-cp/Lobby](https://badges.gitter.im/vesta-cp/Lobby.svg)](https://gitter.im/vesta-cp/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Hestia is an open source Linux hosting control panel with a clean and focused interface. It's written purely in bash.
 
-* Vesta is an open source hosting control panel.
-* Vesta has a clean and focused interface without the clutter.
-* Vesta has the latest of very innovative technologies.
+Hestia currently supports the following operating systems:
+* Debian Linux (versions 7, 8)
+* Red Hat Enterprise Linux (versions 5, 6, 7)
+* Ubuntu Linux (versions 14.04 LTS, 16.04 LTS)
+
+Hestia uses the following technologies:
+* nginx or Apache2 with php5-fpm as web server
+* bind as DNS server
+* dovecot with exim4 and clamav as mail solution
+* proftpd or vsftpd as FTP server
+* fail2ban and iptables as firewall security solutions
+* MySQL and PostgreSQL databases
 
 How to install (2 step)
 ----------------------------
-Connect to your server as root via SSH
-```bash
-ssh root@your.server
-```
-
-Download the installation script, and run it:
-```bash
-curl http://vestacp.com/pub/vst-install.sh | bash
-```
-
-How to install (3 step)
-----------------------------
-If the above example does not work, try this 3 step method:
-Connect to your server as root via SSH
-```bash
-ssh root@your.server
-```
-
-Download the installation script:
-```bash
-curl -O http://vestacp.com/pub/vst-install.sh
-```
-Then run it:
-```bash
-bash vst-install.sh
-```
+1. be root
+2. download and execute the installation script `install/vst-install.sh`from this repository
 
 License
 ----------------------------
-Vesta is licensed under  [GPL v3 ](https://github.com/serghey-rodin/vesta/blob/master/LICENSE) license
+Vesta is licensed under the [GNU GPL v3](./LICENSE).
 
