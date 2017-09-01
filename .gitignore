@@ -3,3 +3,10 @@
 *.gzip
 *.gz
 *.DS_Store
+conf
+data
+php
+nginx
+ssl
+log
+web/rrd
