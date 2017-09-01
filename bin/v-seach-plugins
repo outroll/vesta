@@ -1,0 +1,102 @@
+#!/bin/bash
+# info: list web domains
+# options: keyword [FORMAT]
+#
+# The function to obtain the list of all plugins by keyword.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+plugin=$1
+format=${2-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    i=1
+    objects=$(grep PLUGIN $VESTA/conf/search_plugin.conf |wc -l)
+    echo "{"
+    while read str; do
+        eval $str
+        echo -n '    "'$PLUGIN'": {
+        "NAME": "'$NAME'",
+        "VERSION": "'$VERSION'",
+        "KEY": "'$KEY'",
+        "ACTIVE": "'$ACTIVE'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done < <(cat $VESTA/conf/search_plugin.conf)
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "PLUGIN   NAME   VERSION   KEY   ACTIVE   DATE"
+    echo "------   ----   -------   ---   ------   ----"
+    while read str; do
+        eval $str
+        echo "$PLUGIN $NAME $VERSION $KEY $ACTIVE $DATE"
+    done < <(cat $VESTA/conf/search_plugin.conf)
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    while read str; do
+        eval $str
+        echo -ne "PLUGIN\t$NAME\t$VERSION\t$KEY\t$ACTIVE\t$TIME\t$DATE"
+    done < <(cat $VESTA/conf/search_plugin.conf)
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "PLUGIN,NAME,VERSION,KEY,ACTIVE,TIME,DATE"
+    while read str; do
+        eval $str
+        echo "$PLUGIN,\"$NAME\",$VERSION,$KEY,$ACTIVE,$TIME,$DATE"
+    done < <(cat $VESTA/conf/search_plugin.conf)
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'KEYWORD [FORMAT]'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+wget https://cp.tpweb.org/plugin/search/$plugin -o $VESTA/conf/search_plugin.conf
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

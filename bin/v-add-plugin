@@ -1,0 +1,69 @@
+#!/bin/bash
+# info: add plugin
+# options: PLUGIN [RESTART]
+#
+# The function adds the plugin to the vestaCP installation
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+plugin=$1
+restart="${2-yes}"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+check_args '1' "$#" 'PLUGIN [RESTART]'
+is_format_valid 'plugin'
+is_object_valid 'plugin' 'PLUGIN' "plugin" #Change to is_plugin_not_installed
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Get plugin DATA from web
+#plugin=""
+pluginname=""
+pluginversion=""
+plugindownload=""
+pluginkey=""
+
+
+# Creating domain directories
+
+mkdir -p $PLUGIN
+cd $PLUGIN
+wget $plugindownload -O $plugin.tar.gz
+tar -xzf $plugin.tar.gz
+rm -f $plugin.tar.gz
+
+# Changing file owner & permission
+chmod 750 $PLUGIN/$plugin
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Generating timestamp
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+# Adding plugin in plugin.conf
+echo "PLUGIN='$plugin' NAME='$pluginname' VERSION='$version' KEY='$pluginkey' ACTIVE='no' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

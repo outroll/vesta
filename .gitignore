@@ -2,3 +2,4 @@
 *.zip
 *.gzip
 *.gz
+*.DS_Store

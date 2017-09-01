@@ -1,0 +1,87 @@
+#!/bin/bash
+# info: list plugin parameters
+# options: PLUGIN [FORMAT]
+#
+# The function to obtain plugin parameters.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+plugin=$1
+format=${2-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    echo '{'
+    echo '    "'PLUGIN'": {
+        "NAME": "'$NAME'",
+        "VERSION": "'$VERSION'",
+        "KEY": "'$KEY'",
+        "ACTIVE": "'$ACTIVE'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    source $VESTA/conf/vesta.conf
+    echo "PLUGIN:         $PLUGIN"
+    echo "NAME:           $NAME"
+    echo "VERSION:        $VERSION"
+    echo "KEY:            $KEY"
+    echo "ACTIVE:         $ACTIVE"
+    echo "TIME:           $TIME"
+    echo "DATE:           $DATE"
+}
+
+# PLAIN list function
+plain_list() {
+    echo -ne "$PLUGIN\t$NAME\t$VERSION\t$KEY\t$ACTIVE\t"
+    echo -e "$TIME\t$DATE"
+}
+
+# CSV list function
+csv_list() {
+    echo -n "PLUGIN,NAME,VERSION,KEY,ACTIVE,"
+    echo "TIME,DATE"
+    echo -n "$PLUGIN,$NAME,$VERSION,$KEY,$ACTIVE,"
+    echo "$TIME,$DATE"
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'PLUGIN [FORMAT]'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Parsing plugin
+eval $(grep "PLUGIN='$plugin'" $VESTA/conf/plugin.conf)
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

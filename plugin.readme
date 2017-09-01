@@ -1,0 +1,32 @@
+# Plugin readme
+
+- Plugin Add
+-> v-add-plugin PLUGIN [RESTART]
+
+- Plugin list
+--> v-list-plugins [FORMAT]
+--> v-list-plugin PLUGIN [FORMAT]
+
+- Plugin search
+--> v-search-plugins KEYWORD [FORMAT]
+
+- Plugin Activation
+--> v-activate-plugin PLUGIN [KEY] [FORMAT]
+
+- Plugin deactivate
+- plugin Update
+
+
+# Plugin structure
+/plugin
+-> /name/plugin.conf
+-> /name/bin
+-> /name/web
+-> /name/install
+--> /name/install/install.sh
+--> /name/install/update.sh
+
+
+
+
+#TODO Add build number (numeric value) and change update process to build number

@@ -1,0 +1,44 @@
+#!/bin/bash
+# info: add plugin
+# options: PLUGIN [KEY] [RESTART]
+#
+# The function adds the plugin to the vestaCP installation
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+plugin=$1
+key=${2-emtpy}
+restart="${3-yes}"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+check_args '1' "$#" 'PLUGIN [RESTART]'
+is_format_valid 'plugin'
+is_object_valid 'plugin' 'PLUGIN' "plugin" #Change to is_plugin_not_active
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+#Check and/or get key online
+#Change plugin active status
+#execute plugin install.sh script
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

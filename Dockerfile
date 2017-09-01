@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:16.04
 
 EXPOSE 22 80 8083 3306 443 25 993 110 53 54
 
@@ -20,7 +20,7 @@ RUN /vesta/install/vst-install-ubuntu-docker.sh --nginx yes --apache yes \
   --phpfpm no --named yes --remi yes --vsftpd no --proftpd no --iptables no \
   --fail2ban no --quota no --exim yes --dovecot yes --spamassassin no --clamav no \
   --mysql yes --postgresql no --hostname example.com --email test@example.com \
-  --password admin -y no --force
+  --password admin -y no
 
 #RUN cd /usr/local/vesta/data/ips && mv * 127.0.0.1 \
 #    && cd /etc/apache2/conf.d && sed -i -- 's/172.*.*.*:80/127.0.0.1:80/g' * && sed -i -- 's/172.*.*.*:8443/127.0.0.1:8443/g' * \

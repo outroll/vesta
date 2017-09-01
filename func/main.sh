@@ -11,6 +11,7 @@ USER_DATA=$VESTA/data/users/$user
 WEBTPL=$VESTA/data/templates/web
 DNSTPL=$VESTA/data/templates/dns
 RRD=$VESTA/web/rrd
+PLUGIN=$VESTA/plugin
 SENDMAIL="$VESTA/web/inc/mail-wrapper.php"
 
 # Return codes
@@ -943,6 +944,7 @@ is_format_valid() {
                 ttl)            is_int_format_valid "$arg" 'ttl';;
                 user)           is_user_format_valid "$arg" $arg_name;;
                 wday)           is_cron_format_valid "$arg" $arg_name ;;
+                plugin)         is_name_format_valid "$arg" 'object';;
             esac
         fi
     done

@@ -695,7 +695,6 @@ chmod -R 750 $VESTA/data/queue
 chmod 660 $VESTA/log/*
 rm -f /var/log/vesta
 ln -s $VESTA/log /var/log/vesta
-chown admin:admin $VESTA/data/sessions
 chmod 770 $VESTA/data/sessions
 
 # Generating Vesta configuration
@@ -1160,16 +1159,16 @@ fi
 #----------------------------------------------------------#
 
 # Deleting old admin user
-if [ ! -z "$(grep ^admin: /etc/passwd)" ] && [ "$force" = 'yes' ]; then
-    chattr -i /home/admin/conf > /dev/null 2>&1
-    userdel -f admin >/dev/null 2>&1
-    chattr -i /home/admin/conf >/dev/null 2>&1
-    mv -f /home/admin  $vst_backups/home/ >/dev/null 2>&1
-    rm -f /tmp/sess_* >/dev/null 2>&1
-fi
-if [ ! -z "$(grep ^admin: /etc/group)" ] && [ "$force" = 'yes' ]; then
-    groupdel admin > /dev/null 2>&1
-fi
+#if [ ! -z "$(grep ^admin: /etc/passwd)" ] && [ "$force" = 'yes' ]; then
+#    chattr -i /home/admin/conf > /dev/null 2>&1
+#    userdel -f admin >/dev/null 2>&1
+#    chattr -i /home/admin/conf >/dev/null 2>&1
+#    mv -f /home/admin  $vst_backups/home/ >/dev/null 2>&1
+#    rm -f /tmp/sess_* >/dev/null 2>&1
+#fi
+#if [ ! -z "$(grep ^admin: /etc/group)" ] && [ "$force" = 'yes' ]; then
+#    groupdel admin > /dev/null 2>&1
+#fi
 
 #Move bin files
 rm -rf /usr/local/vesta/bin /usr/local/vesta/func \
