@@ -1,7 +1,9 @@
     <div class="l-center">
       <div class="l-sort clearfix noselect">
-        <a href="/add/plugin/" class="l-sort__create-btn edit" title="<?=__('Add plugin')?>"></a>
-
+        <a href="/add/plugin/" class="l-sort__create-btn" title="<?=__('Add Plugin')?>"></a>
+        <ul class="context-menu sort-order" style="display:none;">
+          <li entity="sort-name"><span class="name active"><?=__('Name')?></span><span class="up">&nbsp;</span></li>
+        </ul>
         <div class="l-sort-toolbar clearfix">
           <table>
             <tr>
@@ -12,167 +14,134 @@
                   <input type="submit" value="" class="l-sort-toolbar__search" onClick="return doSearch('/search/')" />
                 </form>
               </td>
-              <td class="step-right">
-                <a class="vst" href="/list/server/?cpu" target="_blank" > <?=__('show: CPU / MEM / NET / DISK');?> </a>
-              </td>
               <td class="toggle-all">
                 <input id="toggle-all" type="checkbox" name="toggle-all" value="toggle-all" onChange="checkedAll('objects');">
                 <label for="toggle-all" class="check-label toggle-all"><?=__('toggle all')?></label>
               </td>
               <td>
-                <form action="/bulk/service/" method="post" id="objects">
+                <form action="/bulk/plugin/" method="post" id="objects">
                 <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
                 <div class="l-select">
-                    <select class="" name="action">
-                      <option value=""><?php print __('apply to selected');?></option>
-                      <option value="stop"><?php print __('stop');?></option>
-                      <option value="start"><?php print __('start');?></option>
-                      <option value="restart"><?php print __('restart');?></option>
-                    </select>
+                  <select name="action">
+                    <option value=""><?=__('apply to selected')?></option>
+                    <option value="active"><?=__('active')?></option>
+                    <option value="deactivate"><?=__('deactivate')?></option>
+                    <option value="delete"><?=__('delete')?></option>
+                  </select>
                 </div>
-                <input type="submit" class="l-sort-toolbar__filter-apply" value="">
+                <input type="submit" class="l-sort-toolbar__filter-apply" value=""/>
+              </td>
+              <td class="sort-by">
+                <?=__('sort by');?>: <span><b><?=__('Name')?></b></span> <i class="l-icon-down-arrow media-top"></i>
               </td>
             </tr>
           </table>
+          <!--  -->
         </div>
+        <!-- /.l-sort -->
       </div>
-      <!-- /.l-sort -->
     </div>
 
     <div class="l-separator"></div>
     <!-- /.l-separator -->
 
 
-    <div class="l-center units">
-      <div class="l-unit <? if($status == 'suspended') echo 'l-unit--suspended';?>">
+
+
+
+
+    <div class="l-center units narrow">
+                <?php
+                    foreach ($plugins as $key => $value) {
+                        ++$i;
+                        if ($value['ACTIVE'] == 'no') {
+                            $status = 'suspended';
+                            $spnd_action = 'Activate' ;
+                            $spnd_confirmation = 'UNSUSPEND_DOMAIN_CONFIRMATION' ;
+                        } else {
+                            $status = 'active';
+                            $spnd_action = 'Deactivate' ;
+                            $spnd_confirmation = 'SUSPEND_DOMAIN_CONFIRMATION' ;
+                        }
+                    ?>
+
+      <div class="l-unit <? if($value['ACTIVE'] == 'no') echo 'l-unit--suspended'; if($_SESSION['favourites']['PLUGIN'][$key] == 1) echo ' l-unit--starred'; if($value['BUILDNUMBER'] < $value['LATEST_BUILDNUMBER']) echo ' l-unit--outdated'; ?>" v_section="plugin" v_unit_id="<?=$key?>"
+id="plugin-unit-<?=$i?>"  sort-name="<?=$key?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
-            <input id="check0" class="ch-toggle" type="checkbox" name="srv[]" value="<?php echo $sys['sysinfo']['HOSTNAME'] ?>">
-            <label for="check0" class="check-label"></label>
+            <input id="check<?=$i?>" class="ch-toggle" type="checkbox" name="plugin[]" value="<?=$key?>">
+            <label for="check<?=$i?>" class="check-label"></label>
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__configure shortcut-enter" key-action="href"><a href="/edit/server/"><?=__('configure')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
-              <div class="actions-panel__col actions-panel__restart shortcut-r" key-action="href"><a href="/restart/system/?hostname=<?php echo $sys['sysinfo']['HOSTNAME'] ?>"><?=__('restart')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
+              <div class="actions-panel__col actions-panel__edit shortcut-enter" key-action="href"><a href="/edit/plugin/?domain=<?=$key?>"><?=__('edit')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
+              <div class="actions-panel__col actions-panel__suspend shortcut-s" key-action="js">
+                <a id="<?=$spnd_action ?>_link_<?=$i?>" class="data-controls do_<?=$spnd_action?>">
+                  <?=__($spnd_action)?> <i class="do_<?=$spnd_action?>"></i>
+                  <input type="hidden" name="<?=$spnd_action?>_url" value="/<?=$spnd_action?>/plugin/?domain=<?=$key?>&token=<?=$_SESSION['token']?>" />
+                  <div id="<?=$spnd_action?>_dialog_<?=$i?>" class="confirmation-text-suspention hidden" title="<?=__('Confirmation')?>">
+                    <p class="confirmation"><?=__($spnd_confirmation,$key)?></p>
+                  </div>
+                </a>
+                <span class="shortcut">&nbsp;S</span>
+              </div>
+              <div class="actions-panel__col actions-panel__delete shortcut-delete" key-action="js">
+                <a id="delete_link_<?=$i?>" class="data-controls do_delete">
+                  <?=__('delete')?> <i class="do_delete"></i>
+                  <input type="hidden" name="delete_url" value="/delete/plugin/?plugin=<?=$key?>&token=<?=$_SESSION['token']?>" />
+                  <div id="delete_dialog_<?=$i?>" class="confirmation-text-delete hidden" title="<?=__('Confirmation')?>">
+                    <p class="confirmation"><?=__('DELETE_DOMAIN_CONFIRMATION',$key)?></p>
+                  </div>
+                </a>
+                <span class="shortcut delete">&nbsp;Del</span>
+              </div>
+              <?php if($value['BUILDNUMBER'] < $value['LATEST_BUILDNUMBER']) { ?>
+                <div class="actions-panel__col actions-panel__update shortcut-u" key-action="href">
+                  <a href="/update/plugin/?pkg=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('update')?><i></i></a><span class="shortcut">&nbsp;U</span>
+                </div>
+              <?php } ?>
+
             </div>
-            <!-- /.actions-panel -->
+            <!-- /.actiona-panel -->
           </div>
           <!-- l-unit-toolbar__col -->
         </div>
         <!-- /.l-unit-toolbar -->
 
         <div class="l-unit__col l-unit__col--left clearfix">
-          <div class="l-unit__suspended"><?__('suspended')?></div>
-          <!-- div class="l-unit__date">
-          </div-->
+          <div class="l-unit__date">
+            <?=translate_date($value['DATE'])?>
+          </div>
+          <div class="text-center">
+            <i class="l-icon-star" title="<?=__('save to favorites')?>"></i>
+          </div>
         </div>
         <!-- /.l-unit__col -->
         <div class="l-unit__col l-unit__col--right">
-          <div class="l-unit__name separate">
-            <?=$sys['sysinfo']['HOSTNAME']?>
+          <div class="l-unit__name" u_name="<?=$key?>">
+            <?=$value['NAME']?> <span><?=$key?></span>
           </div>
-
-
-          <div class="l-unit__stats">
+            <div class="l-unit__stats">
             <table>
 
                <tr>
                 <td>
                   <div class="l-unit__stat-cols clearfix">
-                    <div class="l-unit__stat-col l-unit__stat-col--left">
-                      <b><?=$sys['sysinfo']['OS']?>
-                      <?=$sys['sysinfo']['VERSION']?></b>
-                    </div>
-                    <div class="l-unit__stat-col l-unit__stat-col--right">(<?=$sys['sysinfo']['ARCH']?>)</div>
+                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Version')?>:</div>
+                    <div class="l-unit__stat-col l-unit__stat-col--right"><b><?=$value['VERSION']?></b> <?=$value['BUILDNUMBER']?></div>
                   </div>
                 </td>
                 <td>
                   <div class="l-unit__stat-cols clearfix">
-                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Load Average')?>:</div>
-                    <div class="l-unit__stat-col l-unit__stat-col--right"><b><?=$sys['sysinfo']['LOADAVERAGE']?></b></div>
+                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Latest Version')?>:</div>
+                    <div class="l-unit__stat-col l-unit__stat-col--right"><b><?=$value['LATEST_VERSION']?></b> <?=$value['LATEST_BUILDNUMBER']?></div>
                   </div>
                 </td>
                 <td>
                   <div class="l-unit__stat-cols clearfix last">
-                    <div class="l-unit__stat-col l-unit__stat-col--left compact"><?=__('Uptime')?>:</div>
-                    <div class="l-unit__stat-col l-unit__stat-col--right"><b><?=humanize_time($sys['sysinfo']['UPTIME'])?></b></div>
-                  </div>
-                </td>
-              </tr>
-
-            </table>
-          </div>
-          <!-- /.l-unit__stats -->
-        </div>
-        <!-- /.l-unit__col -->
-      </div>
-      <!-- /.l-unit -->
-
-
-
-      <?php
-        foreach ($plugins as $key => $value) {
-        ++$i;
-          if ($value['ACTIVE'] == 'yes') {
-            $status = 'active';
-            $action = 'deactivate';
-          } else {
-            $status = 'notactive';
-            $action = 'activate';
-          }
-      ?>
-
-
-      <div class="l-unit <? if($status == 'notactive') echo 'l-unit--suspended';?>">
-        <div class="l-unit-toolbar clearfix">
-          <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
-            <input id="check<?php echo $i ?>" class="ch-toggle" type="checkbox" name="plugin[]" value="<?php echo $key ?>">
-            <label for="check<?php echo $i ?>" class="check-label"></label>
-          </div>
-          <!-- l-unit-toolbar__col -->
-          <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
-            <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__configure shortcut-enter" key-action="href"><a href="/edit/plugin/<? echo $key ?>/"><?=__('configure')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
-              <div class="actions-panel__col actions-panel__<?=$action?> shortcut-s" key-action="href"><a href="/<?php echo $action ?>/plugin/?plugin=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__($action)?> <i></i></a><span class="shortcut">&nbsp;S</span></div>
-            </div>
-            <!-- /.actions-panel -->
-          </div>
-          <!-- l-unit-toolbar__col -->
-        </div>
-        <!-- /.l-unit-toolbar -->
-
-        <div class="l-unit__col l-unit__col--left clearfix step-left">
-          <!-- div class="l-unit__date">
-          </div-->
-        </div>
-        <!-- /.l-unit__col -->
-        <div class="l-unit__col l-unit__col--right">
-          <div class="l-unit__name small-2">
-            <?=$key?>
-          </div>
-
-
-          <div class="l-unit__stats">
-            <table>
-
-               <tr>
-                <td>
-                  <div class="l-unit__stat-cols clearfix">
-                    <div class="l-unit__stat-col l-unit__stat-col--left"><b><?=__($value['NAME'])?></b></div>
-                    <div class="l-unit__stat-col l-unit__stat-col--right"><?=__($value['PLUGIN'])?></div>
-                  </div>
-                </td>
-                <td>
-                  <div class="l-unit__stat-cols clearfix">
-                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Version')?>: <b><?=$value['VERSION']?></b></div>
-                    <div class="l-unit__stat-col l-unit__stat-col--right"><?=__('Latest version')?>: <b>0.0.0</b></div>
-                  </div>
-                </td>
-                <td>
-                  <div class="l-unit__stat-cols clearfix last">
-                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Uptime')?>: <b>BLABAL</b></div>
-                    <div class="l-unit__stat-col l-unit__stat-col--right"></div>
+                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Version')?>:</div>
+                    <div class="l-unit__stat-col l-unit__stat-col--right"><b><?=$value['VERSION']?></b></div>
                   </div>
                 </td>
               </tr>
@@ -190,12 +159,22 @@
 
     </div>
 
+
     <div id="vstobjects">
       <div class="l-separator"></div>
       <div class="l-center">
         <div class="l-unit-ft">
+          <table class='data'></table>
           <div class="l-unit__col l-unit__col--left clearfix"></div>
-          <div class="data-count l-unit__col l-unit__col--right clearfix"></div>
+          <div class="data-count l-unit__col l-unit__col--right clearfix">
+            <?php
+              if ( $i == 1) {
+                echo __('1 plugin');
+              } else {
+                echo __('%s plugins',$i);
+              }
+            ?>
+          </div>
         </div>
+      </div>
     </div>
-  </div>

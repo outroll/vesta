@@ -37,6 +37,9 @@ pluginname=""
 pluginversion=""
 plugindownload=""
 pluginkey=""
+pluginbuildnumber=""
+latestversion=""
+latestbuildnumber=""
 
 
 # Creating domain directories
@@ -60,7 +63,7 @@ time=$(echo "$time_n_date" |cut -f 1 -d \ )
 date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Adding plugin in plugin.conf
-echo "PLUGIN='$plugin' NAME='$pluginname' VERSION='$version' KEY='$pluginkey' ACTIVE='no' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
+echo "PLUGIN='$plugin' NAME='$pluginname' VERSION='$version' BUILDNUMBER='$pluginbuildnumber' LATEST_VERSION='$latestversion' LATEST_BUILDNUMBER='$latestbuildnumber' KEY='$pluginkey' ACTIVE='no' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
 
 #----------------------------------------------------------#
 #                       Vesta                              #

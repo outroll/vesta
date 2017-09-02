@@ -25,8 +25,3 @@
 -> /name/install
 --> /name/install/install.sh
 --> /name/install/update.sh
-
-
-
-
-#TODO Add build number (numeric value) and change update process to build number
