@@ -55,6 +55,7 @@ fi
 # Get old ip
 get_domain_values 'dns'
 old=$IP6
+ip=$IP
 
 if [ -z "$old" ]; then
     #Create new
@@ -77,9 +78,6 @@ fi
 
 # Changing ip
 update_object_value 'dns' 'DOMAIN' "$domain_idn" '$IP6' "$ipv6"
-
-# Changing records
-sed -i "s/$old/$ipv6/g" $USER_DATA/dns/$domain.conf
 
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
