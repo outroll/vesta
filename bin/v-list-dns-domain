@@ -18,7 +18,7 @@ format=${3-shell}
 source $VESTA/func/main.sh
 
 # Additional argument formatting
-format_domain
+format_domain "no"
 format_domain_idn
 
 # JSON list function

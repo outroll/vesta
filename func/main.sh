@@ -951,7 +951,7 @@ is_format_valid() {
 }
 
 # Domain argument formatting
-format_domain() {
+format_domain() { #[removeWWW (default: yes )]
     if [[ "$domain" = *[![:ascii:]]* ]]; then
         if [[ "$domain" =~ [[:upper:]] ]]; then
             domain=$(echo "$domain" |sed 's/[[:upper:]].*/\L&/')
@@ -961,7 +961,7 @@ format_domain() {
             domain=$(echo "$domain" |tr '[:upper:]' '[:lower:]')
         fi
     fi
-    if [[ "$domain" =~ ^www\..* ]]; then
+    if [[ "$domain" =~ ^www\..* ]] && [ "$1" != "no" ]; then
         domain=$(echo "$domain" |sed -e "s/^www.//")
     fi
     if [[ "$domain" =~ .*\.$ ]]; then
