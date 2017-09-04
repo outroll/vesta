@@ -52,7 +52,7 @@ for user in $users; do
                     echo "$domain $msg"
                 fi
             else
-                msg==$($BIN/v-add-letsencrypt-domain $user $domain)
+                msg=$($BIN/v-add-letsencrypt-domain $user $domain)
                 if [ $? -ne 0 ]; then
                     echo "$domain $msg"
                 fi
