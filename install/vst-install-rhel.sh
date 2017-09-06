@@ -880,8 +880,9 @@ if [ "$apache" = 'yes'  ]; then
         echo > conf.d/proxy_ajp.conf
     fi
     if [ -e "conf.modules.d/00-dav.conf" ]; then
-        sed -i "s/^/#/" conf.modules.d/00-dav.conf conf.modules.d/00-lua.conf
-        sed -i "s/^/#/" conf.modules.d/00-proxy.conf
+        sed -i "s/^/#/g" conf.modules.d/00-dav.conf 
+        sed -i "s/^/#/g" conf.modules.d/00-lua.conf
+        sed -i "s/^/#/g" conf.modules.d/00-proxy.conf
     fi
     echo > conf.d/vesta.conf
     touch logs/access_log logs/error_log logs/error_log logs/suexec.log
