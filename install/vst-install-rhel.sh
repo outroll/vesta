@@ -1205,8 +1205,10 @@ if [ "$fail2ban" = 'yes' ]; then
     fi
     chkconfig fail2ban on
     /bin/mkdir -p /var/run/fail2ban
-    sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/fail2ban/g" /usr/lib/systemd/system/fail2ban.service
-    systemctl daemon-reload
+    if [ "$release" -eq '7' ]; then
+      sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/fail2ban/g" /usr/lib/systemd/system/fail2ban.service
+      systemctl daemon-reload
+    fi
     service fail2ban start
     check_result $? "fail2ban start failed"
 fi
