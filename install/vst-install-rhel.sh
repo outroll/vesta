@@ -880,8 +880,9 @@ if [ "$apache" = 'yes'  ]; then
         echo > conf.d/proxy_ajp.conf
     fi
     if [ -e "conf.modules.d/00-dav.conf" ]; then
-        sed -i "s/^/#/" conf.modules.d/00-dav.conf conf.modules.d/00-lua.conf
-        sed -i "s/^/#/" conf.modules.d/00-proxy.conf
+        sed -i "s/^/#/g" conf.modules.d/00-dav.conf 
+        sed -i "s/^/#/g" conf.modules.d/00-lua.conf
+        sed -i "s/^/#/g" conf.modules.d/00-proxy.conf
     fi
     echo > conf.d/vesta.conf
     touch logs/access_log logs/error_log logs/error_log logs/suexec.log
@@ -1204,8 +1205,10 @@ if [ "$fail2ban" = 'yes' ]; then
     fi
     chkconfig fail2ban on
     /bin/mkdir -p /var/run/fail2ban
-    sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/fail2ban/g" /usr/lib/systemd/system/fail2ban.service
-    systemctl daemon-reload
+    if [ "$release" -eq '7' ]; then
+      sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/fail2ban/g" /usr/lib/systemd/system/fail2ban.service
+      systemctl daemon-reload
+    fi
     service fail2ban start
     check_result $? "fail2ban start failed"
 fi
