@@ -213,7 +213,8 @@ get_user_ips() {
 get_user_ip() {
     ip=$(get_user_ips |head -n1)
     if [ -z "$ip" ]; then
-        check_result $E_NOTEXIST "no IP is available"
+        ip="no"
+        #check_result $E_NOTEXIST "no IP is available"
     fi
     local_ip=$ip
     nat=$(grep "^NAT" $VESTA/data/ips/$ip |cut -f 2 -d \')
