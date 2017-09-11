@@ -18,7 +18,13 @@ release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
 vestacp="http://$CHOST/$VERSION/$release"
 
-if [ "$release" -eq 7 ]; then
+
+if [ "$release" -ne "7" ]; then
+    echo "Error: This Installer is for RHEL/CentOS 7. "
+    exit
+fi
+
+
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid php php-common php-cli
     php-bcmath php-gd php-imap php-mbstring php-mcrypt php-mysql php-pdo
     php-soap php-tidy php-xml php-xmlrpc php-fpm php-pgsql awstats webalizer
@@ -29,17 +35,6 @@ if [ "$release" -eq 7 ]; then
     sudo bc jwhois mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype
     fail2ban rsyslog iptables-services which vesta vesta-nginx vesta-php
     vim-common expect"
-else
-    software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
-    php php-common php-cli php-bcmath php-gd php-imap php-mbstring php-mcrypt
-    php-mysql php-pdo php-soap php-tidy php-xml php-xmlrpc php-fpm php-pgsql
-    awstats webalizer vsftpd proftpd bind bind-utils bind-libs exim dovecot
-    clamd spamassassin roundcubemail mysql mysql-server phpMyAdmin postgresql
-    postgresql-server postgresql-contrib phpPgAdmin e2fsprogs openssh-clients
-    ImageMagick curl mc screen ftp zip unzip flex sqlite pcre sudo bc jwhois
-    mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype fail2ban
-    which vesta vesta-nginx vesta-php vim-common expect"
-fi
 
 # Defining help function
 help() {
@@ -880,8 +875,9 @@ if [ "$apache" = 'yes'  ]; then
         echo > conf.d/proxy_ajp.conf
     fi
     if [ -e "conf.modules.d/00-dav.conf" ]; then
-        sed -i "s/^/#/" conf.modules.d/00-dav.conf conf.modules.d/00-lua.conf
-        sed -i "s/^/#/" conf.modules.d/00-proxy.conf
+        sed -i "s/^/#/g" conf.modules.d/00-dav.conf 
+        sed -i "s/^/#/g" conf.modules.d/00-lua.conf
+        sed -i "s/^/#/g" conf.modules.d/00-proxy.conf
     fi
     echo > conf.d/vesta.conf
     touch logs/access_log logs/error_log logs/error_log logs/suexec.log
@@ -895,7 +891,7 @@ if [ "$apache" = 'yes'  ]; then
     check_result $? "httpd start failed"
 
     # Workaround for OpenVZ/Virtuozzo
-    if [ "$release" -eq '7' ] && [ -e "/proc/vz/veinfo" ]; then
+    if [ -e "/proc/vz/veinfo" ]; then
         echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
         echo "sleep 2 && service httpd restart" >> /etc/rc.local
     fi
