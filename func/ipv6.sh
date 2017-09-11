@@ -198,7 +198,8 @@ get_user_ip6s() {
 get_user_ipv6() {
     ipv6=$(get_user_ip6s |head -n1)
     if [ -z "$ipv6" ]; then
-        check_result $E_NOTEXIST "no IP6 is available"
+        ipv6="no"
+        #check_result $E_NOTEXIST "no IP6 is available"
     fi
 }
 
