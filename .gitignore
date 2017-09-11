@@ -10,3 +10,4 @@ nginx
 ssl
 log
 web/rrd
+.vscode
