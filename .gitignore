@@ -11,3 +11,4 @@ ssl
 log
 web/rrd
 .vscode
+.DS_Store
