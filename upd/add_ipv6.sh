@@ -13,6 +13,14 @@ if [ ! -e "$VESTA/data/firewallv6" ]; then
 
 fi
 
+#download new templates
+$BIN/v-update-web-templates
+$BIN/v-update-dns-templates
+
+#testing
+#rm -rf /usr/local/vesta/data/templates/*
+# cp -rf /usr/local/vesta/install/rhel/7/templates/* /usr/local/vesta/data/templates/es/
+
 #set IPv4 version
 iplist=$(ls --sort=time $VESTA/data/ips/)
 for ip in $iplist; do
@@ -55,9 +63,6 @@ for user in $userlist; do
     $BIN/v-rebuild-user $user
 done
 
+$BIN/v-update-sys-ip-counters
 
-#download new templates
-$BIN/v-update-web-templates
-$BIN/v-update-dns-templates
-
-/usr/local/vesta/bin/v-add-user-notification admin "IPv6 support" "Your vesta installation supports IPv6!"
+$BIN/v-add-user-notification admin "IPv6 support" "Your vesta installation supports IPv6!"

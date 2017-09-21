@@ -3,7 +3,9 @@ is_ip_owner() {
     owner=$(grep 'OWNER=' $VESTA/data/ips/$ip |cut -f 2 -d \')
     if [ "$owner" != "$user" ]; then
         check_result $E_FORBIDEN "$ip is not owned by $user"
-    
+    fi
+}
+
 # Check if ip address is free
 is_ip_free() {
     if [ -e "$VESTA/data/ips/$ip" ]; then

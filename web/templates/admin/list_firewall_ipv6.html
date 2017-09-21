@@ -86,7 +86,7 @@ sort-ip="<?=str_replace(':', '', $data[$key]['IP6'])?>" sort-comment="<?=$data[$
               <div class="actions-panel__col actions-panel__<?=$spnd_action?> shortcut-s" key-action="js">
                 <a id="<?=$spnd_action ?>_link_<?=$i?>" class="data-controls do_<?=$spnd_action?>">
                   <?=__($spnd_action)?> <i class="do_<?=$spnd_action?>"></i>
-                  <input type="hidden" name="<?=$spnd_action?>_url" value="/<?=$spnd_action ?>/firewall/?rule=<?=$key?>&token=<?=$_SESSION['token']?>" />
+                  <input type="hidden" name="<?=$spnd_action?>_url" value="/<?=$spnd_action ?>/firewallv6/?rule=<?=$key?>&token=<?=$_SESSION['token']?>" />
                   <div id="<?=$spnd_action?>_dialog_<?=$i?>" class="confirmation-text-suspention hidden" title="<?=__('Confirmation')?>">
                     <p class="confirmation"><?=__($spnd_confirmation,$key)?></p>
                   </div>
