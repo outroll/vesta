@@ -55,6 +55,7 @@ fi
 get_domain_values 'dns'
 old=$IP6
 new=$ipv6
+ip=$IP
 
 if [ -z "$old" ]; then
     #Create new

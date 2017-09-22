@@ -57,6 +57,7 @@ fi
 get_domain_values 'dns'
 old=$IP
 new=$ip
+ipv6=$IP6
 
 if [ -z "$old" ]; then
     #Create new
@@ -71,7 +72,6 @@ else
         sed -i "s/$old/$ip/g" $USER_DATA/dns/$domain.conf
     else
         #Delete configs
-        ip=$old
         remove_dns_config_records
     fi
 fi
