@@ -46,7 +46,7 @@ if (!empty($_POST['ok'])) {
     $v_interface = escapeshellarg($_POST['v_interface']);
     $v_owner = escapeshellarg($_POST['v_owner']);
     $v_shared = $_POST['v_shared'];
-    $v_version = escapeshellarg($_POST['v_version']);
+    $v_version = $_POST['v_version'];
 
     // Check shared checkmark
     if ($v_shared == 'on') {
@@ -59,7 +59,7 @@ if (!empty($_POST['ok'])) {
 
     // Add IP
     if (empty($_SESSION['error_msg'])) {
-        if($v_version == "6") {
+        if($v_version == 6) {
             exec (VESTA_CMD."v-add-sys-ipv6 ".$v_ip." ".$v_netmask." ".$v_interface."  ".$v_owner." '".$ip_status."' ".$v_name." ".$v_nat, $output, $return_var);
         } else {
             exec (VESTA_CMD."v-add-sys-ip ".$v_ip." ".$v_netmask." ".$v_interface."  ".$v_owner." '".$ip_status."' ".$v_name, $output, $return_var);
