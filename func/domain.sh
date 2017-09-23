@@ -535,8 +535,6 @@ add_dns_config() {
     if [ ! -z $ipv6 ]; then
         spfipv6="ip6:$ipv6";
     fi
-    echo $spfipv4
-    echo $spfipv6
     
     # Adding dns zone to the user config
     echo "$template_data" | grep -v '%ip' |\
@@ -605,16 +603,14 @@ add_dns_config_records() {
     if [ ! -z "$ipv6" ]; then
         template_data=$(echo "$template_data" |grep "%ipv6%")
     fi
-
-    new_lines=$(echo "$template_data" |\
+    
+    echo "$template_data" |\
         sed -e "s/%ip%/$ip/g" \
             -e "s/%ipv6%/$ipv6/g" \
             -e "s/%time%/$time/g" \
             -e "s/%date%/$date/g" \
         |awk -F 'ID=' '{print $2}' \
-        |cut -d\' --complement -s -f1,2)
-
-    echo "$new_lines"\
+        |cut -d\' --complement -s -f1,2 \
     | while read line; do
         id=""
         get_next_dnsrecord
@@ -626,7 +622,7 @@ add_dns_config_records() {
 remove_dns_config_records() {
     template_data=$(cat $DNSTPL/$TPL.tpl)
     
-    # Adding dns zone to the user config
+    # Search template data
     template_data=$(echo "$template_data" |grep -v "v=spf1" |egrep "%ip(v6)?%")
     if [ -z "$ip" ]; then
         template_data=$(echo "$template_data" |grep "%ip%")
@@ -635,16 +631,14 @@ remove_dns_config_records() {
         template_data=$(echo "$template_data" |grep "%ipv6%")
     fi
     
-    delete_lines=$(echo "$template_data" |\
+    echo "$template_data" |\
         sed -e "s/%ip%/$old/g" \
             -e "s/%ipv6%/$old/g" \
         |awk -F 'ID=' '{print $2}' \
         |cut -d\' --complement -s -f1,2 \
-        |awk -F 'TIME=' '{print $1}');
-    
-    echo "$delete_lines"\
+        |awk -F ' SUSPENDED=' '{print $1}' \
     | while read line; do
-        sed -i '/$line/d' $USER_DATA/dns/$domain.conf
+        sed -i "/$line/d" $USER_DATA/dns/$domain.conf
     done
 }
 

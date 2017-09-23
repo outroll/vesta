@@ -49,15 +49,18 @@ else
     ip=''
 fi
 
+
+# Get old ip
+get_domain_values 'dns'
+if [ -z "$ip" ] && [ -z "$IP6" ]; then
+    check_result $E_INVALID "IP or IPv6 is required"
+fi
+
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-# Get old ip
-get_domain_values 'dns'
 old=$IP
-new=$ip
-ipv6=$IP6
 
 if [ -z "$old" ]; then
     #Create new
@@ -71,13 +74,21 @@ else
         # Changing records
         sed -i "s/$old/$ip/g" $USER_DATA/dns/$domain.conf
     else
+        ip=""
+        ipv6=$IP6
         #Delete configs
         remove_dns_config_records
     fi
 fi
 
 # Changing ip
-update_object_value 'dns' 'DOMAIN' "$domain" '$IP' "$new"
+update_object_value 'dns' 'DOMAIN' "$domain" '$IP' "$ip"
+
+#update counters
+records="$(wc -l $USER_DATA/dns/$domain.conf | cut -f1 -d ' ')"
+update_object_value 'dns' 'DOMAIN' "$domain" '$RECORDS' "$records"
+records=$(wc -l $USER_DATA/dns/*.conf | cut -f 1 -d ' ')
+update_user_value "$user" '$U_DNS_RECORDS' "$records"
 
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
