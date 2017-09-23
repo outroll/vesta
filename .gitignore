@@ -10,3 +10,4 @@ php
 nginx
 ssl
 web/rrd
+.DS_Store
