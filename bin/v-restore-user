@@ -507,13 +507,16 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
                 old_ip=$IP
                 IP=$ip
             fi
+            
             # Checking ipv6 address
             check_ipv6=$(is_ipv6_valid $IP6 $user)
             if [ ! -z "$check_ipv6" ]; then
                 local_ip6=''
                 get_user_ipv6 $user
                 old_ipv6=$IP6
-                IP=$ipv6
+                IP6=$ipv6
+            else
+                old_ipv6=''
             fi
 
             # Checking dns template
@@ -530,7 +533,15 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
         fi
 
         # Restoring dns records
-        cp -f $tmpdir/dns/$domain_idn/vesta/$domain_idn.conf $USER_DATA/dns/
+        cp -f $tmpdir/dns/$domain/vesta/$domain.conf $USER_DATA/dns/
+        if [ -z "$old_ipv6" ] && [ ! -z "$IP6" ]; then
+            time_n_date=$(date +'%T %F')
+            time=$(echo "$time_n_date" |cut -f 1 -d \ )
+            date=$(echo "$time_n_date" |cut -f 2 -d \ )
+            ip=""
+            ipv6="$IP6"
+            add_dns_config_records
+        fi
 
         # Rebuilding dns domain
         rebuild_dns_domain_conf

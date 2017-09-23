@@ -54,6 +54,10 @@ fi
 
 # Preparing variables for vhost replace
 get_domain_values 'web'
+if [ -z "$ip" ] && [ -z "$IP6" ]; then
+    check_result $E_INVALID "IP or IPv6 is required"
+fi
+
 old=$(get_real_ip $IP)
 new=$ip
 
