@@ -46,7 +46,7 @@ if (!empty($_POST['ok'])) {
     $v_interface = escapeshellarg($_POST['v_interface']);
     $v_owner = escapeshellarg($_POST['v_owner']);
     $v_shared = $_POST['v_shared'];
-    $v_version = escapeshellarg($_POST['v_version']);
+    $v_version = $_POST['v_version'];
 
     // Check shared checkmark
     if ($v_shared == 'on') {
