@@ -1,5 +1,5 @@
 #!/bin/bash
-# info: adding ssl for domain
+# info: adding ssl for ${domain_idn}
 # options: USER DOMAIN SSL_DIR [SSL_HOME] [RESTART]
 #
 # The function turns on SSL support for a domain. Parameter ssl_dir is a path
@@ -22,18 +22,15 @@ ssl_home=${4-same}
 restart="$5"
 
 # Additional argument formatting
-if [[ "$domain" =~ [[:upper:]] ]]; then
-    domain=$(echo "$domain" |tr '[:upper:]' '[:lower:]')
+if [[ "${domain_idn}" =~ [[:upper:]] ]]; then
+    domain=$(echo "${domain_idn}" |tr '[:upper:]' '[:lower:]')
 fi
-if [[ "$domain" =~ ^www\..* ]]; then
-    domain=$(echo "$domain" |sed -e "s/^www.//")
+if [[ "${domain_idn}" =~ ^www\..* ]]; then
+    domain=$(echo "${domain_idn}" |sed -e "s/^www.//")
 fi
-if [[ "$domain" =~ .*\.$ ]]; then
-    domain=$(echo "$domain" |sed -e "s/\.$//")
+if [[ "${domain_idn}" =~ .*\.$ ]]; then
+    domain=$(echo "${domain_idn}" |sed -e "s/\.$//")
 fi
-
-domain=$(idn -t --quiet -u "$domain" )
-domain_idn=$(idn -t --quiet -a "$domain")
 
 # Includes
 source $VESTA/func/main.sh
@@ -57,9 +54,9 @@ is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_system_enabled "$WEB_SSL" 'SSL_SUPPORT'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_object_value_empty 'web' 'DOMAIN' "$domain" '$SSL'
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
+is_object_value_empty 'web' 'DOMAIN' "$domain_idn" '$SSL'
 is_web_domain_cert_valid
 
 
@@ -68,22 +65,22 @@ is_web_domain_cert_valid
 #----------------------------------------------------------#
 
 # Adding certificate to user data directory
-cp -f $ssl_dir/$domain.crt $USER_DATA/ssl/$domain.crt
-cp -f $ssl_dir/$domain.key $USER_DATA/ssl/$domain.key
-cp -f $ssl_dir/$domain.crt $USER_DATA/ssl/$domain.pem
-if [ -e "$ssl_dir/$domain.ca" ]; then
-    cp -f $ssl_dir/$domain.ca $USER_DATA/ssl/$domain.ca
-    echo >> $USER_DATA/ssl/$domain.pem
-    cat $USER_DATA/ssl/$domain.ca >> $USER_DATA/ssl/$domain.pem
+cp -f $ssl_dir/${domain_idn}.crt $USER_DATA/ssl/${domain_idn}.crt
+cp -f $ssl_dir/${domain_idn}.key $USER_DATA/ssl/${domain_idn}.key
+cp -f $ssl_dir/${domain_idn}.crt $USER_DATA/ssl/${domain_idn}.pem
+if [ -e "$ssl_dir/${domain_idn}.ca" ]; then
+    cp -f $ssl_dir/${domain_idn}.ca $USER_DATA/ssl/${domain_idn}.ca
+    echo >> $USER_DATA/ssl/${domain_idn}.pem
+    cat $USER_DATA/ssl/${domain_idn}.ca >> $USER_DATA/ssl/${domain_idn}.pem
 fi
-chmod 660 $USER_DATA/ssl/$domain.*
+chmod 660 $USER_DATA/ssl/${domain_idn}.*
 
 # Adding certificate to user dir
-cp -f $USER_DATA/ssl/$domain.crt $HOMEDIR/$user/conf/web/ssl.$domain.crt
-cp -f $USER_DATA/ssl/$domain.key $HOMEDIR/$user/conf/web/ssl.$domain.key
-cp -f $USER_DATA/ssl/$domain.pem $HOMEDIR/$user/conf/web/ssl.$domain.pem
-if [ -e "$USER_DATA/ssl/$domain.ca" ]; then
-    cp -f $USER_DATA/ssl/$domain.ca $HOMEDIR/$user/conf/web/ssl.$domain.ca
+cp -f $USER_DATA/ssl/${domain_idn}.crt $HOMEDIR/$user/conf/web/ssl.${domain_idn}.crt
+cp -f $USER_DATA/ssl/${domain_idn}.key $HOMEDIR/$user/conf/web/ssl.${domain_idn}.key
+cp -f $USER_DATA/ssl/${domain_idn}.pem $HOMEDIR/$user/conf/web/ssl.${domain_idn}.pem
+if [ -e "$USER_DATA/ssl/${domain_idn}.ca" ]; then
+    cp -f $USER_DATA/ssl/${domain_idn}.ca $HOMEDIR/$user/conf/web/ssl.${domain_idn}.ca
 fi
 
 # Parsing domain values
@@ -111,8 +108,8 @@ fi
 increase_user_value "$user" '$U_WEB_SSL'
 
 # Adding ssl values
-update_object_value 'web' 'DOMAIN' "$domain" '$SSL_HOME' "$SSL_HOME"
-update_object_value 'web' 'DOMAIN' "$domain" '$SSL' "yes"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$SSL_HOME' "$SSL_HOME"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$SSL' "yes"
 
 # Restarting web server
 $BIN/v-restart-web $restart

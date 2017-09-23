@@ -16,6 +16,9 @@ user=$1
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -33,11 +36,11 @@ is_object_valid 'user' 'USER' "$user"
 
 # Domain loop
 for domain in $(search_objects 'web' 'SUSPENDED' "no" 'DOMAIN'); do
-    home_dir="$HOMEDIR/$user/web/$domain/"
+    home_dir="$HOMEDIR/$user/web/$domain_idn/"
     if [ -e "$home_dir" ]; then
         disk_usage=$(nice -n 19 du -shm $home_dir | cut -f 1 )
     fi
-    update_object_value 'web' 'DOMAIN' "$domain" '$U_DISK' "$disk_usage"
+    update_object_value 'web' 'DOMAIN' "$domain_idn" '$U_DISK' "$disk_usage"
 done
 
 

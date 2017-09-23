@@ -33,8 +33,8 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -42,7 +42,7 @@ is_object_unsuspended 'mail' 'DOMAIN' "$domain"
 #----------------------------------------------------------#
 
 # Starting unsuspend loop
-for account in $(search_objects "mail/$domain" 'SUSPENDED' 'yes' 'ACCOUNT'); do
+for account in $(search_objects "mail/$domain_idn" 'SUSPENDED' 'yes' 'ACCOUNT'); do
     $BIN/v-unsuspend-mail-account "$user" "$domain" "$account"
 done
 

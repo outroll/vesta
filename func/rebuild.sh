@@ -161,14 +161,14 @@ rebuild_web_domain_conf() {
         mkdir -p /var/log/$WEB_SYSTEM/domains
         chmod 771 /var/log/$WEB_SYSTEM/domains
     fi
-    touch /var/log/$WEB_SYSTEM/domains/$domain.bytes \
-          /var/log/$WEB_SYSTEM/domains/$domain.log \
-          /var/log/$WEB_SYSTEM/domains/$domain.error.log
+    touch /var/log/$WEB_SYSTEM/domains/$domain_idn.bytes \
+          /var/log/$WEB_SYSTEM/domains/$domain_idn.log \
+          /var/log/$WEB_SYSTEM/domains/$domain_idn.error.log
 
     # Creating symlinks
     cd $HOMEDIR/$user/web/$domain/logs/
-    ln -f -s /var/log/$WEB_SYSTEM/domains/$domain.log .
-    ln -f -s /var/log/$WEB_SYSTEM/domains/$domain.error.log .
+    ln -f -s /var/log/$WEB_SYSTEM/domains/$domain_idn.log .
+    ln -f -s /var/log/$WEB_SYSTEM/domains/$domain_idn.error.log .
     cd /
 
     # Propagating html skeleton
@@ -185,7 +185,7 @@ rebuild_web_domain_conf() {
         $HOMEDIR/$user/web/$domain/public_html \
         $HOMEDIR/$user/web/$domain/public_shtml \
         $HOMEDIR/$user/web/$domain/document_errors
-    chmod 640 /var/log/$WEB_SYSTEM/domains/$domain.*
+    chmod 640 /var/log/$WEB_SYSTEM/domains/$domain_idn.*
 
     # Set ownership
     chown $user:$user $HOMEDIR/$user/web/$domain \
@@ -194,7 +194,7 @@ rebuild_web_domain_conf() {
         $HOMEDIR/$user/web/$domain/public_html \
         $HOMEDIR/$user/web/$domain/public_shtml
     chown -R $user:$user $HOMEDIR/$user/web/$domain/document_errors
-    chown root:$user /var/log/$WEB_SYSTEM/domains/$domain.*
+    chown root:$user /var/log/$WEB_SYSTEM/domains/$domain_idn.*
 
     # Adding vhost configuration
     conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
@@ -204,15 +204,15 @@ rebuild_web_domain_conf() {
     if [ "$SSL" = 'yes' ]; then
         conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
         add_web_config "$WEB_SYSTEM" "$TPL.stpl"
-        cp -f $USER_DATA/ssl/$domain.crt \
-            $HOMEDIR/$user/conf/web/ssl.$domain.crt
-        cp -f $USER_DATA/ssl/$domain.key \
-            $HOMEDIR/$user/conf/web/ssl.$domain.key
-        cp -f $USER_DATA/ssl/$domain.pem \
-            $HOMEDIR/$user/conf/web/ssl.$domain.pem
-        if [ -e "$USER_DATA/ssl/$domain.ca" ]; then
-            cp -f $USER_DATA/ssl/$domain.ca \
-                $HOMEDIR/$user/conf/web/ssl.$domain.ca
+        cp -f $USER_DATA/ssl/$domain_idn.crt \
+            $HOMEDIR/$user/conf/web/ssl.$domain_idn.crt
+        cp -f $USER_DATA/ssl/$domain_idn.key \
+            $HOMEDIR/$user/conf/web/ssl.$domain_idn.key
+        cp -f $USER_DATA/ssl/$domain_idn.pem \
+            $HOMEDIR/$user/conf/web/ssl.$domain_idn.pem
+        if [ -e "$USER_DATA/ssl/$domain_idn.ca" ]; then
+            cp -f $USER_DATA/ssl/$domain_idn.ca \
+                $HOMEDIR/$user/conf/web/ssl.$domain_idn.ca
         fi
     fi
 
@@ -240,10 +240,10 @@ rebuild_web_domain_conf() {
                 -e "s|%home%|$HOMEDIR|g" \
                 -e "s|%alias%|${aliases//,/ }|g" \
                 -e "s|%alias_idn%|${aliases_idn//,/ }|g" \
-                > $HOMEDIR/$user/conf/web/$STATS.$domain.conf
+                > $HOMEDIR/$user/conf/web/$STATS.$domain_idn.conf
         if [ "$STATS" == 'awstats' ]; then
             if [ ! -e "/etc/awstats/$STATS.$domain_idn.conf" ]; then
-                ln -f -s $HOMEDIR/$user/conf/web/$STATS.$domain.conf \
+                ln -f -s $HOMEDIR/$user/conf/web/$STATS.$domain_idn.conf \
                     /etc/awstats/$STATS.$domain_idn.conf
             fi
         fi
@@ -313,8 +313,8 @@ rebuild_web_domain_conf() {
     done
 
     # Adding http auth protection
-    htaccess="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.$domain.conf_htaccess"
-    htpasswd="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.$domain.htpasswd"
+    htaccess="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.$domain_idn.conf_htaccess"
+    htpasswd="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.$domain_idn.htpasswd"
     docroot="$HOMEDIR/$user/web/$domain/public_html"
     for auth_user in ${AUTH_USER//:/ }; do
         # Parsing auth user variables
@@ -351,10 +351,11 @@ rebuild_dns_domain_conf() {
 
     # Get domain values
     get_domain_values 'dns'
-    domain_idn=$(idn -t --quiet -a "$domain")
+    format_domain_idn
+
 
     # Checking zone file
-    if [ ! -e "$USER_DATA/dns/$domain.conf" ]; then
+    if [ ! -e "$USER_DATA/dns/$domain_idn.conf" ]; then
         cat $DNSTPL/$TPL.tpl | grep -v '%ip' |\
             sed -e "s/%ip%/$IP/g" \
                 -e "s/%ipv6%/$IP6/g" \
@@ -377,7 +378,7 @@ rebuild_dns_domain_conf() {
                 -e "s/%ns3%/$ns3/g" \
                 -e "s/%ns4%/$ns4/g" \
                 -e "s/%time%/$TIME/g" \
-                -e "s/%date%/$DATE/g" >> $USER_DATA/dns/$domain.conf
+                -e "s/%date%/$DATE/g" >> $USER_DATA/dns/$domain_idn.conf
         fi
 
         if [ ! -z $IP6 ] && [ "$IP6" != "no" ]; then
@@ -391,7 +392,7 @@ rebuild_dns_domain_conf() {
                 -e "s/%ns3%/$ns3/g" \
                 -e "s/%ns4%/$ns4/g" \
                 -e "s/%time%/$TIME/g" \
-                -e "s/%date%/$DATE/g" >> $USER_DATA/dns/$domain.conf
+                -e "s/%date%/$DATE/g" >> $USER_DATA/dns/$domain_idn.conf
         fi
     fi
 
@@ -409,8 +410,8 @@ rebuild_dns_domain_conf() {
     fi
 
     # Set file permissions
-    chmod 640 $HOMEDIR/$user/conf/dns/$domain.db
-    chown root:$dns_group $HOMEDIR/$user/conf/dns/$domain.db
+    chmod 640 $HOMEDIR/$user/conf/dns/$domain_idn.db
+    chown root:$dns_group $HOMEDIR/$user/conf/dns/$domain_idn.db
 
     # Get dns config path
     if [ -e '/etc/named.conf' ]; then
@@ -423,22 +424,22 @@ rebuild_dns_domain_conf() {
 
     # Bind config check
     if [ "$SUSPENDED" = 'yes' ]; then
-        rm_string=$(grep -n /etc/namedb/$domain.db $dns_conf | cut -d : -f 1)
+        rm_string=$(grep -n /etc/namedb/$domain_idn.db $dns_conf | cut -d : -f 1)
         if [ ! -z "$rm_string" ]; then
             sed -i "$rm_string d" $dns_conf
         fi
         suspended_dns=$((suspended_dns + 1))
     else
-        if [ -z "$(grep /$domain.db $dns_conf)" ]; then
+        if [ -z "$(grep /$domain_idn.db $dns_conf)" ]; then
             named="zone \"$domain_idn\" {type master; file"
-            named="$named \"$HOMEDIR/$user/conf/dns/$domain.db\";};"
+            named="$named \"$HOMEDIR/$user/conf/dns/$domain_idn.db\";};"
             echo "$named" >> $dns_conf
         fi
     fi
     user_domains=$((user_domains + 1))
-    records=$(wc -l $USER_DATA/dns/$domain.conf | cut -f 1 -d ' ')
+    records=$(wc -l $USER_DATA/dns/$domain_idn.conf | cut -f 1 -d ' ')
     user_records=$((user_records + records))
-    update_object_value 'dns' 'DOMAIN' "$domain" '$RECORDS' "$records"
+    update_object_value 'dns' 'DOMAIN' "$domain_idn" '$RECORDS' "$records"
 }
 
 # MAIL domain rebuild
@@ -484,7 +485,7 @@ rebuild_mail_domain_conf() {
 
         # Adding dkim
         if [ "$DKIM" = 'yes' ]; then
-            cp $USER_DATA/mail/$domain.pem \
+            cp $USER_DATA/mail/$domain_idn.pem \
                 $HOMEDIR/$user/conf/mail/$domain/dkim.pem
         fi
 
@@ -508,7 +509,7 @@ rebuild_mail_domain_conf() {
     # Rebuild domain accounts
     accs=0
     dom_diks=0
-    if [ -e "$USER_DATA/mail/$domain.conf" ]; then
+    if [ -e "$USER_DATA/mail/$domain_idn.conf" ]; then
         accounts=$(search_objects "mail/$domain" 'SUSPENDED' "no" 'ACCOUNT')
     else
         accounts=''
@@ -516,7 +517,7 @@ rebuild_mail_domain_conf() {
     for account in $accounts; do
         (( ++accs))
         dom_diks=$((dom_diks + U_DISK))
-        object=$(grep "ACCOUNT='$account'" $USER_DATA/mail/$domain.conf)
+        object=$(grep "ACCOUNT='$account'" $USER_DATA/mail/$domain_idn.conf)
         FWD_ONLY='no'
         eval "$object"
         if [ "$SUSPENDED" = 'yes' ]; then
@@ -543,7 +544,7 @@ rebuild_mail_domain_conf() {
 
     # Set permissions and ownership
     if [[ "$MAIL_SYSTEM" =~ exim ]]; then
-        chmod 660 $USER_DATA/mail/$domain.*
+        chmod 660 $USER_DATA/mail/$domain_idn.*
         chmod 771 $HOMEDIR/$user/conf/mail/$domain
         chmod 660 $HOMEDIR/$user/conf/mail/$domain/*
         chmod 771 /etc/$MAIL_SYSTEM/domains/$domain_idn
@@ -554,8 +555,8 @@ rebuild_mail_domain_conf() {
     fi
 
     # Update counters
-    update_object_value 'mail' 'DOMAIN' "$domain" '$ACCOUNTS' "$accs"
-    update_object_value 'mail' 'DOMAIN' "$domain" '$U_DISK' "$dom_diks"
+    update_object_value 'mail' 'DOMAIN' "$domain_idn" '$ACCOUNTS' "$accs"
+    update_object_value 'mail' 'DOMAIN' "$domain_idn" '$U_DISK' "$dom_diks"
     U_MAIL_ACCOUNTS=$((U_MAIL_ACCOUNTS + accs))
     U_DISK_MAIL=$((U_DISK_MAIL + dom_diks))
     U_MAIL_DOMAINS=$((U_MAIL_DOMAINS + 1))

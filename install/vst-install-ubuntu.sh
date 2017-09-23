@@ -29,7 +29,7 @@ if [ "$release" = '16.04' ]; then
         mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect"
+        bsdmainutils cron vesta vesta-nginx vesta-php expect s3cmd"
 elif [ "$release" = '16.10' ]; then
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
@@ -53,7 +53,7 @@ else
         mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect"
+        bsdmainutils cron vesta vesta-nginx vesta-php expect s3cmd"
 fi
 
 # Defining help function

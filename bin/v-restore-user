@@ -153,6 +153,15 @@ google_download() {
     fi
 }
 
+# Google backup download function
+s3_download() {
+    source $VESTA/conf/s3.backup.conf
+    s3cmd --region="$HOST" --access_key="$USERNAME" --secret_key="$PASSWORD" get s3://$BUCKET${BPATH}$1 $BACKUP/ > /dev/null 2>&1
+    if [ "$?" -ne 0 ]; then
+        check_result "$E_CONNECT" "s3cmd failed to download $1"
+    fi
+}
+
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -172,6 +181,10 @@ is_backup_available "$user" "$backup"
 if [ ! -e "$BACKUP/$backup" ]; then
     if [[ "$BACKUP_SYSTEM" =~ "google" ]]; then
         google_download $backup
+        downloaded='yes'
+    fi
+     if [[ "$BACKUP_SYSTEM" =~ "s3" ]]; then
+        s3_download $backup
         downloaded='yes'
     fi
     if [[ "$BACKUP_SYSTEM" =~ "sftp" ]] && [ -z "$downloaded" ]; then
@@ -285,12 +298,13 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
 
     # Restoring web domain
     for domain in $domains; do
+        format_domain_idn
         echo -e "$(date "+%F %T") $domain" |tee -a $tmpdir/restore.log
 
         # Checking domain existance
-        check_config=$(grep "DOMAIN='$domain'" $USER_DATA/web.conf)
+        check_config=$(grep "DOMAIN='$domain_idn'" $USER_DATA/web.conf)
         if [ -z "$check_config" ]; then
-            check_new=$(is_domain_new 'web' $domain)
+            check_new=$(is_domain_new 'web' $domain_idn)
             if [ ! -z "$check_new" ]; then
                 rm -rf $tmpdir
                 error="$domain belongs to another user"
@@ -301,7 +315,7 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
         fi
 
         # Unpacking domain container
-        tar xf $BACKUP/$backup -C $tmpdir ./web/$domain
+        tar xf $BACKUP/$backup -C $tmpdir ./web/$domain_idn
         if [ "$?" -ne 0 ]; then
             rm -rf $tmpdir
             error="Can't unpack $domain web container"
@@ -312,7 +326,7 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
 
         # Restoring web.conf
         if [ -z "$check_config" ]; then
-            eval $(cat $tmpdir/web/$domain/vesta/web.conf)
+            eval $(cat $tmpdir/web/$domain_idn/vesta/web.conf)
 
             # Deleting conflicting aliases
             for dom_alias in ${ALIAS//,/ }; do
@@ -376,14 +390,14 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
 
             # Copying ssl certificates
             if [ "$SSL" = 'yes' ]; then
-                for crt in $(ls $tmpdir/web/$domain/conf |grep ssl); do
+                for crt in $(ls $tmpdir/web/$domain_idn/conf |grep ssl); do
                     crt=$(echo "$crt" |sed "s/ssl.//")
-                    cp -f $tmpdir/web/$domain/conf/ssl.$crt $USER_DATA/ssl/$crt
+                    cp -f $tmpdir/web/$domain_idn/conf/ssl.$crt $USER_DATA/ssl/$crt
                 done
             fi
 
             # Concatenating web.conf keys
-            str="DOMAIN='$domain' IP='$IP' IP6='$IP6' ALIAS='$ALIAS'"
+            str="DOMAIN='$domain_idn' IP='$IP' IP6='$IP6' ALIAS='$ALIAS'"
             str="$str TPL='$TPL' SSL='$SSL' SSL_HOME='$SSL_HOME'"
             str="$str FTP_USER='$FTP_USER' FTP_MD5='$FTP_MD5'"
             str="$str BACKEND='$BACKEND' PROXY='$PROXY'"
@@ -403,8 +417,8 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
         fi
 
         # Restoring web domain data
-        tar -xzpf $tmpdir/web/$domain/domain_data.tar.gz \
-            -C $HOMEDIR/$user/web/$domain/
+        tar -xzpf $tmpdir/web/$domain_idn/domain_data.tar.gz \
+            -C $HOMEDIR/$user/web/$domain_idn/
         if [ "$?" -ne 0 ]; then
             rm -rf $tmpdir
             error="can't unpack $domain data tarball"
@@ -414,12 +428,12 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
         fi
 
         # Applying Fix for tar < 1.24
-        find $HOMEDIR/$user/web/$domain -type d \
+        find $HOMEDIR/$user/web/$domain_idn -type d \
             -exec chown -h $user:$user {} \;
 
         # Re-chowning files if uid differs
         if [ "$old_uid" -ne "$new_uid" ]; then
-            find $HOMEDIR/$user/web/$domain/ -user $old_uid \
+            find $HOMEDIR/$user/web/$domain_idn/ -user $old_uid \
                 -exec chown -h $user:$user {} \;
         fi
     done
@@ -455,12 +469,13 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
 
     # Restoring dns domain
     for domain in $domains; do
+        format_domain_idn
         echo -e "$(date "+%F %T") $domain" |tee -a $tmpdir/restore.log
 
         # Checking domain existance
-        check_config=$(grep "DOMAIN='$domain'" $USER_DATA/dns.conf)
+        check_config=$(grep "DOMAIN='$domain_idn'" $USER_DATA/dns.conf)
         if [ -z "$check_config" ]; then
-            check_new=$(is_domain_new 'dns' $domain)
+            check_new=$(is_domain_new 'dns' $domain_idn)
             if [ ! -z "$check_new" ]; then
                 rm -rf $tmpdir
                 error="$domain belongs to another user"
@@ -471,7 +486,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
         fi
 
         # Unpacking domain container
-        tar xf $BACKUP/$backup -C $tmpdir ./dns/$domain
+        tar xf $BACKUP/$backup -C $tmpdir ./dns/$domain_idn
         if [ "$?" -ne 0 ]; then
             rm -rf $tmpdir
             error="Can't unpack $domain dns container"
@@ -482,7 +497,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
 
         # Restoring dns.conf
         if [ -z "$check_config" ]; then
-            eval $(cat $tmpdir/dns/$domain/vesta/dns.conf)
+            eval $(cat $tmpdir/dns/$domain_idn/vesta/dns.conf)
 
             # Checking ip address
             check_ip=$(is_ip_valid $IP $user)
@@ -511,7 +526,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
             fi
 
             # Concatenating dns.conf keys
-            str="DOMAIN='$domain' IP='$IP' IP6='$IP6' TPL='$TPL' TTL='$TTL' EXP='$EXP'"
+            str="DOMAIN='$domain_idn' IP='$IP' IP6='$IP6' TPL='$TPL' TTL='$TTL' EXP='$EXP'"
             str="$str SOA='$SOA' RECORDS='$RECORDS' SUSPENDED='no'"
             str="$str TIME='$(date +%T)' DATE='$(date +%F)'"
             echo $str >> $USER_DATA/dns.conf
@@ -561,12 +576,13 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
 
     # Restoring dns domain
     for domain in $domains; do
+        format_domain_idn
         echo -e "$(date "+%F %T") $domain" |tee -a $tmpdir/restore.log
 
         # Checking domain existance
-        check_config=$(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
+        check_config=$(grep "DOMAIN='$domain_idn'" $USER_DATA/mail.conf)
         if [ -z "$check_config" ]; then
-            check_new=$(is_domain_new 'mail' $domain)
+            check_new=$(is_domain_new 'mail' $domain_idn)
             if [ ! -z "$check_new" ]; then
                 rm -rf $tmpdir
                 error="$domain belongs to another user"
@@ -577,7 +593,7 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
         fi
 
         # Unpacking domain container
-        tar xf $BACKUP/$backup -C $tmpdir ./mail/$domain
+        tar xf $BACKUP/$backup -C $tmpdir ./mail/$domain_idn
         if [ "$?" -ne 0 ]; then
             rm -rf $tmpdir
             error="Can't unpack $domain mail container"
@@ -588,17 +604,17 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
 
         # Restoring mail.conf
         if [ -z "$check_config" ]; then
-            cat $tmpdir/mail/$domain/vesta/mail.conf >> $USER_DATA/mail.conf
+            cat $tmpdir/mail/$domain_idn/vesta/mail.conf >> $USER_DATA/mail.conf
         fi
 
         # Restoring DKIM
-        if [ -e "$tmpdir/mail/$domain/vesta/$domain.pem" ]; then
-            cp -f $tmpdir/mail/$domain/vesta/$domain.pem $USER_DATA/mail/
-            cp -f $tmpdir/mail/$domain/vesta/$domain.pub $USER_DATA/mail/
+        if [ -e "$tmpdir/mail/$domain_idn/vesta/$domain_idn.pem" ]; then
+            cp -f $tmpdir/mail/$domain_idn/vesta/$domain_idn.pem $USER_DATA/mail/
+            cp -f $tmpdir/mail/$domain_idn/vesta/$domain_idn.pub $USER_DATA/mail/
         fi
 
         # Restoring email accounts
-        cp -f $tmpdir/mail/$domain/vesta/$domain.conf $USER_DATA/mail/
+        cp -f $tmpdir/mail/$domain/vesta/$domain_idn.conf $USER_DATA/mail/
 
         # Rebuilding mail config
         rebuild_mail_domain_conf
@@ -607,8 +623,8 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
         format_domain_idn
 
         # Restoring emails
-        if [ -e "$tmpdir/mail/$domain/accounts.tar.gz" ]; then
-            tar -xzpf $tmpdir/mail/$domain/accounts.tar.gz \
+        if [ -e "$tmpdir/mail/$domain_idn/accounts.tar.gz" ]; then
+            tar -xzpf $tmpdir/mail/$domain_idn/accounts.tar.gz \
                 -C $HOMEDIR/$user/mail/$domain_idn/
             if [ "$?" -ne 0 ]; then
                 rm -rf $tmpdir

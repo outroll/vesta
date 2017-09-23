@@ -2,11 +2,13 @@
 *.zip
 *.gzip
 *.gz
-.vscode
+*.DS_Store
 conf
 data
-log
 php
 nginx
 ssl
+log
 web/rrd
+.vscode
+.DS_Store

@@ -60,4 +60,8 @@ done
 # Logging
 log_event "$OK" "$ARGUMENTS"
 
+<<<<<<< HEAD
 exit
+=======
+exit
+>>>>>>> master

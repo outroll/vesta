@@ -1,0 +1,46 @@
+FROM centos:7
+
+EXPOSE 22 80 8083 3306 443 25 993 110 53 54
+
+ENV container docker
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
+systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*;
+
+VOLUME /sys/fs/cgroup /run /tmp
+ENV VESTA /usr/local/vesta
+
+RUN yum update -y && yum install -y sudo wget initscripts && yum clean all
+
+RUN nohup /usr/sbin/init &
+
+ADD bin /vesta/bin
+ADD func /vesta/func
+ADD install /vesta/install
+ADD test /vesta/test
+ADD upd /vesta/upd
+ADD web /vesta/web
+ADD docker /vesta/docker
+
+RUN chmod +x /vesta/install/vst-install*
+#RUN /bin/bash /vesta/install/vst-install-rhel-docker.sh --nginx yes --apache yes \
+#  --phpfpm no --named yes --remi yes --vsftpd no --proftpd no --iptables no \
+#  --fail2ban no --quota no --exim yes --dovecot yes --spamassassin no --clamav no \
+#  --mysql yes --postgresql no --hostname example.com --email test@example.com \
+#  --password admin -y no --force
+
+#RUN cd /usr/local/vesta/data/ips && mv * 127.0.0.1 \
+#    && cd /etc/httpd/conf.d && sed -i -- 's/172.*.*.*:80/127.0.0.1:80/g' * && sed -i -- 's/172.*.*.*:8443/127.0.0.1:8443/g' * \
+#    && cd /etc/nginx/conf.d && sed -i -- 's/172.*.*.*:80;/80;/g' * && sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' * \
+#    && cd /home/admin/conf/web && sed -i -- 's/172.*.*.*:80;/80;/g' * && sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' *
+
+RUN chmod +x /vesta/docker/startup-centos.sh
+#RUN /bin/bash -c "source /etc/profile.d/vesta.sh"
+#RUN /vesta/docker/startup-centos.sh
+CMD /usr/sbin/init

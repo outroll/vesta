@@ -20,7 +20,8 @@
         <?php if ((isset($_SESSION['FIREWALL_SYSTEM'])) && (!empty($_SESSION['FIREWALL_SYSTEM']))) {?><div class="l-menu__item <?php if($TAB == 'FIREWALL' ) echo 'l-menu__item--active' ?>"><a href="/list/firewall/"><?=__('Firewall')?></a></div><?php }?>
         <?php if ((isset($_SESSION['FILEMANAGER_KEY'])) && (!empty($_SESSION['FILEMANAGER_KEY']))) {?><div class="l-menu__item <?php if($TAB == 'FILEMANAGER' ) echo 'l-menu__item--active' ?>"><a href="/list/directory/"><?=__('File Manager')?></a></div><?php }?>
         <div class="l-menu__item <?php if($TAB == 'SERVER' ) echo 'l-menu__item--active' ?>"><a href="/list/server/"><?=__('Server')?></a></div>
-      </div>
+		<div class="l-menu__item <?php if($TAB == 'PLUGIN' ) echo 'l-menu__item--active' ?>"><a href="/list/plugin/"><?=__('Plugin')?></a></div>
+	  </div>
       <!-- /.l-menu -->
       <div class="l-profile noselect">
         <a class="l-profile__notifications <? if($panel[$user]['NOTIFICATIONS'] == 'yes') echo " updates"; ?>">&nbsp;</a>

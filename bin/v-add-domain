@@ -22,6 +22,9 @@ source $VESTA/func/ip.sh
 source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
