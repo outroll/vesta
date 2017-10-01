@@ -945,6 +945,7 @@ is_format_valid() {
                 user)           is_user_format_valid "$arg" $arg_name;;
                 wday)           is_cron_format_valid "$arg" $arg_name ;;
                 plugin)         is_name_format_valid "$arg" 'object';;
+                key)         	is_name_format_valid "$arg" 'object';;
             esac
         fi
     done

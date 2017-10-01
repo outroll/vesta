@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add plugin
-# options: PLUGIN [RESTART]
+# options: PLUGIN KEY [RESTART]
 #
 # The function adds the plugin to the vestaCP installation
 
@@ -11,6 +11,7 @@
 
 # Argument definition
 plugin=$1
+key=$2
 restart="${2-yes}"
 
 # Includes
@@ -22,8 +23,9 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
-check_args '1' "$#" 'PLUGIN [RESTART]'
+check_args '2' "$#" 'PLUGIN KEY [RESTART]'
 is_format_valid 'plugin'
+is_format_valid 'key'
 is_object_valid 'plugin' 'PLUGIN' "$plugin" #Change to is_plugin_not_installed
 
 
@@ -32,26 +34,23 @@ is_object_valid 'plugin' 'PLUGIN' "$plugin" #Change to is_plugin_not_installed
 #----------------------------------------------------------#
 
 # Get plugin DATA from web
-#plugin=""
-pluginname=""
-pluginversion=""
-plugindownload=""
-pluginkey=""
-pluginbuildnumber=""
-latestversion=""
-latestbuildnumber=""
-
+wget http://cp.tpweb.org/api/get-plugin/$plugin?output=bash -q -O - > $VESTA/conf/plugin_data.conf
+eval $(cat $VESTA/conf/plugin_data.conf | head -n1)
 
 # Creating domain directories
 
-mkdir -p $PLUGIN
-cd $PLUGIN
-wget $plugindownload -O $plugin.tar.gz
-tar -xzf $plugin.tar.gz
-rm -f $plugin.tar.gz
+#mkdir -p $VESTA/plugin/$PLUGIN
+#cd $VESTA/plugin/$PLUGIN
+#wget $DOWNLOAD_URL -O $plugin.zip
+#unzip $plugin.zip
+#rm -f $plugin.zip
 
 # Changing file owner & permission
-chmod 750 $PLUGIN/$plugin
+chmod 750 $VESTA/plugin/$PLUGIN
+
+if [ -f "$VESTA/plugin/$PLUGIN/install/install.sh" ]; then
+    bash $VESTA/plugin/$PLUGIN/install/install.sh
+fi
 
 #----------------------------------------------------------#
 #                       Vesta                              #
@@ -63,7 +62,7 @@ time=$(echo "$time_n_date" |cut -f 1 -d \ )
 date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Adding plugin in plugin.conf
-echo "PLUGIN='$plugin' NAME='$pluginname' VERSION='$version' BUILDNUMBER='$pluginbuildnumber' LATEST_VERSION='$latestversion' LATEST_BUILDNUMBER='$latestbuildnumber' KEY='$pluginkey' ACTIVE='no' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
+echo "PLUGIN='$PLUGIN' NAME='$NAME' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
 
 #----------------------------------------------------------#
 #                       Vesta                              #

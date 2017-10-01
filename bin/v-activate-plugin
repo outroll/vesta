@@ -32,9 +32,30 @@ is_object_valid 'plugin' 'PLUGIN' "plugin" #Change to is_plugin_not_active
 #                       Action                             #
 #----------------------------------------------------------#
 
-#Check and/or get key online
-#Change plugin active status
-#execute plugin install.sh script
+line=$(grep "PLUGIN='$plugin'" $VESTA/conf/plugin.conf)
+eval $line
+
+if [ "$ACTIVE" == "no" ]; then
+    #Check key online
+
+    #Execute plugin install script
+    if [ -f "$VESTA/plugin/$PLUGIN/install/install.sh" ]; then
+        bash $VESTA/plugin/$PLUGIN/install/install.sh
+    fi
+
+    # Deleting old record
+    sed -i "/^PLUGIN='$PLUGIN'/d" $VESTA/conf/plugin.conf
+
+    # Generating timestamp
+    time_n_date=$(date +'%T %F')
+    time=$(echo "$time_n_date" |cut -f 1 -d \ )
+    date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+    # Adding record
+    echo "PLUGIN='$PLUGIN' NAME='$NAME' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
+else
+    #Plugin is already active
+fi
 
 
 #----------------------------------------------------------#
