@@ -35,7 +35,7 @@ is_format_valid 'key'
 
 # Get plugin DATA from web
 wget http://cp.tpweb.org/api/get-plugin/$plugin?output=bash -q -O - > $VESTA/conf/plugin_data.conf
-eval $(cat $VESTA/conf/plugin_data.conf | head -n1)
+eval $(cat $VESTA/conf/plugin_data.conf | grep "PLUGIN='$plugin'")
 
 # Creating domain directories
 

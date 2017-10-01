@@ -13,6 +13,7 @@
 restart="${1-yes}"
 
 # Includes
+source $VESTA/func/main.sh
 
 # Additional argument formatting
 
@@ -38,10 +39,11 @@ then
 fi
 
 php composer-setup.php --quiet
+mv composer.phar /usr/bin/composer
 RESULT=$?
 rm composer-setup.php
 
-
+$BIN/v-add-cron-job admin '27' '2' '1' '*' '*' "$VESTA/plugin/composer/bin/v-update-composer"
 
 #----------------------------------------------------------#
 #                       Vesta                              #
