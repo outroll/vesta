@@ -41,7 +41,7 @@ if (!empty($_POST['ok'])) {
 
     // Add firewall rule
     if (empty($_SESSION['error_msg'])) {
-        //exec (VESTA_CMD."v-add-plugin ".$v_plugin." ".$v_key, $output, $return_var);
+        exec (VESTA_CMD."v-add-plugin ".$v_plugin." ".$v_key, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
