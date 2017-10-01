@@ -24,7 +24,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 check_args '1' "$#" 'PLUGIN [RESTART]'
 is_format_valid 'plugin'
-is_object_valid 'plugin' 'PLUGIN' "plugin" #Change to is_plugin_not_installed
+is_object_valid 'plugin' 'PLUGIN' "$plugin" #Change to is_plugin_not_installed
 
 
 #----------------------------------------------------------#

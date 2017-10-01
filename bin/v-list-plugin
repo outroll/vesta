@@ -35,7 +35,6 @@ json_list() {
 
 # SHELL list function
 shell_list() {
-    source $VESTA/conf/vesta.conf
     echo "PLUGIN:                $PLUGIN"
     echo "NAME:                  $NAME"
     echo "VERSION:               $VERSION"

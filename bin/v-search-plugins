@@ -50,7 +50,7 @@ shell_list() {
     echo "------   ----   -------   -----------   ---   ------   ----"
     while read str; do
         eval $str
-        echo "$PLUGIN $NAME $VERSION $BUILDNUMBER $KEY $ACTIVE $DATE"
+        echo "$PLUGIN '$NAME' $VERSION $BUILDNUMBER '$KEY' $ACTIVE $DATE"
     done < <(cat $VESTA/conf/search_plugin.conf)
 }
 
@@ -85,7 +85,7 @@ check_args '1' "$#" 'KEYWORD [FORMAT]'
 #                       Action                             #
 #----------------------------------------------------------#
 
-wget https://cp.tpweb.org/plugin/search/$plugin?output=bash -o $VESTA/conf/search_plugin.conf
+wget http://cp.tpweb.org/plugin/search/$plugin?output=bash -q -O - > $VESTA/conf/search_plugin.conf
 
 # Listing data
 case $format in
