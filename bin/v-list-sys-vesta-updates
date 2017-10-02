@@ -60,7 +60,7 @@ shell_list() {
 #----------------------------------------------------------#
 
 # Checking official latest version
-latest=$(wget -q -T 1 -t 1 http://c.vestacp.com/latest.txt -O -)
+latest=$(wget -q -T 1 -t 1 http://cp.tpweb.org/latest.txt -O -)
 
 # Checking installed vesta version
 if [ -e "/etc/redhat-release" ]; then
