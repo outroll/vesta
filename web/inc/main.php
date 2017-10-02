@@ -143,18 +143,16 @@ function render_page($user, $TAB, $page) {
     top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
 
     // Extarct global variables
-    // I think those variables should be passed via arguments
-    //*
     extract($GLOBALS, EXTR_SKIP);
-    /*/
-    $variables = array_filter($GLOBALS, function($key){return preg_match('/^(v_|[a-z])[a-z\d]+$/', $key);}, ARRAY_FILTER_USE_KEY);
-    extract($variables, EXTR_OVERWRITE);
-    //*/
 
     // Body
-    if (($_SESSION['user'] !== 'admin') && (@include($__template_dir . "user/$page.html"))) {
+    if (is_callable($page)) {
+        echo call_user_func_array($page, array());
+    }
+    elseif($_SESSION['user'] !== 'admin' && @include($__template_dir . "user/$page.html")) {
         // User page loaded
-    } else {
+    }
+    else {
         // Not admin or user page doesn't exist
         // Load admin page
         @include($__template_dir . "admin/$page.html");
@@ -385,3 +383,5 @@ function is_it_mysql_or_mariadb() {
     if (isset($data['mariadb'])) $mysqltype='mariadb';
     return $mysqltype;
 }
+
+include 'plugin.php';
