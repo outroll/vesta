@@ -1,6 +1,6 @@
 #!/bin/bash
-# info: change ip owner
-# options: DOMAIN USER [IP]
+# info: change domain owner
+# options: DOMAIN USER
 #
 # The function of changing domain ownership.
 
@@ -9,10 +9,9 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 domain=$1
 user=$2
-ip=$3
 
 # Includes
 source $VESTA/func/ip.sh
@@ -24,20 +23,13 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '2' "$#" 'DOMAIN USER [IP]'
-validate_format 'domain' 'user'
+check_args '2' "$#" 'DOMAIN USER'
+is_format_valid 'domain' 'user'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-if [ ! -z "$ip" ]; then
-    is_ip_valid
-    is_ip_avalable
-fi
-
-owner=$(v-search-domain-owner $domain)
+owner=$($BIN/v-search-domain-owner $domain)
 if [ -z "$owner" ]; then
-    echo "Error: domain $domain doesn't exist"
-    log_event "$E_NOTEXIST" "$EVENT"
-    exit $E_NOTEXIST
+    check_result $E_NOTEXIST "domain $domain doesn't exist"
 fi
 if [ "$owner" = "$user" ]; then
     exit
@@ -156,6 +148,18 @@ if [ ! -z "$mail_data" ]; then
     $BIN/v-unsuspend-mail-domain $user $domain no >> /dev/null 2>&1
     $BIN/v-rebuild-mail-domains $owner no
     $BIN/v-rebuild-mail-domains $user
+
+    # Checking exim username for later chowning
+    exim_user="exim";
+    check_exim_username=$(grep -c '^Debian-exim:' /etc/passwd)
+    if [ "$check_exim_username" -eq 1 ]; then
+        exim_user="Debian-exim"
+    fi
+    # Chowning mail conf files to exim user
+    if [ -d "$HOMEDIR/$user/conf/mail/$domain" ]; then
+        find $HOMEDIR/$user/conf/mail/$domain -user root \
+            -exec chown $exim_user {} \;
+    fi
 fi
 
 # Update counters
@@ -168,6 +172,6 @@ $BIN/v-update-user-counters $user
 #----------------------------------------------------------#
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

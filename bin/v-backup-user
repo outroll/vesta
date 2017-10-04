@@ -12,7 +12,7 @@
 # Importing system variables
 source /etc/profile
 
-# Argument defenition
+# Argument definition
 user=$1
 notify=${2-no}
 
@@ -28,7 +28,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '1' "$#" 'USER [NOTIFY]'
-validate_format 'user'
+is_format_valid 'user'
 is_system_enabled "$BACKUP_SYSTEM" 'BACKUP_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -41,7 +41,7 @@ is_backup_enabled
 
 # Set backup directory if undefined
 if [ -z "$BACKUP" ]; then
-    BACKUP=/home/backup
+    BACKUP=/backup
 fi
 mkdir -p $BACKUP
 
@@ -49,79 +49,63 @@ mkdir -p $BACKUP
 start_time=$(date '+%s')
 
 # Set notification email and subject
-if [ "$notify" != 'no' ]; then
-    subj="$user → backup failed"
-    email=$(get_user_value '$CONTACT')
-else
-    subj="$user → backup failed"
-    email=$(grep CONTACT $VESTA/data/users/admin/user.conf | cut -f 2 -d \')
-fi
-send_mail="$VESTA/web/inc/mail-wrapper.php"
+subj="$user → backup failed"
+email=$(grep CONTACT $VESTA/data/users/admin/user.conf |cut -f 2 -d \')
 
-# Check load average
-la=$(cat /proc/loadavg | cut -f 1 -d ' ' | cut -f 1 -d '.')
+# Checking load average
+la=$(cat /proc/loadavg |cut -f 1 -d ' ' |cut -f 1 -d '.')
 i=0
 while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
-    echo "$(date "+%F %T") LoadAverage $la is above threshold. Sleeping..."
-    sleep 120
-    if [ "$i" -ge "5" ]; then
-        mail_top=$(top -b| head -n 30)
-        mail_text="LoadAverage $i is above threshold\n\n$mail_top\n"
-        echo -e "$mail_text" | $send_mail -s "$subj" $email
-        echo "Error: LA is too high"
+    echo -e "$(date "+%F %T") Load Average $la"
+    sleep 60
+    if [ "$i" -ge "15" ]; then
+        la_error="LoadAverage $la is above threshold"
+        echo "$la_error" |$SENDMAIL -s "$subj" $email $notify
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        log_event "$E_LA" "$EVENT"
-        exit $E_LA
+        check_result $E_LA "$la_error"
     fi
-    la=$(cat /proc/loadavg | cut -f 1 -d ' ' | cut -f 1 -d '.')
+    la=$(cat /proc/loadavg |cut -f 1 -d ' ' |cut -f 1 -d '.')
     (( ++i))
 done
 
 # Creating temporary directory
 tmpdir=$(mktemp -p $BACKUP -d)
+
 if [ "$?" -ne 0 ]; then
-    echo "Can't create tmp dir $tmpdir" | $send_mail -s "$subj" $email
-    echo "Error: can't create tmp dir"
-    log_event "$E_NOTEXIST" "$EVENT"
-    exit $E_NOTEXIST
+    echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notify
+    check_result $E_NOTEXIST "can't create tmp dir"
 fi
 
 # Backup sys configs
-echo -e "-- SYSTEM --"
-msg="-- SYSTEM --"
+echo "-- SYSTEM --" |tee $BACKUP/$user.log
 mkdir $tmpdir/vesta
 
-echo -e "$(date "+%F %T") $user.conf"
-msg="$msg\n$(date "+%F %T") $user.conf"
+echo -e "$(date "+%F %T") $user.conf" |tee -a $BACKUP/$user.log
 cp -r $USER_DATA/user.conf $tmpdir/vesta/
+cp -r $USER_DATA/ssl $tmpdir/vesta/
 
 if [ -e "$USER_DATA/stats.log" ]; then
-    echo -e "$(date "+%F %T") stats.log"
-    msg="$msg\n$(date "+%F %T") stats.log"
+    echo -e "$(date "+%F %T") stats.log" |tee -a $BACKUP/$user.log
     cp -r $USER_DATA/stats.log $tmpdir/vesta/
 fi
 
 if [ -e "$USER_DATA/history.log" ]; then
-    echo -e "$(date "+%F %T") history.log"
-    msg="$msg\n$(date "+%F %T") history.log"
+    echo -e "$(date "+%F %T") history.log" |tee -a $BACKUP/$user.log
     cp -r $USER_DATA/history.log $tmpdir/vesta/
 fi
 
 if [ -e "$USER_DATA/backup-excludes.conf" ]; then
-    echo -e "$(date "+%F %T") backup-excludes.conf"
-    msg="$msg\n$(date "+%F %T") backup-excludes.conf"
+    echo -e "$(date "+%F %T") backup-excludes.conf" |tee -a $BACKUP/$user.log
     cp -r $USER_DATA/backup-excludes.conf $tmpdir/vesta/
 fi
 
 # Backup PAM
 mkdir $tmpdir/pam
-echo -e "$(date "+%F %T") pam"
-msg="$msg\n$(date "+%F %T") pam"
+echo -e "$(date "+%F %T") pam" |tee -a $BACKUP/$user.log
 grep "^$user:" /etc/passwd > $tmpdir/pam/passwd
 grep "^$user:" /etc/shadow > $tmpdir/pam/shadow
 grep "^$user:" /etc/group > $tmpdir/pam/group
 echo
-msg="$msg\n"
 
 # Parsing excludes
 if [ -e "$USER_DATA/backup-excludes.conf" ]; then
@@ -130,34 +114,32 @@ fi
 
 # WEB domains
 if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
-    echo "-- WEB --"
-    msg="$msg\n-- WEB --"
+    echo -e "\n-- WEB --" |tee -a $BACKUP/$user.log
     mkdir $tmpdir/web/
 
     # Parsing domain exclusions
     conf="$USER_DATA/web.conf"
     for domain in $(search_objects 'web' 'SUSPENDED' "*" 'DOMAIN'); do
-        check_exl=$(echo -e "${WEB//,/\n}" |grep "^$domain$")
-        if [ -z "$check_exl" ]; then
+        exclusion=$(echo -e "$WEB" |tr ',' '\n' |grep "^$domain$")
+        if [ -z "$exclusion" ]; then
             web_list="$web_list $domain"
         else
-            echo "$(date "+%F %T") excluding $domain"
-            msg="$msg\n$(date "+%F %T") excluding $domain"
+            echo "$(date "+%F %T") excluding $domain"|tee -a $BACKUP/$user.log
         fi
     done
-    web_list=$(echo "$web_list" | sed -e "s/  */\ /g" -e "s/^ //")
+    web_list=$(echo "$web_list" |sed -e "s/  */\ /g" -e "s/^ //")
 
     i=0
 
     for domain in $web_list; do
         ((i ++))
-        echo -e "$(date "+%F %T") $domain"
-        msg="$msg\n$(date "+%F %T") $domain"
+        echo -e "$(date "+%F %T") $domain" |tee -a $BACKUP/$user.log
         mkdir -p $tmpdir/web/$domain/conf
         mkdir -p $tmpdir/web/$domain/vesta
 
         # Get domain variables
-        domain_idn=$(idn -t --quiet -a "$domain")
+        domain_idn=$domain
+        format_domain_idn
         get_domain_values 'web'
 
         # Backup web.conf
@@ -168,30 +150,30 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
         # Backup vhost config
         tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.tpl"
         conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
-        get_web_config_brds
+        get_web_config_lines $tpl_file $conf
         sed -n "$top_line,$bottom_line p" $conf > conf/$WEB_SYSTEM.conf
 
         # Backup ssl vhost
         if [ "$SSL" = 'yes' ]; then
             tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.stpl"
             conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
-            get_web_config_brds
+            get_web_config_lines $tpl_file $conf
             sed -n "$top_line,$bottom_line p" $conf > conf/s$WEB_SYSTEM.conf
         fi
 
         # Backup proxy config
-        if [ ! -z "$PROXY" ]; then
+        if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
             tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
             conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
-            get_web_config_brds
+            get_web_config_lines $tpl_file $conf
             sed -n "$top_line,$bottom_line p" $conf > conf/$PROXY_SYSTEM.conf
         fi
 
         # Backup ssl proxy config
-        if [ ! -z "$PROXY" ] && [ "$SSL" = 'yes' ] ; then
+        if [ ! -z "$PROXY_SYSTEM" ] && [ "$SSL" = 'yes' ]; then
             tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
             conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
-            get_web_config_brds
+            get_web_config_lines $tpl_file $conf
             sed -n "$top_line,$bottom_line p" $conf > conf/s$PROXY_SYSTEM.conf
         fi
 
@@ -207,73 +189,57 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
         fi
 
         # Define exclude arguments
+        exlusion=$(echo -e "$WEB" |tr ',' '\n' |grep "^$domain:")
         set -f
         fargs=()
-        fargs+=(-not)
-        fargs+=(-path)
-        fargs+=("./logs*")
-        check_exlusion=$(echo -e "${WEB//,/\n}" | grep "^$domain:")
-        if [ ! -z "$check_exlusion" ]; then
-            xdirs="$(echo -e "${check_exlusion//:/\n}" |grep -v $domain)"
+        fargs+=(--exclude='logs/*')
+        if [ ! -z "$exlusion" ]; then
+            xdirs="$(echo -e "$exlusion" |tr ':' '\n' |grep -v $domain)"
             for xpath in $xdirs; do
-                xpath="$(echo $xpath | sed -e 's/\/*$//' -e 's/^\/*//')"
-                fargs+=(-not)
-                fargs+=(-path)
-                fargs+=("./$xpath/*")
+                fargs+=(--exclude=$xpath/*)
                 echo "$(date "+%F %T") excluding directory $xpath"
                 msg="$msg\n$(date "+%F %T") excluding directory $xpath"
             done
         fi
+        set +f
 
         # Backup files
         cd $HOMEDIR/$user/web/$domain
-        find . ${fargs[@]} -type f -or -type l -print0 |\
-            tar -cpf $tmpdir/web/$domain/domain_data.tar --null -T -
-
-        # Backup empty folders
-        find . ${fargs[@]} -type d -empty -print0 |\
-            tar -rpf $tmpdir/web/$domain/domain_data.tar --null -T -
+        tar -cpf $tmpdir/web/$domain/domain_data.tar * ${fargs[@]}
 
         # Compress archive
         gzip -$BACKUP_GZIP $tmpdir/web/$domain/domain_data.tar
-        set +f
     done
 
     # Print total
     if [ "$i" -eq 1 ]; then
-        echo -e "$(date "+%F %T") *** $i domain ***"
-        msg="$msg\n$(date "+%F %T") *** $i domain ***"
+        echo -e "$(date "+%F %T") *** $i domain ***" |tee -a $BACKUP/$user.log
     else
-        echo -e "$(date "+%F %T") *** $i domains ***"
-        msg="$msg\n$(date "+%F %T") *** $i domains ***"
+        echo -e "$(date "+%F %T") *** $i domains ***"|tee -a $BACKUP/$user.log
     fi
-    echo
-    msg="$msg\n"
 fi
 
 # DNS domains
 if [ ! -z "$DNS_SYSTEM" ] && [ "$DNS" != '*' ]; then
-    echo "-- DNS --"
-    msg="$msg\n-- DNS --"
+    echo -e "\n-- DNS --" |tee -a $BACKUP/$user.log
     mkdir $tmpdir/dns/
 
     # Parsing domain exclusions
     for domain in $(search_objects 'dns' 'SUSPENDED' "*" 'DOMAIN'); do
-        check_exl=$(echo -e "${DNS//,/\n}" |grep "^$domain$")
-        if [ -z "$check_exl" ]; then
+        exclusion=$(echo "$DNS" |tr ',' '\n' |grep "^$domain$")
+        if [ -z "$exclusion" ]; then
             dns_list="$dns_list $domain"
         else
             echo "$(date "+%F %T") excluding $domain"
             msg="$msg\n$(date "+%F %T") excluding $domain"
         fi
     done
-    dns_list=$(echo "$dns_list" | sed -e "s/  */\ /g" -e "s/^ //")
+    dns_list=$(echo "$dns_list" |sed -e "s/  */\ /g" -e "s/^ //")
 
     i=0
     for domain in $dns_list; do
         ((i ++))
-        echo -e "$(date "+%F %T") $domain"
-        msg="$msg\n$(date "+%F %T") $domain"
+        echo -e "$(date "+%F %T") $domain" |tee -a $BACKUP/$user.log
 
         # Building directory tree
         mkdir -p $tmpdir/dns/$domain/conf
@@ -293,43 +259,37 @@ if [ ! -z "$DNS_SYSTEM" ] && [ "$DNS" != '*' ]; then
 
     # Print total
     if [ "$i" -eq 1 ]; then
-        echo -e "$(date "+%F %T") *** $i domain ***"
-        msg="$msg\n$(date "+%F %T") *** $i domain ***"
+        echo -e "$(date "+%F %T") *** $i domain ***" |tee -a $BACKUP/$user.log
     else
-        echo -e "$(date "+%F %T") *** $i domains ***"
-        msg="$msg\n$(date "+%F %T") *** $i domains ***"
+        echo -e "$(date "+%F %T") *** $i domains ***"|tee -a $BACKUP/$user.log
     fi
-    echo
-    msg="$msg\n"
 fi
 
 # Mail domains
 if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL" != '*' ]; then
-    echo "-- MAIL --"
-    msg="$msg\n-- MAIL --"
+    echo -e "\n-- MAIL --" |tee -a $BACKUP/$user.log
     mkdir $tmpdir/mail/
 
     # Parsing domain exclusions
     conf="$USER_DATA/mail.conf"
     for domain in $(search_objects 'mail' 'SUSPENDED' "*" 'DOMAIN'); do
-        check_exl=$(echo -e "${MAIL//,/\n}" |grep "^$domain$")
+        check_exl=$(echo "$MAIL" |tr ',' '\n' |grep "^$domain$")
         if [ -z "$check_exl" ]; then
             mail_list="$mail_list $domain"
         else
-            echo "$(date "+%F %T") excluding $domain"
-            msg="$msg\n$(date "+%F %T") excluding $domain"
+            echo "$(date "+%F %T") excluding $domain"|tee -a $BACKUP/$user.log
         fi
     done
-    mail_list=$(echo "$mail_list" | sed -e "s/  */\ /g" -e "s/^ //")
+    mail_list=$(echo "$mail_list" |sed -e "s/  */\ /g" -e "s/^ //")
 
     i=0
     for domain in $mail_list; do
         ((i ++))
-        echo -e "$(date "+%F %T") $domain"
-        msg="$msg\n$(date "+%F %T") $domain"
+        echo -e "$(date "+%F %T") $domain" |tee -a $BACKUP/$user.log
         mkdir -p $tmpdir/mail/$domain/conf
         mkdir -p $tmpdir/mail/$domain/vesta
-        domain_idn=$(idn -t --quiet -a "$domain")
+        domain_idn=$domain
+        format_domain_idn
 
         # Backup exim config
         if [[ "$MAIL_SYSTEM" =~ exim ]]; then
@@ -348,18 +308,18 @@ if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL" != '*' ]; then
         # Backup emails
         cd $HOMEDIR/$user/mail/$domain_idn
         for account in $(ls); do
-            exclusion=$(echo -e "${MAIL//,/\n}" |grep "$domain:")
-            exclusion=$(echo -e "${exclusion//:/\n}" |grep "^$account$")
+            exclusion=$(echo "$MAIL" |tr ',' '\n' |grep "$domain:")
+            exclusion=$(echo "$exclusion" |tr ':' '\n' |grep "^$account$")
 
             # Checking exlusions
             if [ -z "$exclusion" ] && [[ "$MAIL_SYSTEM" =~ exim ]]; then
-                echo "$(date "+%F %T") + $account@$domain"
-                msg="$msg\n$(date "+%F %T") + $account@$domain"
+                echo "$(date "+%F %T") + $account@$domain" |\
+                    tee -a $BACKUP/$user.log
                 touch $tmpdir/mail/$domain/accounts.tar
                 tar -rpf $tmpdir/mail/$domain/accounts.tar $account
             else
-                echo "$(date "+%F %T") excluding account $account"
-                msg="$msg\n$(date "+%F %T") excluding account $account"
+                echo "$(date "+%F %T") excluding mail account $account" |\
+                    tee -a $BACKUP/$user.log
             fi
         done
 
@@ -371,44 +331,37 @@ if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL" != '*' ]; then
 
     # Print total
     if [ "$i" -eq 1 ]; then
-        echo -e "$(date "+%F %T") *** $i domain ***"
-        msg="$msg\n$(date "+%F %T") *** $i domain ***"
+        echo -e "$(date "+%F %T") *** $i domain ***" |tee -a $BACKUP/$user.log
     else
-        echo -e "$(date "+%F %T") *** $i domains ***"
-        msg="$msg\n$(date "+%F %T") *** $i domains ***"
+        echo -e "$(date "+%F %T") *** $i domains ***"|tee -a $BACKUP/$user.log
     fi
-    echo
-    msg="$msg\n"
 fi
 
 
 # Databases
 if [ ! -z "$DB_SYSTEM" ] && [ "$DB" != '*' ]; then
-    echo "-- DB --"
-    msg="$msg\n-- DB --"
+    echo -e "\n-- DB --" |tee -a $BACKUP/$user.log
     mkdir $tmpdir/db/
 
     # Parsing database exclusions
     for database in $(search_objects 'db' 'SUSPENDED' "*" 'DB'); do
-        check_exl=$(echo -e "${DB//,/\n}" |grep "^$database$")
-        if [ -z "$check_exl" ]; then
+        exclusion=$(echo "$DB" |tr ',' '\n' |grep "^$database$")
+        if [ -z "$exclusion" ]; then
             db_list="$db_list $database"
         else
-            echo "$(date "+%F %T") excluding $database"
-            msg="$msg\n$(date "+%F %T") excluding $database"
+            echo "$(date "+%F %T") excluding $database" |\
+                tee -a $BACKUP/$user.log
         fi
     done
 
     i=0
     conf="$USER_DATA/db.conf"
-    db_list=$(echo "$db_list" | sed -e "s/  */\ /g" -e "s/^ //")
+    db_list=$(echo "$db_list" |sed -e "s/  */\ /g" -e "s/^ //")
     for database in $db_list; do
         ((i ++))
         get_database_values
 
-        echo -e "$(date "+%F %T") $database ($TYPE)"
-        msg="$msg\n$(date "+%F %T") $database ($TYPE)"
-
+        echo -e "$(date "+%F %T") $database ($TYPE)" |tee -a $BACKUP/$user.log
         mkdir -p $tmpdir/db/$database/conf
         mkdir -p $tmpdir/db/$database/vesta
 
@@ -428,20 +381,17 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB" != '*' ]; then
 
     # Print total
     if [ "$i" -eq 1 ]; then
-        echo -e "$(date "+%F %T") *** $i database ***"
-        msg="$msg\n$(date "+%F %T") *** $i database ***"
+        echo -e "$(date "+%F %T") *** $i database ***" |\
+            tee -a $BACKUP/$user.log
     else
-        echo -e "$(date "+%F %T") *** $i databases ***"
-        msg="$msg\n$(date "+%F %T") *** $i databases ***"
+        echo -e "$(date "+%F %T") *** $i databases ***"|\
+            tee -a $BACKUP/$user.log
     fi
-    echo
-    msg="$msg\n"
 fi
 
 # Cron jobs
 if [ ! -z "$CRON_SYSTEM" ] && [ "$CRON" != '*' ]; then
-    echo "-- CRON --"
-    msg="$msg\n-- CRON --"
+    echo -e "\n-- CRON --" |tee -a $BACKUP/$user.log
     mkdir $tmpdir/cron/
 
     # Backup cron.conf
@@ -455,20 +405,17 @@ if [ ! -z "$CRON_SYSTEM" ] && [ "$CRON" != '*' ]; then
 
     # Print total
     if [ "$cron_record" -eq 1 ]; then
-        echo -e "$(date "+%F %T") *** $cron_record job ***"
-        msg="$msg\n$(date "+%F %T") *** $cron_record job ***"
+        echo -e "$(date "+%F %T") *** $cron_record job ***" |\
+            tee -a $BACKUP/$user.log
     else
-        echo -e "$(date "+%F %T") *** $cron_record jobs ***"
-        msg="$msg\n$(date "+%F %T") *** $cron_record jobs ***"
+        echo -e "$(date "+%F %T") *** $cron_record jobs ***" |\
+            tee -a $BACKUP/$user.log
     fi
-    echo
-    msg="$msg\n"
 fi
 
 # User Directories
 if [ "$USER" != '*' ]; then
-    echo "-- User Dir --"
-    msg="$msg\n-- User Dir --"
+    echo -e "\n-- User Dir --" |tee -a $BACKUP/$user.log
     mkdir $tmpdir/user_dir
     cd $HOMEDIR/$user
 
@@ -477,107 +424,94 @@ if [ "$USER" != '*' ]; then
     if [ -e "$USER_DATA/backup-excludes.conf" ]; then
         source $USER_DATA/backup-excludes.conf
     fi
-    exlusion_list=$(echo -e "${USER//,/\n}")
     fargs=()
-    for xpath in $exlusion_list; do
+    for xpath in $(echo "$USER" |tr ',' '\n'); do
         fargs+=(-not)
         fargs+=(-path)
         fargs+=("./$xpath*")
-        echo "$(date "+%F %T") excluding directory $xpath"
-        msg="$msg\n$(date "+%F %T") excluding directory $xpath"
+        echo "$(date "+%F %T") excluding directory $xpath" |\
+            tee -a $BACKUP/$user.log
     done
 
     IFS=$'\n'
     set -f
     i=0
-    for udir in $(ls -a |egrep -v "conf|web|dns|mail|^\.\.$|^\.$"); do
-        check_exl=$(echo -e "${USER//,/\n}" |grep "^$udir$")
-        if [ -z "$check_exl" ]; then
+
+    for udir in $(ls -a |egrep -v "^conf$|^web$|^dns$|^mail$|^\.\.$|^\.$"); do
+        exclusion=$(echo "$USER" |tr ',' '\n' |grep "^$udir$")
+        if [ -z "$exclusion" ]; then
             ((i ++))
             udir_list="$udir_list $udir"
-            echo -e "$(date "+%F %T") adding directory $udir"
-            msg="$msg\n$(date "+%F %T") adding directory $udir"
+            echo -e "$(date "+%F %T") adding $udir" |tee -a $BACKUP/$user.log
 
-            # Backup files
-            find ./$udir ${fargs[@]} -type f -or -type l -print0 |\
-                tar -cpf $tmpdir/user_dir/$udir.tar --null -T -
-
-            # Backup empty folders
-            find ./$udir ${fargs[@]} -type d -empty -print0 |\
-                tar -rpf $tmpdir/user_dir/$udir.tar --null -T -
+            # Backup files and dirs
+            tar -cpf $tmpdir/user_dir/$udir.tar $udir
 
             # Compress arhive
             gzip -$BACKUP_GZIP $tmpdir/user_dir/$udir.tar
         fi
     done
     set +f
-    udir_list=$(echo "$udir_list" | sed -e "s/  */\ /g" -e "s/^ //")
+    udir_list=$(echo "$udir_list" |sed -e "s/  */\ /g" -e "s/^ //")
 
     # Print total
     if [ "$i" -eq 1 ]; then
-        echo -e "$(date "+%F %T") *** $i user directory ***"
-        msg="$msg\n$(date "+%F %T") *** $i directory ***"
+        echo -e "$(date "+%F %T") *** $i user directory ***" |\
+            tee -a $BACKUP/$user.log
     else
-        echo -e "$(date "+%F %T") *** $i directories ***"
-        msg="$msg\n$(date "+%F %T") *** $i directories ***"
+        echo -e "$(date "+%F %T") *** $i directories ***" |\
+            tee -a $BACKUP/$user.log
     fi
-    echo
-    msg="$msg\n"
 fi
 
 # Get backup size
-size="$(du -shm $tmpdir | cut -f 1)"
+size="$(du -shm $tmpdir |cut -f 1)"
 
 # Get current time
 end_time=$(date '+%s')
-DATE=$(date +%F)
-TIME=$(date +%T)
-
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Defining local storage function
 local_backup(){
 
-    rm -f $BACKUP/$user.$DATE.tar
+    rm -f $BACKUP/$user.$date.tar
 
     # Checking retention
-    backup_list=$(ls -lrt $BACKUP/ | awk '{print $9}' |grep "^$user\.")
-    backups_count=$(echo "$backup_list" | wc -l)
+    backup_list=$(ls -lrt $BACKUP/ |awk '{print $9}' |grep "^$user\." | grep ".tar")
+    backups_count=$(echo "$backup_list" |wc -l)
     if [ "$BACKUPS" -le "$backups_count" ]; then
         backups_rm_number=$((backups_count - BACKUPS))
         (( ++backups_rm_number))
 
         # Removing old backup
-        for backup in $(echo "$backup_list" | head -n $backups_rm_number); do
-            backup_date=$(echo $backup | sed -e "s/$user.//" -e "s/.tar$//")
-            echo -e "$(date "+%F %T") Roated: $backup_date"
-            msg="$msg\n$(date "+%F %T") Rotated: $backup_date"
+        for backup in $(echo "$backup_list" |head -n $backups_rm_number); do
+            backup_date=$(echo $backup |sed -e "s/$user.//" -e "s/.tar$//")
+            echo -e "$(date "+%F %T") Rotated: $backup_date" |\
+                tee -a $BACKUP/$user.log
             rm -f $BACKUP/$backup
         done
     fi
 
     # Checking disk space
     disk_usage=$(df $BACKUP |tail -n1 |tr ' ' '\n' |grep % |cut -f 1 -d %)
-
     if [ "$disk_usage" -ge "$BACKUP_DISK_LIMIT" ]; then
         rm -rf $tmpdir
-        echo "Not enough disk space to run backup" |\
-            $send_mail -s "$subj" $email
-        echo "Error: Not enough disk space"
+        rm -f $BACKUP/$user.log
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        log_event "$E_DISK" "$EVENT"
-        exit $E_DISK
+        echo "Not enough disk space" |$SENDMAIL -s "$subj" $email $notify
+        check_result "$E_DISK" "Not enough dsk space"
     fi
 
     # Creating final tarball
     cd $tmpdir
-    tar -cf $BACKUP/$user.$DATE.tar .
-    chmod 640 $BACKUP/$user.$DATE.tar
-    chown admin:$user $BACKUP/$user.$DATE.tar
+    tar -cf $BACKUP/$user.$date.tar .
+    chmod 640 $BACKUP/$user.$date.tar
+    chown admin:$user $BACKUP/$user.$date.tar
     localbackup='yes'
-    echo -e "$(date "+%F %T") Local: $BACKUP/$user.$DATE.tar"
-    msg="$msg\n$(date "+%F %T") Local: $BACKUP/$user.$DATE.tar"
-    U_BACKUPS=$(ls $BACKUP/ | grep "^$user." | wc -l)
-    update_user_value "$user" '$U_BACKUPS' "$U_BACKUPS"
+    echo -e "$(date "+%F %T") Local: $BACKUP/$user.$date.tar" |\
+        tee -a $BACKUP/$user.log
 }
 
 
@@ -598,20 +532,16 @@ EOF
 ftp_backup() {
     # Checking config
     if [ ! -e "$VESTA/conf/ftp.backup.conf" ]; then
-        ftp_conf_error="Can't open  $VESTA/conf/ftp.backup.conf"
-        echo "$ftp_conf_error" | $send_mail -s "$subj" $email
-        echo "Error: $VESTA/conf/ftp.backup.conf doesn't exist"
+        error="ftp.backup.conf doesn't exist"
+        rm -rf $tmpdir
+        rm -f $BACKUP/$user.log
+        echo "$error" |$SENDMAIL -s "$subj" $email $notify
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        log_event "$E_NOTEXIST" "$EVENT"
-        exit $E_NOTEXIST
+        check_result "$E_NOTEXIST" "$error"
     fi
 
     # Parse config
     source $VESTA/conf/ftp.backup.conf
-
-    # Set current data
-    DATE=$(date +%F)
-    TIME=$(date +%T)
 
     # Set default port
     if [ -z "$(grep 'PORT=' $VESTA/conf/ftp.backup.conf)" ]; then
@@ -620,70 +550,86 @@ ftp_backup() {
 
     # Checking variables
     if [ -z "$HOST" ] || [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
+        error="Can't parse ftp backup configuration"
         rm -rf $tmpdir
-        echo "Can't parse ftp backup configuration" |\
-            $send_mail -s "$subj" $email
-        echo "Error: Parsing error"
+        rm -f $BACKUP/$user.log
+        echo "$error" |$SENDMAIL -s "$subj" $email $notify
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        log_event "$E_PARSING" "$EVENT"
-        exit $E_PARSING
+        check_result "$E_PARSING" "$error"
     fi
 
-
     # Debug info
-    echo -e "$(date "+%F %T") Remote: ftp://$HOST$BPATH/$user.$DATE.tar"
+    echo -e "$(date "+%F %T") Remote: ftp://$HOST$BPATH/$user.$date.tar"
 
     # Checking ftp connection
     fconn=$(ftpc)
     ferror=$(echo $fconn |grep -i -e failed -e error -e "Can't" -e "not conn")
     if [ ! -z "$ferror" ]; then
+        error="Error: can't login to ftp ftp://$USERNAME@$HOST"
         rm -rf $tmpdir
-        echo "Can't login to ftp://$USERNAME@$HOST" |\
-            $send_mail -s "$subj" $email
-        echo "Error: can't login to ftp ftp://$USERNAME@$HOST"
+        rm -f $BACKUP/$user.log
+        echo "$error" |$SENDMAIL -s "$subj" $email $notify
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        log_event "$E_CONNECT" "$EVENT"
-        exit $E_CONNECT
+        check_result "$E_CONNECT" "$error"
     fi
 
     # Check ftp permissions
-    ftpc "mkdir $BPATH" > /dev/null 2>&1
-    ftmpdir="$BPATH/vst.bK76A9SUkt"
+    if [ -z $BPATH ]; then
+            ftmpdir="vst.bK76A9SUkt"
+        else
+            ftpc "mkdir $BPATH" > /dev/null 2>&1
+            ftmpdir="$BPATH/vst.bK76A9SUkt"
+    fi
     ftpc "mkdir $ftmpdir" "rm $ftmpdir"
     ftp_result=$(ftpc "mkdir $ftmpdir" "rm $ftmpdir" |grep -v Trying)
     if [ ! -z "$ftp_result" ] ; then
+        error="Can't create ftp backup folder ftp://$HOST$BPATH"
         rm -rf $tmpdir
-        echo "Can't create ftp backup folder ftp://$HOST$BPATH" |\
-            $send_mail -s "$subj" $email
-        echo "Error: cant's create ftp folder ftp://$HOST$BPATH"
+        rm -f $BACKUP/$user.log
+        echo "$error" |$SENDMAIL -s "$subj" $email $notify
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        log_event "$E_FTP" "$EVENT"
-        exit $E_FTP
+        check_result "$E_FTP" "$error"
     fi
 
     # Checking retention
-    backup_list=$(ftpc "cd $BPATH" "ls" |awk '{print $9}' |grep "^$user\.")
-    backups_count=$(echo "$backup_list" | wc -l)
+    if [ -z $BPATH ]; then
+        backup_list=$(ftpc "ls" |awk '{print $9}' |grep "^$user\.")
+    else
+        backup_list=$(ftpc "cd $BPATH" "ls" |awk '{print $9}' |grep "^$user\.")
+    fi
+    backups_count=$(echo "$backup_list" |wc -l)
     if [ "$backups_count" -ge "$BACKUPS" ]; then
         backups_rm_number=$((backups_count - BACKUPS + 1))
-        for backup in $(echo "$backup_list" | head -n $backups_rm_number); do 
-            backup_date=$(echo $backup | sed -e "s/$user.//" -e "s/.tar$//")
-            echo -e "$(date "+%F %T") Roated ftp backup: $backup_date"
-            msg="$msg\n$(date "+%F %T") Roated ftp backup: $backup_date"
-            ftpc "cd $BPATH" "delete $backup"
+        for backup in $(echo "$backup_list" |head -n $backups_rm_number); do 
+            backup_date=$(echo $backup |sed -e "s/$user.//" -e "s/.tar$//")
+            echo -e "$(date "+%F %T") Rotated ftp backup: $backup_date" |\
+                tee -a $BACKUP/$user.log
+            if [ -z $BPATH ]; then
+                ftpc "delete $backup"
+            else
+                ftpc "cd $BPATH" "delete $backup"
+            fi
         done
     fi
 
     # Uploading backup archive
     if [ "$localbackup" = 'yes' ]; then
         cd $BACKUP
-        ftpc "cd $BPATH" "put $user.$DATE.tar"
+        if [ -z $BPATH ]; then
+            ftpc "put $user.$date.tar"
+         else
+            ftpc "cd $BPATH" "put $user.$date.tar"
+        fi
     else
         cd $tmpdir
-        tar -cf $BACKUP/$user.$DATE.tar .
+        tar -cf $BACKUP/$user.$date.tar .
         cd $BACKUP/
-        ftpc "cd $BPATH" "put $user.$DATE.tar"
-        rm -f $user.$DATE.tar
+        if [ -z $BPATH ]; then
+            ftpc "put $user.$date.tar"
+        else
+            ftpc "cd $BPATH" "put $user.$date.tar"
+        fi
+        rm -f $user.$date.tar
     fi
 }
 
@@ -749,20 +695,16 @@ sftp_backup() {
 
     # Checking config
     if [ ! -e "$VESTA/conf/sftp.backup.conf" ]; then
-        sftp_conf_error="Can't open  $VESTA/conf/sftp.backup.conf"
-        echo "$sftp_conf_error" | $send_mail -s "$subj" $email
-        echo "Error: $VESTA/conf/sftp.backup.conf doesn't exist"
+        error="Can't open sftp.backup.conf"
+        rm -rf $tmpdir
+        rm -f $BACKUP/$user.log
+        echo "$error" |$SENDMAIL -s "$subj" $email $notify
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        log_event "$E_NOTEXIST" "$EVENT"
-        exit $E_NOTEXIST
+        check_result "$E_NOTEXIST" "$error"
     fi
 
     # Parse config
     source $VESTA/conf/sftp.backup.conf
-
-    # Set current data
-    DATE=$(date +%F)
-    TIME=$(date +%T)
 
     # Set default port
     if [ -z "$(grep 'PORT=' $VESTA/conf/sftp.backup.conf)" ]; then
@@ -771,65 +713,123 @@ sftp_backup() {
 
     # Checking variables
     if [ -z "$HOST" ] || [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
+        error="Can't parse sftp backup configuration"
         rm -rf $tmpdir
-        echo "Can't parse sftp backup configuration" |\
-            $send_mail -s "$subj" $email
-        echo "Error: Parsing error"
+        rm -f $BACKUP/$user.log
+        echo "$error" |$SENDMAIL -s "$subj" $email $notify
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        log_event "$E_PARSING" "$EVENT"
-        exit $E_PARSING
+        check_result "$E_PARSING" "$error"
     fi
 
     # Debug info
-    echo -e "$(date "+%F %T") Remote: sftp://$HOST/$BPATH/$user.$DATE.tar"
+    echo -e "$(date "+%F %T") Remote: sftp://$HOST/$BPATH/$user.$date.tar" |\
+        tee -a $BACKUP/$user.log
 
     # Checking network connection and write permissions
-    sftmpdir="$BPATH/vst.bK76A9SUkt"
+    if [ -z $BPATH ]; then
+        sftmpdir="vst.bK76A9SUkt"
+    else
+        sftmpdir="$BPATH/vst.bK76A9SUkt"
+    fi
     sftpc "mkdir $BPATH" > /dev/null 2>&1
     sftpc "mkdir $sftmpdir" "rmdir $sftmpdir" > /dev/null 2>&1
     rc=$?
     if [[ "$rc" != 0 ]]; then
-        rm -rf $tmpdir
         case $rc in
-            $E_CONNECT) echo "Error: can't login to sftp host $HOST" |\
-                $send_mail -s "$subj" $email;;
-            $E_FTP) echo "Error: can't create temp folder on sftp $HOST" |\
-                $send_mail -s "$subj" $email;;
+            $E_CONNECT) error="Can't login to sftp host $HOST" ;;
+            $E_FTP) error="Can't create temp folder on sftp $HOST" ;;
         esac
+        rm -rf $tmpdir
+        rm -f $BACKUP/$user.log
+        echo "$error" |$SENDMAIL -s "$subj" $email $notify
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        log_event "$rc" "$EVENT"
-        exit "$rc"
+        check_result "$rc" "$error"
     fi
 
     # Checking retention
-    backup_list=$(sftpc "cd $BPATH" "ls -l" |awk '{print $9}' |grep "^$user\.")
-    backups_count=$(echo "$backup_list" | wc -l)
+    if [ -z $BPATH ]; then
+        backup_list=$(sftpc "ls -l" |awk '{print $9}'|grep "^$user\.")
+    else
+        backup_list=$(sftpc "cd $BPATH" "ls -l" |awk '{print $9}'|grep "^$user\.")
+    fi
+    backups_count=$(echo "$backup_list" |wc -l)
     if [ "$backups_count" -ge "$BACKUPS" ]; then
         backups_rm_number=$((backups_count - BACKUPS + 1))
-        for backup in $(echo "$backup_list" | head -n $backups_rm_number); do 
-            backup_date=$(echo $backup | sed -e "s/$user.//" -e "s/.tar.*$//")
-            echo -e "$(date "+%F %T") Roated sftp backup: $backup_date"
-            msg="$msg\n$(date "+%F %T") Roated sftp backup: $backup_date"
-            sftpc "cd $BPATH" "rm $backup" > /dev/null 2>&1
+        for backup in $(echo "$backup_list" |head -n $backups_rm_number); do
+            backup_date=$(echo $backup |sed -e "s/$user.//" -e "s/.tar.*$//")
+            echo -e "$(date "+%F %T") Rotated sftp backup: $backup_date" |\
+                tee -a $BACKUP/$user.log
+            if [ -z $BPATH ]; then
+                sftpc "rm $backup" > /dev/null 2>&1
+            else
+                sftpc "cd $BPATH" "rm $backup" > /dev/null 2>&1
+            fi
         done
     fi
 
     # Uploading backup archive
-    echo -e "$(date "+%F %T") Uploading $user.$DATE.tar ..."
+    echo "$(date "+%F %T") Uploading $user.$date.tar"|tee -a $BACKUP/$user.log
     if [ "$localbackup" = 'yes' ]; then
         cd $BACKUP
-        sftpc "cd $BPATH" "put $user.$DATE.tar" > /dev/null 2>&1
+        if [ -z $BPATH ]; then
+            sftpc "put $user.$date.tar" "chmod 0600 $user.$date.tar" > /dev/null 2>&1
+        else
+            sftpc "cd $BPATH" "put $user.$date.tar" "chmod 0600 $user.$date.tar" > /dev/null 2>&1
+        fi
     else
         cd $tmpdir
-        tar -cf $BACKUP/$user.$DATE.tar .
+        tar -cf $BACKUP/$user.$date.tar .
         cd $BACKUP/
-        sftpc "cd $BPATH" "put $user.$DATE.tar" > /dev/null 2>&1
-        rm -f $user.$DATE.tar
+        if [ -z $BPATH ]; then
+            sftpc "put $user.$date.tar" "chmod 0600 $user.$date.tar" > /dev/null 2>&1
+        else
+            sftpc "cd $BPATH" "put $user.$date.tar" "chmod 0600 $user.$date.tar" > /dev/null 2>&1
+        fi
+        rm -f $user.$date.tar
     fi
 }
 
-echo "-- SUMMARY --"
-msg="$msg\n-- SUMMARY --"
+google_backup() {
+
+    # Defining google settings
+    source $VESTA/conf/google.backup.conf
+    gsutil="$VESTA/3rdparty/gsutil/gsutil"
+    export BOTO_CONFIG="$VESTA/conf/.google.backup.boto"
+
+    # Debug info
+    echo -e "$(date "+%F %T") Remote: gs://$BUCKET/$BPATH/$user.$date.tar"
+
+    # Checking retention
+    backup_list=$(${gsutil} ls gs://$BUCKET/$BPATH/$user.* 2>/dev/null)
+    backups_count=$(echo "$backup_list" |wc -l)
+    if [ "$backups_count" -ge "$BACKUPS" ]; then
+        backups_rm_number=$((backups_count - BACKUPS + 1))
+        for backup in $(echo "$backup_list" |head -n $backups_rm_number); do 
+            echo -e "$(date "+%F %T") Roated gcp backup: $backup"
+            $gsutil rm $backup > /dev/null 2>&1
+        done
+    fi
+
+    # Uploading backup archive
+    echo -e "$(date "+%F %T") Uploading $user.$date.tar ..."
+    if [ "$localbackup" = 'yes' ]; then
+        cd $BACKUP
+        ${gsutil} cp $user.$date.tar gs://$BUCKET/$BPATH/ > /dev/null 2>&1
+    else
+        cd $tmpdir
+        tar -cf $BACKUP/$user.$date.tar .
+        cd $BACKUP/
+        ${gsutil} cp $user.$date.tar gs://$BUCKET/$BPATH/ > /dev/null 2>&1
+        rc=$?
+        rm -f $user.$date.tar
+        if [ "$rc" -ne 0 ]; then
+            check_result "$E_CONNECT" "gsutil failed to upload $user.$date.tar"
+        fi
+    fi
+}
+
+
+echo -e "\n-- SUMMARY --" |tee -a $BACKUP/$user.log
 
 # Switching on backup system types
 for backup_type in $(echo -e "${BACKUP_SYSTEM//,/\\n}"); do
@@ -837,6 +837,7 @@ for backup_type in $(echo -e "${BACKUP_SYSTEM//,/\\n}"); do
         local) local_backup ;;
         ftp)   ftp_backup ;;
         sftp)  sftp_backup ;;
+        google) google_backup ;;
     esac
 done
 
@@ -850,15 +851,13 @@ current_time=$(date "+%T")
 if [ "$run_time" -lt 1 ]; then
     run_time=1
 fi
-min=miutes
+min=minutes
 if [ "$run_time" -eq 1 ]; then
     min=minute
 fi
 
-echo "$(date "+%F %T") Size: $size Mb"
-msg="$msg\n$(date "+%F %T") Size: $size Mb"
-echo "$(date "+%F %T") Runtime: $run_time $min"
-msg="$msg\n$(date "+%F %T") Runtime: $run_time $min"
+echo "$(date "+%F %T") Size: $size MB" |tee -a $BACKUP/$user.log
+echo "$(date "+%F %T") Runtime: $run_time $min" |tee -a $BACKUP/$user.log
 
 
 #----------------------------------------------------------#
@@ -867,10 +866,10 @@ msg="$msg\n$(date "+%F %T") Runtime: $run_time $min"
 
 # Removing duplicate
 touch $USER_DATA/backup.conf
-sed -i "/$user.$DATE.tar/d" $USER_DATA/backup.conf
+sed -i "/$user.$date.tar/d" $USER_DATA/backup.conf
 
-# Regestering new backup
-backup_str="BACKUP='$user.$DATE.tar'"
+# Registering new backup
+backup_str="BACKUP='$user.$date.tar'"
 backup_str="$backup_str TYPE='$BACKUP_SYSTEM' SIZE='$size'"
 backup_str="$backup_str WEB='${web_list// /,}'"
 backup_str="$backup_str DNS='${dns_list// /,}'"
@@ -878,7 +877,7 @@ backup_str="$backup_str MAIL='${mail_list// /,}'"
 backup_str="$backup_str DB='${db_list// /,}'"
 backup_str="$backup_str CRON='$cron_list'"
 backup_str="$backup_str UDIR='${udir_list// /,}'"
-backup_str="$backup_str RUNTIME='$run_time' TIME='$TIME' DATE='$DATE'"
+backup_str="$backup_str RUNTIME='$run_time' TIME='$time' DATE='$date'"
 echo "$backup_str" >> $USER_DATA/backup.conf
 
 # Removing old backups
@@ -889,14 +888,19 @@ chmod 660 $USER_DATA/backup.conf
 # Deleting task from queue
 sed -i "/v-backup-user $user /d" $VESTA/data/queue/backup.pipe
 
+U_BACKUPS=$(grep BACKUP $USER_DATA/backup.conf |wc -l)
+update_user_value "$user" '$U_BACKUPS' "$U_BACKUPS"
+
 # Send notification
-if [ "$notify" != 'no' ]; then
+if [ -e "$BACKUP/$user.log" ]; then
+    cd $BACKUP
     subj="$user → backup has been completed"
     email=$(get_user_value '$CONTACT')
-    echo -e "$msg" | $send_mail -s "$subj" $email
+    cat $BACKUP/$user.log |$SENDMAIL -s "$subj" $email $notify
+    rm $BACKUP/$user.log
 fi
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

@@ -11,7 +11,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=${1-admin}
 ip_status=${2-shared}
 
@@ -27,7 +27,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '0' "$#" '[USER] [IP_STATUS]'
-validate_format 'user' 'ip_status'
+is_format_valid 'user' 'ip_status'
 is_object_valid 'user' 'USER' "$user" "$user"
 
 
@@ -87,9 +87,7 @@ if [ ! -z "$vst_ip_list" ] && [ "$vst_ip_num" -eq '1' ]; then
                 $BIN/v-rebuild-dns-domains $user no
             done
             $BIN/v-restart-dns
-            if [ $? -ne 0 ]; then
-                exit $E_RESTART
-            fi
+            check_result $? "dns restart failed" >/dev/null
         fi
 
         # No further comparation is needed
@@ -99,9 +97,10 @@ fi
 
 # Compare ips
 for ip in $ip_list; do
-    if [ ! -e "$VESTA/data/ips/$ip" ]; then
+    check_ifconfig=$(/sbin/ifconfig |grep "$ip")
+    if [ ! -e "$VESTA/data/ips/$ip" ] && [ ! -z "$check_ifconfig" ]; then
         interface=$(/sbin/ip addr |grep $ip |awk '{print $NF}')
-        interface=$(echo $interface |cut -f 1 -d :)
+        interface=$(echo "$interface" |cut -f 1 -d : |head -n 1)
         netmask=$(/sbin/ip addr |grep $ip |cut -f 2 -d / |cut -f 1 -d \ )
         netmask=$(convert_cidr $netmask)
         $BIN/v-add-sys-ip $ip $netmask $interface

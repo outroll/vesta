@@ -25,9 +25,9 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 check_args '2' "$#" 'USER DOMAIN [IP] [RESTART]'
-validate_format 'user' 'domain'
+is_format_valid 'user' 'domain'
 if [ ! -z "$ip" ] ; then
-    validate_format 'ip'
+    is_format_valid 'ip'
 fi
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -39,50 +39,43 @@ is_object_unsuspended 'user' 'USER' "$user"
 
 # Get ip if it wasn't defined
 if [ -z "$ip" ]; then
-    ip=$(get_user_ip $user)
+    get_user_ip
     if [ -z "$ip" ]; then
-        echo "Error: no avaiable IP address"
-        log_event "$E_NOTEXIST" "$EVENT"
-        exit $E_NOTEXIST
+        check_result $E_NOTEXIST "no avaiable IP address"
     fi
 fi
 
-# Web domain
+# Working on web domain
 if [ ! -z "$WEB_SYSTEM" ]; then
     $BIN/v-add-web-domain $user $domain $ip 'no'
-    return_code=$?
+    check_result $? "can't add web domain" >/dev/null
 fi
 
-# Proxy support
-if [ ! -z "$PROXY_SYSTEM" ] && [ "$return_code" -eq 0 ]; then
-    extentions="jpg,jpeg,gif,png,ico,svg,css,zip,tgz,gz,rar,bz2,doc,xls"
-    extentions="$extentions,exe,pdf,ppt,txt,odt,ods,odp,odf,tar,wav"
-    extentions="$extentions,bmp,rtf,js,mp3,avi,mpeg,flv,html,htm"
-    $BIN/v-add-web-domain-proxy $user $domain 'default' "$extentions" 'no'
+# Working on DNS domain
+if [ ! -z "$DNS_SYSTEM" ]; then
+    $BIN/v-add-dns-domain $user $domain $ip "" "" "" "" "" '' '' '' 'no'
+    check_result $? "can't add dns domain" >/dev/null
 fi
 
-# DNS domain
-if [ ! -z "$DNS_SYSTEM" ] && [ "$return_code" -eq 0 ]; then
-    $BIN/v-add-dns-domain $user $domain $ip 'no'
-    return_code=$?
-fi
-
-# Mail domain
-if [ ! -z "$MAIL_SYSTEM" ] && [ "$return_code" -eq 0 ]; then
+# Working on mail domain
+if [ ! -z "$MAIL_SYSTEM" ]; then
     $BIN/v-add-mail-domain $user $domain
-    return_code=$?
+    check_result $? "can't add mail domain" >/dev/null
 fi
 
-# Restart services
-if [ "$restart" != 'no' ] && [ "$return_code" -eq 0 ]; then
-    $BIN/v-restart-web
-    $BIN/v-restart-proxy
-    $BIN/v-restart-dns
-fi
+# Restarting services
+$BIN/v-restart-web $restart
+check_result $? "can't restart web" > /dev/null
+
+$BIN/v-restart-proxy $restart
+check_result $? "can't restart proxy" > /dev/null
+
+$BIN/v-restart-dns $restart
+check_result $? "can't restart dns" > /dev/null
 
 
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-exit $return_code
+exit

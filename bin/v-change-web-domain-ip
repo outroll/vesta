@@ -1,18 +1,18 @@
 #!/bin/bash
-# info: change web domain ip address
-# options: USER DOMAIN IP [RESTART]
+# info: change web domain ip
+# options: USER DOMAIN DOMAIN [RESTART]
 #
-# The call is used for changing the site ip address.
+# The call is used for changing domain ip
 
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain_idn=$(idn -t --quiet -a "$domain")
+domain=$2
+domain_idn=$2
 ip=$3
 restart=$4
 
@@ -22,54 +22,47 @@ source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+# TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
+
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN IP [RESTART]'
-validate_format 'user' 'domain' 'ip'
+is_format_valid 'user' 'domain' 'ip'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_ip_valid
-is_ip_avalable
+is_ip_valid "$ip" "$user"
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-# Define variable for replace
+# Preparing variables for vhost replace
 get_domain_values 'web'
-ip=$(get_real_ip $ip)
-tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.tpl"
-conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
 old=$(get_real_ip $IP)
 new=$ip
-replace_web_config
 
-# Checking SSL
+# Replacing vhost
+replace_web_config "$WEB_SYSTEM" "$TPL.tpl"
 if [ "$SSL" = 'yes' ]; then
-    tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
-    replace_web_config
+    replace_web_config "$WEB_SYSTEM" "$TPL.stpl"
 fi
 
-# Checking proxy
-if [ ! -z "$PROXY" ]; then
-    tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
-    conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
-    replace_web_config
-fi
-
-# Checking SSL proxy
-if [ "$SSL" = 'yes' ] && [ ! -z "$PROXY" ]; then 
-    tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
-    replace_web_config
+# Replacing proxy vhost
+if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
+    replace_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+    if [ "$SSL" = 'yes' ]; then
+        replace_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+    fi
 fi
 
 
@@ -85,20 +78,14 @@ decrease_ip_value "$old"
 update_object_value 'web' 'DOMAIN' "$domain" '$IP' "$3"
 
 # Restart web server
-if [ "$restart" != 'no' ]; then
-    $BIN/v-restart-web
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+$BIN/v-restart-web $restart
+check_result $? "WEB restart failed" >/dev/null
 
-    $BIN/v-restart-proxy
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
-fi
+$BIN/v-restart-proxy $restart
+check_result $? "Proxy restart failed" >/dev/null
 
 # Logging
 log_history "changed web domain $domain ip to $3"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

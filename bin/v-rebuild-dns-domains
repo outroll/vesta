@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: rebuild dns domains
-# options: USER [RESTART]
+# options: USER [RESTART] [UPDATE_SERIAL]
 #
 # The function rebuilds DNS configuration files.
 
@@ -9,9 +9,10 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 restart=$2
+update_serial=$3
 
 # Includes
 source $VESTA/func/main.sh
@@ -24,8 +25,8 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '1' "$#" 'USER [RESTART]'
-validate_format 'user'
+check_args '1' "$#" 'USER [RESTART] [UPDATE_SERIAL]'
+is_format_valid 'user'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -65,6 +66,9 @@ sed -i "/\/$user\/conf\/dns/d" $dns_conf
 
 # Starting loop
 for domain in $(search_objects 'dns' 'DOMAIN' "*" 'DOMAIN'); do
+   if [ "$update_serial" != 'no' ]; then
+        update_domain_serial
+    fi
     rebuild_dns_domain_conf
 done
 
@@ -78,15 +82,11 @@ update_user_value "$user" '$U_DNS_DOMAINS' "$user_domains"
 update_user_value "$user" '$U_DNS_RECORDS' "$user_records"
 update_user_value "$user" '$SUSPENDED_DNS' "$suspended_dns"
 
-# Restart named
-if [ "$restart" != 'no' ]; then
-    $BIN/v-restart-dns
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
-fi
+# Restarting named
+$BIN/v-restart-dns $restart
+check_result $? "Bind restart failed" >/dev/null
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

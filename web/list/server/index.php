@@ -1,5 +1,5 @@
 <?php
-session_start();
+error_reporting(NULL);
 $TAB = 'SERVER';
 
 // Main include
@@ -16,10 +16,8 @@ if (isset($_GET['cpu'])) {
     $TAB = 'CPU';
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_server_info.html');
     exec (VESTA_CMD.'v-list-sys-cpu-status', $output, $return_var);
-    if ($return_var == 0 ) {
-        foreach($output as $file) {
-            echo $file . "\n";
-        }
+    foreach($output as $file) {
+        echo $file . "\n";
     }
     echo "    </pre>\n</body>\n</html>\n";
     exit();
@@ -30,10 +28,8 @@ if (isset($_GET['mem'])) {
     $TAB = 'MEMORY';
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_server_info.html');
     exec (VESTA_CMD.'v-list-sys-memory-status', $output, $return_var);
-    if ($return_var == 0 ) {
-        foreach($output as $file) {
-            echo $file . "\n";
-        }
+    foreach($output as $file) {
+        echo $file . "\n";
     }
     echo "    </pre>\n</body>\n</html>\n";
     exit();
@@ -41,13 +37,11 @@ if (isset($_GET['mem'])) {
 
 // Disk info
 if (isset($_GET['disk'])) {
-    $TAB = 'MEMORY';
+    $TAB = 'DISK';
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_server_info.html');
     exec (VESTA_CMD.'v-list-sys-disk-status', $output, $return_var);
-    if ($return_var == 0 ) {
-        foreach($output as $file) {
-            echo $file . "\n";
-        }
+    foreach($output as $file) {
+        echo $file . "\n";
     }
     echo "    </pre>\n</body>\n</html>\n";
     exit();
@@ -55,13 +49,11 @@ if (isset($_GET['disk'])) {
 
 // Network info
 if (isset($_GET['net'])) {
-    $TAB = 'MEMORY';
+    $TAB = 'NETWORK';
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_server_info.html');
     exec (VESTA_CMD.'v-list-sys-network-status', $output, $return_var);
-    if ($return_var == 0 ) {
-        foreach($output as $file) {
-            echo $file . "\n";
-        }
+    foreach($output as $file) {
+        echo $file . "\n";
     }
     echo "    </pre>\n</body>\n</html>\n";
     exit();
@@ -72,10 +64,9 @@ if (isset($_GET['web'])) {
     $TAB = 'WEB';
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_server_info.html');
     exec (VESTA_CMD.'v-list-sys-web-status', $output, $return_var);
-    if ($return_var == 0 ) {
-        foreach($output as $file) {
-            echo $file . "\n";
-        }
+    foreach($output as $file) {
+        $file=str_replace('border="0"', 'border="1"', $file);
+        echo $file . "\n";
     }
     echo "    </pre>\n</body>\n</html>\n";
     exit();
@@ -87,10 +78,8 @@ if (isset($_GET['dns'])) {
     $TAB = 'DNS';
     include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_server_info.html');
     exec (VESTA_CMD.'v-list-sys-dns-status', $output, $return_var);
-    if ($return_var == 0 ) {
-        foreach($output as $file) {
-            echo $file . "\n";
-        }
+    foreach($output as $file) {
+        echo $file . "\n";
     }
     echo "    </pre>\n</body>\n</html>\n";
     exit();
@@ -124,13 +113,6 @@ if (isset($_GET['db'])) {
     exit();
 }
 
-
-// Header
-include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
-
-// Panel
-top_panel($user,$TAB);
-
 // Data
 exec (VESTA_CMD."v-list-sys-info json", $output, $return_var);
 $sys = json_decode(implode('', $output), true);
@@ -138,10 +120,9 @@ unset($output);
 exec (VESTA_CMD."v-list-sys-services json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 unset($output);
-include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_services.html');
+
+// Render page
+render_page($user, $TAB, 'list_services');
 
 // Back uri
 $_SESSION['back'] = $_SERVER['REQUEST_URI'];
-
-// Footer
-include($_SERVER['DOCUMENT_ROOT'].'/templates/footer.html');

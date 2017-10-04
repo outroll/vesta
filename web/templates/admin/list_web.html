@@ -1,6 +1,6 @@
     <div class="l-center">
       <div class="l-sort clearfix noselect">
-        <a href="/add/web/" class="l-sort__create-btn" title="<?=str_replace(' ', '&nbsp;', __('Add Web Domain'))?>"></a>
+        <a href="/add/web/" class="l-sort__create-btn" title="<?=__('Add Web Domain')?>"></a>
         <ul class="context-menu sort-order" style="display:none;">
           <li entity="sort-date" sort_as_int="1"><span class="name active"><?=__('Date')?></span><span class="up">&nbsp;</span></li>
           <li entity="sort-name"><span class="name"><?=__('Domain')?></span><span class="up">&nbsp;</span></li>
@@ -23,9 +23,6 @@
                 <input id="toggle-all" type="checkbox" name="toggle-all" value="toggle-all" onChange="checkedAll('objects');">
                 <label for="toggle-all" class="check-label toggle-all"><?=__('toggle all')?></label>
               </td>
-              <td class="sort-by">
-                <?=__('sort by');?>: <span><b><?=__('Date')?></b></span> <i class="l-icon-down-arrow media-top"></i>
-              </td>
               <td>
                 <form action="/bulk/web/" method="post" id="objects">
                 <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
@@ -38,16 +35,16 @@
                   </select>
                 </div>
                 <input type="submit" class="l-sort-toolbar__filter-apply" value=""/>
-                </div>
+              </td>
+              <td class="sort-by">
+                <?=__('sort by');?>: <span><b><?=__('Date')?></b></span> <i class="l-icon-down-arrow media-top"></i>
               </td>
             </tr>
           </table>
           <!--  -->
         </div>
+        <!-- /.l-sort -->
       </div>
-      <? display_error_block() ?>
-
-      <!-- /.l-sort -->
     </div>
 
     <div class="l-separator"></div>
@@ -99,6 +96,11 @@
                             $ftp_user = str_replace(':', ', ', $ftp_user);
                         }
 
+                        $backend_support='no';
+                        if (!empty($data[$key]['BACKEND'])) {
+                            $backend_support='yes';
+                        }
+
                         $proxy_support='no';
                         if (!empty($data[$key]['PROXY'])) {
                             $proxy_support='yes';
@@ -115,9 +117,9 @@
                         }
                     ?>
 
-      <div class="l-unit <? if($data[$key]['SUSPENDED'] == 'yes') echo 'l-unit--suspended'; if($_SESSION['favourites']['WEB'][$key] == 1) echo ' l-unit--starred'; ?>" v_section="web" v_unit_id="<?=$key?>" 
-id="web-unit-<?=$i?>"  sort-ip="<?=str_replace('.', '', $data[$key]['IP'])?>" 
-sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" 
+      <div class="l-unit <? if($data[$key]['SUSPENDED'] == 'yes') echo 'l-unit--suspended'; if($_SESSION['favourites']['WEB'][$key] == 1) echo ' l-unit--starred'; ?>" v_section="web" v_unit_id="<?=$key?>"
+id="web-unit-<?=$i?>"  sort-ip="<?=str_replace('.', '', $data[$key]['IP'])?>"
+sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>"
 sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-disk="<?=$data[$key]['U_DISK']?>" sort-star="<? if($_SESSION['WEB'][$key] == 1) echo '1'; else echo '0';?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
@@ -127,12 +129,12 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__edit"><a href="/edit/web/?domain=<?=$key?>"><?=__('edit')?> <i></i></a></div>
-              <div class="actions-panel__col actions-panel__logs"><a href="/list/web-log/?domain=<?php echo $key ?>&type=access#" target="_blank"><?=__('view logs')?> <i></i></a></div>
+              <div class="actions-panel__col actions-panel__edit shortcut-enter" key-action="href"><a href="/edit/web/?domain=<?=$key?>"><?=__('edit')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
+              <div class="actions-panel__col actions-panel__logs shortcut-l" key-action="href"><a href="/list/web-log/?domain=<?php echo $key ?>&type=access#" target="_blank"><?=__('view logs')?> <i></i></a><span class="shortcut">&nbsp;L</span></div>
               <? if (!empty($data[$key]['STATS'])) { ?>
-                  <div class="actions-panel__col actions-panel__logs"><a href="http://<?=$key?>/vstats/"  target="_blank"><?=__('open webstats')?> <i></i></a></div>
+                  <div class="actions-panel__col actions-panel__logs shortcut-w" key-action="href"><a href="http://<?=$key?>/vstats/"  target="_blank"><?=__('open webstats')?> <i></i></a><span class="shortcut">&nbsp;W</span></div>
               <? } ?>
-              <div class="actions-panel__col actions-panel__suspend">
+              <div class="actions-panel__col actions-panel__suspend shortcut-s" key-action="js">
                 <a id="<?=$spnd_action ?>_link_<?=$i?>" class="data-controls do_<?=$spnd_action?>">
                   <?=__($spnd_action)?> <i class="do_<?=$spnd_action?>"></i>
                   <input type="hidden" name="<?=$spnd_action?>_url" value="/<?=$spnd_action?>/web/?domain=<?=$key?>&token=<?=$_SESSION['token']?>" />
@@ -140,8 +142,9 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
                     <p class="confirmation"><?=__($spnd_confirmation,$key)?></p>
                   </div>
                 </a>
+                <span class="shortcut">&nbsp;S</span>
               </div>
-              <div class="actions-panel__col actions-panel__delete">
+              <div class="actions-panel__col actions-panel__delete shortcut-delete" key-action="js">
                 <a id="delete_link_<?=$i?>" class="data-controls do_delete">
                   <?=__('delete')?> <i class="do_delete"></i>
                   <input type="hidden" name="delete_url" value="/delete/web/?domain=<?=$key?>&token=<?=$_SESSION['token']?>" />
@@ -149,6 +152,7 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
                     <p class="confirmation"><?=__('DELETE_DOMAIN_CONFIRMATION',$key)?></p>
                   </div>
                 </a>
+                <span class="shortcut delete">&nbsp;Del</span>
               </div>
 
             </div>
@@ -162,9 +166,9 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
           <div class="l-unit__date">
             <?=translate_date($data[$key]['DATE'])?>
           </div>
-          <div class="l-unit__suspended""><?=__('suspended')?></div>
+          <div class="l-unit__suspended"><?=__('suspended')?></div>
           <div class="text-center">
-            <i class="l-icon-star"></i>
+            <i class="l-icon-star" title="<?=__('save to favorites')?>"></i>
           </div>
         </div>
         <!-- /.l-unit__col -->
@@ -174,7 +178,7 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
           </div>
           <!-- /.l-unit__name -->
           <div class="l-unit__ip">
-            <?=str_replace('.', '<span>.</span>', $data[$key]['IP'])?>
+            <?=empty($ips[$data[$key]['IP']]['NAT']) ? $data[$key]['IP'] : "{$ips[$data[$key]['IP']]['NAT']}"; ?>
           </div>
           <!-- /.l-unit__ip -->
           <div class="l-unit__stats">
@@ -198,11 +202,12 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Web Template')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['TPL'])?></b>
+                      <b><?=$data[$key]['TPL']?></b>
                     </div>
                   </div>
                 </td>
                 <td>
+                  <?php if (!empty($_SESSION['PROXY_SYSTEM'])) { echo ""; ?>
                   <? if($proxy_support == 'no'){ ?>
                     <div class="l-unit__stat-cols clearfix disabled last"><?=__('Proxy Support')?></div>
                   <? } else {?>
@@ -212,6 +217,19 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
                         <b><?=__($proxy_support)?></b>
                       </div>
                     </div>
+                  <? } ?>
+                  <? } ?>
+                  <?php if (!empty($_SESSION['WEB_BACKEND'])) { echo ""; ?>
+                  <? if($backend_support == 'no'){ ?>
+                    <div class="l-unit__stat-cols clearfix disabled last"><?=__('Backend Support')?></div>
+                  <? } else {?>
+                    <div class="l-unit__stat-cols clearfix last">
+                      <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Backend Support')?>:</div>
+                      <div class="l-unit__stat-col l-unit__stat-col--right">
+                        <b><?=__($backend_support)?></b>
+                      </div>
+                    </div>
+                  <? } ?>
                   <? } ?>
                 </td>
               </tr>
@@ -224,20 +242,51 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
                     <div class="l-unit__stat-cols clearfix">
                       <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('SSL Support')?>:</div>
                       <div class="l-unit__stat-col l-unit__stat-col--right">
-                        <b><?=__($data[$key]['SSL'])?></b>
+                        <b>
+                            <? if($data[$key]['LETSENCRYPT'] == 'yes'){
+                                echo __('Lets Encrypt');
+                            } else {
+                                echo __($data[$key]['SSL']);
+                            }?>
+                        </b>
                       </div>
                     </div>
                   <? } ?>
                 </td>
                 <td>
+                  <?php if (!empty($_SESSION['PROXY_SYSTEM'])) { echo ""; ?>
                   <div class="l-unit__stat-cols clearfix last">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Proxy Template')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
                       <b><?=$data[$key]['PROXY']?></b>
                     </div>
                   </div>
+                  <? } ?>
+                  <?php if (!empty($_SESSION['WEB_BACKEND'])) { echo ""; ?>
+                  <div class="l-unit__stat-cols clearfix last">
+                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Backend Template')?>:</div>
+                    <div class="l-unit__stat-col l-unit__stat-col--right">
+                      <b><?=$data[$key]['BACKEND']?></b>
+                    </div>
+                  </div>
+                  <? } ?>
                 </td>
               </tr>
+                <!--tr>
+                    <td></td>
+                    <td>
+                        <? if(empty($data[$key]['LETSENCRYPT']) || $data[$key]['LETSENCRYPT'] == 'no') { ?>
+                        <div class="l-unit__stat-cols clearfix disabled"><?=__('Lets Encrypt Support')?></div>
+                        <? } else {?>
+                        <div class="l-unit__stat-cols clearfix">
+                            <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Lets Encrypt Support')?>:</div>
+                            <div class="l-unit__stat-col l-unit__stat-col--right">
+                                <b><?=__($data[$key]['LETSENCRYPT'])?></b>
+                            </div>
+                        </div>
+                        <? } ?>
+                    </td>
+                </tr-->
               <tr>
                 <td>
                   <div class="l-unit__stat-cols clearfix graph">
@@ -270,7 +319,7 @@ sort-name="<?=$key?>"  sort-bandwidth="<?=$data[$key]['U_BANDWIDTH']?>" sort-dis
                     <div class="l-unit__stat-cols clearfix last">
                       <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Additional FTP Account')?>:</div>
                       <div class="l-unit__stat-col l-unit__stat-col--right">
-                        <b><?=__($ftp_user)?></b>
+                        <b><?=$ftp_user?></b>
                       </div>
                     </div>
                   <? } ?>

@@ -1,6 +1,6 @@
     <div class="l-center">
       <div class="l-sort clearfix noselect">
-        <a href="/add/dns/?domain=<?=$_GET['domain']?>" title="<?=str_replace(' ', '&nbsp;', __('Add DNS Record'))?>" class="l-sort__create-btn"></a>
+        <a href="/add/dns/?domain=<?=htmlentities($_GET['domain'])?>" title="<?=__('Add DNS Record')?>" class="l-sort__create-btn"></a>
         <div class="l-sort-toolbar clearfix">
           <table>
             <tr>
@@ -16,10 +16,11 @@
                 <label for="toggle-all" class="check-label toggle-all"><?=__('toggle all')?></label>
               </td>
               <td>
-                <form action="/bulk/dns/" method="post">
+                <form action="/bulk/dns/" method="post" id="objects">
+                <input type="hidden" name="domain" value="<?=htmlentities($_GET['domain'])?>" />
                 <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
                 <div class="l-select">
-                  <select name="" id="">
+                  <select name="action" id="">
                     <option value=""><?=__('apply to selected')?></option>
                     <option value="suspend"><?php print __('suspend');?></option>
                     <option value="unsuspend"><?php print __('unsuspend');?></option>
@@ -31,11 +32,7 @@
             </tr>
           </table>
         </div>
-
       </div>
-
-      <? display_error_block(); ?>
-
       <!-- /.l-sort -->
     </div>
 
@@ -48,7 +45,7 @@
 
     <div class="l-center units">
 
-    <div class="l-unit">
+    <div class="l-unit header">
       <div class="subtitle"><?=__('Listing')?>  <?=htmlentities($_GET['domain'])?></div>
     </div>
 
@@ -71,14 +68,14 @@
 v_unit_id="<?=$key?>" v_section="dns_rec">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
-            <input id="check<?php echo $i ?>" class="ch-toggle" type="checkbox" name="check" value="check<?php echo $i ?>">
-            <label for="check<?php echo $i ?>" class="check-label"></label>
+            <input id="check<?=$data[$key]['ID']?>" class="ch-toggle" type="checkbox" name="record[]" value="<?=$data[$key]['ID']?>">
+            <label for="check<?=$data[$key]['ID']?>" class="check-label"></label>
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__edit"><a href="/edit/dns/?domain=<?=$_GET['domain']?>&record_id=<?=$data[$key]['ID']?>"><?=__('edit')?> <i></i></a></div>
-              <div class="actions-panel__col actions-panel__delete">
+              <div class="actions-panel__col actions-panel__edit shortcut-enter" key-action="href"><a href="/edit/dns/?domain=<?=$_GET['domain']?>&record_id=<?=$data[$key]['ID']?>"><?=__('edit')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
+              <div class="actions-panel__col actions-panel__delete shortcut-delete" key-action="js">
                 <a id="delete_link_<?=$i?>" class="data-controls do_delete">
                   <?=__('delete')?> <i class="do_delete"></i>
                   <input type="hidden" name="delete_url" value="/delete/dns/?domain=<?=$_GET['domain']?>&record_id=<?=$data[$key]['ID']?>&token=<?=$_SESSION['token']?>" />
@@ -86,6 +83,7 @@ v_unit_id="<?=$key?>" v_section="dns_rec">
                     <p class="confirmation"><?=__('DELETE_RECORD_CONFIRMATION',$data[$key]['RECORD'])?></p>
                   </div>
                 </a>
+                <span class="shortcut delete">&nbsp;Del</span>
               </div>
 
             </div>
@@ -96,9 +94,9 @@ v_unit_id="<?=$key?>" v_section="dns_rec">
         <!-- /.l-unit-toolbar -->
 
         <div class="l-unit__col l-unit__col--left clearfix">
-          <div class="l-unit__suspended""><?=__('suspended')?></div>
-          <div class="text-center jump-top">
-            <i class="l-icon-star"></i>
+          <div class="l-unit__suspended"><?=__('suspended')?></div>
+          <div class="text-center jump-small-top">
+            <i class="l-icon-star" title="<?=__('save to favorites')?>"></i>
           </div>
         </div>
         <!-- /.l-unit__col -->
@@ -127,7 +125,7 @@ v_unit_id="<?=$key?>" v_section="dns_rec">
           <table class='data'></table>
           <!-- /form -->
           <div class="l-unit__col l-unit__col--left clearfix"></div>
-          <div class="data-count l-unit__col l-unit__col--right clearfix">
+          <div class="data-count l-unit__col l-unit__col--right total clearfix">
             <?php
               if ( $i == 1) {
                 echo __('1 record');
@@ -135,6 +133,9 @@ v_unit_id="<?=$key?>" v_section="dns_rec">
                 echo __('%s records',$i);
               }
             ?>
+          </div>
+          <div class="data-count l-unit__col l-unit__col--right back clearfix">
+            <a class="button cancel" href="/list/dns/"><?=__('Back')?></a>
           </div>
       </div>
     </div>

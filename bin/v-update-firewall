@@ -51,12 +51,31 @@ if [ $? -ne 0 ]; then
     conntrack_ftp='no'
 fi
 
+# Checking custom OpenSSH  port
+sshport=$(grep '^Port ' /etc/ssh/sshd_config | head -1 | cut -d ' ' -f 2)
+if [[ "$sshport" =~ ^[0-9]+$ ]] && [ "$sshport" -ne "22"  ]; then
+    sed -i "s/PORT='22'/PORT=\'$sshport\'/" $rules
+fi
+
 # Creating temporary file
 tmp=$(mktemp)
 
 # Flushing INPUT chain
 echo "$iptables -P INPUT ACCEPT" >> $tmp
 echo "$iptables -F INPUT" >> $tmp
+
+# Enabling stateful support
+if [ "$conntrack" != 'no' ]; then
+    str="$iptables -A INPUT -m state"
+    str="$str --state ESTABLISHED,RELATED -j ACCEPT"
+    echo "$str" >> $tmp
+fi
+
+# Handling local traffic
+for ip in $(ls $VESTA/data/ips); do
+    echo "$iptables -A INPUT -s $ip -j ACCEPT" >> $tmp
+done
+echo "$iptables -A INPUT -s 127.0.0.1 -j ACCEPT" >> $tmp
 
 # Pasring iptables rules
 IFS=$'\n'
@@ -94,25 +113,6 @@ for line in $(sort -r -n -k 2 -t \' $rules); do
     fi
 done
 
-# Handling local traffic
-for ip in $(ls $VESTA/data/ips); do
-    echo "$iptables -A INPUT -s $ip -j ACCEPT" >> $tmp
-done
-echo "$iptables -A INPUT -s 127.0.0.1 -j ACCEPT" >> $tmp
-IFS=$'\n'
-for p_rule in $(cat $ports); do
-    eval $p_rule
-    rule="$iptables -A INPUT -p $PROTOCOL"
-    echo "$rule --sport $PORT -j ACCEPT" >> $tmp
-done
-
-# Enabling stateful support
-if [ "$conntrack" != 'no' ]; then
-    str="$iptables -A INPUT -p tcp -m state"
-    str="$str --state ESTABLISHED,RELATED -j ACCEPT"
-    echo "$str" >> $tmp
-fi
-
 # Switching chain policy to DROP
 echo "$iptables -P INPUT DROP" >> $tmp
 
@@ -132,19 +132,29 @@ fi
 
 # Checking fail2ban support
 if [ ! -z "$FIREWALL_EXTENSION" ]; then
-    chains=$(cat $VESTA/data/firewall/chains.conf 2>/dev/null)
-fi
-for chain in $chains; do
-    eval $chain
-    if [[ "$PORT" =~ ,|-|: ]] ; then
-        port="-m multiport --dports $PORT"
-    else
-        port="--dport $PORT"
-    fi
-    echo "$iptables -I INPUT -p $PROTOCOL $port -j fail2ban-$CHAIN" > $tmp
-    bash $tmp
+    for chain in $(cat $VESTA/data/firewall/chains.conf 2>/dev/null); do
+        eval $chain
+        if [[ "$PORT" =~ ,|-|: ]] ; then
+            port="-m multiport --dports $PORT"
+        else
+            port="--dport $PORT"
+        fi
+        echo "$iptables -N fail2ban-$CHAIN" >> $tmp
+        echo "$iptables -F fail2ban-$CHAIN" >> $tmp
+        echo "$iptables -I fail2ban-$CHAIN -s 0.0.0.0/0 -j RETURN" >> $tmp
+        echo "$iptables -I INPUT -p $PROTOCOL $port -j fail2ban-$CHAIN" >>$tmp
+    done
+    bash $tmp 2>/dev/null
     rm -f $tmp
-done
+
+    for ban in $(cat $VESTA/data/firewall/banlist.conf 2>/dev/null); do
+        eval $ban
+        echo -n "$iptables -I fail2ban-$CHAIN 1 -s $IP" >> $tmp
+        echo " -j REJECT --reject-with icmp-port-unreachable" >> $tmp
+    done
+    bash $tmp 2>/dev/null
+    rm -f $tmp
+fi
 
 # Saving rules to the master iptables file
 if [ -e "/etc/redhat-release" ]; then
@@ -160,6 +170,14 @@ else
         echo "/sbin/iptables-restore < /etc/iptables.rules" >> $preup
         echo "exit 0" >> $preup
         chmod +x $preup
+    fi
+fi
+
+# Worarkound for OpenVZ
+if [ -e "/proc/vz/veinfo" ]; then
+    dig @8.8.8.8 google.com +time=1 +tries=1 >/dev/null 2>&1
+    if [ "$?" -ne 0 ]; then
+        $BIN/v-stop-firewall
     fi
 fi
 

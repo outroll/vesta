@@ -9,13 +9,11 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
-domain_idn=$(idn -t --quiet -a "$domain")
-account=$(echo $3 | tr '[:upper:]' '[:lower:]')
-password=$4
+domain=$2
+account=$3
+password=$4; HIDE=4
 quota=${5-unlimited}
 
 # Includes
@@ -23,9 +21,10 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
-# Hiding password
-A4='******'
-EVENT="$DATE $TIME $SCRIPT $A1 $A2 $A3 $A4 $A5 $A6 $A7 $A8 $A9"
+# Additional argument formatting
+if [[ "$account" =~ [[:upper:]] ]]; then
+    account=$(echo "$account" |tr '[:upper:]' '[:lower:]')
+fi
 
 
 #----------------------------------------------------------#
@@ -33,9 +32,9 @@ EVENT="$DATE $TIME $SCRIPT $A1 $A2 $A3 $A4 $A5 $A6 $A7 $A8 $A9"
 #----------------------------------------------------------#
 
 check_args '4' "$#" 'USER DOMAIN ACCOUNT PASSWORD [QUOTA]'
-validate_format 'user' 'domain' 'account'
+is_format_valid 'user' 'domain' 'account'
 if [ "$quota" != 'unlimited' ]; then
-    validate_format 'quota'
+    is_format_valid 'quota'
 fi
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
@@ -52,7 +51,7 @@ is_password_valid
 #----------------------------------------------------------#
 
 # Generating hashed password
-salt=$(gen_password "$PW_MATRIX" "8")
+salt=$(generate_password "$PW_MATRIX" "8")
 md5="{MD5}$($BIN/v-generate-password-hash md5 $salt <<<$password)"
 
 # Adding account info into password file
@@ -69,13 +68,18 @@ fi
 #                       Vesta                              #
 #----------------------------------------------------------#
 
+# Generating timestamp
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
 if [[ "$quota" -eq '0' ]]; then
     quota='unlimited'
 fi
 
-str="ACCOUNT='$account' ALIAS='' QUOTA='$quota' AUTOREPLY='no' FWD=''"
-str="$str FWD_ONLY='' MD5='$md5' U_DISK='0' SUSPENDED='no' TIME='$TIME'"
-str="$str DATE='$DATE'"
+str="ACCOUNT='$account' ALIAS='' AUTOREPLY='no' FWD='' FWD_ONLY=''"
+str="$str MD5='$md5' QUOTA='$quota' U_DISK='0' SUSPENDED='no'"
+str="$str TIME='$time' DATE='$date'"
 echo "$str" >> $USER_DATA/mail/$domain.conf
 chmod 660 $USER_DATA/mail/$domain.conf
 
@@ -86,6 +90,6 @@ update_object_value 'mail' 'DOMAIN' "$domain" '$ACCOUNTS' "$accounts"
 
 # Logging
 log_history "added mail account $account@$domain"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

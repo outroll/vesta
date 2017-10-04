@@ -1,10 +1,9 @@
 <?php
-// Init
 error_reporting(NULL);
 ob_start();
-session_start();
 $TAB = 'USER';
 
+// Main include
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 
@@ -24,7 +23,7 @@ if (($_SESSION['user'] == 'admin') && (!empty($_GET['user']))) {
 }
 
 // List user
-exec (VESTA_CMD."v-list-user ".$v_username." json", $output, $return_var);
+exec (VESTA_CMD."v-list-user ".escapeshellarg($v_username)." json", $output, $return_var);
 check_return_code($return_var,$output);
 $data = json_decode(implode('', $output), true);
 unset($output);
@@ -38,7 +37,7 @@ $v_fname = $data[$v_username]['FNAME'];
 $v_lname = $data[$v_username]['LNAME'];
 $v_shell = $data[$v_username]['SHELL'];
 $v_ns = $data[$v_username]['NS'];
-$nameservers = explode(", ", $v_ns);
+$nameservers = explode(",", $v_ns);
 $v_ns1 = $nameservers[0];
 $v_ns2 = $nameservers[1];
 $v_ns3 = $nameservers[2];
@@ -62,7 +61,7 @@ exec (VESTA_CMD."v-list-user-packages json", $output, $return_var);
 $packages = json_decode(implode('', $output), true);
 unset($output);
 
-// List lanugages
+// List languages
 exec (VESTA_CMD."v-list-sys-languages json", $output, $return_var);
 $languages = json_decode(implode('', $output), true);
 unset($output);
@@ -89,7 +88,7 @@ if (!empty($_POST['save'])) {
         $fp = fopen($v_password, "w");
         fwrite($fp, $_POST['v_password']."\n");
         fclose($fp);
-        exec (VESTA_CMD."v-change-user-password ".$v_username." ".$v_password, $output, $return_var);
+        exec (VESTA_CMD."v-change-user-password ".escapeshellarg($v_username)." ".$v_password, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         unlink($v_password);
@@ -99,7 +98,7 @@ if (!empty($_POST['save'])) {
     // Change package (admin only)
     if (($v_package != $_POST['v_package']) && ($_SESSION['user'] == 'admin') && (empty($_SESSION['error_msg']))) {
         $v_package = escapeshellarg($_POST['v_package']);
-        exec (VESTA_CMD."v-change-user-package ".$v_username." ".$v_package, $output, $return_var);
+        exec (VESTA_CMD."v-change-user-package ".escapeshellarg($v_username)." ".$v_package, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
@@ -107,7 +106,7 @@ if (!empty($_POST['save'])) {
     // Change language
     if (($v_language != $_POST['v_language']) && (empty($_SESSION['error_msg']))) {
         $v_language = escapeshellarg($_POST['v_language']);
-        exec (VESTA_CMD."v-change-user-language ".$v_username." ".$v_language, $output, $return_var);
+        exec (VESTA_CMD."v-change-user-language ".escapeshellarg($v_username)." ".$v_language, $output, $return_var);
         check_return_code($return_var,$output);
         if (empty($_SESSION['error_msg'])) {
              if ((empty($_GET['user'])) || ($_GET['user'] == $_SESSION['user'])) $_SESSION['language'] = $_POST['v_language'];
@@ -118,7 +117,7 @@ if (!empty($_POST['save'])) {
     // Change shell (admin only)
     if (($v_shell != $_POST['v_shell']) && ($_SESSION['user'] == 'admin') && (empty($_SESSION['error_msg']))) {
         $v_shell = escapeshellarg($_POST['v_shell']);
-        exec (VESTA_CMD."v-change-user-shell ".$v_username." ".$v_shell, $output, $return_var);
+        exec (VESTA_CMD."v-change-user-shell ".escapeshellarg($v_username)." ".$v_shell, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
@@ -129,7 +128,7 @@ if (!empty($_POST['save'])) {
             $_SESSION['error_msg'] = __('Please enter valid email address.');
         } else {
             $v_email = escapeshellarg($_POST['v_email']);
-            exec (VESTA_CMD."v-change-user-contact ".$v_username." ".$v_email, $output, $return_var);
+            exec (VESTA_CMD."v-change-user-contact ".escapeshellarg($v_username)." ".$v_email, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
         }
@@ -139,7 +138,7 @@ if (!empty($_POST['save'])) {
     if (($v_fname != $_POST['v_fname']) || ($v_lname != $_POST['v_lname']) && (empty($_SESSION['error_msg']))) {
         $v_fname = escapeshellarg($_POST['v_fname']);
         $v_lname = escapeshellarg($_POST['v_lname']);
-        exec (VESTA_CMD."v-change-user-name ".$v_username." ".$v_fname." ".$v_lname, $output, $return_var);
+        exec (VESTA_CMD."v-change-user-name ".escapeshellarg($v_username)." ".$v_fname." ".$v_lname, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $v_fname = $_POST['v_fname'];
@@ -157,7 +156,7 @@ if (!empty($_POST['save'])) {
         $v_ns6 = escapeshellarg($_POST['v_ns6']);
         $v_ns7 = escapeshellarg($_POST['v_ns7']);
         $v_ns8 = escapeshellarg($_POST['v_ns8']);
-        $ns_cmd = VESTA_CMD."v-change-user-ns ".$v_username." ".$v_ns1." ".$v_ns2;
+        $ns_cmd = VESTA_CMD."v-change-user-ns ".escapeshellarg($v_username)." ".$v_ns1." ".$v_ns2;
         if (!empty($_POST['v_ns3'])) $ns_cmd = $ns_cmd." ".$v_ns3;
         if (!empty($_POST['v_ns4'])) $ns_cmd = $ns_cmd." ".$v_ns4;
         if (!empty($_POST['v_ns5'])) $ns_cmd = $ns_cmd." ".$v_ns5;
@@ -184,28 +183,9 @@ if (!empty($_POST['save'])) {
     }
 }
 
-
-// Header
-include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
-
-
-// Panel
-if (!empty($_SESSION['look'])) {
-    top_panel($user,$TAB);
-} else {
-    top_panel($_SESSION['user'],$TAB);
-}
-
-// Display body
-if ($_SESSION['user'] == 'admin') {
-    include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_user.html');
-} else {
-    include($_SERVER['DOCUMENT_ROOT'].'/templates/user/edit_user.html');
-}
+// Render page
+render_page($user, $TAB, 'edit_user');
 
 // Flush session messages
 unset($_SESSION['error_msg']);
 unset($_SESSION['ok_msg']);
-
-// Footer
-include($_SERVER['DOCUMENT_ROOT'].'/templates/footer.html');

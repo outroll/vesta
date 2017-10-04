@@ -9,12 +9,12 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain_idn=$(idn -t --quiet -a "$domain")
+domain=$2
+domain_idn=$2
 ftp_user=${1}_${3}
-password=$4
+password=$4; HIDE=4
 ftp_path=$5
 
 # Includes
@@ -22,9 +22,10 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
-# Hiding password
-A4='******'
-EVENT="$DATE $TIME $SCRIPT $A1 $A2 $A3 $A4 $A5 $A6 $A7 $A8 $A9"
+# Additional argument formatting
+format_domain
+format_domain_idn
+# TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
 
 
 #----------------------------------------------------------#
@@ -32,7 +33,7 @@ EVENT="$DATE $TIME $SCRIPT $A1 $A2 $A3 $A4 $A5 $A6 $A7 $A8 $A9"
 #----------------------------------------------------------#
 
 check_args '4' "$#" 'USER DOMAIN FTP_USER FTP_PASSWORD [FTP_PATH]'
-validate_format 'user' 'domain' 'ftp_user'
+is_format_valid 'user' 'domain' 'ftp_user'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -41,7 +42,7 @@ is_object_unsuspended 'web' 'DOMAIN' "$domain"
 check_ftp_user=$(grep "^$ftp_user:" /etc/passwd)
 if [ ! -z "$check_ftp_user" ] && [ "$FTP_USER" != "$ftp_user" ]; then
     echo "Error: ftp user $ftp_user already exists"
-    log_event "$E_EXISTS" "$EVENT"
+    log_event "$E_EXISTS" "$ARGUMENTS"
     exit $E_EXISTS
 fi
 is_password_valid
@@ -55,12 +56,8 @@ is_password_valid
 get_domain_values 'web'
 
 # Defining ftp user shell
-if [ -z "$FTP_SHELL" ]; then
-    shell='/sbin/nologin'
-    if [ -e "/usr/bin/rssh" ]; then
-        shell='/usr/bin/rssh'
-    fi
-else
+shell=$(which nologin)
+if [ ! -z "$FTP_SHELL" ]; then
     shell=$FTP_SHELL
 fi
 
@@ -72,7 +69,7 @@ else
     ftp_path_a=$(readlink -f "$HOMEDIR/$user/web/$domain/$ftp_path")
     if [ -z "$(echo $ftp_path_a |grep $HOMEDIR/$user/web/$domain)" ]; then
         echo "Error: absolute path $ftp_path_a is invalid"
-        log_event "$E_INVALID" "$EVENT"
+        log_event "$E_INVALID" "$ARGUMENTS"
         exit $E_INVALID
     fi
     # Creating ftp user home directory
@@ -124,6 +121,6 @@ update_object_value 'web' 'DOMAIN' "$domain" '$FTP_PATH' "$ftp_path"
 
 # Logging
 log_history "added ftp account ${1}_${3}@$domain"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

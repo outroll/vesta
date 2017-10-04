@@ -1,19 +1,19 @@
     <div class="l-center">
       <div class="l-sort clearfix noselect">
-        <a href="/edit/server/" class="l-sort__create-btn edit" title="<?=str_replace(' ', '&nbsp;', __('Configure'))?>"></a>
+        <a href="/edit/server/" class="l-sort__create-btn edit" title="<?=__('Configure')?>"></a>
 
         <div class="l-sort-toolbar clearfix">
           <table>
             <tr>
-              <td class="step-right">
-                <a class="vst" href="/list/server/?cpu" target="_blank" > <?php print __('show: CPU / MEM / NET / DISK'); ?> </a>
-              </td>
               <td class="l-sort-toolbar__search-box">
                 <form action="/search/" method="get">
                   <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
                   <input type="text" name="q" class="search-input" value="<? echo isset($_POST['q']) ? htmlspecialchars($_POST['q']) : '' ?>" />
                   <input type="submit" value="" class="l-sort-toolbar__search" onClick="return doSearch('/search/')" />
                 </form>
+              </td>
+              <td class="step-right">
+                <a class="vst" href="/list/server/?cpu" target="_blank" > <?=__('show: CPU / MEM / NET / DISK');?> </a>
               </td>
               <td class="toggle-all">
                 <input id="toggle-all" type="checkbox" name="toggle-all" value="toggle-all" onChange="checkedAll('objects');">
@@ -36,9 +36,6 @@
           </table>
         </div>
       </div>
-
-      <? display_error_block(); ?>
-
       <!-- /.l-sort -->
     </div>
 
@@ -56,7 +53,8 @@
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__restart"><a href="/restart/system/?hostname=<?php echo $sys['sysinfo']['HOSTNAME'] ?>"><?=__('restart')?> <i></i></a></div>
+              <div class="actions-panel__col actions-panel__configure shortcut-enter" key-action="href"><a href="/edit/server/"><?=__('configure')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
+              <div class="actions-panel__col actions-panel__restart shortcut-r" key-action="href"><a href="/restart/system/?hostname=<?php echo $sys['sysinfo']['HOSTNAME'] ?>"><?=__('restart')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
             </div>
             <!-- /.actions-panel -->
           </div>
@@ -65,7 +63,7 @@
         <!-- /.l-unit-toolbar -->
 
         <div class="l-unit__col l-unit__col--left clearfix">
-          <div class="l-unit__suspended""><?__('suspended')?></div>
+          <div class="l-unit__suspended"><?__('suspended')?></div>
           <!-- div class="l-unit__date">
           </div-->
         </div>
@@ -91,7 +89,7 @@
                 </td>
                 <td>
                   <div class="l-unit__stat-cols clearfix">
-                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('LoadAverage')?>:</div>
+                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Load Average')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right"><b><?=$sys['sysinfo']['LOADAVERAGE']?></b></div>
                   </div>
                 </td>
@@ -133,14 +131,15 @@
       <div class="l-unit <? if($status == 'suspended') echo 'l-unit--suspended';?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
-            <input id="check<?php echo $i ?>" type="checkbox" name="service[]" value="<?php echo $key ?>">
+            <input id="check<?php echo $i ?>" class="ch-toggle" type="checkbox" name="service[]" value="<?php echo $key ?>">
             <label for="check<?php echo $i ?>" class="check-label"></label>
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__<?=$action?>"><a href="/<?php echo $action ?>/service/?srv=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__($action)?> <i></i></a></div>
-              <div class="actions-panel__col actions-panel__restart"><a href="/restart/service/?srv=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('restart')?> <i></i></a></div>
+              <div class="actions-panel__col actions-panel__configure shortcut-enter" key-action="href"><a href="/edit/server/<? echo $key ?>/"><?=__('configure')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
+              <div class="actions-panel__col actions-panel__<?=$action?> shortcut-s" key-action="href"><a href="/<?php echo $action ?>/service/?srv=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__($action)?> <i></i></a><span class="shortcut">&nbsp;S</span></div>
+              <div class="actions-panel__col actions-panel__restart shortcut-r" key-action="href"><a href="/restart/service/?srv=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('restart')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
             </div>
             <!-- /.actions-panel -->
           </div>
@@ -172,8 +171,7 @@
                 <td>
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('CPU')?>: <b><?=$cpu?></b></div>
-                    <div class="l-unit__stat-col l-unit__stat-col--right"><?=__('Memory')?>: <b><?=$data[$key]['MEM']?> <?=__('mb')?></b>
-                    </div>
+                    <div class="l-unit__stat-col l-unit__stat-col--right"><?=__('Memory')?>: <b><?=$data[$key]['MEM']?> <?=__('mb')?></b></div>
                   </div>
                 </td>
                 <td>

@@ -5,24 +5,30 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain_idn=$(idn -t --quiet -a "$domain")
+domain=$2
+domain_idn=$2
 ssl_home=$3
+restart=$4
 
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+# TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
+
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '3' "$#" 'USER DOMAIN SSL_HOME'
-validate_format 'user' 'domain'
+check_args '3' "$#" 'USER DOMAIN SSL_HOME [RESTART]'
+is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -39,8 +45,6 @@ is_object_value_exist 'web' 'DOMAIN' "$domain" '$SSL'
 get_domain_values 'web'
 old_ssl_home=$SSL_HOME
 SSL_HOME=$ssl_home
-tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.stpl"
-conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
 
 # Parsing tpl_option
 case $SSL_HOME in
@@ -52,13 +56,11 @@ case $SSL_HOME in
 esac
 
 # Changing sslhome directory
-replace_web_config
+replace_web_config "$WEB_SYSTEM" "$TPL.stpl"
 
-# Checking proxy config
-if [ ! -z "$PROXY" ]; then
-    tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
-    replace_web_config
+# Changing proxy vhost
+if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
+    replace_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
 fi
 
 
@@ -69,19 +71,15 @@ fi
 # Update config
 update_object_value 'web' 'DOMAIN' "$domain" '$SSL_HOME' "$SSL_HOME"
 
-# Restart web server
-$BIN/v-restart-web
-if [ $? -ne 0 ]; then
-    exit $E_RESTART
-fi
+# Restarting web server
+$BIN/v-restart-web $restart
+check_result $? "Web restart failed" >/dev/null
 
-$BIN/v-restart-proxy
-if [ $? -ne 0 ]; then
-    exit $E_RESTART
-fi
+$BIN/v-restart-proxy $restart
+check_result $? "Proxy restart failed" >/dev/null
 
 # Logging
 log_history "changed ssl home for $domain to $ssl_home"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

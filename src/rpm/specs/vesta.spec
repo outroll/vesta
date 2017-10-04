@@ -1,6 +1,6 @@
 Name:           vesta
 Version:        0.9.8
-Release:        14
+Release:        18
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPL
@@ -30,23 +30,14 @@ rm -rf %{buildroot}
 
 %post
 if [ $1 -ge 2 ]; then
-    if [ -e /usr/local/vesta/upd/convert_templates.sh ]; then
-        /usr/local/vesta/upd/convert_templates.sh
-    fi
-    if [ -e /usr/local/vesta/upd/convert_webip.sh ]; then
-        /usr/local/vesta/upd/convert_webip.sh
-    fi
-    if [ -e /usr/local/vesta/upd/add_fwd_only.sh ]; then
-        /usr/local/vesta/upd/add_fwd_only.sh
-    fi
-    if [ -e /usr/local/vesta/upd/fix_vesta_ssl_permissions.sh ]; then
-        /usr/local/vesta/upd/fix_vesta_ssl_permissions.sh
-    fi
     if [ -e /usr/local/vesta/upd/add_sudo.sh ]; then
         /usr/local/vesta/upd/add_sudo.sh
     fi
-    if [ -e /usr/local/vesta/upd/add_firewall.sh ]; then
-        /usr/local/vesta/upd/add_firewall.sh
+    if [ -e /usr/local/vesta/upd/add_notifications.sh ]; then
+        /usr/local/vesta/upd/add_notifications.sh
+    fi
+    if [ -e /usr/local/vesta/upd/fix_sessions.sh ]; then
+        /usr/local/vesta/upd/fix_sessions.sh
     fi
 fi
 %files
@@ -62,6 +53,57 @@ fi
 %config(noreplace) %{_vestadir}/web/css/uploadify.css
 
 %changelog
+* Mon Nov 14 2016 Serghey Rodin <builder@vestacp.com> - 0.9.8-17
+- System Config Editor
+- Let's Encrypt GUI
+- Google Nearline expiremental backup support
+- User notifcation panel
+- ClamAV fixes for CentOS/Debian/Ubuntu
+- i18n updates
+- Web stats support for php-fpm systems
+- Georgian Translation
+- Filemanager improvements
+- Imap/Pop3 JS helpers
+- Dozen bugfixes including security issues
+
+
+* Mon Jun 27 2016 Serghey Rodin <builder@vestacp.com> - 0.9.8-16
+- Full keyboard control
+- Cron Helper
+- LetsEncrypt Support cli-only
+- Language files update
+- File permission in File Manager
+- Handle DES passwords
+- New templates for PHP-FPM
+- Core refactoring
+- Dozen bugfixes including security issues
+
+* Fri Nov 06 2015 Serghey Rodin <builder@vestacp.com> - 0.9.8-15
+- File Manager (commercial plugin)
+- SFTP Chroot (commercial plugin)
+- Monitoring Tools: top/free/df/server-status/mysql-status/etc
+- New installer
+- Improved PHP-FPM support
+- UI: Notification center
+- UI: Starred objects
+- UI: Object sorting
+- UI: HotKeys suport
+- UI: Mail account settings JS hint
+- UI: Autofocus on first input when adding/editing
+- UI: Up to 8 nameserver dns support
+- Core: Improved system logger, domain adding api and backup routine
+- Japanese language support. Thanks to Flatta
+- Polish language support. Thanks to MarPiRK
+- Vietnamese language support. Thanks to Nguyen Ngoc Phuong
+- Security Fix: Command Injection and XSS Thanks to Global IT
+- BugFix: DNS Cluster SOA synchronization
+- BugFix: Bulk Operation
+- BugFix: Backup exclusions
+- BugFix: Domain validation
+- BugFix: FTP user name prefix
+- BugFix: Fail2Ban manager
+- BugFix: Service manager
+
 * Wed Jun 03 2015 Serghey Rodin <builder@vestacp.com> - 0.9.8-13
 - New UI
 - PHP-FPM support

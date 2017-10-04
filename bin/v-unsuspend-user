@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 restart=$2
 
@@ -23,7 +23,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '1' "$#" 'USER'
-validate_format 'user'
+is_format_valid 'user'
 is_object_valid 'user' 'USER' "$user"
 if [ "$user" = 'admin' ]; then
     exit
@@ -76,24 +76,17 @@ fi
 update_user_value "$user" '$SUSPENDED' 'no'
 decrease_user_value 'admin' '$SUSPENDED_USERS'
 
-if [ "$restart" != 'no' ]; then
-    $BIN/v-restart-web
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+# Restarting system services
+$BIN/v-restart-web $restart
+check_result $? "Web restart failed" >/dev/null
 
-    $BIN/v-restart-dns
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+$BIN/v-restart-dns $restart
+check_result $? "DNS restart failed" >/dev/null
 
-    $BIN/v-restart-cron
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
-fi
+$BIN/v-restart-cron $restart
+check_result $? "Cron restart failed" >/dev/null
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

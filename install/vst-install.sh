@@ -5,10 +5,10 @@
 #
 # Currently Supported Operating Systems:
 #
-#   RHEL 5, RHEL 6
-#   CentOS 5, CentOS 6
-#   Debian 7
-#   Ubuntu LTS, Ubuntu 13.04, Ubuntu 13.10
+#   RHEL 5, 6, 7
+#   CentOS 5, 6, 7
+#   Debian 7, 8
+#   Ubuntu 12.04 - 16.04
 #
 
 # Am I root?
@@ -43,6 +43,11 @@ case $(head -n1 /etc/issue | cut -f 1 -d ' ') in
     Ubuntu)     type="ubuntu" ;;
     *)          type="rhel" ;;
 esac
+
+# Fallback to Ubuntu
+if [ ! -e "/etc/redhat-release" ]; then
+    type='ubuntu'
+fi
 
 # Check wget
 if [ -e '/usr/bin/wget' ]; then

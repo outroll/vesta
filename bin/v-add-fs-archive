@@ -1,22 +1,16 @@
 #!/bin/bash
 # info: archive directory
-# options: USER ARCHIVE DIRECTORY [DIRECTORY_N]
+# options: USER ARCHIVE SOURCE
 #
 # The function creates tar archive
 
 user=$1
 archive=$2
-src1=$3
-src2=$4
-src3=$5
-src4=$6
-src5=$7
-src6=$8
-src7=$9
+src0=$3
 
 # Checking arguments
-if [ -z "$src1" ]; then
-    echo "Usage: USER ARCHIVE DIRECTORY [DIRECTORY_N]"
+if [ -z "$src0" ]; then
+    echo "Usage: USER ARCHIVE FILE [FILE_2] [FILE_3] [FILE ...]"
     exit 1
 fi
 
@@ -27,33 +21,56 @@ if [ ! -e "$VESTA/data/users/$user" ]; then
 fi
 
 # Checking user homedir
-homedir=$(grep "^$user:" /etc/passwd | cut -f 6 -d :)
+homedir=$(grep "^$user:" /etc/passwd |cut -f 6 -d :)
 if [ -z $homedir ]; then
     echo "Error: user home directory doesn't exist"
     exit 12
 fi
 
 # Checking archive
-if [ -e "$archive.tar.gz" ]; then
-    echo "Error: archive already exist $archive.tar.gz"
+if [ -e "$archive" ]; then
+    echo "Error: archive already exist $archive"
     exit 1
 fi
 
 # Checking source path
-for src_path in $src1 $src2 $src3 $src4 $src5 $src6 $src7; do
-    rpath=$(readlink -f "$src_path")
-    if [ -z "$(echo $rpath |egrep "^/tmp|^$homedir")" ]; then
-        echo "Error: invalid source path $src_path"
-        exit 1
+IFS=$'\n'
+i=1
+for src in $*; do
+    if [ "$i" -gt 2 ]; then
+        rpath=$(readlink -f "$src")
+        if [ -z "$(echo $rpath |egrep "^/tmp|^$homedir")" ]; then
+            echo "Error: invalid source path $src"
+            exit 1
+        fi
     fi
+    ((i++))
 done
 
-# Creating tar.gz archive
-sudo -u $user tar -czf "$archive.tar.gz" \
-    $src1 $src2 $src3 $src4 $src5 $src6 $src7 > /dev/null 2>&1
-if [ "$?" -ne 0 ]; then
-    echo "Error: archive $archive.tar.gz was not created"
-    exit 3
+i=1
+for src in $*; do
+    if [ "$i" -gt 2 ]; then
+        # Deleting leading home path
+        src=$(echo "$src"| sed -e "s|/home/$user/||")
+
+        # Creating tar.gz archive
+        sudo -u $user tar -rf "${archive/.gz/}" -C /home/$user $src >\
+            /dev/null 2>&1
+        if [ "$?" -ne 0 ]; then
+            echo "Error: archive $archive was not created"
+            exit 3
+        fi
+    fi
+    ((i++))
+done
+
+# Checking gzip
+if [[ "$archive" =~ \.gz$ ]]; then
+    sudo -u $user gzip "${archive/.gz/}" >/dev/null 2>&1
+    if [ "$?" -ne 0 ]; then
+        echo "Error: archive $archive was not gziped"
+        exit 3
+    fi
 fi
 
 exit

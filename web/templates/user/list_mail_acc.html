@@ -1,6 +1,6 @@
     <div class="l-center">
       <div class="l-sort clearfix noselect">
-        <a href="/add/mail/?domain=<?=$_GET['domain']?>" class="l-sort__create-btn" title="<?=str_replace(' ', '&nbsp;', __('Add Mail Account'))?>"></a>
+        <a href="/add/mail/?domain=<?=htmlentities($_GET['domain'])?>" class="l-sort__create-btn" title="<?=__('Add Mail Account')?>"></a>
         <ul class="context-menu sort-order" style="display:none;">
           <li entity="sort-date" sort_as_int="1"><span class="name active"><?=__('Date')?></span><span class="up">&nbsp;</span></li>
           <li entity="sort-name"><span class="name"><?=__('Account')?></span><span class="up">&nbsp;</span></li>
@@ -29,31 +29,25 @@
                 <input id="toggle-all" type="checkbox" name="toggle-all" value="toggle-all">
                 <label for="toggle-all" class="check-label toggle-all"><?=__('toggle all')?></label>
               </td>
-              <td class="sort-by">
-                <?=__('sort by');?>: <span><b><?=__('Date')?></b></span> <i class="l-icon-down-arrow media-top"></i>
-              </td>
               <td>
                 <form action="/bulk/mail/" method="post" id="objects">
                 <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
                 <div class="l-select">
-                  <select name="" id="">
+                  <select name="action" id="">
                     <option value=""><?=__('apply to selected')?></option>
-                    <option value="suspend"><?=__('suspend')?></option>
-                    <option value="unsuspend"><?=__('unsuspend')?></option>
                     <option value="delete"><?=__('delete')?></option>
                   </select>
                 </div>
                 <input type="submit" value="" class="l-sort-toolbar__filter-apply" />
               </td>
+              <td class="sort-by">
+                <?=__('sort by');?>: <span><b><?=__('Date')?></b></span> <i class="l-icon-down-arrow media-top"></i>
+              </td>
             </tr>
           </table>
           <!--  -->
         </div>
-
       </div>
-
-      <? display_error_block() ?>
-
       <!-- /.l-sort -->
     </div>
 
@@ -63,7 +57,7 @@
 
 
     <div class="l-center units">
-      <div class="l-unit">
+      <div class="l-unit header">
         <div class="subtitle"><?=__('Listing')?>  <?=htmlentities($_GET['domain'])?></div>
       </div>
 
@@ -83,8 +77,8 @@
       ?>
 
 
-      <div class="l-unit <? if($status == 'suspended') echo 'l-unit--suspended'; if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] == 1) echo ' l-unit--starred'; ?>" v_unit_id="<?=$key."@".$_GET['domain']?>" v_section="mail_acc" 
-sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>" sort-disk="<?$data[$key]['U_DISK']?>" 
+      <div class="l-unit <? if($status == 'suspended') echo 'l-unit--suspended'; if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] == 1) echo ' l-unit--starred'; ?>" v_unit_id="<?=$key."@".$_GET['domain']?>" v_section="mail_acc"
+sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>" sort-disk="<?$data[$key]['U_DISK']?>"
 sort-star="<? if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] == 1) echo '1'; else echo '0'; ?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
@@ -94,17 +88,8 @@ sort-star="<? if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] =
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__edit"><a href="/edit/mail/?domain=<?=$_GET['domain']?>&account=<?=$key?>"><?=__('edit')?> <i></i></a></div>
-              <div class="actions-panel__col actions-panel__suspend">
-                <a id="<?=$spnd_action ?>_link_<?=$i?>" class="data-controls do_<?=$spnd_action?>">
-                  <?=__($spnd_action)?> <i class="do_<?=$spnd_action?>"></i>
-                  <input type="hidden" name="<?=$spnd_action?>_url" value="/<?=$spnd_action?>/mail/?domain=<?=$_GET['domain']?>&token=<?=$_SESSION['token']?>" />
-                  <div id="<?=$spnd_action?>_dialog_<?=$i?>" class="confirmation-text-suspention hidden" title="<?=__('Confirmation')?>">
-                    <p class="confirmation"><?=__($spnd_confirmation,$key)?></p>
-                  </div>
-                </a>
-              </div>
-              <div class="actions-panel__col actions-panel__delete">
+              <div class="actions-panel__col actions-panel__edit shortcut-enter" key-action="href"><a href="/edit/mail/?domain=<?=$_GET['domain']?>&account=<?=$key?>"><?=__('edit')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
+              <div class="actions-panel__col actions-panel__delete shortcut-delete" key-action="js">
                 <a id="delete_link_<?=$i?>" class="data-controls do_delete">
                   <?=__('delete')?> <i class="do_delete"></i>
                   <input type="hidden" name="delete_url" value="/delete/mail/?domain=<?=$_GET['domain']?>&account=<?=$key?>&token=<?=$_SESSION['token']?>" />
@@ -112,6 +97,7 @@ sort-star="<? if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] =
                     <p class="confirmation"><?=__('DELETE_MAIL_ACCOUNT_CONFIRMATION',$key)?></p>
                   </div>
                 </a>
+                <span class="shortcut delete">&nbsp;Del</span>
               </div>
             </div>
             <!-- /.actiona-panel -->
@@ -124,9 +110,9 @@ sort-star="<? if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] =
           <div class="l-unit__date">
             <?=translate_date($data[$key]['DATE'])?>
           </div>
-          <div class="l-unit__suspended""><?__('suspended')?></div>
+          <div class="l-unit__suspended"><?__('suspended')?></div>
           <div class="text-center">
-            <i class="l-icon-star"></i>
+            <i class="l-icon-star" title="<?=__('save to favorites')?>"></i>
           </div>
         </div>
         <!-- /.l-unit__col -->
@@ -156,7 +142,7 @@ sort-star="<? if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] =
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Quota')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><? echo __($data[$key]['QUOTA'])?></b>
+                      <b><?=__(humanize_usage_size($data[$key]['QUOTA'])) ?></b> <?=__(humanize_usage_measure($data[$key]['QUOTA'])) ?>
                     </div>
                   </div>
                 </td>
@@ -201,7 +187,7 @@ sort-star="<? if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] =
     <div id="vstobjects">
       <div class="l-separator"></div>
       <div class="l-center">
-        <div class="l-unit">
+        <div class="l-unit-ft">
           <table class='data'></table>
           <div class="l-unit__col l-unit__col--left clearfix"></div>
           <div class="data-count l-unit__col l-unit__col--right clearfix">
@@ -212,6 +198,9 @@ sort-star="<? if($_SESSION['favourites']['MAIL_ACC'][$key."@".$_GET['domain']] =
                 echo __('%s mail accounts',$i);
               }
             ?>
+          </div>
+          <div class="data-count l-unit__col l-unit__col--right back clearfix">
+            <a class="button cancel" href="/list/mail/"><?=__('Back')?></a>
           </div>
         </div>
       </div>

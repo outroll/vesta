@@ -9,15 +9,20 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain_idn=$(idn -t --quiet -a "$domain")
+domain=$2
+domain_idn=$2
 
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+format_domain
+format_domain_idn
+# TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
 
 
 #----------------------------------------------------------#
@@ -25,43 +30,52 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '2' "$#" 'USER DOMAIN'
-validate_format 'user' 'domain'
+is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_web_backend_pool_valid
-
-# Checking last webdomain
-domains=$(search_objects 'web' 'SUSPENDED' "no" 'DOMAIN'|wc -l)
-if [ "$backend" = "$user" ] && [ "$domains" -gt 1 ]; then
-    exit
-fi
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
+# Defining pool directory
+pool=$(find /etc/php* -type d \( -name "pool.d" -o -name "*fpm.d" \))
+if [ ! -e "$pool" ]; then
+    check_result $E_NOTEXIST "php-fpm pool doesn't exist"
+fi
+
+# Defining backend type
+backend_type="$domain"
+if [ "$WEB_BACKEND_POOL" = 'user' ]; then
+    backend_type="$user"
+fi
+
+# Checking last webdomain
+if [ "$WEB_BACKEND_POOL" = 'user' ]; then
+    domains=$(search_objects 'web' 'SUSPENDED' "no" 'DOMAIN'|wc -l)
+    if [     "$backend" = "$user" ] && [ "$domains" -gt 1 ]; then
+        exit
+    fi
+fi
+
 # Deleting backend
-rm -f $pool/$backend.conf
+rm -f $pool/$backend_type.conf
 
 
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-# Restart backend server
-if [ "$restart" != 'no' ]; then
-    $BIN/v-restart-web-backend
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
-fi
+# Restarting backend server
+$BIN/v-restart-web-backend $restart
+check_result $? "Backend restart failed" >/dev/null
 
 # Logging
 log_history "deleting backend support for $domain"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

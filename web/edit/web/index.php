@@ -1,11 +1,10 @@
 <?php
-// Init
 error_reporting(NULL);
 ob_start();
-session_start();
 unset($_SESSION['error_msg']);
 $TAB = 'WEB';
 
+// Main include
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 // Check domain argument
@@ -36,14 +35,23 @@ $v_tpl = $data[$v_domain]['IP'];
 $v_cgi = $data[$v_domain]['CGI'];
 $v_elog = $data[$v_domain]['ELOG'];
 $v_ssl = $data[$v_domain]['SSL'];
-if ( $v_ssl == 'yes' ) {
+if (!empty($v_ssl)) {
     exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".$v_domain."' json", $output, $return_var);
     $ssl_str = json_decode(implode('', $output), true);
     unset($output);
     $v_ssl_crt = $ssl_str[$v_domain]['CRT'];
     $v_ssl_key = $ssl_str[$v_domain]['KEY'];
     $v_ssl_ca = $ssl_str[$v_domain]['CA'];
+    $v_ssl_subject = $ssl_str[$v_domain]['SUBJECT'];
+    $v_ssl_aliases = $ssl_str[$v_domain]['ALIASES'];
+    $v_ssl_not_before = $ssl_str[$v_domain]['NOT_BEFORE'];
+    $v_ssl_not_after = $ssl_str[$v_domain]['NOT_AFTER'];
+    $v_ssl_signature = $ssl_str[$v_domain]['SIGNATURE'];
+    $v_ssl_pub_key = $ssl_str[$v_domain]['PUB_KEY'];
+    $v_ssl_issuer = $ssl_str[$v_domain]['ISSUER'];
 }
+$v_letsencrypt = $data[$v_domain]['LETSENCRYPT'];
+if (empty($v_letsencrypt)) $v_letsencrypt = 'no';
 $v_ssl_home = $data[$v_domain]['SSL_HOME'];
 $v_backend_template = $data[$v_domain]['BACKEND'];
 $v_proxy = $data[$v_domain]['PROXY'];
@@ -188,14 +196,14 @@ if (!empty($_POST['save'])) {
                 $restart_web = 'yes';
                 $restart_proxy = 'yes';
                 $v_template = escapeshellarg($_POST['v_template']);
-                exec (VESTA_CMD."v-add-web-domain-alias ".$v_username." ".$v_domain." '".$alias."' 'no'", $output, $return_var);
+                exec (VESTA_CMD."v-add-web-domain-alias ".$v_username." ".$v_domain." ".escapeshellarg($alias)." 'no'", $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
                 if (empty($_SESSION['error_msg'])) {
                     exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain, $output, $return_var);
                     unset($output);
                     if ($return_var == 0) {
-                        exec (VESTA_CMD."v-add-dns-on-web-alias ".$v_username." ".$alias." ".$v_ip." no", $output, $return_var);
+                        exec (VESTA_CMD."v-add-dns-on-web-alias ".$v_username." ".escapeshellarg($alias)." ".$v_ip." no", $output, $return_var);
                         check_return_code($return_var,$output);
                     unset($output);
                         $restart_dns = 'yes';
@@ -206,11 +214,11 @@ if (!empty($_POST['save'])) {
     }
 
     // Change backend template
-    if ((!empty($_SESSION['WEB_BACKEND'])) && ( $v_backend_template != $_POST['v_backend_template']) && (empty($_SESSION['error_msg']))) {
-            $v_backend_template = $_POST['v_backend_template'];
-            exec (VESTA_CMD."v-change-web-domain-backend-tpl ".$v_username." ".$v_domain." ".escapeshellarg($v_backend_template), $output, $return_var);
-            check_return_code($return_var,$output);
-            unset($output);
+    if ((!empty($_SESSION['WEB_BACKEND'])) && ( $v_backend_template != $_POST['v_backend_template']) && ( $_SESSION['user'] == 'admin') && (empty($_SESSION['error_msg']))) {
+        $v_backend_template = $_POST['v_backend_template'];
+        exec (VESTA_CMD."v-change-web-domain-backend-tpl ".$v_username." ".$v_domain." ".escapeshellarg($v_backend_template), $output, $return_var);
+        check_return_code($return_var,$output);
+        unset($output);
     }
 
     // Delete proxy support
@@ -222,8 +230,8 @@ if (!empty($_POST['save'])) {
         $restart_proxy = 'yes';
     }
 
-    // Change proxy template / Update extention list
-    if ((!empty($_SESSION['PROXY_SYSTEM'])) && (!empty($v_proxy)) && (!empty($_POST['v_proxy'])) && (empty($_SESSION['error_msg']))) {
+    // Change proxy template / Update extension list (admin only)
+    if ((!empty($_SESSION['PROXY_SYSTEM'])) && (!empty($v_proxy)) && (!empty($_POST['v_proxy'])) && (empty($_SESSION['error_msg'])) && ($_SESSION['user'] == 'admin')) {
         $ext = preg_replace("/\n/", " ", $_POST['v_proxy_ext']);
         $ext = preg_replace("/,/", " ", $ext);
         $ext = preg_replace('/\s+/', ' ',$ext);
@@ -257,18 +265,21 @@ if (!empty($_POST['save'])) {
         $restart_proxy = 'yes';
     }
 
-    // Delete SSL certificate
-    if (( $v_ssl == 'yes' ) && (empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-delete-web-domain-ssl ".$v_username." ".$v_domain." 'no'", $output, $return_var);
-        check_return_code($return_var,$output);
-        unset($output);
-        $v_ssl = 'no';
-        $restart_web = 'yes';
-        $restart_proxy = 'yes';
+    // Change document root for ssl domain
+    if (( $v_ssl == 'yes') && (!empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
+        if ( $v_ssl_home != $_POST['v_ssl_home'] ) {
+            $v_ssl_home = escapeshellarg($_POST['v_ssl_home']);
+            exec (VESTA_CMD."v-change-web-domain-sslhome ".$user." ".$v_domain." ".$v_ssl_home." 'no'", $output, $return_var);
+            check_return_code($return_var,$output);
+            $v_ssl_home = $_POST['v_ssl_home'];
+            $restart_web = 'yes';
+            $restart_proxy = 'yes';
+            unset($output);
+        }
     }
 
     // Change SSL certificate
-    if (($v_ssl == 'yes') && (!empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
+    if (( $v_letsencrypt == 'no' ) && (empty($_POST['v_letsencrypt'])) && ( $v_ssl == 'yes' ) && (!empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
         if (( $v_ssl_crt != str_replace("\r\n", "\n",  $_POST['v_ssl_crt'])) || ( $v_ssl_key != str_replace("\r\n", "\n",  $_POST['v_ssl_key'])) || ( $v_ssl_ca != str_replace("\r\n", "\n",  $_POST['v_ssl_ca']))) {
             exec ('mktemp -d', $mktemp_output, $return_var);
             $tmpdir = $mktemp_output[0];
@@ -302,32 +313,74 @@ if (!empty($_POST['save'])) {
             unset($output);
             $restart_web = 'yes';
             $restart_proxy = 'yes';
-            $v_ssl_crt = $_POST['v_ssl_crt'];
-            $v_ssl_key = $_POST['v_ssl_key'];
-            $v_ssl_ca = $_POST['v_ssl_ca'];
+
+            exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".$v_domain."' json", $output, $return_var);
+            $ssl_str = json_decode(implode('', $output), true);
+            unset($output);
+            $v_ssl_crt = $ssl_str[$v_domain]['CRT'];
+            $v_ssl_key = $ssl_str[$v_domain]['KEY'];
+            $v_ssl_ca = $ssl_str[$v_domain]['CA'];
+            $v_ssl_subject = $ssl_str[$v_domain]['SUBJECT'];
+            $v_ssl_aliases = $ssl_str[$v_domain]['ALIASES'];
+            $v_ssl_not_before = $ssl_str[$v_domain]['NOT_BEFORE'];
+            $v_ssl_not_after = $ssl_str[$v_domain]['NOT_AFTER'];
+            $v_ssl_signature = $ssl_str[$v_domain]['SIGNATURE'];
+            $v_ssl_pub_key = $ssl_str[$v_domain]['PUB_KEY'];
+            $v_ssl_issuer = $ssl_str[$v_domain]['ISSUER'];
 
             // Cleanup certificate tempfiles
-            if (!empty($_POST['v_ssl_crt'])) {
-                unlink($tmpdir."/".$_POST['v_domain'].".crt");
-            }
-
-            if (!empty($_POST['v_ssl_key'])) {
-                unlink($tmpdir."/".$_POST['v_domain'].".key");
-            }
-
-            if (!empty($_POST['v_ssl_ca'])) {
-                unlink($tmpdir."/".$_POST['v_domain'].".ca");
-            }
-
+            if (!empty($_POST['v_ssl_crt'])) unlink($tmpdir."/".$_POST['v_domain'].".crt");
+            if (!empty($_POST['v_ssl_key'])) unlink($tmpdir."/".$_POST['v_domain'].".key");
+            if (!empty($_POST['v_ssl_ca']))  unlink($tmpdir."/".$_POST['v_domain'].".ca");
             rmdir($tmpdir);
         }
     }
 
-    // Add SSL certificate
-    if (( $v_ssl == 'no') && (!empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
-        if ((!empty($_POST['v_ssl'])) && (empty($_POST['v_ssl_crt']))) $errors[] = 'ssl certificate';
-        if ((!empty($_POST['v_ssl'])) && (empty($_POST['v_ssl_key']))) $errors[] = 'ssl key';
-        if ((!empty($_POST['v_ssl'])) && (empty($_POST['v_ssl_home']))) $errors[] = 'ssl home';
+    // Delete Lets Encrypt support
+    if (( $v_letsencrypt == 'yes' ) && (empty($_POST['v_letsencrypt'])) && (empty($_SESSION['error_msg']))) {
+        exec (VESTA_CMD."v-delete-letsencrypt-domain ".$user." ".$v_domain." 'no'", $output, $return_var);
+        check_return_code($return_var,$output);
+        unset($output);
+        $v_ssl_crt = '';
+        $v_ssl_key = '';
+        $v_ssl_ca = '';
+        $v_letsencrypt = 'no';
+        $v_letsencrypt_deleted = 'yes';
+        $v_ssl = 'no';
+        $restart_web = 'yes';
+        $restart_proxy = 'yes';
+    }
+
+    // Delete SSL certificate
+    if (( $v_ssl == 'yes' ) && (empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
+        exec (VESTA_CMD."v-delete-web-domain-ssl ".$v_username." ".$v_domain." 'no'", $output, $return_var);
+        check_return_code($return_var,$output);
+        unset($output);
+        $v_ssl_crt = '';
+        $v_ssl_key = '';
+        $v_ssl_ca = '';
+        $v_ssl = 'no';
+        $restart_web = 'yes';
+        $restart_proxy = 'yes';
+    }
+
+    // Add Lets Encrypt support
+    if ((!empty($_POST['v_ssl'])) && ( $v_letsencrypt == 'no' ) && (!empty($_POST['v_letsencrypt'])) && empty($_SESSION['error_msg'])) {
+        $l_aliases = str_replace("\n", ',', $v_aliases);
+        exec (VESTA_CMD."v-add-letsencrypt-domain ".$user." ".$v_domain." '".$l_aliases."' 'no'", $output, $return_var);
+        check_return_code($return_var,$output);
+        unset($output);
+        $v_letsencrypt = 'yes';
+        $v_ssl = 'yes';
+        $restart_web = 'yes';
+        $restart_proxy = 'yes';
+     }
+
+     // Add SSL certificate
+     if (( $v_ssl == 'no' ) && (!empty($_POST['v_ssl']))  && (empty($v_letsencrypt_deleted)) && (empty($_SESSION['error_msg']))) {
+        if (empty($_POST['v_ssl_crt'])) $errors[] = 'ssl certificate';
+        if (empty($_POST['v_ssl_key'])) $errors[] = 'ssl key';
+        if (empty($_POST['v_ssl_home'])) $errors[] = 'ssl home';
         $v_ssl_home = escapeshellarg($_POST['v_ssl_home']);
         if (!empty($errors[0])) {
             foreach ($errors as $i => $error) {
@@ -368,38 +421,30 @@ if (!empty($_POST['save'])) {
             $v_ssl = 'yes';
             $restart_web = 'yes';
             $restart_proxy = 'yes';
-            $v_ssl_crt = $_POST['v_ssl_crt'];
-            $v_ssl_key = $_POST['v_ssl_key'];
-            $v_ssl_ca = $_POST['v_ssl_ca'];
-            $v_ssl_home = $_POST['v_ssl_home'];
+
+            exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".$v_domain."' json", $output, $return_var);
+            $ssl_str = json_decode(implode('', $output), true);
+            unset($output);
+            $v_ssl_crt = $ssl_str[$_POST['v_domain']]['CRT'];
+            $v_ssl_key = $ssl_str[$_POST['v_domain']]['KEY'];
+            $v_ssl_ca = $ssl_str[$_POST['v_domain']]['CA'];
+            $v_ssl_subject = $ssl_str[$_POST['v_domain']]['SUBJECT'];
+            $v_ssl_aliases = $ssl_str[$_POST['v_domain']]['ALIASES'];
+            $v_ssl_not_before = $ssl_str[$_POST['v_domain']]['NOT_BEFORE'];
+            $v_ssl_not_after = $ssl_str[$_POST['v_domain']]['NOT_AFTER'];
+            $v_ssl_signature = $ssl_str[$_POST['v_domain']]['SIGNATURE'];
+            $v_ssl_pub_key = $ssl_str[$_POST['v_domain']]['PUB_KEY'];
+            $v_ssl_issuer = $ssl_str[$_POST['v_domain']]['ISSUER'];
 
             // Cleanup certificate tempfiles
-            if (!empty($_POST['v_ssl_crt'])) {
-                unlink($tmpdir."/".$_POST['v_domain'].".crt");
-            }
-
-            if (!empty($_POST['v_ssl_key'])) {
-                unlink($tmpdir."/".$_POST['v_domain'].".key");
-            }
-
-            if (!empty($_POST['v_ssl_ca'])) {
-                unlink($tmpdir."/".$_POST['v_domain'].".ca");
-            }
-
+            if (!empty($_POST['v_ssl_crt'])) unlink($tmpdir."/".$_POST['v_domain'].".crt");
+            if (!empty($_POST['v_ssl_key'])) unlink($tmpdir."/".$_POST['v_domain'].".key");
+            if (!empty($_POST['v_ssl_ca'])) unlink($tmpdir."/".$_POST['v_domain'].".ca");
             rmdir($tmpdir);
         }
     }
 
-    // Change document root for ssl domain
-    if (( $v_ssl == 'yes') && (!empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
-        if ( $v_ssl_home != $_POST['v_ssl_home'] ) {
-            $v_ssl_home = escapeshellarg($_POST['v_ssl_home']);
-            exec (VESTA_CMD."v-change-web-domain-sslhome ".$user." ".$v_domain." ".$v_ssl_home." 'no'", $output, $return_var);
-            check_return_code($return_var,$output);
-            $v_ssl_home = $_POST['v_ssl_home'];
-            unset($output);
-        }
-    }
+
 
     // Delete web stats
     if ((!empty($v_stats)) && ($_POST['v_stats'] == 'none') && (empty($_SESSION['error_msg']))) {
@@ -520,7 +565,7 @@ if (!empty($_POST['save'])) {
                     $fp = fopen($v_ftp_password, "w");
                     fwrite($fp, $v_ftp_user_data['v_ftp_password']."\n");
                     fclose($fp);
-                    exec (VESTA_CMD."v-add-web-domain-ftp ".$v_username." ".$v_domain." ".$v_ftp_username." ".$v_ftp_password . " " . $v_ftp_path, $output, $return_var);
+                    exec (VESTA_CMD."v-add-web-domain-ftp ".$v_username." ".$v_domain." ".$v_ftp_user." ".$v_ftp_password . " " . $v_ftp_path, $output, $return_var);
                     check_return_code($return_var,$output);
                     if ((!empty($v_ftp_user_data['v_ftp_email'])) && (empty($_SESSION['error_msg']))) {
                         $to = $v_ftp_user_data['v_ftp_email'];
@@ -580,12 +625,13 @@ if (!empty($_POST['save'])) {
                 }
 
                 // Change FTP account path
+                $v_ftp_username_for_emailing = $v_ftp_user_data['v_ftp_user'];
                 $v_ftp_username = $user . '_' . $v_ftp_user_data['v_ftp_user']; //preg_replace("/^".$user."_/", "", $v_ftp_user_data['v_ftp_user']);
                 $v_ftp_username = escapeshellarg($v_ftp_username);
-                //if (!empty($v_ftp_user_data['v_ftp_path'])) {
                     $v_ftp_path = escapeshellarg(trim($v_ftp_user_data['v_ftp_path']));
-                    exec (VESTA_CMD."v-change-web-domain-ftp-path ".$v_username." ".$v_domain." ".$v_ftp_username." ".$v_ftp_path, $output, $return_var);
-                //}
+                    if(escapeshellarg(trim($v_ftp_user_data['v_ftp_path_prev'])) != $v_ftp_path) {
+                        exec (VESTA_CMD."v-change-web-domain-ftp-path ".$v_username." ".$v_domain." ".$v_ftp_username." ".$v_ftp_path, $output, $return_var);
+                    }
 
                 // Change FTP account password
                 if (!empty($v_ftp_user_data['v_ftp_password'])) {
@@ -600,7 +646,7 @@ if (!empty($_POST['save'])) {
                     $subject = __("FTP login credentials");
                     $hostname = exec('hostname');
                     $from = __('MAIL_FROM',$hostname);
-                    $mailtext = __('FTP_ACCOUNT_READY',$_GET['domain'],$user,$v_ftp_username,$v_ftp_user_data['v_ftp_password']);
+                    $mailtext = __('FTP_ACCOUNT_READY',$_GET['domain'],$user,$v_ftp_username_for_emailing,$v_ftp_user_data['v_ftp_password']);
                     send_email($to, $subject, $mailtext, $from);
                     unset($v_ftp_email);
                 }
@@ -694,22 +740,9 @@ if (isset($v_ftp_users_updated)) {
     }
 }
 
-// Header
-include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
-
-// Panel
-top_panel($user,$TAB);
-
-// Display body
-if ($_SESSION['user'] == 'admin') {
-    include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_web.html');
-} else {
-    include($_SERVER['DOCUMENT_ROOT'].'/templates/user/edit_web.html');
-}
+// Render page
+render_page($user, $TAB, 'edit_web');
 
 // Flush session messages
 unset($_SESSION['error_msg']);
 unset($_SESSION['ok_msg']);
-
-// Footer
-include($_SERVER['DOCUMENT_ROOT'].'/templates/footer.html');

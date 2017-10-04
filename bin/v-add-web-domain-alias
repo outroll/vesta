@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add web domain alias
-# options: USER DOMAIN ALIAS [RESTART]
+# options: USER DOMAIN ALIASES [RESTART]
 #
 # The call is intended for adding aliases to a domain (it is also called
 # "domain parking"). The function supports wildcards *.domain.tpl.
@@ -10,15 +10,11 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
-domain_idn=$(idn -t --quiet -a "$domain")
-dom_alias=$(idn -t --quiet -u "$3" )
-dom_alias=$(echo $dom_alias | sed -e 's/\.*$//g' -e 's/^\.*//g')
-dom_alias=$(echo $dom_alias | tr '[:upper:]' '[:lower:]')
-dom_alias_idn=$(idn -t --quiet -a "$dom_alias" )
+domain=$2
+domain_idn=$2
+aliases=$3
 restart="$4"
 
 # Includes
@@ -27,19 +23,25 @@ source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+# TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
+format_aliases
+
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '3' "$#" 'USER DOMAIN DOM_ALIAS [RESTART]'
-validate_format 'user' 'domain' 'dom_alias'
+check_args '3' "$#" 'USER DOMAIN ALIASES [RESTART]'
+is_format_valid 'user' 'domain' 'dom_alias'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_domain_new 'web' "$dom_alias" 'alias'
+is_domain_new 'web' "$aliases"
 is_package_full 'WEB_ALIASES'
 
 
@@ -49,43 +51,31 @@ is_package_full 'WEB_ALIASES'
 
 # Parsing domain values
 get_domain_values 'web'
-tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.tpl"
-conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
-ip=$(get_real_ip $IP)
-
-# Parsing domain aliases
-if [ -z "$ALIAS" ]; then
-    ALIAS="$dom_alias"
-else
-    ALIAS="$ALIAS,$dom_alias"
-fi
 
 # Preparing domain values for the template substitution
-upd_web_domain_values
+local_ip=$(get_real_ip $IP)
+if [ -z "$ALIAS" ]; then
+    ALIAS="$aliases"
+else
+    ALIAS="$ALIAS,$aliases"
+fi
+prepare_web_domain_values
 
-# Recreating vhost
-del_web_config
-add_web_config
-
+# Rebuilding vhost
+del_web_config "$WEB_SYSTEM" "$TPL.tpl"
+add_web_config "$WEB_SYSTEM" "$TPL.tpl"
 if [ "$SSL" = 'yes' ]; then
-    tpl_file="$WEBTPL/$WEB_SYSTEM/$WEB_BACKEND/$TPL.stpl"
-    conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
-    del_web_config
-    add_web_config
+    del_web_config "$WEB_SYSTEM" "$TPL.stpl"
+    add_web_config "$WEB_SYSTEM" "$TPL.stpl"
 fi
 
-# Checking proxy
-if [ ! -z "$PROXY" ]; then
-    tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.tpl"
-    conf="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf"
-    del_web_config
-    add_web_config
-
+# Rebuilding proxy configuration
+if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
+    del_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+    add_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
     if [ "$SSL" = 'yes' ]; then
-        tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
-        conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
-        del_web_config
-        add_web_config
+        del_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
+        add_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
     fi
 fi
 
@@ -96,24 +86,18 @@ fi
 
 # Adding new alias
 update_object_value 'web' 'DOMAIN' "$domain" '$ALIAS' "$ALIAS"
-
-# Update counters
 increase_user_value "$user" '$U_WEB_ALIASES'
 
-# Adding task to the vesta pipe
-if [ "$restart" != 'no' ]; then
-    $BIN/v-restart-web
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+# Restarting web server
+$BIN/v-restart-web $restart
+check_result $? "Web restart failed" >/dev/null
 
-    $BIN/v-restart-proxy
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
-fi
+# Restarting proxy server
+$BIN/v-restart-proxy $restart
+check_result $? "Proxy restart failed" >/dev/null
 
-log_history "added $dom_alias as alias for $domain"
-log_event "$OK" "$EVENT"
+
+log_history "added $aliases for $domain"
+log_event "$OK" "$ARGUMENTS"
 
 exit

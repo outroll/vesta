@@ -10,7 +10,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 ip=$1
 
 # Includes
@@ -25,7 +25,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '1' "$#" 'IP'
-validate_format 'ip'
+is_format_valid 'ip'
 is_ip_valid "$ip"
 is_ip_key_empty '$U_WEB_DOMAINS'
 is_ip_key_empty '$U_SYS_USERS'
@@ -43,7 +43,7 @@ cidr=$(convert_netmask $NETMASK)
 interface=$(/sbin/ip addr | grep "$ip/$cidr" | awk '{print $NF}')
 if [ ! -z "$interface" ] && [ -z "$(echo $interface |cut -s -f2 -d :)" ]; then
     echo "Error: can't delete main IP address"
-    log_event "$E_FORBIDEN" "$EVENT"
+    log_event "$E_FORBIDEN" "$ARGUMENTS"
     exit $E_FORBIDEN
 fi
 
@@ -52,7 +52,7 @@ if [ ! -z "$interface" ]; then
     /sbin/ip addr del $ip/$cidr dev $INTERFACE
     if [ "$?" -ne 0 ]; then
         echo "Error: can't delete system ip"
-        log_event "$E_FORBIDEN" "$EVENT"
+        log_event "$E_FORBIDEN" "$ARGUMENTS"
         exit $E_FORBIDEN
     fi
 fi
@@ -99,6 +99,12 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
         new_ips=$(echo "$rpaf_str" | sed "s/$ip//")
         sed -i "s/$ips/$new_ips/g" $rpaf_conf
     fi
+    
+    #mod_remoteip
+    remoteip_conf="/etc/$WEB_SYSTEM/mods-enabled/remoteip.conf"
+    if [ -e "$remoteip_conf" ]; then
+        sed -i "s/RemoteIPInternalProxy $ip//g" $remoteip_conf
+    fi
 fi
 
 
@@ -123,16 +129,12 @@ fi
 
 # Restarting web server
 $BIN/v-restart-web
-if [ $? -ne 0 ]; then
-    exit $E_RESTART
-fi
+check_result $? "Web restart failed" >/dev/null
 
 # Restarting proxy server
 if [ ! -z "$PROXY_SYSTEM" ]; then
     $BIN/v-restart-proxy
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
+    check_result $? "Proxy restart failed" >/dev/null
 fi
 
 # Restarting firewall
@@ -142,6 +144,6 @@ fi
 
 # Logging
 log_history "deleted system ip address $ip"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

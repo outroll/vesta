@@ -1,17 +1,10 @@
 <?php
-// Init
 error_reporting(NULL);
 ob_start();
-session_start();
 $TAB = 'MAIL';
 
+// Main include
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
-
-// Header
-include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
-
-// Panel
-top_panel($user,$TAB);
 
 // Check domain argument
 if (empty($_GET['domain'])) {
@@ -186,8 +179,17 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         exit();
     }
 
+    // Validate email
+    if ((!empty($_POST['v_send_email'])) && (empty($_SESSION['error_msg']))) {
+        if (!filter_var($_POST['v_send_email'], FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error_msg'] = __('Please enter valid email address.');
+        }
+    }
+
     $v_domain = escapeshellarg($_POST['v_domain']);
     $v_account = escapeshellarg($_POST['v_account']);
+    $v_send_email = $_POST['v_send_email'];
+    $v_credentials = $_POST['v_credentials'];
 
     // Change password
     if ((!empty($_POST['v_password'])) && (empty($_SESSION['error_msg']))) {
@@ -205,7 +207,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
     // Change quota
     if (($v_quota != $_POST['v_quota']) && (empty($_SESSION['error_msg']))) {
         if (empty($_POST['v_quota'])) {
-            $v_quota = 0; 
+            $v_quota = 0;
         } else {
             $v_quota = escapeshellarg($_POST['v_quota']);
         }
@@ -233,7 +235,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         $result = array_diff($aliases, $valiases);
         foreach ($result as $alias) {
             if ((empty($_SESSION['error_msg'])) && (!empty($alias))) {
-                exec (VESTA_CMD."v-add-mail-account-alias ".$v_username." ".$v_domain." ".$v_account." '".$alias."'", $output, $return_var);
+                exec (VESTA_CMD."v-add-mail-account-alias ".$v_username." ".$v_domain." ".$v_account." ".escapeshellarg($alias), $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
             }
@@ -259,7 +261,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         $result = array_diff($fwd, $vfwd);
         foreach ($result as $forward) {
             if ((empty($_SESSION['error_msg'])) && (!empty($forward))) {
-                exec (VESTA_CMD."v-add-mail-account-forward ".$v_username." ".$v_domain." ".$v_account." '".$forward."'", $output, $return_var);
+                exec (VESTA_CMD."v-add-mail-account-forward ".$v_username." ".$v_domain." ".$v_account." ".escapeshellarg($forward), $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
             }
@@ -304,25 +306,32 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         }
     }
 
+    // Email login credentials
+    if ((!empty($v_send_email)) && (empty($_SESSION['error_msg']))) {
+        $to = $v_send_email;
+        $subject = __("Email Credentials");
+        $hostname = exec('hostname');
+        $from = __('MAIL_FROM', $hostname);
+        $mailtext = $v_credentials;
+        send_email($to, $subject, $mailtext, $from);
+    }
+
     // Set success message
     if (empty($_SESSION['error_msg'])) {
         $_SESSION['ok_msg'] = __('Changes has been saved.');
     }
 }
 
-// Display body for mail domain
-if ((!empty($_GET['domain'])) && (empty($_GET['account'])))  {
-    include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_mail.html');
-}
 
-// Display body for mail account
-if ((!empty($_GET['domain'])) && (!empty($_GET['account'])))  {
-    include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_mail_acc.html');
+// Render page
+if (empty($_GET['account']))  {
+    // Display body for mail domain
+    render_page($user, $TAB, 'edit_mail');
+} else {
+    // Display body for mail account
+    render_page($user, $TAB, 'edit_mail_acc');
 }
 
 // Flush session messages
 unset($_SESSION['error_msg']);
 unset($_SESSION['ok_msg']);
-
-// Footer
-include($_SERVER['DOCUMENT_ROOT'].'/templates/footer.html');

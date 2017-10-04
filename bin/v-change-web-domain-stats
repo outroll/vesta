@@ -10,10 +10,10 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain_idn=$(idn -t --quiet -a "$domain")
+domain=$2
+domain_idn=$2
 type=$3
 
 # Includes
@@ -21,13 +21,17 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN TYPE'
-validate_format 'user' 'domain'
+is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_type_valid "$STATS_SYSTEM" "$type"
 is_object_valid 'user' 'USER' "$user"
@@ -46,7 +50,7 @@ get_domain_values 'web'
 
 # Comparing stats types
 if [ "$STATS" == $type ]; then
-    log_event "$OK" "$EVENT"
+    log_event "$OK" "$ARGUMENTS"
     exit 0
 fi
 
@@ -59,10 +63,8 @@ rm -rf $stats_dir/*
 # Deleting config
 rm -f $HOMEDIR/$user/conf/web/$STATS.$domain.conf
 
-# Preparing domain values for the template substitution
-upd_web_domain_values
-
 # Adding statistic config
+prepare_web_domain_values
 cat $WEBTPL/$type/$type.tpl |\
     sed -e "s/%ip%/$ip/g" \
         -e "s/%web_port%/$WEB_PORT/g" \
@@ -98,7 +100,7 @@ update_object_value 'web' 'DOMAIN' "$domain" '$STATS' "$type"
 
 # Logging
 log_history "changed web log stats for $domain to $type"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 # Build stats
 exec $BIN/v-update-web-domain-stat $user $domain

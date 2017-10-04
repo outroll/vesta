@@ -22,7 +22,7 @@
                 <label for="toggle-all" class="check-label toggle-all"><?=__('toggle all')?></label>
               </td>
               <td>
-                <form action="/bulk/vesta/" method="post">
+                <form action="/bulk/vesta/" method="post" id="objects">
                 <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
                 <div class="l-select">
                   <select name="action" id="">
@@ -35,11 +35,7 @@
             </tr>
           </table>
         </div>
-
       </div>
-
-      <? display_error_block(); ?>
-
       <!-- /.l-sort -->
     </div>
 
@@ -54,10 +50,10 @@
 
           if ($data[$key]['UPDATED'] == 'yes') {
             $status = 'active';
-            $upd_status = __('updated');
+            $upd_status = 'updated';
           } else {
             $status = 'suspended';
-            $upd_status = __('outdated');
+            $upd_status = 'outdated';
           }
 
       ?>
@@ -75,7 +71,7 @@
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
               <? if ($data[$key]['UPDATED'] == 'no') {
-                   echo '<div class="actions-panel__col actions-panel__update"><a href="/update/vesta/?pkg='.$key.'&token='.$_SESSION['token'].'">'.__('update').'<i></i></a></div>';
+                   echo '<div class="actions-panel__col actions-panel__update shortcut-u" key-action="href"><a href="/update/vesta/?pkg='.$key.'&token='.$_SESSION['token'].'">'.__('update').'<i></i></a><span class="shortcut">&nbsp;U</span></div>';
                  }
               ?>
             </div>

@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 domain=$2
 auth_user=$3
@@ -20,17 +20,18 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
-# Definining htpasswd file
+# Defining htpasswd file
 htaccess="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.$domain.conf_htaccess"
 htpasswd="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.$domain.htpasswd"
-
+shtaccess="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.$domain.conf_htaccess"
+shtpasswd="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.$domain.htpasswd"
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN AUTH_USER [RESTART]'
-validate_format 'user' 'domain'
+is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -40,7 +41,7 @@ is_password_valid
 get_domain_values 'web'
 if [ -z "$(echo "$AUTH_USER" |tr : '\n' |grep ^$auth_user$)" ]; then
     echo "Error: auth user $auth_user doesn't exist"
-    log_event "$E_NOTEXIST" "$EVENT"
+    log_event "$E_NOTEXIST" "$ARGUMENTS"
     exit $E_NOTEXIST
 fi
 
@@ -54,7 +55,7 @@ sed -i "/^$auth_user:/d" $htpasswd
 
 # Deleting password protection
 if [ "$(echo "$AUTH_USER" |tr : '\n' |wc -l)" -le 1 ]; then
-    rm -f $htaccess $htpasswd
+    rm -f $htaccess $htpasswd $shtaccess $shtpasswd
     restart_required='yes'
 fi
 
@@ -82,6 +83,6 @@ update_object_value 'web' 'DOMAIN' "$domain" '$AUTH_HASH' "$auth_hash"
 
 # Logging
 log_history "changed auth user $httpauth_user password on $domain"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

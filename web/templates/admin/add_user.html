@@ -12,9 +12,7 @@
                     }
                   ?>
         </div>
-
       </div>
-      <? display_error_block() ?>
     </div>
 
 
@@ -34,24 +32,6 @@
         <form id="vstobjects" name="v_add_user" method="post">
             <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
             <input type="hidden" name="ok" value="Add" />
-            <script type="text/javascript">
-                $(function() {
-                    $("#v_email").change(function() {
-                        document.getElementById('v_notify').value = document.getElementById('v_email').value;
-                    });
-                });
-
-                function randomString() {
-                    var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-                    var string_length = 10;
-                    var randomstring = '';
-                    for (var i=0; i<string_length; i++) {
-                        var rnum = Math.floor(Math.random() * chars.length);
-                        randomstring += chars.substring(rnum,rnum+1);
-                    }
-                    document.v_add_user.v_password.value = randomstring;
-                }
-            </script>
 
             <table class="data mode-add">
                 <tr class="data-add">
@@ -69,7 +49,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_username" <?php if (!empty($v_username)) echo "value=".htmlentities($v_username);  ?> >
+                                    <input type="text" size="20" class="vst-input" name="v_username" value="<?=htmlentities(trim($v_username, "'"))?>" tabindex="1" >
                                 </td>
                             </tr>
                             <tr>
@@ -79,7 +59,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input password" name="v_password"  <?php if (!empty($v_password)) echo "value=".htmlentities($v_password);  ?>>
+                                    <input type="text" size="20" class="vst-input password" name="v_password" value="<?=htmlentities(trim($v_password, "'"))?>" tabindex="2" >
                                 </td>
                             </tr>
                             <tr>
@@ -89,7 +69,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_email" id='v_email' <?php if (!empty($v_email)) echo "value=".htmlentities($v_email); ?>>
+                                    <input type="text" size="20" class="vst-input" name="v_email" id='v_email' value="<?=htmlentities(trim($v_email, "'"))?>" tabindex="3" >
                                 </td>
                             </tr>
                             <tr>
@@ -99,7 +79,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <select class="vst-list" name="v_package">
+                                    <select class="vst-list" name="v_package" tabindex="4" >
                                         <?php
                                             foreach ($data as $key => $value) {
                                                 echo "\n\t\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"".htmlentities($key)."\"";
@@ -112,7 +92,7 @@
                                                 }
                                                 echo ">".htmlentities($key)."</option>\n";
                                             }
-                                        ?> 
+                                        ?>
                                     </select>
                                 </td>
                             </tr>
@@ -123,17 +103,17 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <select class="vst-list" name="v_language">
+                                    <select class="vst-list" name="v_language" tabindex="5" >
                                         <?php
                                             foreach ($languages as $key => $value) {
                                                 echo "\n\t\t\t\t\t\t\t\t\t<option value=\"".htmlentities($value)."\"";
                                                 $svalue = "'".$value."'";
-                                                if (( $value == 'en' ) && (empty($v_language))){
-                                                    echo 'selected' ;
+                                                if (( $value == $_SESSION['LANGUAGE'] ) && (empty($v_language))){
+                                                    echo ' selected' ;
                                                 }
                                                 if (isset($v_language)){
                                                     if (( $value == $v_language ) || ( $svalue == $v_language)){
-                                                        echo 'selected' ;
+                                                        echo ' selected' ;
                                                     }
                                                 }
                                                 echo ">".htmlentities($value)."</option>\n";
@@ -149,7 +129,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_fname" <?php if (!empty($v_fname)) echo "value=".htmlentities($v_fname); ?>>
+                                    <input type="text" size="20" class="vst-input" name="v_fname" value="<?=htmlentities(trim($v_fname, "'"))?>" tabindex="6" >
                                 </td>
                             </tr>
                             <tr>
@@ -159,7 +139,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_lname" <?php if (!empty($v_lname)) echo "value=".htmlentities($v_lname); ?>>
+                                    <input type="text" size="20" class="vst-input" name="v_lname" value="<?=htmlentities(trim($v_lname, "'"))?>" tabindex="7" >
                                 </td>
                             </tr>
                             <tr>
@@ -169,7 +149,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text"  class="vst-input" name="v_notify" id="v_notify" <?php if (!empty($v_notify)) echo "value=".htmlentities($v_notify); ?>>
+                                    <input type="text"  class="vst-input" name="v_notify" id="v_notify" value="<?=htmlentities(trim($v_notify, "'"))?>" tabindex="8" >
                                 </td>
                             </tr>
 
@@ -177,10 +157,10 @@
                     <table class="data-col2">
                         <tr>
                             <td class="step-top" width="116px">
-                                <input type="submit" name="ok" value="<?php print __('Add');?>" class="button">
+                                <input type="submit" name="ok" value="<?=__('Add')?>" class="button">
                             </td>
                             <td class="step-top">
-                                <input type="button" class="button cancel" value="<?php print __('Back');?>" onclick="<?php echo $back ?>">
+                                <input type="button" class="button cancel" value="<?=__('Back')?>" onclick="<?=$back?>">
                             </td>
                         </tr>
                     </table>

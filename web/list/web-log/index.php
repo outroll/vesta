@@ -1,7 +1,7 @@
 <?php
 // Init
 error_reporting(NULL);
-session_start();
+
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 // Header
@@ -15,7 +15,7 @@ exec (VESTA_CMD."v-list-web-domain-".$type."log $user ".$v_domain, $output, $ret
 
 if ($return_var == 0 ) {
     foreach($output as $file) {
-        echo $file . "\n";
+        echo htmlentities($file) . "\n";
     }
 }
 echo "    </pre>\n</body>\n</html>\n";

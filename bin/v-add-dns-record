@@ -12,11 +12,10 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
-domain_idn=$(idn -t --quiet -a "$domain")
+domain=$2
+domain_idn=$2
 record=$(idn -t --quiet -u "$3" )
 record=$(echo "$record" | tr '[:upper:]' '[:lower:]')
 rtype=$(echo "$4"| tr '[:lower:]' '[:upper:]')
@@ -41,10 +40,21 @@ fi
 # Add trailing dot at the end of NS/CNAME/MX/PTR/SRV record
 if [[ $rtype =~ NS|CNAME|MX|PTR|SRV ]]; then
     trailing_dot=$(echo $dvalue | grep "\.$")
-    if [ -z $trailing_dot ]; then
+    if [ -z "$trailing_dot" ]; then
         dvalue="$dvalue."
     fi
 fi
+
+dvalue=${dvalue//\"/}
+
+if [[ "$dvalue" =~ [\;[:space:]] ]]; then
+    dvalue='"'"$dvalue"'"'
+fi
+
+# Additional argument formatting
+format_domain
+format_domain_idn
+# TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
 
 
 #----------------------------------------------------------#
@@ -52,7 +62,7 @@ fi
 #----------------------------------------------------------#
 
 check_args '5' "$#" 'USER DOMAIN RECORD TYPE VALUE [PRIORITY] [ID] [RESTART]'
-validate_format 'user' 'domain' 'record' 'rtype' 'dvalue'
+is_format_valid 'user' 'domain' 'record' 'rtype' 'dvalue'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -60,7 +70,7 @@ is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'dns' 'DOMAIN' "$domain"
 is_package_full 'DNS_RECORDS'
 get_next_dnsrecord
-validate_format 'id'
+is_format_valid 'id'
 is_object_new "dns/$domain" 'ID' "$id"
 is_dns_fqnd "$rtype" "$dvalue"
 is_dns_nameserver_valid "$domain" "$rtype" "$dvalue"
@@ -70,10 +80,15 @@ is_dns_nameserver_valid "$domain" "$rtype" "$dvalue"
 #                       Action                             #
 #----------------------------------------------------------#
 
+# Generating timestamp
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
 # Adding record
 zone="$USER_DATA/dns/$domain.conf"
 dns_rec="ID='$id' RECORD='$record' TYPE='$rtype' PRIORITY='$priority'"
-dns_rec="$dns_rec VALUE='$dvalue' SUSPENDED='no' TIME='$TIME' DATE='$DATE'"
+dns_rec="$dns_rec VALUE='$dvalue' SUSPENDED='no' TIME='$time' DATE='$date'"
 echo "$dns_rec" >> $zone
 chmod 660 $zone
 
@@ -82,6 +97,7 @@ sort_dns_records
 
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+    update_domain_serial
     update_domain_zone
 fi
 
@@ -100,21 +116,17 @@ fi
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-# Upddate counters
+# Update counters
 records="$(wc -l $USER_DATA/dns/$domain.conf | cut -f1 -d ' ')"
 update_object_value 'dns' 'DOMAIN' "$domain" '$RECORDS' "$records"
 increase_user_value "$user" '$U_DNS_RECORDS'
 
 # Restart named
-if [ "$restart" != 'no' ]; then
-    $BIN/v-restart-dns
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
-fi
+$BIN/v-restart-dns $restart
+check_result $? $E_RESTART 'dns failed to restart'
 
 # Logging
 log_history "added $rtype dns record $record for $domain"
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit
