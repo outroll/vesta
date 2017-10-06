@@ -126,5 +126,9 @@ server {
     include     /etc/nginx/conf.d/phppgadmin.inc*;
     include     /etc/nginx/conf.d/webmail.inc*;
 
+<<<<<<< HEAD
     include     %home%/%user%/conf/web/nginx.%domain_idn%.conf*;
+=======
+    include     %home%/%user%/conf/web/snginx.%domain%.conf*;
+>>>>>>> 5f99045f901eea1379338ec42eb7b70a8a4583e6
 }
