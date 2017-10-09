@@ -38,11 +38,16 @@ source $VESTA/conf/vesta.conf
 
 # Check backup ownership function
 is_backup_available() {
-    if [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]] || [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]] ; then
-        # Has permission
-    else
-        # No permission
-        check_result $E_FORBIDEN "permission denied"
+    passed=false
+    if [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]]; then
+        passed=true
+    elif [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]]; then
+        passed=true
+    fi
+    
+    if [ $passed = false ]; then
+        echo "not permissions";
+        #check_result $E_FORBIDEN "permission denied"
     fi
 }
 
