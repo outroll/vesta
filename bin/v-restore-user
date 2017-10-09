@@ -46,8 +46,7 @@ is_backup_available() {
     fi
     
     if [ $passed = false ]; then
-        echo "not permissions";
-        #check_result $E_FORBIDEN "permission denied"
+        check_result $E_FORBIDEN "permission denied"
     fi
 }
 
