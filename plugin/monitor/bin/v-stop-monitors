@@ -1,0 +1,40 @@
+#!/bin/bash
+# info: Start all monitors
+#
+# Start all monitors
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+systemctl stop node_exporter.service
+
+if [ "$DB_SYSTEM" == "mysql" ]; then 
+    #Mysql exporter
+    systemctl stop mysqld_exporter.service
+fi
+
+if [ "$PROXY_SYSTEM" == "nginx" ]; then
+    #nginx exporter
+    systemctl stop nginx_exporter.service
+fi
+
+if [ "$WEB_SYSTEM" == "httpd" ]; then
+    #Apache exporter
+    systemctl stop apache_exporter.service
+fi
+
+systemctl stop prometheus.service
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit
