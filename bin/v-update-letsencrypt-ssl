@@ -57,8 +57,8 @@ for user in $users; do
                     echo "$domain $msg"
                 fi
             fi
+            sleep 10
         fi
-        sleep 10
     done
 done
 
