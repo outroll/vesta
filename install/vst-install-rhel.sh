@@ -628,7 +628,7 @@ fi
 check_result $? "yum install failed"
 
 if [ "$phpv" = "7" ]; then
-    yum install -y php71-php-imap php71-php-process php71-php-pspell php71-php-xml php71-php-xmlrpc php71-php-pdo php71-php-ldap php71-php-pecl-zip php701-php-common php71-php php71-php-mcrypt php71-php-gmp php71-php-mysqlnd php71-php-mbstring php71-php-gd php71-php-tidy php71-php-pecl-memcache --enablerepo=remi
+    yum install -y php72-php-imap php72-php-process php72-php-pspell php72-php-xml php72-php-xmlrpc php72-php-pdo php72-php-ldap php72-php-pecl-zip php701-php-common php72-php php72-php-mcrypt php72-php-gmp php72-php-mysqlnd php72-php-mbstring php72-php-gd php72-php-tidy php72-php-pecl-memcache --enablerepo=remi  >> $sklog
 fi
 
 #----------------------------------------------------------#
