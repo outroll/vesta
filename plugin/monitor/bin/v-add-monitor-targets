@@ -1,0 +1,47 @@
+#!/bin/bash
+# info: add plugin
+# options: HOSTNAME [RESTART]
+#
+# The function adds the target to prometheus
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+host=$1
+restart="${2-yes}"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+check_args '1' "$#" 'HOSTNAME [RESTART]'
+is_format_valid 'host'
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Generating timestamp
+
+$PLUGIN/monitor/bin/v-add-monitor-target "prometheus" "$host" "9090" "no"
+$PLUGIN/monitor/bin/v-add-monitor-target "node" "$host" "9100" "no"
+$PLUGIN/monitor/bin/v-add-monitor-target "mysql" "$host" "9104" "no"
+$PLUGIN/monitor/bin/v-add-monitor-target "nginx" "$host" "9113" "no"
+$PLUGIN/monitor/bin/v-add-monitor-target "apache" "$host" "9117" "no"
+
+$PLUGIN/monitor/bin/v-rebuild-monitor-targets $restart
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit
