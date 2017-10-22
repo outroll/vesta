@@ -44,22 +44,10 @@ systemctl daemon-reload
 systemctl enable node_exporter.service
 systemctl start node_exporter.service
 
+hostname=$(hostname)
 
-echo "global:" > $PLUGIN/monitor/prometheus/prometheus.yml
-echo "  scrape_interval:     15s" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "  evaluation_interval: 15s" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "  external_labels:" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "      monitor: '$(hostname)'" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "rule_files:" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "  # - \"first.rules\"" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "  # - \"second.rules\"" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "scrape_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "  - job_name: 'prometheus'" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "    static_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "      - targets: ['localhost:9090']" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "  - job_name: 'node'" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "    static_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
-echo "      - targets: ['localhost:9100']" >> $PLUGIN/monitor/prometheus/prometheus.yml
+$PLUGIN/monitor/bin/v-add-monitor-target "prometheus" "$hostname" "9090" "no"
+$PLUGIN/monitor/bin/v-add-monitor-target "node" "$hostname" "9100" "no"
 
 if [ "$DB_SYSTEM" == "mysql" ]; then 
     #Mysql exporter
@@ -83,9 +71,7 @@ if [ "$DB_SYSTEM" == "mysql" ]; then
     systemctl start mysqld_exporter.service
     
     
-    echo "  - job_name: 'mysql'" >> $PLUGIN/monitor/prometheus/prometheus.yml
-    echo "    static_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
-    echo "      - targets: ['localhost:9104']" >> $PLUGIN/monitor/prometheus/prometheus.yml
+    $PLUGIN/monitor/bin/v-add-monitor-target "mysql" "$hostname" "9104" "no"
 fi
 
 if [ "$PROXY_SYSTEM" == "nginx" ]; then
@@ -104,9 +90,7 @@ if [ "$PROXY_SYSTEM" == "nginx" ]; then
     systemctl enable nginx_exporter.service
     systemctl start nginx_exporter.service
     
-    echo "  - job_name: 'nginx'" >> $PLUGIN/monitor/prometheus/prometheus.yml
-    echo "    static_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
-    echo "      - targets: ['localhost:9113']" >> $PLUGIN/monitor/prometheus/prometheus.yml
+    $PLUGIN/monitor/bin/v-add-monitor-target "nginx" "$hostname" "9113" "no"
 fi
 
 if [ "$WEB_SYSTEM" == "httpd" ]; then
@@ -125,9 +109,7 @@ if [ "$WEB_SYSTEM" == "httpd" ]; then
     systemctl enable apache_exporter.service
     systemctl start apache_exporter.service
     
-    echo "  - job_name: 'apache'" >> $PLUGIN/monitor/prometheus/prometheus.yml
-    echo "    static_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
-    echo "      - targets: ['localhost:9117']" >> $PLUGIN/monitor/prometheus/prometheus.yml
+    $PLUGIN/monitor/bin/v-add-monitor-target "apache" "$hostname" "9117" "no"
 fi
 
 
@@ -141,6 +123,9 @@ echo "ExecStart=$PLUGIN/monitor/prometheus/prometheus -config.file=$PLUGIN/monit
 echo "" >> /etc/systemd/system/prometheus.service
 echo "[Install]" >> /etc/systemd/system/prometheus.service
 echo "WantedBy=default.target" >> /etc/systemd/system/prometheus.service
+
+
+$PLUGIN/monitor/bin/v-rebuild-monitor-targets "no"
 
 systemctl daemon-reload
 systemctl enable prometheus.service

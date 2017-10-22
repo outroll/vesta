@@ -90,6 +90,9 @@ function generate_top_menu() {
                 }
                 $sub .= "</ul>";
             }
+            if(!isset($TAB)) {
+                $TAB = "";
+            }
             $result .= '<div class="l-menu__item ' . ($TAB == strtoupper($menu['text']) ? 'l-menu__item--active' : '') . (strlen($sub) > 0 ? 'l-menu-dropdown' : '') . '"><a href="' . $menu['page'] . '">' . __($menu['text'])  . '</a>' . $sub . '</div>';
         }
     }

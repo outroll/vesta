@@ -936,6 +936,7 @@ is_format_valid() {
                 record)         is_common_format_valid "$arg" 'record';;
                 restart)        is_boolean_format_valid "$arg" 'restart' ;;
                 rtype)          is_dns_type_format_valid "$arg" ;;
+                type)         	is_name_format_valid "$arg" 'object';;
                 rule)           is_int_format_valid "$arg" "rule id" ;;
                 soa)            is_domain_format_valid "$arg" 'SOA' ;;
                 stats_pass)     is_password_format_valid "$arg" ;;
@@ -986,4 +987,11 @@ format_aliases() {
         aliases=$(echo "$aliases" |grep -v www.$domain |sed -e "/^$/d")
         aliases=$(echo "$aliases" |tr '\n' ',' |sed -e "s/,$//")
     fi
+}
+
+# Get next record ID
+get_next_record_id() {
+	CONF_FILE=$1
+	curr_str=$(grep "ID=" $CONF_FILE | cut -f 2 -d \' | sort -n|tail -n1)
+	id="$((curr_str +1))"
 }

@@ -1,0 +1,53 @@
+#!/bin/bash
+# info: add plugin
+# options: TYPE HOSTNAME PORT [RESTART]
+#
+# The function adds the target to prometheus
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+type=$1
+host=$2
+port=$3
+restart="${4-yes}"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+check_args '3' "$#" 'TYPE HOSTNAME PORT [RESTART]'
+is_format_valid 'type'
+is_format_valid 'host'
+is_format_valid 'port'
+get_next_record_id $PLUGIN/monitor/conf/targets.conf
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Generating timestamp
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+# Adding plugin in plugin.conf
+echo "ID='$id' TYPE='$type' HOSTNAME='$host' PORT='$port' TIME='$time' DATE='$date'" >> $PLUGIN/monitor/conf/targets.conf
+
+if [ "$restart" = "yes" ]; then
+    $PLUGIN/monitor/bin/v-rebuild-monitor-targets $restart
+fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit
