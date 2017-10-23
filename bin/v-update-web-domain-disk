@@ -34,8 +34,8 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -43,7 +43,7 @@ is_object_unsuspended 'web' 'DOMAIN' "$domain"
 #----------------------------------------------------------#
 
 # Defining home directory
-home_dir="$HOMEDIR/$user/web/$domain/"
+home_dir="$HOMEDIR/$user/web/$domain_idn/"
 
 # Checking home directory exist
 if [ -e "$home_dir" ]; then
@@ -56,7 +56,7 @@ fi
 #----------------------------------------------------------#
 
 # Updating disk value in config
-update_object_value 'web' 'DOMAIN' "$domain" '$U_DISK' "$disk_usage"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$U_DISK' "$disk_usage"
 recalc_user_disk_usage
 
 # Logging

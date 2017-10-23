@@ -37,7 +37,7 @@ fi
 # Starting loop
 for domain in $(search_objects 'mail' 'SUSPENDED' "no" 'DOMAIN'); do
     dom_diks=0
-    accounts=$(search_objects "mail/$domain" 'SUSPENDED' "no" 'ACCOUNT')
+    accounts=$(search_objects "mail/$domain_idn" 'SUSPENDED' "no" 'ACCOUNT')
     for account in $accounts; do
         home_dir=$HOMEDIR/$user/mail/$domain/$account
         if [ -e "$home_dir" ]; then
@@ -45,10 +45,10 @@ for domain in $(search_objects 'mail' 'SUSPENDED' "no" 'DOMAIN'); do
         else
             udisk=0
         fi
-        update_object_value "mail/$domain" 'ACCOUNT' "$account"  '$U_DISK' "$udisk"
+        update_object_value "mail/$domain_idn" 'ACCOUNT' "$account"  '$U_DISK' "$udisk"
         dom_diks=$((dom_diks + udisk))
     done
-    update_object_value 'mail' 'DOMAIN' "$domain" '$U_DISK' "$dom_diks"
+    update_object_value 'mail' 'DOMAIN' "$domain_idn" '$U_DISK' "$dom_diks"
 done
 
 

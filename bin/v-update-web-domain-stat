@@ -33,9 +33,9 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_object_value_exist 'web' 'DOMAIN' "$domain" '$STATS'
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
+is_object_value_exist 'web' 'DOMAIN' "$domain_idn" '$STATS'
 
 
 #----------------------------------------------------------#
@@ -45,13 +45,13 @@ is_object_value_exist 'web' 'DOMAIN' "$domain" '$STATS'
 get_domain_values 'web'
 
 # Checking config
-config="$HOMEDIR/$user/conf/web/$STATS.$domain.conf"
+config="$HOMEDIR/$user/conf/web/$STATS.$domain_idn.conf"
 if [ ! -e "$config" ]; then
     check_result $E_NOTEXISTS "$config doesn't exist"
 fi
 
 # Checking statistics directory
-dir="$HOMEDIR/$user/web/$domain/stats"
+dir="$HOMEDIR/$user/web/$domain_idn/stats"
 if [ ! -e "$dir" ]; then
     mkdir -p $dir
 fi
@@ -95,12 +95,12 @@ build_awstats() {
     fi
 
     # Creating main awstats page
-    $awstats $opts | sed "s%awstats.$domain.%%g" > $dir/$month/index.html
+    $awstats $opts | sed "s%awstats.$domain_idn.%%g" > $dir/$month/index.html
 
     # Creating suplemental awstats pages
     for format in $output; do
         $awstats $opts=$format |\
-            sed "s%awstats.$domain.%%g" > $dir/$month/$format.html
+            sed "s%awstats.$domain_idn.%%g" > $dir/$month/$format.html
     done
 
     # Creating index page
