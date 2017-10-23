@@ -19,6 +19,9 @@ source $VESTA/func/main.sh
 source $VESTA/func/remote.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -28,7 +31,7 @@ check_args '3' "$#" 'USER DOMAIN ID'
 is_format_valid 'user' 'domain' 'id'
 is_system_enabled "$DNS_CLUSTER" 'DNS_CLUSTER'
 is_object_valid 'user' 'USER' "$user"
-is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_valid 'dns' 'DOMAIN' "$domain_idn"
 is_procces_running
 remote_dns_health_check
 

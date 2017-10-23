@@ -34,8 +34,8 @@ is_format_valid 'user' 'domain' 'account'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
 is_object_valid "mail/$domain" 'ACCOUNT' "$account"
 is_object_unsuspended "mail/$domain" 'ACCOUNT' "$account"
 
@@ -67,7 +67,7 @@ sed -i "/ACCOUNT='$account'/d" $USER_DATA/mail/$domain.conf
 # Decrease mail accounts counter
 accounts=$(wc -l $USER_DATA/mail/$domain.conf | cut -f 1 -d ' ')
 decrease_user_value "$user" '$U_MAIL_ACCOUNTS'
-update_object_value 'mail' 'DOMAIN' "$domain" '$ACCOUNTS' "$accounts"
+update_object_value 'mail' 'DOMAIN' "$domain_idn" '$ACCOUNTS' "$accounts"
 
 # Logging
 log_history "deleted $account@$domain mail account"

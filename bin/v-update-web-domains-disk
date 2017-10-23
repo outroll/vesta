@@ -37,7 +37,7 @@ for domain in $(search_objects 'web' 'SUSPENDED' "no" 'DOMAIN'); do
     if [ -e "$home_dir" ]; then
         disk_usage=$(nice -n 19 du -shm $home_dir | cut -f 1 )
     fi
-    update_object_value 'web' 'DOMAIN' "$domain" '$U_DISK' "$disk_usage"
+    update_object_value 'web' 'DOMAIN' "$domain_idn" '$U_DISK' "$disk_usage"
 done
 
 
