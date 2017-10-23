@@ -6,8 +6,8 @@
 #                  Variables&Functions                     #
 #----------------------------------------------------------#
 export PATH=$PATH:/sbin
-RHOST='repo.tpweb.org'
-CHOST='cp.tpweb.org'
+RHOST='repo.madeit.be'
+CHOST='cp.madeit.be'
 REPO='rhel'
 VERSION='rhel'
 VESTA='/usr/local/vesta'
@@ -140,8 +140,6 @@ for arg; do
         --exim)                 args="${args}-x " ;;
         --interactive)          args="${args}-y " ;;
         --dovecot)              args="${args}-z " ;;
-        --php7)                 args="${args}-p7 " ;;
-        --php5)                 args="${args}-p5 " ;;
         *)                      [[ "${arg:0:1}" == "-" ]] || delim="\""
                                 args="${args}${delim}${arg}${delim} ";;
     esac
@@ -149,7 +147,7 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:q:l:y:s:e:p7:p:fh" Option; do
+while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:q:l:y:s:e:p:fh" Option; do
     case $Option in
         a) apache=$OPTARG ;;            # Apache
         n) nginx=$OPTARG ;;             # Nginx
@@ -173,8 +171,6 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:q:l:y:s:e:p7:p:fh" Option; do
         s) servername=$OPTARG ;;        # Hostname
         e) email=$OPTARG ;;             # Admin email
         p) vpass=$OPTARG ;;             # Admin password
-        p7) phpv="7" ;;                 # PHP V7
-        p5) phpv="5" ;;                 # PHP V5
         f) force='yes' ;;               # Force install
         h) help ;;                      # Help
         *) help ;;                      # Print help (default)
@@ -206,10 +202,6 @@ set_default_value 'remi' 'yes'
 set_default_value 'quota' 'no'
 set_default_value 'lang' 'en'
 set_default_value 'interactive' 'yes'
-
-if [ -z "$phpv" ]; then
-    phpv="7"
-fi
 
 # Checking software conflicts
 if [ "$phpfpm" = 'yes' ]; then
@@ -626,10 +618,6 @@ else
         install $software
 fi
 check_result $? "yum install failed"
-
-if [ "$phpv" = "7" ]; then
-    yum install -y php72-php-imap php72-php-process php72-php-pspell php72-php-xml php72-php-xmlrpc php72-php-pdo php72-php-ldap php72-php-pecl-zip php701-php-common php72-php php72-php-mcrypt php72-php-gmp php72-php-mysqlnd php72-php-mbstring php72-php-gd php72-php-tidy php72-php-pecl-memcache --enablerepo=remi  >> $sklog
-fi
 
 #----------------------------------------------------------#
 #                     Configure system                     #

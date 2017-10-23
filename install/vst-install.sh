@@ -51,7 +51,7 @@ fi
 
 # Check wget
 if [ -e '/usr/bin/wget' ]; then
-    wget http://cp.tpweb.org/vst-install-$type.sh -O vst-install-$type.sh
+    wget http://cp.madeit.be/vst-install-$type.sh -O vst-install-$type.sh
     if [ "$?" -eq '0' ]; then
         bash vst-install-$type.sh $*
         exit
@@ -63,7 +63,7 @@ fi
 
 # Check curl
 if [ -e '/usr/bin/curl' ]; then
-    curl -O http://cp.tpweb.org/vst-install-$type.sh
+    curl -O http://cp.madeit.be/vst-install-$type.sh
     if [ "$?" -eq '0' ]; then
         bash vst-install-$type.sh $*
         exit
