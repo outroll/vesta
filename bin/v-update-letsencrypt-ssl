@@ -60,6 +60,39 @@ for user in $users; do
             sleep 10
         fi
     done
+    
+    #Mail certificates
+    for domain in $(search_objects 'mail' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
+
+        crt="$VESTA/data/users/$user/mail-ssl/$domain.crt"
+        crt_data=$(openssl x509 -text -in "$crt")
+        expire=$(echo "$crt_data" |grep "Not After")
+        expire=$(echo "$expire" |cut -f 2,3,4 -d :)
+        expire=$(date -d "$expire" +%s)
+        now=$(date +%s)
+        expire=$((expire - now))
+        expire=$((expire / 86400))
+        domain=$(basename $crt |sed -e "s/.crt$//")
+        if [[ "$expire" -lt 31 ]]; then
+            aliases=$(echo "$crt_data" |grep DNS:)
+            aliases=$(echo "$aliases" |sed -e "s/DNS://g" -e "s/,//")
+            aliases=$(echo "$aliases" |tr ' ' '\n' |sed "/^$/d")
+            aliases=$(echo "$aliases" |grep -v "^$domain$")
+            if [ ! -z "$aliases" ]; then
+                aliases=$(echo "$aliases" |sed -e ':a;N;$!ba;s/\n/,/g')
+                msg=$($BIN/v-add-letsencrypt-mail-domain $user $domain $aliases)
+                if [ $? -ne 0 ]; then
+                    echo "$domain $msg"
+                fi
+            else
+                msg==$($BIN/v-add-letsencrypt-mail-domain $user $domain)
+                if [ $? -ne 0 ]; then
+                    echo "$domain $msg"
+                fi
+            fi
+            sleep 10
+        fi
+    done
 done
 
 #----------------------------------------------------------#
