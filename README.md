@@ -17,7 +17,7 @@ ssh root@your.server
 
 Download the installation script, and run it:
 ```bash
-curl http://cp.tpweb.org/vst-install.sh | bash
+curl http://cp.madeit.be/vst-install.sh | bash
 ```
 
 How to install (3 step)
@@ -30,7 +30,7 @@ ssh root@your.server
 
 Download the installation script:
 ```bash
-curl -O http://cp.tpweb.org/vst-install.sh
+curl -O http://cp.madeit.be/vst-install.sh
 ```
 Then run it:
 ```bash
