@@ -96,6 +96,15 @@ $v_ssl_signature = $ssl_str['VESTA']['SIGNATURE'];
 $v_ssl_pub_key = $ssl_str['VESTA']['PUB_KEY'];
 $v_ssl_issuer = $ssl_str['VESTA']['ISSUER'];
 
+// Check system configuration
+exec (VESTA_CMD . "v-list-sys-config json", $output, $return_var);
+$data = json_decode(implode('', $output), true);
+unset($output);
+
+$v_letsencrypt = $data['LETSENCRYPT'];
+if (empty($v_letsencrypt)) $v_letsencrypt = 'no';
+
+
 // Check POST request
 if (!empty($_POST['save'])) {
 
@@ -378,7 +387,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Update SSL certificate
-    if ((!empty($_POST['v_ssl_crt'])) && (empty($_SESSION['error_msg']))) {
+    if (( $v_letsencrypt == 'no' ) && (empty($_POST['v_letsencrypt'])) && (!empty($_POST['v_ssl_crt'])) && (empty($_SESSION['error_msg']))) {
         if (($v_ssl_crt != str_replace("\r\n", "\n",  $_POST['v_ssl_crt'])) || ($v_ssl_key != str_replace("\r\n", "\n",  $_POST['v_ssl_key']))) {
             exec ('mktemp -d', $mktemp_output, $return_var);
             $tmpdir = $mktemp_output[0];
@@ -419,7 +428,17 @@ if (!empty($_POST['save'])) {
             $v_ssl_issuer = $ssl_str['VESTA']['ISSUER'];
         }
     }
+    
+    // Add Letsencrypt certificate
+    if ((!empty($_POST['v_ssl'])) && ( $v_letsencrypt == 'no' ) && (!empty($_POST['v_letsencrypt'])) && empty($_SESSION['error_msg'])) {
+        $l_aliases = str_replace("\n", ',', $v_aliases);
+        exec (VESTA_CMD."v-add-letsencrypt-vesta", $output, $return_var);
+        check_return_code($return_var,$output);
+        unset($output);
+        $v_letsencrypt = 'yes';
+    }
 
+    
     // Flush field values on success
     if (empty($_SESSION['error_msg'])) {
         $_SESSION['ok_msg'] = __('Changes has been saved.');
@@ -495,7 +514,6 @@ $sys_arr = $data['config'];
 foreach ($sys_arr as $key => $value) {
     $_SESSION[$key] = $value;
 }
-
 
 // Render page
 render_page($user, $TAB, 'edit_server');

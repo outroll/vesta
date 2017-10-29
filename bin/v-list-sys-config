@@ -50,7 +50,8 @@ json_list() {
         "BACKUP": "'$BACKUP'",
         "MAIL_URL": "'$MAIL_URL'",
         "DB_PMA_URL": "'$DB_PMA_URL'",
-        "DB_PGA_URL": "'$DB_PGA_URL'"
+        "DB_PGA_URL": "'$DB_PGA_URL'",
+        "LETSENCRYPT": "'$LETSENCRYPT'"
     }
 }'
 }
@@ -135,6 +136,7 @@ shell_list() {
         echo "Language:       $LANGUAGE"
     fi
     echo "Version:        $VERSION"
+    echo "Letsencrypt:    $LETSENCRYPT"
 }
 
 # PLAIN list function
@@ -147,7 +149,7 @@ plain_list() {
     echo -ne "$CRON_SYSTEM\t$DISK_QUOTA\t$FIREWALL_SYSTEM\t"
     echo -ne "$FIREWALL_EXTENSION\t$FILEMANAGER_KEY\t$SFTPJAIL_KEY\t"
     echo -ne "$REPOSITORY\t$VERSION\t$LANGUAGE\t$BACKUP_GZIP\t$BACKUP\t"
-    echo -e "$MAIL_URL\t$DB_PMA_URL\t$DB_PGA_URL"
+    echo -e "$MAIL_URL\t$DB_PMA_URL\t$DB_PGA_URL\t$LETSENCRYPT"
 }
 
 
@@ -161,7 +163,7 @@ csv_list() {
     echo -n "'CRON_SYSTEM','DISK_QUOTA','FIREWALL_SYSTEM',"
     echo -n "'FIREWALL_EXTENSION','FILEMANAGER_KEY','SFTPJAIL_KEY',"
     echo -n "'REPOSITORY','VERSION','LANGUAGE','BACKUP_GZIP','BACKUP',"
-    echo -n "'MAIL_URL','DB_PMA_URL','DB_PGA_URL'"
+    echo -n "'MAIL_URL','DB_PMA_URL','DB_PGA_URL','LETSENCRYPT'"
     echo
     echo -n "'$WEB_SYSTEM','$WEB_RGROUPS','$WEB_PORT','$WEB_SSL',"
     echo -n "'$WEB_SSL_PORT','$WEB_BACKEND','$PROXY_SYSTEM','$PROXY_PORT',"
@@ -171,7 +173,7 @@ csv_list() {
     echo -n "'$CRON_SYSTEM','$DISK_QUOTA','$FIREWALL_SYSTEM',"
     echo -n "'$FIREWALL_EXTENSION','$FILEMANAGER_KEY','$SFTPJAIL_KEY',"
     echo -n "'$REPOSITORY','$VERSION','$LANGUAGE','$BACKUP_GZIP','$BACKUP',"
-    echo -n "'$MAIL_URL','$DB_PMA_URL','$DB_PGA_URL'"
+    echo -n "'$MAIL_URL','$DB_PMA_URL','$DB_PGA_URL','$LETSENCRYPT'"
     echo
 }
 

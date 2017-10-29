@@ -28,3 +28,19 @@ $(document).ready(function(){
         }
     });
 });
+
+
+function toggle_letsencrypt(elm) {
+    if ($(elm).attr('checked')) {
+        $('#ssl textarea[name=v_ssl_crt],#ssl textarea[name=v_ssl_key], #ssl textarea[name=v_ssl_ca]').attr('disabled', 'disabled');
+        $('#generate-csr').hide();
+        if(!$('.lets-encrypt-note').hasClass('enabled')) {
+            $('.lets-encrypt-note').show();
+        }
+    }
+    else {
+        $('#ssl textarea[name=v_ssl_crt],#ssl textarea[name=v_ssl_key], #ssl textarea[name=v_ssl_ca]').removeAttr('disabled');
+        $('#generate-csr').show();
+	    $('.lets-encrypt-note').hide();
+    }
+}
