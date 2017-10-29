@@ -316,7 +316,7 @@ function send_email($to,$subject,$mailtext,$from) {
 }
 
 function list_timezones() {
-    $tz = new DateTimeZone('HAST');
+    /*$tz = new DateTimeZone('HAST');
     $timezone_offsets['HAST'] = $tz->getOffset(new DateTime);
     $tz = new DateTimeZone('HADT');
     $timezone_offsets['HADT'] = $tz->getOffset(new DateTime);
@@ -344,7 +344,7 @@ function list_timezones() {
     $timezone_offsets['AST'] = $tz->getOffset(new DateTime);
     $tz = new DateTimeZone('ADT');
     $timezone_offsets['ADT'] = $tz->getOffset(new DateTime);
-
+    */
     foreach(DateTimeZone::listIdentifiers() as $timezone){
         $tz = new DateTimeZone($timezone);
         $timezone_offsets[$timezone] = $tz->getOffset(new DateTime);
