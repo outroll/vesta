@@ -12,9 +12,11 @@
 # Argument definition
 user=$1
 domain=$2
+domain_idn=$2
 auth_user=$3
 password=$4; HIDE=4
 restart=${5-yes}
+nginx=${6-no}
 
 # Includes
 source $VESTA/func/main.sh
@@ -28,12 +30,15 @@ shtaccess="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.$domain.conf_htaccess"
 shtpasswd="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.$domain.htpasswd"
 docroot="$HOMEDIR/$user/web/$domain/public_html"
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '4' "$#" 'USER DOMAIN AUTH_USER AUTH_PASSWORD [RESTART]'
+check_args '4' "$#" 'USER DOMAIN AUTH_USER AUTH_PASSWORD [RESTART] [NGINX]'
 is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
@@ -53,9 +58,17 @@ fi
 #                       Action                             #
 #----------------------------------------------------------#
 
+# Add password to nginx config
+if [ "$WEB_SYSTEM" != 'nginx' ] && [ "$nginx" != 'no' ]; then
+    htaccess="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.$domain.conf_htaccess"
+    htpasswd="$HOMEDIR/$user/conf/web/$PROXY_SYSTEM.$domain.htpasswd"
+    shtaccess="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.$domain.conf_htaccess"
+    shtpasswd="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.$domain.htpasswd"
+fi
+
 # Adding htaccess password protection
 if [ ! -e "$htaccess" ]; then
-    if [ "$WEB_SYSTEM" != 'nginx' ]; then
+    if [ "$WEB_SYSTEM" != 'nginx' ] && [ "$nginx" = 'no' ]; then
         echo "<Directory $docroot>" > $htaccess
         echo "    AuthUserFile $htpasswd" >> $htaccess
         echo "    AuthName \"$domain access\"" >> $htaccess
@@ -79,7 +92,7 @@ echo "$auth_user:$auth_hash" >> $htpasswd
 
 # Symbolic link for secure web templates
 if [ ! -L $shtpasswd ]; then
-    ln -s $htpasswd $shtpasswd 
+    ln -s $htpasswd $shtpasswd
 fi
 if [ ! -L $shtaccess ]; then
     ln -s $htaccess $shtaccess
