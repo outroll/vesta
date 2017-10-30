@@ -20,8 +20,34 @@ source $VESTA/conf/vesta.conf
 
 #https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elk-stack-on-centos-7
 
-#Low memory server:
-#https://discuss.elastic.co/t/running-es-5-on-a-low-memory-server-for-testing/65336/4
+#Modules
+#https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-module-nginx.html
+
+#filebeat.modules:
+#- module: apache2
+#  access:
+#    var.paths: ["/var/log/httpd/domains/*.access.log"]
+#  error:
+#    var.paths: ["/var/log/httpd/domains/*.error.log"]
+#- module: nginx
+#  access:
+#    var.paths: ["/var/log/nginx/domains/*.access.log"]
+#  error:
+#    var.paths: ["/var/log/nginx/domains/*.error.log"]
+#- module: mysql
+#  error:
+#    enabled: true
+#    var.paths: ["/var/log/mariadb/mariadb.log"]
+#  slowlog:
+#    enabled: true
+#    var.paths: ["/path/to/log/mysql/mysql-slow.log*"]
+#- module: system
+#  syslog:
+#    enabled: true
+#    var.paths: ["/var/log/messages"]
+#  auth:
+#    enabled: true
+#    var.paths: ["/var/log/secure"]
 
 
 #----------------------------------------------------------#

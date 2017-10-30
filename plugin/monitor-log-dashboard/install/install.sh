@@ -28,10 +28,10 @@ source $VESTA/conf/vesta.conf
 #                       Action                             #
 #----------------------------------------------------------#
 
-INSTALL_JAVA='no'
+INSTALL_JAVA='yes'
 INSTALL_ELASTICSEARCH='yes'
 INSTALL_KIBANA='yes'
-INSTALL_NGINX='no'
+INSTALL_NGINX='yes'
 INSTALL_LOGSTASH='yes'
 
 DOMAINNAME="logging.$(hostname)"
@@ -119,21 +119,13 @@ if [ "$INSTALL_LOGSTASH" = 'yes' ]; then
 
     cp $VESTA/plugin/monitor-log-dashboard/conf/02-beats-input.conf /etc/logstash/conf.d/02-beats-input.conf
     cp $VESTA/plugin/monitor-log-dashboard/conf/10-syslog-filter.conf /etc/logstash/conf.d/10-syslog-filter.conf
-    cp $VESTA/plugin/monitor-log-dashboard/conf/11-nginx-filter.conf /etc/logstash/conf.d/11-nginx-filter.conf
+    #cp $VESTA/plugin/monitor-log-dashboard/conf/11-nginx-filter.conf /etc/logstash/conf.d/11-nginx-filter.conf
     cp $VESTA/plugin/monitor-log-dashboard/conf/30-elasticsearch-output.conf /etc/logstash/conf.d/30-elasticsearch-output.conf
     sudo service logstash configtest
 
     sudo systemctl restart logstash
     sudo chkconfig logstash on
 
-
-    cd $VESTA/plugin/monitor-log-dashboard/dashboard
-    curl -L -O https://download.elastic.co/beats/dashboards/beats-dashboards-1.3.1.zip
-    sudo yum -y install unzip
-
-    unzip beats-dashboards-*.zip
-    cd beats-dashboards-*
-    ./load.sh
 
     cd $VESTA/plugin/monitor-log-dashboard/dashboard
     curl -O https://gist.githubusercontent.com/thisismitch/3429023e8438cc25b86c/raw/d8c479e2a1adcea8b1fe86570e42abab0f10f364/filebeat-index-template.json
