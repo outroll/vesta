@@ -96,7 +96,7 @@ mkdir -p $HOMEDIR/$user/web/$domain \
 
 # Creating domain logs
 touch /var/log/$WEB_SYSTEM/domains/$domain.bytes \
-      /var/log/$WEB_SYSTEM/domains/$domain.log \
+      /var/log/$WEB_SYSTEM/domains/$domain.access.log \
       /var/log/$WEB_SYSTEM/domains/$domain.error.log
 ln -f -s /var/log/$WEB_SYSTEM/domains/$domain.*log \
     $HOMEDIR/$user/web/$domain/logs/

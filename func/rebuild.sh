@@ -162,12 +162,12 @@ rebuild_web_domain_conf() {
         chmod 771 /var/log/$WEB_SYSTEM/domains
     fi
     touch /var/log/$WEB_SYSTEM/domains/$domain_idn.bytes \
-          /var/log/$WEB_SYSTEM/domains/$domain_idn.log \
+          /var/log/$WEB_SYSTEM/domains/$domain_idn.access.log \
           /var/log/$WEB_SYSTEM/domains/$domain_idn.error.log
 
     # Creating symlinks
     cd $HOMEDIR/$user/web/$domain/logs/
-    ln -f -s /var/log/$WEB_SYSTEM/domains/$domain_idn.log .
+    ln -f -s /var/log/$WEB_SYSTEM/domains/$domain_idn.access.log .
     ln -f -s /var/log/$WEB_SYSTEM/domains/$domain_idn.error.log .
     cd /
 

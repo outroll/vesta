@@ -10,7 +10,7 @@ server {
         proxy_pass      https://%ip%:%web_ssl_port%;
         location ~* ^.+\.(%proxy_extentions%)$ {
             root           %sdocroot%;
-            access_log     /var/log/httpd/domains/%domain%.log combined;
+            access_log     /var/log/httpd/domains/%domain%.access.log combined;
             access_log     /var/log/httpd/domains/%domain%.bytes bytes;
             expires        max;
             try_files      $uri @fallback;
