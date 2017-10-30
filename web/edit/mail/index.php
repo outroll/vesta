@@ -19,7 +19,7 @@ if (($_SESSION['user'] == 'admin') && (!empty($_GET['user']))) {
 $v_username = $user;
 
 // List mail domain
-if ((!empty($_GET['domain'])) && (empty($_GET['account'])))  {
+if ((!empty($_GET['domain'])) && (empty($_GET['account']))) {
     $v_domain = escapeshellarg($_GET['domain']);
     exec (VESTA_CMD."v-list-mail-domain ".$user." ".$v_domain." json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
@@ -61,7 +61,7 @@ if ((!empty($_GET['domain'])) && (empty($_GET['account'])))  {
 }
 
 // List mail account
-if ((!empty($_GET['domain'])) && (!empty($_GET['account'])))  {
+if ((!empty($_GET['domain'])) && (!empty($_GET['account']))) {
     $v_domain = escapeshellarg($_GET['domain']);
     $v_account = escapeshellarg($_GET['account']);
     exec (VESTA_CMD."v-list-mail-account ".$user." ".$v_domain." ".$v_account." 'json'", $output, $return_var);
@@ -507,7 +507,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
 
 
 // Render page
-if (empty($_GET['account']))  {
+if (empty($_GET['account'])) {
     // Display body for mail domain
     render_page($user, $TAB, 'edit_mail');
 } else {
