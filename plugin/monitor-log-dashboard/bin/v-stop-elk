@@ -1,0 +1,26 @@
+#!/bin/bash
+# info: Stop grafana
+#
+# Stop grafana
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+sudo systemctl stop elasticsearch
+sudo systemctl stop kibana
+sudo systemctl stop logstash
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

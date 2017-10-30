@@ -1,0 +1,26 @@
+#!/bin/bash
+# info: Start grafana
+#
+# Start grafana
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+sudo systemctl start elasticsearch
+sudo systemctl start kibana
+sudo systemctl start logstash
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit
