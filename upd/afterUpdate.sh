@@ -27,6 +27,12 @@ if [ "$VERSION" = "0.0.3" ]; then
     VERSION="0.0.4"
     sed -i "s/VERSION=.*/VERSION='0.0.4'/g" /usr/local/vesta/conf/vesta.conf
     
+    
+    $BIN/v-update-web-templates
+    userlist=$(ls --sort=time $VESTA/data/users/)
+    for user in $userlist; do
+        $BIN/v-rebuild-user $user
+    done
     echo "PLUGIN='monitor-log' NAME='Log monitor' VERSION='1.0.0' BUILDNUMBER='1' LATEST_VERSION='1.0.0' LATEST_BUILDNUMBER='1' KEY='' ACTIVE='yes' TIME='22:00:00' DATE='2017-10-29'" >> $VESTA/conf/plugin.conf 
     echo "PLUGIN='monitor-log-dashboard' NAME='Log dashboard monitor' VERSION='1.0.0' BUILDNUMBER='1' LATEST_VERSION='1.0.0' LATEST_BUILDNUMBER='1' KEY='' ACTIVE='yes' TIME='22:00:00' DATE='2017-10-29'" >> $VESTA/conf/plugin.conf 
 fi

@@ -22,7 +22,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 # Defining config host
-chost='c.vestacp.com'
+chost='cp.madeit.be'
 
 # Detcing OS
 case $(head -n1 /etc/issue |cut -f 1 -d ' ') in
@@ -43,7 +43,7 @@ if [ "$version" = 'debian' ]; then
 fi
 
 # Defining download url
-vestacp="http://$chost/$version/$release"
+vestacp="http://$chost/$version/$release/$VERSION"
 
 # Downloading template archive
 cd $(mktemp -d)
