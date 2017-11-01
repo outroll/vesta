@@ -29,7 +29,7 @@ is_format_valid 'user' 'domain' 'data_file'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_valid 'dns' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#

@@ -12,10 +12,17 @@
 # Argument definition
 type=$1
 host=$2
-user=$3
-password=$4; HIDE=4
-path=${5-/backup}
-port=$6
+if [ "$type" == 's3' ];then
+    bucket=$3
+    user=$4
+    password=$5; HIDE=5
+    path=${6-/}
+else
+    user=$3
+    password=$4; HIDE=4
+    path=${5-/backup}
+    port=$6
+fi
 
 # Includes
 source $VESTA/func/main.sh
@@ -93,12 +100,20 @@ EOF
 #----------------------------------------------------------#
 
 if [ "$type" != 'local' ];then
-    check_args '4' "$#" "TYPE HOST USERNAME PASSWORD [PATH] [PORT]"
+    if [ "$type" = 's3' ]; then
+        check_args '5' "$#" "TYPE HOST BUCKET USERNAME PASSWORD [PATH] [PORT]"
+    else
+        check_args '4' "$#" "TYPE HOST USERNAME PASSWORD [PATH] [PORT]"
+    fi
     is_format_valid 'host'
     is_password_valid
     if [ "$type" = 'sftp' ]; then
         which expect >/dev/null 2>&1
         check_result $? "expect command not found"  $E_NOTEXIST
+    fi
+    if [ "$type" = 's3' ]; then
+        which s3cmd >/dev/null 2>&1
+        check_result $? "s3cmd command not found"  $E_NOTEXIST
     fi
 fi
 
@@ -164,6 +179,27 @@ if [ "$type" = 'sftp' ]; then
     fi
 fi
 
+if [ "$type" = 's3' ]; then
+    options=(--region="$host" --access_key="$user" --secret_key="$password")
+    if [[ ! "$path" =~ /$ ]]; then
+        path="${path}/"
+    fi
+    if [[ ! "$path" =~ ^/ ]]; then
+        path="/${path}"
+    fi
+    echo | s3cmd ${options[@]} put - s3://$bucket${path}vst.bK76A9SUkt > /dev/null 2>&1
+    rc=$?
+    if [[ "$rc" != 0 ]]; then
+        case $rc in
+            77) echo "Error: can't login to s3 $user@$host/$bucket";;
+            65) echo "Error: can't create temp folder on the s3 host";;
+        esac
+        log_event "$rc" "$ARGUMENTS"
+        exit "$rc"
+    fi
+    s3cmd $${options[@]} del s3://$bucket${path}vst.bK76A9SUkt > /dev/null 2>&1
+fi
+
 
 # Adding backup host
 if [ $type != 'local' ]; then
@@ -171,6 +207,9 @@ if [ $type != 'local' ]; then
     time=$(echo "$time_n_date" |cut -f 1 -d \ )
     date=$(echo "$time_n_date" |cut -f 2 -d \ )
     str="HOST='$host'\nUSERNAME='$user'\nPASSWORD='$password'"
+    if [ "$type" = 's3' ]; then
+        str="$str\nBUCKET='$bucket'"
+    fi
     str="$str\nBPATH='$path'\nPORT='$port'\nTIME='$time'\nDATE='$date'"
     echo -e "$str" > $VESTA/conf/$type.backup.conf
     chmod 660 $VESTA/conf/$type.backup.conf
