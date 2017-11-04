@@ -170,7 +170,7 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
         fi
 
         # Backup ssl proxy config
-        if [ ! -z "$PROXY_SYSTEM" ] && [ "$SSL" = 'yes' ]; then
+        if [ ! -z "$PROXY_SYSTEM" ] && [ "$SSL" = 'yes' ] && [ ! -z "$PROXY" ]; then
             tpl_file="$WEBTPL/$PROXY_SYSTEM/$PROXY.stpl"
             conf="$HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf"
             get_web_config_lines $tpl_file $conf
