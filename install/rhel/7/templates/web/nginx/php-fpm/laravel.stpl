@@ -1,7 +1,7 @@
 server {
-    listen      %ip%:%web_port%;
+    listen      %ip%:%web_ssl_port%;
     server_name %domain_idn% %alias_idn%;
-    root        %docroot%/public;
+    root        %sdocroot%/public;
     index       index.php index.html index.htm;
     access_log  /var/log/nginx/domains/%domain%.log combined;
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
@@ -52,5 +52,5 @@ server {
     include     /etc/nginx/conf.d/phppgadmin.inc*;
     include     /etc/nginx/conf.d/webmail.inc*;
 
-    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf*;
+    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf*;
 }
