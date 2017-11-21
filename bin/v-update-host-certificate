@@ -1,0 +1,88 @@
+#!/bin/bash
+# info: update hosts certificates for exim, dovecot & vesta-nginx
+# options: user
+# options: hostname
+#
+# Function updates certificates for vesta
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+whoami=$(whoami)
+if [ "$whoami" != "root" ] && [ "$whoami" != "admin" ] ; then
+    echo "You must be root or admin to execute this script";
+    exit 1;
+fi
+
+
+# Argument definition
+user=$1
+hostname=$2
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/ip.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" '[USER] [HOSTNAME]'
+is_format_valid 'user'
+is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+is_system_enabled "$WEB_SSL" 'SSL_SUPPORT'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$hostname"
+is_object_unsuspended 'web' 'DOMAIN' "$hostname"
+
+if [ ! -f "/home/$user/conf/web/ssl.$hostname.pem" ]; then
+    echo "This domain does not have certificate";
+    exit 1;
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Get current datetime for backup of old files
+backup_datetime=`date '+%Y-%m-%d_%H-%M-%S'`
+
+# Keep a backup of the old certificate - todo: remove in production
+#mv $VESTA/ssl/certificate.crt $VESTA/ssl/certificate.crt_backup_$backup_datetime
+#mv $VESTA/ssl/certificate.key $VESTA/ssl/certificate.key_backup_$backup_datetime
+
+# Copy hostnames certificates from user dir
+cp /home/$user/conf/web/ssl.$hostname.pem $VESTA/ssl/certificate.crt
+cp /home/$user/conf/web/ssl.$hostname.key $VESTA/ssl/certificate.key
+
+# Checking exim username for later chowning
+exim_user="exim";
+check_exim_username=$(grep -c '^Debian-exim:' /etc/passwd)
+if [ "$check_exim_username" -eq 1 ]; then
+    exim_user="Debian-exim"
+fi
+
+# Assign exim permissions
+chown $exim_user:mail $VESTA/ssl/certificate.crt
+chown $exim_user:mail $VESTA/ssl/certificate.key
+
+# Restart exim, dovecot & vesta
+v-restart-mail
+v-restart-service dovecot
+v-restart-service vesta
+
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit 0;
