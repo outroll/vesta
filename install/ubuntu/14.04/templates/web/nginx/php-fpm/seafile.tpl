@@ -7,11 +7,6 @@ server {
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
     error_log   /var/log/nginx/domains/%domain%.error.log error;
 
-    # Allow "Well-Known URIs" as per RFC 5785
-    location ~* ^/.well-known/ {
-        allow all;
-    }
-
     location / {
         proxy_pass         http://127.0.0.1:8000;
         proxy_set_header   Host $host;

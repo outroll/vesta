@@ -11,11 +11,6 @@ server {
     ssl_certificate      %ssl_pem%;
     ssl_certificate_key  %ssl_key%;
 
-    # Allow "Well-Known URIs" as per RFC 5785
-    location ~* ^/.well-known/ {
-        allow all;
-    }
-
     location / {
         proxy_pass         http://127.0.0.1:8000;
         proxy_set_header   Host $host;
