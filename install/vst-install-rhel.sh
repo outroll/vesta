@@ -1302,18 +1302,6 @@ if [ "$quota" = 'yes' ]; then
     $VESTA/bin/v-add-sys-quota
 fi
 
-# Starting vesta service
-chkconfig vesta on
-service vesta start
-check_result $? "vesta start failed"
-chown admin:admin $VESTA/data/sessions
-
-# Adding notifications
-$VESTA/upd/add_notifications.sh
-
-# Adding cronjob for autoupdates
-$VESTA/bin/v-add-cron-vesta-autoupdate
-
 #----------------------------------------------------------#
 #           Vesta Stasisha Post install Patch              #
 #----------------------------------------------------------#
@@ -1397,13 +1385,25 @@ wget $base"/web/edit/server/php70-php-fpm/index.php" -O $VESTA"/web/edit/server/
 wget $base"/web/edit/server/php71-php-fpm/index.php" -O $VESTA"/web/edit/server/php71-php-fpm/index.php"
 wget $base"/web/edit/server/php72-php-fpm/index.php" -O $VESTA"/web/edit/server/php72-php-fpm/index.php"
 
-wget $base"/master/bin/v-add-web-domain" -O $VESTA"/bin/v-add-web-domain"
-wget $base"/master/bin/v-list-sys-php70-config" -O $VESTA"/bin/v-list-sys-php70-config"
-wget $base"/master/bin/v-list-sys-php71-config" -O $VESTA"/bin/v-list-sys-php71-config"
-wget $base"/master/bin/v-list-sys-php72-config" -O $VESTA"/bin/v-list-sys-php72-config"
-wget $base"/master/bin/v-list-sys-services" -O $VESTA"/bin/v-list-sys-services"
-wget $base"/master/bin/v-restart-web-backend" -O $VESTA"/bin/v-restart-web-backend"
-wget $base"/master/func/domain.sh" -O $VESTA"/master/func/domain.sh"
+wget $base"/bin/v-add-web-domain" -O $VESTA"/bin/v-add-web-domain"
+wget $base"/bin/v-list-sys-php70-config" -O $VESTA"/bin/v-list-sys-php70-config"
+wget $base"/bin/v-list-sys-php71-config" -O $VESTA"/bin/v-list-sys-php71-config"
+wget $base"/bin/v-list-sys-php72-config" -O $VESTA"/bin/v-list-sys-php72-config"
+wget $base"/bin/v-list-sys-services" -O $VESTA"/bin/v-list-sys-services"
+wget $base"/bin/v-restart-web-backend" -O $VESTA"/bin/v-restart-web-backend"
+wget $base"/func/domain.sh" -O $VESTA"/func/domain.sh"
+
+# Starting vesta service
+chkconfig vesta on
+service vesta start
+check_result $? "vesta start failed"
+chown admin:admin $VESTA/data/sessions
+
+# Adding notifications
+$VESTA/upd/add_notifications.sh
+
+# Adding cronjob for autoupdates
+$VESTA/bin/v-add-cron-vesta-autoupdate
 
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
