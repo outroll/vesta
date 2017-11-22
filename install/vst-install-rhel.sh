@@ -635,6 +635,7 @@ check_result $? "yum install failed"
 #----------------------------------------------------------#
 
 wget $base"/bin/v-add-web-domain" -O $VESTA"/bin/v-add-web-domain"
+wget $base"/bin/v-add-web-domain-backend" -O $VESTA"/bin/v-add-web-domain-backend"
 wget $base"/bin/v-change-sys-service-config" -O $VESTA"/bin/v-change-sys-service-config"
 wget $base"/bin/v-change-web-domain-backend-tpl" -O $VESTA"/bin/v-change-web-domain-backend-tpl"
 wget $base"/bin/v-list-sys-php70-config" -O $VESTA"/bin/v-list-sys-php70-config"
@@ -643,6 +644,10 @@ wget $base"/bin/v-list-sys-php72-config" -O $VESTA"/bin/v-list-sys-php72-config"
 wget $base"/bin/v-list-sys-services" -O $VESTA"/bin/v-list-sys-services"
 wget $base"/bin/v-restart-web-backend" -O $VESTA"/bin/v-restart-web-backend"
 wget $base"/bin/v-change-web-domain-backend-tpl" -O $VESTA"/bin/v-change-web-domain-backend-tpl"
+
+chmod 755 $VESTA"/bin/v-list-sys-php70-config"
+chmod 755 $VESTA"/bin/v-list-sys-php71-config"
+chmod 755 $VESTA"/bin/v-list-sys-php72-config"
 
 #----------------------------------------------------------#
 #                     Configure system                     #
