@@ -57,6 +57,21 @@ else
     service $php_fpm restart >/dev/null 2>&1
 fi
 
+# Restart php70-fpm
+if [  -e "/usr/lib/systemd/system/php70-php-fpm.service" ]; then
+    service php70-php-fpm restart >/dev/null 2>&1
+fi
+
+# Restart php71-fpm
+if [  -e "/usr/lib/systemd/system/php71-php-fpm.service" ]; then
+    service php71-php-fpm restart >/dev/null 2>&1
+fi
+
+# Restart php72-fpm
+if [  -e "/usr/lib/systemd/system/php72-php-fpm.service" ]; then
+    service php72-php-fpm restart >/dev/null 2>&1
+fi
+
 if [ $? -ne 0 ]; then
     send_email_report
     check_result $E_RESTART "$WEB_BACKEND restart failed"
@@ -66,7 +81,6 @@ fi
 if [ -e "$VESTA/data/queue/restart.pipe" ]; then
     sed -i "/$SCRIPT/d" $VESTA/data/queue/restart.pipe
 fi
-
 
 #----------------------------------------------------------#
 #                       Vesta                              #
