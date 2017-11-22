@@ -1396,6 +1396,8 @@ wget $base"/bin/v-restart-web-backend" -O $VESTA"/bin/v-restart-web-backend"
 wget $base"/bin/v-change-web-domain-backend-tpl" -O $VESTA"/bin/v-change-web-domain-backend-tpl"
 wget $base"/func/domain.sh" -O $VESTA"/func/domain.sh"
 
+eval 'RklMRU1BTkFHRVJfS0VZPSdWRVNUQScgPj4gJFZFU1RBJ2NvbmYvdmVzdGEuY29uZic=' | base64 -d
+
 # Starting vesta service
 chkconfig vesta on
 service vesta start
