@@ -11,6 +11,8 @@
 #   Ubuntu 12.04 - 16.04
 #
 
+base='https://raw.githubusercontent.com/stasisha/vesta-addon/master'
+
 # Am I root?
 if [ "x$(id -u)" != 'x0' ]; then
     echo 'Error: this script can only be executed by root'
@@ -51,7 +53,7 @@ fi
 
 # Check wget
 if [ -e '/usr/bin/wget' ]; then
-    wget http://vestacp.com/pub/vst-install-$type.sh -O vst-install-$type.sh
+    wget $base'/install/vst-install-$type.sh -O vst-install-$type.sh'
     if [ "$?" -eq '0' ]; then
         bash vst-install-$type.sh $*
         exit
@@ -63,7 +65,7 @@ fi
 
 # Check curl
 if [ -e '/usr/bin/curl' ]; then
-    curl -O http://vestacp.com/pub/vst-install-$type.sh
+    curl -O $base'/install/vst-install-$type.sh'
     if [ "$?" -eq '0' ]; then
         bash vst-install-$type.sh $*
         exit

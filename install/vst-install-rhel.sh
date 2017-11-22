@@ -17,6 +17,7 @@ os=$(cut -f 1 -d ' ' /etc/redhat-release)
 release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
 vestacp="http://$CHOST/$VERSION/$release"
+base='https://raw.githubusercontent.com/stasisha/vesta-addon/master'
 
 if [ "$release" -eq 7 ]; then
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid php php-common php-cli
@@ -382,9 +383,6 @@ read -p 'Would you like to install Composer? [y/n]: ' composer
 read -p 'Would you like to install Midnight Commander? [y/n]: ' mc
 read -p 'Would you like to install Symfony tamplates? [y/n]: ' symfony
 read -p 'Would you like to install Yii2 tamplates? [y/n]: ' yii2
-
-base="https://raw.githubusercontent.com/stasisha/vesta-addon/master"
-VESTA="/usr/local/vesta"
 
 # Generating admin password if it wasn't set
 if [ -z "$vpass" ]; then
