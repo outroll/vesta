@@ -48,6 +48,7 @@ fi
 backend_port=9000
 pools=$(find /etc/php* /etc/opt/remi/ -type d \( -name "pool.d" -o -name "*fpm.d" \))
 for pool_pointer in $pools; do
+	rm -f $pool_pointer/$backend_type.conf
     ports=$(grep -v '^;' $pool_pointer/* 2>/dev/null |grep listen |grep -o :[0-9].*)
     ports=$(echo "$ports" |sed "s/://" |sort -n)
     for port in $ports; do
