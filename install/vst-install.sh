@@ -53,7 +53,7 @@ fi
 
 # Check wget
 if [ -e '/usr/bin/wget' ]; then
-    wget $base'/install/vst-install-$type.sh -O vst-install-$type.sh'
+    wget $base'/install/vst-install-'$type'.sh -O vst-install-'$type'.sh'
     if [ "$?" -eq '0' ]; then
         bash vst-install-$type.sh $*
         exit
@@ -65,7 +65,7 @@ fi
 
 # Check curl
 if [ -e '/usr/bin/curl' ]; then
-    curl -O $base'/install/vst-install-$type.sh'
+    curl -O $base'/install/vst-install-'$type'.sh'
     if [ "$?" -eq '0' ]; then
         bash vst-install-$type.sh $*
         exit
