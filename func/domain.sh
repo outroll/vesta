@@ -85,7 +85,7 @@ is_web_alias_new() {
 # Prepare web backend
 prepare_web_backend() {
 
-    pools=$(find /etc/php* -type d \( -name "pool.d" -o -name "*fpm.d" \))
+    pools=$(find / -type d \( -name "pool.d" -o -name "*fpm.d" \))
     if [ $template == "php70" ]; then
         pool=$($pools | grep php70)
     elif [ $template == "php71" ]; then
