@@ -11,7 +11,7 @@
 #   Ubuntu 12.04 - 16.04
 #
 
-base='https://raw.githubusercontent.com/stasisha/vesta-addon/master'
+base='https://raw.githubusercontent.com/stasisha/vesta/master'
 
 # Am I root?
 if [ "x$(id -u)" != 'x0' ]; then

@@ -17,7 +17,7 @@ os=$(cut -f 1 -d ' ' /etc/redhat-release)
 release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
 vestacp="http://$CHOST/$VERSION/$release"
-base='https://raw.githubusercontent.com/stasisha/vesta-addon/master'
+base='https://raw.githubusercontent.com/stasisha/vesta/master'
 
 if [ "$release" -eq 7 ]; then
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid php php-common php-cli
