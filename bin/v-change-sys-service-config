@@ -50,6 +50,7 @@ case $service in
     mysqld)         dst=$(find /etc/my* -name my.cnf);;
     mariadb)        dst=$(find /etc/my* -name my.cnf);;
     postgresql)     dst=$($BIN/v-list-sys-pgsql-config plain |cut -f 1);;
+    postgresql-9.6) dst=$($BIN/v-list-sys-pgsql96-config plain |cut -f 1);;
     postgresql-hba) dst=$($BIN/v-list-sys-pgsql-config plain |cut -f 2);;
     dovecot)        dst=$(find /etc/dovecot* -name dovecot.conf);;
     dovecot-1)      dst='/etc/dovecot/conf.d/10-auth.conf';;

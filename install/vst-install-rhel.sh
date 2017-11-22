@@ -1352,6 +1352,8 @@ if [ "$psql96" == 'y' ] || [ "$psql96" == 'Y'  ]; then
   systemctl enable postgresql-9.6.service
   wget $base"/install/rhel/7/postgresql/pg_hba.conf" -O "/var/lib/pgsql/9.6/data/pg_hba.conf"
   systemctl start postgresql-9.6.service
+  mkdir $VESTA"/web/edit/server/postgresql-9.6"
+  wget $base"/web/edit/server/postgresql-9.6/index.php" -O $VESTA"/web/edit/server/postgresql-9.6/index.php"
 fi
 
 if [ ! -z "$(grep ^admin: /etc/group)" ] && [ "$force" = 'yes' ]; then
@@ -1366,11 +1368,11 @@ if [ "$php70" == 'y' ] || [ "$php70" == 'Y'  ]; then
   yum install -y php70-php php70-php-fpm
   backend_port=$((backend_port + 1))
   sed -i "s/9000/"$backend_port"/" /etc/opt/remi/php70/php-fpm.d/www.conf
+  systemctl start php70-php-fpm.service
+  systemctl enable php70-php-fpm.service
   mkdir $VESTA"/web/edit/server/php70-php-fpm"
   wget $base"/web/edit/server/php70-php-fpm/index.php" -O $VESTA"/web/edit/server/php70-php-fpm/index.php"
   wget $base"/install/rhel/7/templates/web/php-fpm/php70.tpl" -O $VESTA"/data/templates/web/php-fpm/php70.tpl"
-  systemctl start php70-php-fpm.service
-  systemctl enable php70-php-fpm.service
 fi
 
 #install php71
@@ -1378,11 +1380,11 @@ if [ "$php71" == 'y' ] || [ "$php71" == 'Y'  ]; then
   yum install -y php71-php php71-php-fpm
   backend_port=$((backend_port + 1))
   sed -i "s/9000/"$backend_port"/" /etc/opt/remi/php71/php-fpm.d/www.conf
+  systemctl start php71-php-fpm.service
+  systemctl enable php71-php-fpm.service
   mkdir $VESTA"/web/edit/server/php71-php-fpm"
   wget $base"/web/edit/server/php71-php-fpm/index.php" -O $VESTA"/web/edit/server/php71-php-fpm/index.php"
   wget $base"/install/rhel/7/templates/web/php-fpm/php71.tpl" -O $VESTA"/data/templates/web/php-fpm/php71.tpl"
-  systemctl start php71-php-fpm.service
-  systemctl enable php71-php-fpm.service
 fi
 
 #install php72
@@ -1390,11 +1392,11 @@ if [ "$php72" == 'y' ] || [ "$php72" == 'Y'  ]; then
   yum install -y php72-php php72-php-fpm
   backend_port=$((backend_port + 1))
   sed -i "s/9000/"$backend_port"/" "/etc/opt/remi/php72/php-fpm.d/www.conf"
+  systemctl start php72-php-fpm.service
+  systemctl enable php72-php-fpm.service
   mkdir $VESTA"/web/edit/server/php72-php-fpm"
   wget $base"/web/edit/server/php72-php-fpm/index.php" -O $VESTA"/web/edit/server/php72-php-fpm/index.php"
   wget $base"/install/rhel/7/templates/web/php-fpm/php72.tpl" -O $VESTA"/data/templates/web/php-fpm/php72.tpl"
-  systemctl start php72-php-fpm.service
-  systemctl enable php72-php-fpm.service
 fi
 
 wget $base"/func/domain.sh" -O $VESTA"/func/domain.sh"
