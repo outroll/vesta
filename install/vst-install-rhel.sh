@@ -1344,6 +1344,7 @@ if [ "$php70" == 'y' ] || [ "$php70" == 'Y'  ]; then
   sed -i "s/9000/"$backend_port"/" /etc/opt/remi/php70/php-fpm.d/www.conf
   mkdir $VESTA"/web/edit/server/php70-php-fpm"
   wget $base"/web/edit/server/php70-php-fpm/index.php" -O $VESTA"/web/edit/server/php70-php-fpm/index.php"
+  wget $base"/install/rhel/7/templates/web/php-fpm/php70.tpl" -O $VESTA"/data/templates/web/php-fpm/php70.tpl"
   systemctl start php70-php-fpm.service
   systemctl enable php70-php-fpm.service
 fi
@@ -1355,6 +1356,7 @@ if [ "$php71" == 'y' ] || [ "$php71" == 'Y'  ]; then
   sed -i "s/9000/"$backend_port"/" /etc/opt/remi/php71/php-fpm.d/www.conf
   mkdir $VESTA"/web/edit/server/php71-php-fpm"
   wget $base"/web/edit/server/php71-php-fpm/index.php" -O $VESTA"/web/edit/server/php71-php-fpm/index.php"
+  wget $base"/install/rhel/7/templates/web/php-fpm/php71.tpl" -O $VESTA"/data/templates/web/php-fpm/php71.tpl"
   systemctl start php71-php-fpm.service
   systemctl enable php71-php-fpm.service
 fi
@@ -1365,6 +1367,7 @@ if [ "$php72" == 'y' ] || [ "$php72" == 'Y'  ]; then
   backend_port=$((backend_port + 1))
   sed -i "s/9000/"$backend_port"/" "/etc/opt/remi/php72/php-fpm.d/www.conf"
   mkdir $VESTA"/web/edit/server/php72-php-fpm"
+  wget $base"/web/edit/server/php72-php-fpm/index.php" -O $VESTA"/web/edit/server/php72-php-fpm/index.php"
   wget $base"/install/rhel/7/templates/web/php-fpm/php72.tpl" -O $VESTA"/data/templates/web/php-fpm/php72.tpl"
   systemctl start php72-php-fpm.service
   systemctl enable php72-php-fpm.service
@@ -1373,7 +1376,7 @@ fi
 wget $base"/bin/v-add-web-domain" -O $VESTA"/bin/v-add-web-domain"
 wget $base"/bin/v-list-sys-php70-config" -O $VESTA"/bin/v-list-sys-php70-config"
 wget $base"/bin/v-list-sys-php71-config" -O $VESTA"/bin/v-list-sys-php71-config"
-wget $base"/bin/v-list-sys-php72-config" -O $VESTA"/bin/v-list-sys-php72-config"q
+wget $base"/bin/v-list-sys-php72-config" -O $VESTA"/bin/v-list-sys-php72-config"
 wget $base"/bin/v-list-sys-services" -O $VESTA"/bin/v-list-sys-services"
 wget $base"/bin/v-restart-web-backend" -O $VESTA"/bin/v-restart-web-backend"
 wget $base"/func/domain.sh" -O $VESTA"/func/domain.sh"
