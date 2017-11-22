@@ -104,6 +104,18 @@ if [ "$update" = 'yes' ] && [ "$restart" != 'no' ]; then
         fi
     fi
 
+	if [ "$service" = 'php70' ] && [  -e "/usr/lib/systemd/system/php70-php-fpm.service" ]; then
+		service="php70-php-fpm"
+	fi
+
+	if [ "$service" = 'php71' ] && [  -e "/usr/lib/systemd/system/php71-php-fpm.service" ]; then
+		service="php71-php-fpm"
+	fi
+
+	if [ "$service" = 'php72' ] && [  -e "/usr/lib/systemd/system/php72-php-fpm.service" ]; then
+		service="php70-php-fpm"
+	fi
+
     service $service restart >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         for config in $dst; do
