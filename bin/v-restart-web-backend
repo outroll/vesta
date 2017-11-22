@@ -14,6 +14,41 @@ source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 PATH="$PATH:/usr/local/sbin:/sbin:/usr/sbin:/root/bin"
 
+stop_php7() {
+
+	# Stop php70-fpm
+	if [  -e "/usr/lib/systemd/system/php70-php-fpm.service" ]; then
+		service php70-php-fpm stop >/dev/null 2>&1
+	fi
+
+	# Stop php71-fpm
+	if [  -e "/usr/lib/systemd/system/php71-php-fpm.service" ]; then
+		service php71-php-fpm stop >/dev/null 2>&1
+	fi
+
+	# Stop php72-fpm
+	if [  -e "/usr/lib/systemd/system/php72-php-fpm.service" ]; then
+		service php72-php-fpm stop >/dev/null 2>&1
+	fi
+}
+
+start_php7() {
+	# Stop php70-fpm
+	if [  -e "/usr/lib/systemd/system/php70-php-fpm.service" ]; then
+		service php70-php-fpm start >/dev/null 2>&1
+	fi
+
+	# Stop php71-fpm
+	if [  -e "/usr/lib/systemd/system/php71-php-fpm.service" ]; then
+		service php71-php-fpm start >/dev/null 2>&1
+	fi
+
+	# Stop php72-fpm
+	if [  -e "/usr/lib/systemd/system/php72-php-fpm.service" ]; then
+		service php72-php-fpm start >/dev/null 2>&1
+	fi
+}
+
 send_email_report() {
     email=$(grep CONTACT $VESTA/data/users/admin/user.conf)
     email=$(echo "$email" | cut -f 2 -d "'")
@@ -52,25 +87,17 @@ fi
 # Restart system
 php_fpm=$(ls /etc/init.d/php*-fpm* 2>/dev/null |cut -f 4 -d /)
 if [ -z "$php_fpm" ]; then
-    service $WEB_BACKEND restart >/dev/null 2>&1
+    service $WEB_BACKEND stop >/dev/null 2>&1
+	stop_php7
+	service $WEB_BACKEND start >/dev/null 2>&1
+	start_php7
 else
-    service $php_fpm restart >/dev/null 2>&1
+    service $php_fpm stop >/dev/null 2>&1
+	stop_php7
+	service $php_fpm start >/dev/null 2>&1
+	start_php7
 fi
 
-# Restart php70-fpm
-if [  -e "/usr/lib/systemd/system/php70-php-fpm.service" ]; then
-    service php70-php-fpm restart >/dev/null 2>&1
-fi
-
-# Restart php71-fpm
-if [  -e "/usr/lib/systemd/system/php71-php-fpm.service" ]; then
-    service php71-php-fpm restart >/dev/null 2>&1
-fi
-
-# Restart php72-fpm
-if [  -e "/usr/lib/systemd/system/php72-php-fpm.service" ]; then
-    service php72-php-fpm restart >/dev/null 2>&1
-fi
 
 if [ $? -ne 0 ]; then
     send_email_report

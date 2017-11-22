@@ -1,159 +1,115 @@
 #!/bin/bash
-# info: change web domain backend template
-# options: USER DOMAIN TEMPLATE [RESTART]
+# info: restart backend server
+# options: NONE
 #
-# The function changes backend template
+# The function reloads backend server configuration.
 
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument definition
-user=$1
-domain=$2
-domain_idn=$2
-template=$3
-restart=$4
-
 # Includes
 source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/func/ip.sh
 source $VESTA/conf/vesta.conf
+PATH="$PATH:/usr/local/sbin:/sbin:/usr/sbin:/root/bin"
 
-# Additional argument formatting
-format_domain
-format_domain_idn
+stop_php7() {
+	# Stop php70-fpm
+	if [  -e "/usr/lib/systemd/system/php70-php-fpm.service" ]; then
+		service php70-php-fpm stop >/dev/null 2>&1
+	fi
 
+	# Stop php71-fpm
+	if [  -e "/usr/lib/systemd/system/php71-php-fpm.service" ]; then
+		service php71-php-fpm stop >/dev/null 2>&1
+	fi
 
-#----------------------------------------------------------#
-#                    Verifications                         #
-#----------------------------------------------------------#
+	# Stop php72-fpm
+	if [  -e "/usr/lib/systemd/system/php72-php-fpm.service" ]; then
+		service php72-php-fpm stop >/dev/null 2>&1
+	fi
+}
 
-check_args '3' "$#" 'USER DOMAIN TEMPLATE [RESTART]'
-is_format_valid 'user' 'domain' 'template'
-is_system_enabled "$WEB_BACKEND" 'WEB_BACKEND'
-is_object_valid 'user' 'USER' "$user"
-is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
-is_backend_template_valid $template
+start_php7() {
+	# Stop php70-fpm
+	if [  -e "/usr/lib/systemd/system/php70-php-fpm.service" ]; then
+		service php70-php-fpm start >/dev/null 2>&1
+	fi
+
+	# Stop php71-fpm
+	if [  -e "/usr/lib/systemd/system/php71-php-fpm.service" ]; then
+		service php71-php-fpm start >/dev/null 2>&1
+	fi
+
+	# Stop php72-fpm
+	if [  -e "/usr/lib/systemd/system/php72-php-fpm.service" ]; then
+		service php72-php-fpm start >/dev/null 2>&1
+	fi
+}
+
+send_email_report() {
+    email=$(grep CONTACT $VESTA/data/users/admin/user.conf)
+    email=$(echo "$email" | cut -f 2 -d "'")
+    tmpfile=$(mktemp)
+    subj="$(hostname): $WEB_BACKEND restart failed"
+    service $WEB_BACKEND configtest >> $tmpfile 2>&1
+    service $WEB_BACKEND restart >> $tmpfile 2>&1
+    cat $tmpfile |$SENDMAIL -s "$subj" $email
+    rm -f $tmpfile
+}
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-prepare_web_backend
-
-# Deleting backend
-rm -f $pool/$backend_type.conf
-
-# Allocating backend port
-backend_port=9000
-ports=$(grep -v '^;' $pool/* 2>/dev/null |grep listen |grep -o :[0-9].*)
-ports=$(echo "$ports" |sed "s/://" |sort -n)
-for port in $ports; do
-    if [ "$backend_port" -eq "$port" ]; then
-        backend_port=$((backend_port + 1))
-    fi
-done
-
-# Changing backend config
-cat $WEBTPL/$WEB_BACKEND/$template.tpl |\
-    sed -e "s|%backend_port%|$backend_port|" \
-        -e "s|%user%|$user|"\
-        -e "s|%domain%|$domain|"\
-        -e "s|%domain_idn%|$domain_idn|"\
-        -e "s|%backend%|$backend_type|g" > $pool/$backend_type.conf
-
-# Checking backend pool configuration
-if [ "$backend_type" = "$user" ]; then
-    conf=$USER_DATA/web.conf
-    fields='$DOMAIN'
-    nohead=1
-
-    for domain in $(shell_list); do
-        get_domain_values 'web'
-        local_ip=$(get_real_ip $IP)
-        prepare_web_domain_values
-
-        # Rebuilding vhost
-        del_web_config "$WEB_SYSTEM" "$TPL.tpl"
-        add_web_config "$WEB_SYSTEM" "$TPL.tpl"
-        if [ "$SSL" = 'yes' ]; then
-            del_web_config "$WEB_SYSTEM" "$TPL.stpl"
-            add_web_config "$WEB_SYSTEM" "$TPL.stpl"
-        fi
-
-        # Rebuilding proxy configuration
-        if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
-            del_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
-            add_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
-            if [ "$SSL" = 'yes' ]; then
-                del_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
-                add_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
-            fi
-        fi
-
-        # Update config
-        add_object_key "web" 'DOMAIN' "$domain" 'BACKEND' 'PROXY'
-        update_object_value 'web' 'DOMAIN' "$domain" '$BACKEND' "$template"
-    done
-
-    # Chaning template in user config
-    old_template=$(grep BACKEND_TEMPLATE $USER_DATA/user.conf)
-    if [ -z "$old_template" ]; then
-        sed -i "s/^WEB_DOMAINS/BACKEND_TEMPLATE='$template'\nWEB_DOMAINS/g" \
-            $USER_DATA/user.conf
-    else
-        update_user_value "$user" '$BACKEND_TEMPLATE' "$template"
-    fi
-else
-    # Parsing domain values
-    get_domain_values 'web'
-    local_ip=$(get_real_ip $IP)
-    prepare_web_domain_values
-
-    # Rebuilding vhost
-    del_web_config "$WEB_SYSTEM" "$TPL.tpl"
-    add_web_config "$WEB_SYSTEM" "$TPL.tpl"
-    if [ "$SSL" = 'yes' ]; then
-        del_web_config "$WEB_SYSTEM" "$TPL.stpl"
-        add_web_config "$WEB_SYSTEM" "$TPL.stpl"
-    fi
-
-    # Rebuilding proxy configuration
-    if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
-        del_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
-        add_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
-        if [ "$SSL" = 'yes' ]; then
-            del_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
-            add_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
-        fi
-    fi
-
-    # Update config
-    add_object_key "web" 'DOMAIN' "$domain" 'BACKEND' 'PROXY'
-    update_object_value 'web' 'DOMAIN' "$domain" '$BACKEND' "$template"
+# Exit
+if [ "$1" = "no" ]; then
+    exit
 fi
 
+# Schedule restart
+if [ "$1" = 'scheduled' ]; then
+    echo "$BIN/$SCRIPT now" >> $VESTA/data/queue/restart.pipe
+    exit
+fi
+if [ -z "$1" ] && [ "$SCHEDULED_RESTART" = 'yes' ]; then
+    echo "$BIN/$SCRIPT now" >> $VESTA/data/queue/restart.pipe
+    exit
+fi
+
+if [ -z "$WEB_BACKEND" ] || [ "$WEB_BACKEND" = 'remote' ]; then
+    exit
+fi
+
+# Restart system
+php_fpm=$(ls /etc/init.d/php*-fpm* 2>/dev/null |cut -f 4 -d /)
+if [ -z "$php_fpm" ]; then
+    service $WEB_BACKEND stop >/dev/null 2>&1
+	stop_php7
+	service $WEB_BACKEND start >/dev/null 2>&1
+	start_php7
+else
+    service $php_fpm stop >/dev/null 2>&1
+	stop_php7
+	service $php_fpm start >/dev/null 2>&1
+	start_php7
+fi
+
+
+if [ $? -ne 0 ]; then
+    send_email_report
+    check_result $E_RESTART "$WEB_BACKEND restart failed"
+fi
+
+# Update restart queue
+if [ -e "$VESTA/data/queue/restart.pipe" ]; then
+    sed -i "/$SCRIPT/d" $VESTA/data/queue/restart.pipe
+fi
 
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
-
-
-# Restarting web
-$BIN/v-restart-web $restart
-check_result $? "Web restart failed" >/dev/null
-
-$BIN/v-restart-web-backend $restart
-check_result $? "Web backend restart failed" >/dev/null
-
-# Logging
-log_history "changed backend template for $domain to $template"
-log_event "$OK" "$ARGUMENTS"
 
 exit

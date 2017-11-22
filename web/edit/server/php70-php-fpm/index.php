@@ -31,7 +31,7 @@ if (!empty($_POST['save'])) {
         $fp = fopen($new_conf, 'w');
         fwrite($fp, str_replace("\r\n", "\n",  $_POST['v_config']));
         fclose($fp);
-        exec (VESTA_CMD."v-change-sys-service-config ".$new_conf." php ".$v_restart, $output, $return_var);
+        exec (VESTA_CMD."v-change-sys-service-config ".$new_conf." php70 ".$v_restart, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         unlink($new_conf);

@@ -43,6 +43,9 @@ case $service in
     vsftpd)         dst=$(find /etc/vsftpd* -name 'vsftpd.conf');;
     proftpd)        dst=$(find /etc/proftpd* -name 'proftpd.conf');;
     php)            dst=$(find /etc/php* -name php.ini);;
+    php70)          dst=$(find /etc/php* /etc/opt/remi -name php.ini | grep php70);;
+    php71)          dst=$(find /etc/php* /etc/opt/remi -name php.ini | grep php71);;
+    php72)          dst=$(find /etc/php* /etc/opt/remi -name php.ini | grep php72);;
     mysql)          dst=$(find /etc/my* -name my.cnf);;
     mysqld)         dst=$(find /etc/my* -name my.cnf);;
     mariadb)        dst=$(find /etc/my* -name my.cnf);;

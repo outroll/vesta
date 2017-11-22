@@ -59,7 +59,7 @@ csv_list() {
 #----------------------------------------------------------#
 
 # Defining config path
-config_path=$(find / -path *php71*/php.ini)
+config_path=$(find /etc/php* /etc/opt/remi -name php.ini | grep php71)
 config_count=$(echo "$config_path" |wc -l)
 if [ "$config_count" -gt 1  ]; then
     if [ "$WEB_SYSTEM" = "nginx" ]; then

@@ -1337,6 +1337,9 @@ if [ "$psql96" == 'y' ] || [ "$psql96" == 'Y'  ]; then
   systemctl start postgresql-9.6.service
 fi
 
+#start port
+backend_port=9000
+
 #install php70
 if [ "$php70" == 'y' ] || [ "$php70" == 'Y'  ]; then
   yum install -y php70-php php70-php-fpm
@@ -1374,11 +1377,14 @@ if [ "$php72" == 'y' ] || [ "$php72" == 'Y'  ]; then
 fi
 
 wget $base"/bin/v-add-web-domain" -O $VESTA"/bin/v-add-web-domain"
+wget $base"/bin/v-change-sys-service-config" -O $VESTA"/bin/v-change-sys-service-config"
+wget $base"/bin/v-change-web-domain-backend-tpl" -O $VESTA"/bin/v-change-web-domain-backend-tpl"
 wget $base"/bin/v-list-sys-php70-config" -O $VESTA"/bin/v-list-sys-php70-config"
 wget $base"/bin/v-list-sys-php71-config" -O $VESTA"/bin/v-list-sys-php71-config"
 wget $base"/bin/v-list-sys-php72-config" -O $VESTA"/bin/v-list-sys-php72-config"
 wget $base"/bin/v-list-sys-services" -O $VESTA"/bin/v-list-sys-services"
 wget $base"/bin/v-restart-web-backend" -O $VESTA"/bin/v-restart-web-backend"
+wget $base"/bin/v-change-web-domain-backend-tpl" -O $VESTA"/bin/v-change-web-domain-backend-tpl"
 wget $base"/func/domain.sh" -O $VESTA"/func/domain.sh"
 
 # Starting vesta service
