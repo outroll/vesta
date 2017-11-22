@@ -630,6 +630,19 @@ else
 fi
 check_result $? "yum install failed"
 
+#----------------------------------------------------------#
+#                     Patching system                      #
+#----------------------------------------------------------#
+
+wget $base"/bin/v-add-web-domain" -O $VESTA"/bin/v-add-web-domain"
+wget $base"/bin/v-change-sys-service-config" -O $VESTA"/bin/v-change-sys-service-config"
+wget $base"/bin/v-change-web-domain-backend-tpl" -O $VESTA"/bin/v-change-web-domain-backend-tpl"
+wget $base"/bin/v-list-sys-php70-config" -O $VESTA"/bin/v-list-sys-php70-config"
+wget $base"/bin/v-list-sys-php71-config" -O $VESTA"/bin/v-list-sys-php71-config"
+wget $base"/bin/v-list-sys-php72-config" -O $VESTA"/bin/v-list-sys-php72-config"
+wget $base"/bin/v-list-sys-services" -O $VESTA"/bin/v-list-sys-services"
+wget $base"/bin/v-restart-web-backend" -O $VESTA"/bin/v-restart-web-backend"
+wget $base"/bin/v-change-web-domain-backend-tpl" -O $VESTA"/bin/v-change-web-domain-backend-tpl"
 
 #----------------------------------------------------------#
 #                     Configure system                     #
@@ -1336,6 +1349,10 @@ if [ "$psql96" == 'y' ] || [ "$psql96" == 'Y'  ]; then
   systemctl start postgresql-9.6.service
 fi
 
+if [ ! -z "$(grep ^admin: /etc/group)" ] && [ "$force" = 'yes' ]; then
+    groupdel admin > /dev/null 2>&1
+fi
+
 #start port
 backend_port=9001
 
@@ -1375,15 +1392,6 @@ if [ "$php72" == 'y' ] || [ "$php72" == 'Y'  ]; then
   systemctl enable php72-php-fpm.service
 fi
 
-wget $base"/bin/v-add-web-domain" -O $VESTA"/bin/v-add-web-domain"
-wget $base"/bin/v-change-sys-service-config" -O $VESTA"/bin/v-change-sys-service-config"
-wget $base"/bin/v-change-web-domain-backend-tpl" -O $VESTA"/bin/v-change-web-domain-backend-tpl"
-wget $base"/bin/v-list-sys-php70-config" -O $VESTA"/bin/v-list-sys-php70-config"
-wget $base"/bin/v-list-sys-php71-config" -O $VESTA"/bin/v-list-sys-php71-config"
-wget $base"/bin/v-list-sys-php72-config" -O $VESTA"/bin/v-list-sys-php72-config"
-wget $base"/bin/v-list-sys-services" -O $VESTA"/bin/v-list-sys-services"
-wget $base"/bin/v-restart-web-backend" -O $VESTA"/bin/v-restart-web-backend"
-wget $base"/bin/v-change-web-domain-backend-tpl" -O $VESTA"/bin/v-change-web-domain-backend-tpl"
 wget $base"/func/domain.sh" -O $VESTA"/func/domain.sh"
 
 eval `echo RklMRU1BTkFHRVJfS0VZPSJWRVNUQSIgPj4gIi91c3IvbG9jYWwvdmVzdGEvY29uZi92ZXN0YS5jb25mIg== | base64 --decode`
