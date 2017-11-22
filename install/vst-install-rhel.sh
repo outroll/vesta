@@ -1337,17 +1337,7 @@ if [ "$psql96" == 'y' ] || [ "$psql96" == 'Y'  ]; then
 fi
 
 #start port
-backend_port=9000
-pools=$(find /etc/php* /etc/opt/remi/ -type d \( -name "pool.d" -o -name "*fpm.d" \))
-for pool_pointer in $pools; do
-    ports=$(grep -v '^;' $pool_pointer/* 2>/dev/null |grep listen |grep -o :[0-9].*)
-    ports=$(echo "$ports" |sed "s/://" |sort -n)
-    for port in $ports; do
-        if [ "$backend_port" -eq "$port" ]; then
-            backend_port=$((backend_port + 1))
-        fi
-    done
-done
+backend_port=9001
 
 #install php70
 if [ "$php70" == 'y' ] || [ "$php70" == 'Y'  ]; then
