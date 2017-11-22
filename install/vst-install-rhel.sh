@@ -45,14 +45,14 @@ fi
 # Defining help function
 help() {
     echo "Usage: $0 [OPTIONS]
-  -a, --apache            Install Apache        [yes|no]  default: yes
+  -a, --apache            Install Apache        [yes|no]  default: no
   -n, --nginx             Install Nginx         [yes|no]  default: yes
-  -w, --phpfpm            Install PHP-FPM       [yes|no]  default: no
+  -w, --phpfpm            Install PHP-FPM       [yes|no]  default: yes
   -v, --vsftpd            Install Vsftpd        [yes|no]  default: yes
   -j, --proftpd           Install ProFTPD       [yes|no]  default: no
   -k, --named             Install Bind          [yes|no]  default: yes
   -m, --mysql             Install MySQL         [yes|no]  default: yes
-  -g, --postgresql        Install PostgreSQL    [yes|no]  default: no
+  -g, --postgresql        Install PostgreSQL    [yes|no]  default: yes
   -d, --mongodb           Install MongoDB       [yes|no]  unsupported
   -x, --exim              Install Exim          [yes|no]  default: yes
   -z, --dovecot           Install Dovecot       [yes|no]  default: yes
@@ -185,7 +185,7 @@ set_default_value 'vsftpd' 'yes'
 set_default_value 'proftpd' 'no'
 set_default_value 'named' 'yes'
 set_default_value 'mysql' 'yes'
-set_default_value 'postgresql' 'no'
+set_default_value 'postgresql' 'yes'
 set_default_value 'mongodb' 'no'
 set_default_value 'exim' 'yes'
 set_default_value 'dovecot' 'yes'
@@ -219,7 +219,6 @@ fi
 if [ "$iptables" = 'no' ]; then
     fail2ban='no'
 fi
-
 
 # Checking root permissions
 if [ "x$(id -u)" != 'x0' ]; then
