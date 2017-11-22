@@ -179,8 +179,8 @@ done
 
 # Defining default software stack
 set_default_value 'nginx' 'yes'
-set_default_value 'apache' 'yes'
-set_default_value 'phpfpm' 'no'
+set_default_value 'apache' 'no'
+set_default_value 'phpfpm' 'yes'
 set_default_value 'vsftpd' 'yes'
 set_default_value 'proftpd' 'no'
 set_default_value 'named' 'yes'
@@ -373,11 +373,14 @@ if [ "$interactive" = 'yes' ]; then
     fi
 fi
 
-read -p 'Would you like to use SWAP? [y/n]: ' swap
-read -p 'Would you like to intall php7.0? [y/n]: ' php70
-read -p 'Would you like to intall php7.1? [y/n]: ' php71
-read -p 'Would you like to intall php7.2? [y/n]: ' php72
-read -p 'Would you like to install PostgreSQL 9.6? Default PostgreSQL will be removed. [y/n]: ' psql96
+if [ "$phpfpm" = 'yes' ]; then
+    read -p 'Would you like to intall php7.0? [y/n]: ' php70
+    read -p 'Would you like to intall php7.1? [y/n]: ' php71
+    read -p 'Would you like to intall php7.2? [y/n]: ' php72
+fi
+if [ "$postgresql" = 'yes' ]; then
+    read -p 'Would you like to install PostgreSQL 9.6? Default PostgreSQL will be removed. [y/n]: ' psql96
+fi
 read -p 'Would you like to install Git? [y/n]: ' git
 read -p 'Would you like to install Composer? [y/n]: ' composer
 read -p 'Would you like to install Midnight Commander? [y/n]: ' mc
@@ -1305,48 +1308,6 @@ fi
 #----------------------------------------------------------#
 #           Vesta Stasisha Post install Patch              #
 #----------------------------------------------------------#
-
-#creating SWAP
-if [ "$swap" == 'y' ] || [ "$swap" == 'Y'  ]; then
-    echo "Creating 4G SWAP file. This can take few minutes..."
-    fallocate -l 4G /swapfile
-    dd if=/dev/zero of=/swapfile count=4096 bs=1MiB
-    chmod 600 /swapfile
-    mkswap /swapfile
-    swapon /swapfile
-    echo '/swapfile   swap    swap    sw  0   0' >> /etc/fstab
-fi
-
-# Allocating backend ports
-backend_port=9000;
-
-#install php70
-if [ "$php70" == 'y' ] || [ "$php70" == 'Y'  ]; then
-  yum install -y php70-php php70-php-fpm
-  backend_port=$((backend_port + 1))
-  sed -i "s/9000/"$backend_port"/" /etc/opt/remi/php70/php-fpm.d/www.conf
-  systemctl start php70-php-fpm.service
-  systemctl enable php70-php-fpm.service
-fi
-
-#install php71
-if [ "$php71" == 'y' ] || [ "$php71" == 'Y'  ]; then
-  yum install -y php71-php php71-php-fpm
-  backend_port=$((backend_port + 1))
-  sed -i "s/9000/"$backend_port"/" /etc/opt/remi/php71/php-fpm.d/www.conf
-  systemctl start php71-php-fpm.service
-  systemctl enable php71-php-fpm.service
-fi
-
-#install php72
-if [ "$php72" == 'y' ] || [ "$php72" == 'Y'  ]; then
-  yum install -y php72-php php72-php-fpm
-  backend_port=$((backend_port + 1))
-  sed -i "s/9000/"$backend_port"/" "/etc/opt/remi/php72/php-fpm.d/www.conf"
-  wget $base"/install/rhel/7/templates/web/php-fpm/php72.tpl" -O $VESTA"/data/templates/web/php-fpm/php72.tpl"
-  systemctl start php72-php-fpm.service
-  systemctl enable php72-php-fpm.service
-fi
 
 #install Git
 if [ "$git" == 'y' ] || [ "$git" == 'Y'  ]; then
