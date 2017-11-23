@@ -1,10 +1,22 @@
 language: php
+
 before_install:
+  - git config --global user.email "travis@travis-ci.org"
+  - git config --global user.name "Travis CI"
   - git remote add upstream https://github.com/serghey-rodin/vesta.git
   - git fetch upstream
   - git fetch origin upstream
+  
 script:
   - git fetch upstream
   - git merge upstream/master
+  
 after_success:
   - git push origin upstream
+
+env:
+  global:
+    secure: VJQhzm0Zbq3wPVmCb+aRKQqOTuPWZUxBKYO1zHJBOtFTUIL5I5jQmrgNST7+0Nu0frwMJqTsLbYze7ynlcA3CMgVhdljHWCMElfeSz9dV08i6fyUJHDC61GkRFRIiphft5edDEdeeltZKPQNgoYJWkP140tJZzNmLiO
+YjnvaS02fH4D/i4D3rh58N4YkaOX1nQ3dg5NNU4XUjkDfigvXS8q6Y0z21LpD5dNYUUYHiU+Fh4KorBFncSI8U9efZqALpzI0RvJZ16okSwT7RGkZTQgZUChdlQegHYarwRaOPBz7/aNO54jgWQuxCtqDk3DfwkPDpGUFICUUDG4KUs
+BYFA78jJiGus/C5Y4c5nb9YB/EIihjJtAUgcv29QwUV9BUefGjXqWyN3kzHVp6XPrAAOKv8MW0YFhaTB9BN64erpdMX2woWEV8fL15wWC/W+cGZBqQcvAqP9vf8TJVjqC9xhaTsgRz8OybcnW/Kh5ajzqcT2388sSAcB8tkgVMWefgv
+r4QaZbxLhYexqwtPMiBUPDmM+kzqDDoFVu9E8BJinqQ/pUHmt/aGsBENNfhFxm35xm3D7kvG3p5VgnmGXHPVvIlPFEAWaGb9bV/m6cczThbg/EnP45nuaWcIqRgwO+h3fGe/wF2RmezoG69I5YKWo+vF5fKFbbXzeSdDvN7pBs=
