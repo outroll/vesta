@@ -1159,18 +1159,9 @@ if [ "$postgresql" = 'yes' ]; then
         wget $vestacp/postgresql/pg_hba.conf -O /var/lib/pgsql/data/pg_hba.conf
         service postgresql start
     else
-        if [ "$postgresql96" = 'yes' ]; then
-          /usr/pgsql-9.6/bin/postgresql96-setup initdb
-          systemctl enable postgresql-9.6.service
-          wget $base"/install/rhel/7/postgresql/pg_hba.conf" -O "/var/lib/pgsql/9.6/data/pg_hba.conf"
-          systemctl start postgresql-9.6.service
-          mkdir $VESTA"/web/edit/server/postgresql-9.6"
-          wget $base"/web/edit/server/postgresql-9.6/index.php" -O $VESTA"/web/edit/server/postgresql-9.6/index.php"
-        else
-            service postgresql initdb
-            wget $vestacp/postgresql/pg_hba.conf -O /var/lib/pgsql/data/pg_hba.conf
-            service postgresql start
-        fi
+        service postgresql initdb
+        wget $vestacp/postgresql/pg_hba.conf -O /var/lib/pgsql/data/pg_hba.conf
+        service postgresql start
         sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$vpass'"
     fi
     # Configuring phpPgAdmin
@@ -1180,6 +1171,15 @@ if [ "$postgresql" = 'yes' ]; then
     wget $vestacp/pga/config.inc.php -O /etc/phpPgAdmin/config.inc.php
 fi
 
+if [ "$postgresql96" = 'yes' ]; then
+    /usr/pgsql-9.6/bin/postgresql96-setup initdb
+    systemctl enable postgresql-9.6.service
+    wget $base"/install/rhel/7/postgresql/pg_hba.conf" -O "/var/lib/pgsql/9.6/data/pg_hba.conf"
+    systemctl start postgresql-9.6.service
+    mkdir $VESTA"/web/edit/server/postgresql-9.6"
+    wget $base"/web/edit/server/postgresql-9.6/index.php" -O $VESTA"/web/edit/server/postgresql-9.6/index.php"
+    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$vpass'"
+fi
 
 #----------------------------------------------------------#
 #                      Configure Bind                      #
@@ -1401,7 +1401,7 @@ if [ "$mysql" = 'yes' ]; then
 fi
 
 # Configuring pgsql host
-if [ "$postgresql" = 'yes' ]; then
+if [ "$postgresql" = 'yes' ] || [ "$postgresql96" = 'yes' ]; then
     $VESTA/bin/v-add-database-host pgsql localhost postgres $vpass
     $VESTA/bin/v-add-database admin db db $(gen_pass) pgsql
 fi
