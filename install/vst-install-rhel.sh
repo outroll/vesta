@@ -385,6 +385,17 @@ if [ "$proftpd" = 'yes' ]; then
     echo '   - ProFTPD FTP Server'
 fi
 
+# Other
+if [ "$git" = 'yes' ]; then
+    echo '   - Git Version Control System'
+fi
+if [ "$composer" = 'yes' ]; then
+    echo '   - Composer Dependency management'
+fi
+if [ "$mc" = 'yes' ]; then
+    echo '   - Midnight Commander'
+fi
+
 # Firewall stack
 if [ "$iptables" = 'yes' ]; then
     echo -n '   - Iptables Firewall'
@@ -393,16 +404,6 @@ if [ "$iptables" = 'yes' ] && [ "$fail2ban" = 'yes' ]; then
     echo -n ' + Fail2Ban'
 fi
 
-# Other
-if [ "$git" = 'yes' ]; then
-    echo '   - Git Version Control System '
-fi
-if [ "$composer" = 'yes' ]; then
-    echo '   - Composer Dependency management'
-fi
-if [ "$mc" = 'yes' ]; then
-    echo '   - Midnight Commander'
-fi
 echo -e "\n\n"
 
 # Asking for confirmation to proceed
