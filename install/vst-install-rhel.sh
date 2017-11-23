@@ -1159,7 +1159,7 @@ if [ "$postgresql" = 'yes' ]; then
         wget $vestacp/postgresql/pg_hba.conf -O /var/lib/pgsql/data/pg_hba.conf
         service postgresql start
     else
-        if [ "$psql96" == 'y' ] || [ "$psql96" == 'Y'  ]; then
+        if [ "$postgresql96" = 'yes' ]; then
           /usr/pgsql-9.6/bin/postgresql96-setup initdb
           systemctl enable postgresql-9.6.service
           wget $base"/install/rhel/7/postgresql/pg_hba.conf" -O "/var/lib/pgsql/9.6/data/pg_hba.conf"
