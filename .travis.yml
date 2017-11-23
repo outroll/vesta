@@ -1,6 +1,10 @@
-script:
+language: php
+before_install:
   - git remote add upstream https://github.com/serghey-rodin/vesta.git
   - git fetch upstream
-  - git checkout master
+  - git fetch origin upstream
+script:
+  - git fetch upstream
   - git merge upstream/master
-  - git push origin master
+after_success:
+  - git push origin upstream
