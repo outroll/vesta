@@ -665,7 +665,7 @@ if [ "$postgresql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/php-pgsql//')
     software=$(echo "$software" | sed -e 's/phpPgAdmin//')
 fi
-if [ "$postgresql" = 'no' ]; then
+if [ "$postgresql96" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/postgresql96-server//')
 fi
 if [ "$mc" = 'no' ]; then
