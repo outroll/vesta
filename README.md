@@ -36,6 +36,9 @@ Then run it:
 bash vst-install.sh
 ```
 
+Install [helper](https://stasisha.github.io/vesta/)
+
+
 License
 ----------------------------
 Vesta is licensed under  [GPL v3 ](https://github.com/serghey-rodin/vesta/blob/master/LICENSE) license
