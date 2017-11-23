@@ -57,7 +57,7 @@ help() {
   -k,  --named             Install Bind          [yes|no]  default: yes
   -m,  --mysql             Install MySQL         [yes|no]  default: yes
   -g,  --postgresql        Install PostgreSQL    [yes|no]  default: no
-  -g96,--postgresql96      Install PostgreSQL9.6 [yes|no]  default: yes
+  -g96,--postgresql96      Install PostgreSQL 9.6[yes|no]  default: yes
   -d,  --mongodb           Install MongoDB       [yes|no]  unsupported
   -x,  --exim              Install Exim          [yes|no]  default: yes
   -z,  --dovecot           Install Dovecot       [yes|no]  default: yes
@@ -513,7 +513,7 @@ echo "gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA" >> $vrepo
 wget $vestacp/GPG.txt -O /etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA
 
 # Installing postgresql9.6 repository
-yum install https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-redhat96-9.6-3.noarch.rpm -y
+yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-redhat96-9.6-3.noarch.rpm
 
 #----------------------------------------------------------#
 #                         Backup                           #
@@ -685,10 +685,10 @@ fi
 # Installing rpm packages
 if [ "$remi" = 'yes' ]; then
     yum -y --disablerepo=* \
-        --enablerepo="*base,*updates,nginx,epel,vesta,remi*" \
+        --enablerepo="*base,*updates,nginx,epel,vesta,pgdg-96-redhat,remi*" \
         install $software
 else
-    yum -y --disablerepo=* --enablerepo="*base,*updates,nginx,epel,vesta" \
+    yum -y --disablerepo=* --enablerepo="*base,*updates,nginx,epel,vesta,pgdg-96-redhat" \
         install $software
 fi
 check_result $? "yum install failed"
