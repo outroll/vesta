@@ -105,7 +105,7 @@ if [ "$?" -ne 0 ]; then
     touch $VESTA/data/queue/letsencrypt.pipe
     sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
     send_notice "LETSENCRYPT" "$alias validation failed"
-    check_result "$E_INVALID" "LE $domain validation"
+    check_result "$E_INVALID" "LE $domain validation: $crt"
 fi
 echo "$crt" > $ssl_dir/$domain.crt
 
@@ -138,7 +138,7 @@ if [ -z "$(grep v-update-lets $VESTA/data/users/admin/cron.conf)" ]; then
     min=$(generate_password '012345' '2')
     hour=$(generate_password '1234567' '1')
     cmd="sudo $BIN/v-update-letsencrypt-ssl"
-    echo "$BIN/v-add-cron-job admin '$min' '$hour' '*' '*' '*' '$cmd'" > /dev/null
+    $BIN/v-add-cron-job admin '$min' '$hour' '*' '*' '*' '$cmd' > /dev/null
 fi
 
 # Updating letsencrypt key

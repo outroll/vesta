@@ -112,7 +112,7 @@ if [ -z "$(grep v-update-lets $VESTA/data/users/admin/cron.conf)" ]; then
     min=$(generate_password '012345' '2')
     hour=$(generate_password '1234567' '1')
     cmd="sudo $BIN/v-update-letsencrypt-ssl"
-    echo "$BIN/v-add-cron-job admin '$min' '$hour' '*' '*' '*' '$cmd'" > /dev/null
+    $BIN/v-add-cron-job admin "$min" "$hour" '*' '*' '*' "$cmd" > /dev/null
 fi
 
 # Updating letsencrypt key

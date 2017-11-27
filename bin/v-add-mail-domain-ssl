@@ -85,15 +85,15 @@ fi
 # Adding domain to the dovecot config
 echo "" >> /etc/dovecot/conf.d/10-ssl.conf
 echo "local_name ${domain_idn} {" >> /etc/dovecot/conf.d/10-ssl.conf
-echo "  ssl_cert = <$HOMEDIR/$user/conf/mail/ssl.${domain_idn}.crt" >> /etc/dovecot/conf.d/10-ssl.conf
+echo "  ssl_cert = <$HOMEDIR/$user/conf/mail/ssl.${domain_idn}.pem" >> /etc/dovecot/conf.d/10-ssl.conf
 echo "  ssl_key = <$HOMEDIR/$user/conf/mail/ssl.${domain_idn}.key" >> /etc/dovecot/conf.d/10-ssl.conf
 echo "}" >> /etc/dovecot/conf.d/10-ssl.conf
 
-rm /usr/local/vesta/ssl/exim.key.$domain_idn
-rm /usr/local/vesta/ssl/exim.cert.$domain_idn
+rm -f /usr/local/vesta/ssl/exim.key.$domain_idn
+rm -f /usr/local/vesta/ssl/exim.cert.$domain_idn
 
 ln -s $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.key /usr/local/vesta/ssl/exim.key.$domain_idn
-ln -s $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.crt /usr/local/vesta/ssl/exim.cert.$domain_idn
+ln -s $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.pem /usr/local/vesta/ssl/exim.cert.$domain_idn
 
 
 #----------------------------------------------------------#
