@@ -27,6 +27,10 @@ check_args '1' "$#" 'SERVICE'
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
+# Exit
+if [ "$2" = "no" ]; then
+    exit
+fi
 
 if [ "$service" != "iptables" ]; then
     service $service restart >/dev/null 2>&1

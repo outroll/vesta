@@ -138,7 +138,7 @@ if [ -z "$(grep v-update-lets $VESTA/data/users/admin/cron.conf)" ]; then
     min=$(generate_password '012345' '2')
     hour=$(generate_password '1234567' '1')
     cmd="sudo $BIN/v-update-letsencrypt-ssl"
-    $BIN/v-add-cron-job admin "$min" "$hour" '*' '*' '*' "$cmd" > /dev/null
+    echo "$BIN/v-add-cron-job admin '$min' '$hour' '*' '*' '*' '$cmd'" > /dev/null
 fi
 
 # Updating letsencrypt key
@@ -157,6 +157,8 @@ $BIN/v-delete-web-domain-alias $user $domain "mail.$domain"
 
 # Restarting web
 $BIN/v-restart-web $restart
+$BIN/v-restart-mail $restart
+$BIN/v-restart-service dovecot $restart
 if [ "$?" -ne 0  ]; then
     send_notice 'LETSENCRYPT' "web server needs to be restarted manually"
 fi
