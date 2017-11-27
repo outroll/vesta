@@ -10,9 +10,8 @@
 #----------------------------------------------------------#
 
 # Argument definition
-domain='certificate'
 ssl_dir=$1
-restart=$2
+restart={$2-yes}
 
 # Includes
 source $VESTA/func/main.sh
@@ -25,7 +24,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '1' "$#" 'SSL_DIR [RESTART]'
-is_format_valid 'ssl_dir'
+#is_format_valid 'ssl_dir'
 
 
 #----------------------------------------------------------#
@@ -33,19 +32,20 @@ is_format_valid 'ssl_dir'
 #----------------------------------------------------------#
 
 # Checking new certificate
-certificate=$(cat $ssl_dir/$domain.crt |grep -n END)
+certificate=$(cat $ssl_dir/certificate.crt |grep -n END)
 certificate_count=$(echo "$certificate" |wc -l)
 if [ "$certificate_count" -gt 1 ]; then
     crt_end=$(echo "$certificate" |head -n1 |cut -f 1 -d :)
-    crt_lines=$(wc -l $ssl_dir/$domain.crt |cut -f1 -d ' ')
+    crt_lines=$(wc -l $ssl_dir/certificate.crt |cut -f1 -d ' ')
     pem_begin=$((crt_lines - crt_end))
-    mv $ssl_dir/$domain.crt $ssl_dir/$domain.crt_full
-    head -n $crt_end $ssl_dir/$domain.crt_full > $ssl_dir/$domain.crt
-    tail -n $pem_begin $ssl_dir/$domain.crt_full > $ssl_dir/$domain.ca
+    mv $ssl_dir/certificate.crt $ssl_dir/certificate.crt_full
+    head -n $crt_end $ssl_dir/certificate.crt_full > $ssl_dir/certificate.crt
+    tail -n $pem_begin $ssl_dir/certificate.crt_full > $ssl_dir/certificate.ca
     is_web_domain_cert_valid
-    mv -f $ssl_dir/$domain.crt_full $ssl_dir/$domain.crt
-    rm -f $ssl_dir/$domain.ca
+    mv -f $ssl_dir/certificate.crt_full $ssl_dir/certificate.crt
+    rm -f $ssl_dir/certificate.ca
 else
+    domain_idn='certificate'
     is_web_domain_cert_valid
 fi
 
@@ -56,7 +56,7 @@ mv $VESTA/ssl/certificate.key $VESTA/ssl/certificate.key.back
 # Adding new certificate
 cp -f $ssl_dir/certificate.crt $VESTA/ssl/certificate.crt
 cp -f $ssl_dir/certificate.key $VESTA/ssl/certificate.key
-
+echo "check b"
 
 #----------------------------------------------------------#
 #                       Vesta                              #

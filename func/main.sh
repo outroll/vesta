@@ -13,6 +13,8 @@ DNSTPL=$VESTA/data/templates/dns
 RRD=$VESTA/web/rrd
 PLUGIN=$VESTA/plugin
 SENDMAIL="$VESTA/web/inc/mail-wrapper.php"
+LETSENCRYPTAPI='https://acme-v01.api.letsencrypt.org'
+#LETSENCRYPTAPI='https://acme-staging.api.letsencrypt.org'
 
 # Return codes
 OK=0

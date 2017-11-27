@@ -72,12 +72,12 @@ ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "$email" "US" "California" \
     "San Francisco" "Vesta" "IT" "$aliases" |tail -n1 |awk '{print $2}')
 
 # Signing CSR
-crt=$($BIN/v-sign-letsencrypt-csr $user $domain $ssl_dir)
+crt=$($BIN/v-sign-letsencrypt-csr "$user" "$domain" "$ssl_dir")
 if [ "$?" -ne 0 ]; then
     touch $VESTA/data/queue/letsencrypt.pipe
     sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
     send_notice "LETSENCRYPT" "$alias validation failed"
-    check_result "$E_INVALID" "LE $domain validation"
+    check_result "$E_INVALID" "LE $domain validation: $crt"
 fi
 echo "$crt" > $ssl_dir/$domain.crt
 
@@ -89,6 +89,7 @@ issuer=$(openssl x509 -text -in $ssl_dir/$domain.crt |grep "Issuer:")
 if [ -z "$(echo $issuer|grep X3)" ]; then
     curl -s $le_certs/$x1 > $ssl_dir/$domain.ca
 else
+    #curl -s "https://letsencrypt.org/certs/fakeleintermediatex1.pem" > $ssl_dir/$domain.ca
     curl -s $le_certs/$x3 > $ssl_dir/$domain.ca
 fi
 
@@ -98,7 +99,7 @@ mv $ssl_dir/$domain.csr $ssl_dir/certificate.csr
 mv $ssl_dir/$domain.key $ssl_dir/certificate.key
 
 # Adding SSL
-$BIN/v-change-sys-vesta-ssl $ssl_dir
+$BIN/v-change-sys-vesta-ssl "$ssl_dir"
 if [ "$?" -ne '0' ]; then
     touch $VESTA/data/queue/letsencrypt.pipe
     sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe

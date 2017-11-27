@@ -40,7 +40,7 @@ fi
 #                       Action                             #
 #----------------------------------------------------------#
 
-api='https://acme-v01.api.letsencrypt.org'
+api=$LETSENCRYPTAPI
 if [ -z "$email" ]; then
     email=$(get_user_value '$CONTACT')
 fi

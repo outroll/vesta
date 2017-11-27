@@ -58,7 +58,7 @@ fi
 #----------------------------------------------------------#
 
 source $USER_DATA/ssl/le.conf
-api='https://acme-v01.api.letsencrypt.org'
+api=$LETSENCRYPTAPI
 r_domain=$(echo "$check_domain" |cut -f 2 -d \')
 key="$USER_DATA/ssl/user.key"
 exponent="$EXPONENT"
