@@ -11,20 +11,17 @@
 
 # Argument definition
 user=$1
-domain=$2
-domain_idn=$2
+domain=$(idn -t --quiet -u "$2" )
+domain_idn=$(idn -t --quiet -a "$domain")
 template=$3
-restart=$4
+restart="$4"
 
+VESTA='/usr/local/vesta'
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
 source $VESTA/conf/vesta.conf
-
-# Additional argument formatting
-format_domain
-format_domain_idn
 
 
 #----------------------------------------------------------#
@@ -47,17 +44,21 @@ is_backend_template_valid $template
 
 prepare_web_backend
 
-# Deleting backend
-rm -f $pool/$backend_type.conf
+
 
 # Allocating backend port
 backend_port=9000
-ports=$(grep -v '^;' $pool/* 2>/dev/null |grep listen |grep -o :[0-9].*)
-ports=$(echo "$ports" |sed "s/://" |sort -n)
-for port in $ports; do
-    if [ "$backend_port" -eq "$port" ]; then
-        backend_port=$((backend_port + 1))
-    fi
+pools=$(find /etc/php* /etc/opt/remi/ -type d \( -name "pool.d" -o -name "*fpm.d" \))
+for pool_pointer in $pools; do
+	# Deleting backend
+	rm -f $pool_pointer/$backend_type.conf
+    ports=$(grep -v '^;' $pool_pointer/* 2>/dev/null |grep listen |grep -o :[0-9].*)
+    ports=$(echo "$ports" |sed "s/://" |sort -n)
+    for port in $ports; do
+        if [ "$backend_port" -eq "$port" ]; then
+            backend_port=$((backend_port + 1))
+        fi
+    done
 done
 
 # Changing backend config
@@ -146,11 +147,13 @@ fi
 
 
 # Restarting web
-$BIN/v-restart-web $restart
-check_result $? "Web restart failed" >/dev/null
+if [ "$restart" != 'no' ]; then
+    $BIN/v-restart-web
+    check_result $? "Web restart failed" >/dev/null
 
-$BIN/v-restart-web-backend $restart
-check_result $? "Web backend restart failed" >/dev/null
+    $BIN/v-restart-web-backend
+    check_result $? "Web backend restart failed" >/dev/null
+fi
 
 # Logging
 log_history "changed backend template for $domain to $template"

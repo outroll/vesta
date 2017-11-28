@@ -4,3 +4,4 @@
 *.gz
 .vscode
 .DS_Store
+.idea

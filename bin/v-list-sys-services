@@ -88,7 +88,12 @@ get_srv_state() {
     if [ -z "$pids" ] && [ "$name" != 'nginx' ]; then
         pids=$(pgrep $name |tr '\n' '|')
     fi
-
+    if [ -z "$pids" ]; then
+        parent=$(ps aux | grep $srv | grep -v grep | awk '{print $2}')
+        pids=$(pgrep -P $parent|tr '\n' '|')
+		pids=$pids$parent
+    fi
+	
     # Checking pid
     if [ ! -z "$pids" ]; then
         pid=$(echo "$pids" |cut -f 1 -d '|')
@@ -151,11 +156,35 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB_SYSTEM" != 'remote' ]; then
     data="$data MEM='$mem' RTIME='$rtime'"
 fi
 
-# Checking WEB Backend
+# Checking WEB Backend: default php-fpm
 if [ ! -z "$WEB_BACKEND" ] && [ "$WEB_BACKEND" != 'remote' ]; then
-    proc_name=$(ls /usr/sbin/php*fpm* |cut -f 4 -d /)
+    proc_name="/etc/php-fpm.conf)"
     get_srv_state $proc_name
-    data="$data\nNAME='$WEB_BACKEND' SYSTEM='backend server' STATE='$state'"
+    data="$data\nNAME='$WEB_BACKEND' SYSTEM='default backend server' STATE='$state'"
+    data="$data CPU='$cpu' MEM='$mem' RTIME='$rtime'"
+fi
+
+# Checking WEB Backend: default php70-fpm
+if [  -e "/usr/lib/systemd/system/php70-php-fpm.service" ]; then
+    proc_name="php70"
+    get_srv_state $proc_name
+    data="$data\nNAME='php70-php-fpm' SYSTEM='backend server' STATE='$state'"
+    data="$data CPU='$cpu' MEM='$mem' RTIME='$rtime'"
+fi
+
+# Checking WEB Backend: default php71-fpm
+if [  -e "/usr/lib/systemd/system/php71-php-fpm.service" ]; then
+    proc_name="php71"
+    get_srv_state $proc_name
+    data="$data\nNAME='php71-php-fpm' SYSTEM='backend server' STATE='$state'"
+    data="$data CPU='$cpu' MEM='$mem' RTIME='$rtime'"
+fi
+
+# Checking WEB Backend: default php72-fpm
+if [  -e "/usr/lib/systemd/system/php72-php-fpm.service" ]; then
+    proc_name="php72"
+    get_srv_state $proc_name
+    data="$data\nNAME='php72-php-fpm' SYSTEM='backend server' STATE='$state'"
     data="$data CPU='$cpu' MEM='$mem' RTIME='$rtime'"
 fi
 
@@ -214,7 +243,7 @@ if [ ! -z "$ANTISPAM_SYSTEM" ] && [ "$ANTISPAM_SYSTEM" != 'remote' ]; then
     data="$data STATE='$state' CPU='$cpu' MEM='$mem' RTIME='$rtime'"
 fi
 
-# Checking DB system
+# Checking DB system: default
 if [ ! -z "$DB_SYSTEM" ] && [ "$DB_SYSTEM" != 'remote' ]; then
     for db in ${DB_SYSTEM//,/ }; do
         proc_name=''
@@ -239,10 +268,18 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB_SYSTEM" != 'remote' ]; then
             fi
         fi
         get_srv_state $service $proc_name
-        data="$data\nNAME='$service' SYSTEM='database server' STATE='$state'"
+        data="$data\nNAME='$service' SYSTEM='default database server' STATE='$state'"
         data="$data CPU='$cpu' MEM='$mem' RTIME='$rtime'"
         proc_name=''
     done
+fi
+
+# Checking DB system: PostgreSQL 9.6
+if [  -e "/usr/pgsql-9.6/bin/psql" ]; then
+    proc_name="postgres"
+    get_srv_state $proc_name
+    data="$data\nNAME='postgresql-9.6' SYSTEM='database server' STATE='$state'"
+    data="$data CPU='$cpu' MEM='$mem' RTIME='$rtime'"
 fi
 
 # Checking FTP system
