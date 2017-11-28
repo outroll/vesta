@@ -15,12 +15,9 @@ user=$1
 # Importing system environment  as we run this script
 #       mostly by cron wich not read it by itself
 source /etc/profile
-
-# Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
-
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -31,7 +28,6 @@ if [ ! -z "$user" ]; then
     is_format_valid 'user'
     is_object_valid 'user' 'USER' "$user"
 fi
-
 
 #----------------------------------------------------------#
 #                       Action                             #
@@ -67,8 +63,7 @@ TOTAL_USERS=0
 
 # Updating user stats
 for user in $user_list; do
-    USER_DATA=$VESTA/data/users/$user
-    source $USER_DATA/user.conf
+    USER_DATA=$VESTA/data/users/$user && source $USER_DATA/user.conf
     next_month=$(date +'%m/01/%y' -d '+ 1 month')
     DATE=$(date -d "$next_month -1day" +%F)
 
