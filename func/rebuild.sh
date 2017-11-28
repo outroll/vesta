@@ -4,6 +4,7 @@ rebuild_user_conf() {
     # Get user variables
     source $USER_DATA/user.conf
 
+
     # Creating user data files
     chmod 770 $USER_DATA
     chmod 660 $USER_DATA/user.conf
@@ -14,15 +15,18 @@ rebuild_user_conf() {
     touch $USER_DATA/stats.log
     chmod 660 $USER_DATA/stats.log
 
+
     # Run template trigger
     if [ -x "$VESTA/data/packages/$PACKAGE.sh" ]; then
         $VESTA/data/packages/$PACKAGE.sh "$user" "$CONTACT" "$FNAME" "$LNAME"
     fi
 
+
     # Rebuild user
     shell=$(grep -w "$SHELL" /etc/shells |head -n1)
     /usr/sbin/useradd "$user" -s "$shell" -c "$CONTACT" \
         -m -d "$HOMEDIR/$user" > /dev/null 2>&1
+
 
     # Update user shell
     /usr/bin/chsh -s "$shell" "$user" &>/dev/null
