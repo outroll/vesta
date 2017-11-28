@@ -52,6 +52,7 @@ if [ "$version" = 'debian' ]; then
     release=$(cat /etc/issue|grep -o [0-9]|head -n1)
     vestacp="$protocol://$chost/$version/$release"
 fi
+# Added code | devs4p
 if [ "$version" = 'Gentoo' ] && [ "$version" = 'Arch' ] && [ "$version" = 'Slackware' ] && [ "$version" = 'Funtoo' ] && [ "$version" = 'Mageia' ]; then
     release=$(lsb_release -a)
     vestacp="$protocol://$chost/Ubuntu-12.04"
