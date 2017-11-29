@@ -1,0 +1,96 @@
+#!/bin/bash
+# info: list iptables rules
+# options: [FORMAT]
+#
+# The function of obtaining the list of all iptables rules.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    i=1
+    objects=$(grep RULE $VESTA/data/firewallv6/rules.conf |wc -l)
+    echo "{"
+    while read str; do
+        eval $str
+        echo -n '    "'$RULE'": {
+        "ACTION": "'$ACTION'",
+        "PROTOCOL": "'$PROTOCOL'",
+        "PORT": "'$PORT'",
+        "IP6": "'$IP6'",
+        "COMMENT": "'$COMMENT'",
+        "SUSPENDED": "'$SUSPENDED'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done < <(cat $VESTA/data/firewallv6/rules.conf)
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "RULE^ACTION^PROTO^PORT^IP6^SPND^DATE"
+    echo "----^------^-----^----^--^----^----"
+    while read str; do
+        eval $str
+        echo "$RULE^$ACTION^$PROTOCOL^$PORT^$IP6^$SUSPENDED^$DATE"
+    done < <(cat $VESTA/data/firewallv6/rules.conf)
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    while read str; do
+        eval $str
+        echo -ne "$RULE\t$ACTION\t$PROTOCOL\t$PORT\t$IP6\t$COMMENT\t"
+        echo -e "$SUSPENDED\t$TIME\t$DATE"
+    done < <(cat $VESTA/data/firewallv6/rules.conf)
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "RULE,ACTION,PROTOCOL,PORT,IP6,COMMENT,SUSPENDED,TIME,DATE"
+    while read str; do
+        eval $str
+        echo -n "$RULE,$ACTION,$PROTOCOL,$PORT,$IP6,\"$COMMENT\","
+        echo "$SUSPENDED,$TIME,$DATE"
+    done < <(cat $VESTA/data/firewallv6/rules.conf)
+}
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t -s '^' ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

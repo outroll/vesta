@@ -63,7 +63,17 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_ip" value="<?=htmlentities(trim($v_ip, "'"))?>">
+                                    <input type="text" size="20" class="vst-input" name="v_ip" value="<?=htmlentities(trim($v_ip, "'"))?>"><!-- ' -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('IPv6 Address');?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_ipv6" value="<?=htmlentities(trim($v_ipv6, "'"))?>"><!-- ' -->
                                 </td>
                             </tr>
                             <tr>

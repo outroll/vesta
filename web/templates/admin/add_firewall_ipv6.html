@@ -1,0 +1,119 @@
+    <div class="l-center">
+      <div class="l-sort clearfix">
+        <div class="l-sort-toolbar clearfix float-left">
+                <span class="title"><b><?=__('Adding Firewall Rule')?></b></span>
+                  <?php
+                    if (!empty($_SESSION['error_msg'])) {
+                      echo "<span class=\"vst-error\"> → ".htmlentities($_SESSION['error_msg'])."</span>";
+                    } else {
+                      if (!empty($_SESSION['ok_msg'])) {
+                        echo "<span class=\"vst-ok\"> → ".$_SESSION['ok_msg']."</span>";
+                      }
+                    }
+                  ?>
+        </div>
+      </div>
+    </div>
+
+    <div class="l-separator"></div>
+    <!-- /.l-separator -->
+
+    <div class="l-center">
+        <?php
+          $back = $_SESSION['back'];
+          if (empty($back)) {
+            $back = "location.href='/list/firewallv6/'";
+          } else {
+            $back = "location.href='".$back."'";
+          }
+        ?>
+        <form id="vstobjects" name="v_add_ip" method="post">
+            <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
+            <input type="hidden" name="ok" value="Add" />
+
+            <table class="data mode-add">
+                <tr class="data-add">
+                    <td class="data-dotted">
+                        <table class="data-col1">
+                            <tr><td></td></tr>
+                        </table>
+                    </td>
+                    <td class="data-dotted">
+                        <table class="data-col2" width="600px">
+                            <tr>
+                                <td class="vst-text step-top">
+                                    <?php print __('Action') ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="vst-list" name="v_action">
+                                        <option value="DROP" <?php if ((!empty($v_action)) && ( $v_action == "'DROP'" )) echo 'selected'?>><?=__('DROP')?></option>
+                                        <option value="ACCEPT" <?php if ((!empty($v_action)) && ( $v_action == "'ACCEPT'" )) echo 'selected'?>><?=__('ACCEPT')?></option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Protocol') ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="vst-list" name="v_protocol">
+                                        <option value="TCP" <?php if ((!empty($v_protocol)) && ( $v_protocol == "'TCP'" )) echo 'selected'?>><?=__('TCP')?></option>
+                                        <option value="UDP" <?php if ((!empty($v_protocol)) && ( $v_protocol == "'UDP'" )) echo 'selected'?>><?=__('UDP')?></option>
+                                        <option value="ICMP" <?php if ((!empty($v_protocol)) && ( $v_protocol == "'ICMPV6'" )) echo 'selected'?>><?=__('ICMPV6')?></option>
+                                    </select>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Port');?> <span class="optional">(<?php print __('ranges are acceptable');?>)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_port" value="<?=htmlentities(trim($v_port, "'"))?>"> <!-- ' -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('IPv6 address');?> <span class="optional">(<?php print __('CIDR format is supported');?>)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_ipv6" value="<?=htmlentities(trim($v_ipv6, "'"))?>"> <!-- ' -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Comment');?> <span class="optional">(<?php print __('optional');?>)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_comment" maxlength="255" value="<?=htmlentities(trim($v_comment, "'"))?>"> <!-- ' -->
+                                </td>
+                            </tr>
+
+                        </table>
+                        <table class="data-col2">
+                            <tr>
+                                <td class="step-top" width="116px">
+                                    <input type="submit" name="ok" value="<?=__('Add')?>" class="button">
+                                </td>
+                                <td class="step-top">
+                                    <input type="button" class="button cancel" value="<?=__('Back')?>" onclick="<?=$back?>">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </from>
+
+    </div>

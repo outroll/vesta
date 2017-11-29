@@ -1,0 +1,80 @@
+#!/bin/bash
+# info: stop system firewall
+# options: NONE
+#
+# The function stops  iptables
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Defining absolute path for iptables and modprobe
+iptables="/sbin/ip6tables"
+modprobe="/sbin/modprobe"
+
+# Includes
+source /etc/profile.d/vesta.sh
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+#is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Creating temporary file
+tmp=$(mktemp)
+
+# Flushing INPUT chain
+echo "$iptables -P INPUT ACCEPT" >> $tmp
+echo "$iptables -F INPUT" >> $tmp
+
+# Deleting vesta chain
+echo "$iptables -X vesta" >> $tmp
+
+# Deleting custom chains
+chains=$(cat $VESTA/data/firewallv6/chains.conf 2>/dev/null)
+IFS=$'\n'
+for chain in $chains; do
+    eval $chain
+    echo "$iptables -F fail2ban-$CHAIN" >> $tmp
+    echo "$iptables -X fail2ban-$CHAIN" >> $tmp
+done
+
+# Applying rules
+bash $tmp 2>/dev/null
+
+# Deleting temporary file
+rm -f $tmp
+
+# Saving rules to the master iptables file
+if [ -e "/etc/redhat-release" ]; then
+    /sbin/ip6tables-save > /etc/sysconfig/ip6tables
+    if [ -z "$(ls /etc/rc3.d/S*ip6tables 2>/dev/null)" ]; then
+        /sbin/chkconfig ip6tables off
+    fi
+else
+    /sbin/ip6tables-save > /etc/ip6tables.rules
+    preup="/etc/network/if-pre-up.d/ip6tables"
+    if [ ! -e "$preup" ]; then
+        echo '#!/bin/sh' > $preup
+        echo "/sbin/ip6tables-restore < /etc/ip6tables.rules" >> $preup
+        echo "exit 0" >> $preup
+        chmod +x $preup
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

@@ -13,8 +13,23 @@ if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
 
 if ($_SESSION['user'] == 'admin') {
     if (!empty($_GET['ip'])) {
+            
+        // List ip
         $v_ip = escapeshellarg($_GET['ip']);
-        exec (VESTA_CMD."v-delete-sys-ip ".$v_ip, $output, $return_var);
+        exec (VESTA_CMD."v-list-sys-ip ".$v_ip." 'json'", $output, $return_var);
+        check_return_code($return_var,$output);
+        $data = json_decode(implode('', $output), true);
+        unset($output);
+
+        // Parse ip
+        $v_username = $user;
+        $v_ip = $_GET['ip'];
+        $v_version = $data[$v_ip]['VERSION'];
+        if($v_version == 6) {
+            exec (VESTA_CMD."v-delete-sys-ipv6 ".$v_ip, $output, $return_var);
+        } else {
+            exec (VESTA_CMD."v-delete-sys-ip ".$v_ip, $output, $return_var);
+        }
     }
     check_return_code($return_var,$output);
     unset($output);

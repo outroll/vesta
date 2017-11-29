@@ -81,6 +81,7 @@ fi
 # Changing tpl
 echo "$template_data" |\
     sed -e "s/%ip%/$IP/g" \
+        -e "s/%ipv6%/$IP6/g" \
         -e "s/%domain_idn%/$domain_idn/g" \
         -e "s/%domain%/$domain/g" \
         -e "s/%ns1%/$ns1/g" \

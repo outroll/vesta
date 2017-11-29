@@ -51,6 +51,8 @@ for user in $user_list; do
     SUSPENDED_CRON=0
     IP_AVAIL=0
     IP_OWNED=0
+    IP6_AVAIL=0
+    IP6_OWNED=0
     U_USERS=0
     U_DISK=0
     U_DISK_DIRS=$(get_user_value '$U_DISK_DIRS')
@@ -88,16 +90,27 @@ for user in $user_list; do
     # Checking ip
     for ip in $(ls $VESTA/data/ips) ;do
         source $VESTA/data/ips/$ip
-        if [ "$OWNER" = "$user" ]; then
-            IP_OWNED=$((IP_OWNED + 1))
-            IP_AVAIL=$((IP_AVAIL + 1))
-        fi
-        if [ "$OWNER" = 'admin' ] && [ "$STATUS" = 'shared' ]; then
-            IP_AVAIL=$((IP_AVAIL + 1))
+        if [ "$VERSION" = "4" ]; then
+            if [ "$OWNER" = "$user" ]; then
+                IP_OWNED=$((IP_OWNED + 1))
+                IP_AVAIL=$((IP_AVAIL + 1))
+            fi
+            if [ "$OWNER" = 'admin' ] && [ "$STATUS" = 'shared' ]; then
+                IP_AVAIL=$((IP_AVAIL + 1))
+            fi
+        else
+            if [ "$OWNER" = "$user" ]; then
+                IP6_OWNED=$((IP6_OWNED + 1))
+                IP6_AVAIL=$((IP6_AVAIL + 1))
+            fi
+            if [ "$OWNER" = 'admin' ] && [ "$STATUS" = 'shared' ]; then
+                IP6_AVAIL=$((IP6_AVAIL + 1))
+            fi
         fi
     done
     if [ "$user" = 'admin' ]; then
-        IP_AVAIL=$(ls $VESTA/data/ips | wc -l)
+        IP_AVAIL=$(ls $VESTA/data/ips | grep VERSION='4' | wc -l)
+        IP6_AVAIL=$(ls $VESTA/data/ips | grep VERSION='6' | wc -l)
     fi
 
     # Checking web system
@@ -185,6 +198,8 @@ for user in $user_list; do
     update_user_value "$user" '$SUSPENDED_CRON' "$SUSPENDED_CRON"
     update_user_value "$user" '$IP_AVAIL' "$IP_AVAIL"
     update_user_value "$user" '$IP_OWNED' "$IP_OWNED"
+    update_user_value "$user" '$IP6_AVAIL' "$IP6_AVAIL"
+    update_user_value "$user" '$IP6_OWNED' "$IP6_OWNED"
     update_user_value "$user" '$U_USERS' "$U_USERS"
     update_user_value "$user" '$U_DISK' "$U_DISK"
     update_user_value "$user" '$U_DISK_DIRS' "$U_DISK_DIRS"

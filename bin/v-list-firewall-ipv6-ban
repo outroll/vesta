@@ -1,0 +1,90 @@
+#!/bin/bash
+# info: list firewall block list
+# options: [FORMAT]
+#
+# The function of obtaining the list of currently blocked ips.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    i=1
+    objects=$(grep IP6 $VESTA/data/firewallv6/banlist.conf |wc -l)
+    echo "{"
+    while read str; do
+        eval $str
+        echo -n '    "'$IP6'": {
+        "IP6": "'$IP6'",
+        "CHAIN": "'$CHAIN'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done < <(cat $VESTA/data/firewallv6/banlist.conf)
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "IP6   CHAIN   TIME   DATE"
+    echo "---   -----   ----   ----"
+    while read str; do
+        eval $str
+        echo "$IP6 $CHAIN $TIME $DATE"
+    done < <(cat $VESTA/data/firewallv6/banlist.conf)
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    while read str; do
+        eval $str
+        echo -e "$IP6\t$CHAIN\t$TIME\t$DATE"
+    done < <(cat $VESTA/data/firewallv6/banlist.conf)
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "IP6,CHAIN,TIME,DATE"
+    while read str; do
+        eval $str
+        echo "$IP6,$CHAIN,$TIME,$DATE"
+    done < <(cat $VESTA/data/firewallv6/banlist.conf)
+}
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

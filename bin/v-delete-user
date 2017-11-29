@@ -19,6 +19,7 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/db.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -69,6 +70,8 @@ fi
 # Releasing user ips
 $BIN/v-delete-user-ips "$user"
 check_result "$?" "user ip release failed"
+$BIN/v-delete-user-ips-v6 "$user"
+check_result "$?" "user ipv6 release failed"
 
 # Deleteing user pipes
 sed -i "/ $user$/d" $VESTA/data/queue/disk.pipe
