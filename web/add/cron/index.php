@@ -43,9 +43,22 @@ if (!empty($_POST['ok'])) {
 
     // Add cron job
     if (empty($_SESSION['error_msg'])) {
-        exec (VESTA_CMD."v-add-cron-job ".$user." ".$v_min." ".$v_hour." ".$v_day." ".$v_month." ".$v_wday." ".$v_cmd, $output, $return_var);
-        check_return_code($return_var,$output);
-        unset($output);
+        exec (VESTA_CMD."v-add-cron-job ".$user." ".$v_min." ".$v_hour." ".$v_day." ".$v_month." ".$v_wday." ".$v_cmd, $output, $return_var)
+
+	/*
+	* Two possibilities here::
+
+	a) old-way
+	b) new-way
+
+	!!! ONLY ONE METHOD AT A TIME
+	*/
+
+	# check_return_code($return_var,$output);
+        if (check_return_code)
+	{
+		unset($output);
+	}
     }
 
     // Flush field values on success
