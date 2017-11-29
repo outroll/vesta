@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(E_ALL);
 ob_start();
 $TAB = 'DB';
 
