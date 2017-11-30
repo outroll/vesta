@@ -846,6 +846,46 @@
                                                 </div>
                                             </td>
                                         </tr>
+
+
+
+                                        <tr>
+                                            <td class="vst-text" id="module-filemanager">
+                                                <?php print __('Google Analytics') ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <select class="vst-list" name="v_filemanager">
+                                                    <?
+                                                                                                                                if($_SESSION['GA_CODE']){
+                                                                                                                                    echo '<option value="disable">'.__('Disable Google Analytics').'</option>';
+
+                                                    } else {
+                                                    echo '<option value="no">'.__('no').'</option>';
+                                                    }
+                                                    ?>
+                                                    <option value='yes' <? if($_GET['lead'] == 'ga' || $_SESSION['GA_CODE']) echo 'selected="selected"'; ?>><?php print __('yes'); ?></option>
+                                                </select>
+                                                <br><br>
+                                                <div class="filemanager description" <? if($_GET['lead'] != 'ga' && !$_SESSION['GA_CODE']) echo 'style="display:none"'; ?>>
+                                                <?
+                                                                                                                            if($_GET['ga_code'] != '' || $_SESSION['GA_CODE']){
+                                                                                                                                $ga_code = $_GET['ga_code'] != '' ? $_GET['ga_code'] : $_SESSION['GA_CODE'];
+                                                                                                                                echo __('Track the usage of Vesta through Google Analytics.').
+                                                                                                                                    '<div class="licence">
+                                                '.__('Tracking Code').': <input type="text" class="vst-input" name="v_ga_code" value="'.htmlentities($ga_code).'" /><br>
+                                                </div>';
+                                                } else {
+                                                echo __('Track the usage of Vesta through Google Analytics.').
+                                                '<div class="licence">
+                                                '.__('Enter Tracking Code').': <input type="text" class="vst-input" name="v_ga_code" /><br>
+                                            </div>';
+                                                }
+                                                ?>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     </table>
                                 </td>
                             </tr>

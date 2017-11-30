@@ -50,7 +50,8 @@ json_list() {
         "BACKUP": "'$BACKUP'",
         "MAIL_URL": "'$MAIL_URL'",
         "DB_PMA_URL": "'$DB_PMA_URL'",
-        "DB_PGA_URL": "'$DB_PGA_URL'"
+        "DB_PGA_URL": "'$DB_PGA_URL'",
+        "GA_CODE": "'$GA_CODE'"
     }
 }'
 }

@@ -1,0 +1,51 @@
+#!/bin/bash
+# info: activate google analytics
+# options: TRACKINGCODE
+#
+# The function activates and set the Google Analytics Tracking
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+code=$1
+
+# Importing system environment
+source /etc/profile
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+# Checking arg number
+check_args '1' "$#" 'TRACKINGCODE'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Updating vesta.conf
+if [ -z "$(grep "GA_CODE" $VESTA/conf/vesta.conf)" ]; then
+    echo "GA_CODE='$code'" >> $VESTA/conf/vesta.conf
+else
+    sed -i "s/GA_CODE=.*/GA_CODE='$code'/g" $VESTA/conf/vesta.conf
+fi
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
