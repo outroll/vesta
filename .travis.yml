@@ -24,5 +24,5 @@ before_install:
 
  - sudo cp -rf * /usr/local/vesta
 script:
-  - /usr/local/vesta/test/test_actions.sh
-  - /usr/local/vesta/test/test_json_listing.sh
+  - sudo /usr/local/vesta/test/test_actions.sh
+  - sudo /usr/local/vesta/test/test_json_listing.sh
