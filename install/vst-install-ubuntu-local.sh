@@ -943,8 +943,8 @@ if [ "$mysql" = 'yes' ]; then
         #mysql_install_db
     #fi
     #update-rc.d mysql defaults
-    service mysql start
-    check_result $? "mysql start failed"
+    #service mysql start
+    #check_result $? "mysql start failed"
 
     # Securing MySQL/MariaDB installation
     mysqladmin -u root password $vpass
