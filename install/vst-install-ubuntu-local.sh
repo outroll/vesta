@@ -509,7 +509,7 @@ killall -9 mysqld > /dev/null 2>&1
 mv /var/lib/mysql $vst_backups/mysql/mysql_datadir > /dev/null 2>&1
 cp -r /etc/mysql/* $vst_backups/mysql > /dev/null 2>&1
 mv -f /root/.my.cnf $vst_backups/mysql > /dev/null 2>&1
-if [ "$release" = '16.04' ] && [ -e '/etc/init.d/mysql' ]; then
+if [ -e '/etc/init.d/mysql' ]; then
     mkdir -p /var/lib/mysql > /dev/null 2>&1
     chown mysql:mysql /var/lib/mysql
     mysqld --initialize-insecure
@@ -939,9 +939,9 @@ if [ "$mysql" = 'yes' ]; then
 
     # Configuring MySQL/MariaDB
     cp -f /usr/local/vesta/install/ubuntu/$release/mysql/$mycnf /etc/mysql/my.cnf
-    if [ "$release" != '16.04' ]; then
-        mysql_install_db
-    fi
+    #if [ "$release" != '16.04' ]; then
+        #mysql_install_db
+    #fi
     update-rc.d mysql defaults
     service mysql start
     check_result $? "mysql start failed"
