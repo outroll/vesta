@@ -1107,12 +1107,12 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     mysql -e "CREATE DATABASE roundcube"
     mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost IDENTIFIED BY '$r'"
     sed -i "s/%password%/$r/g" /etc/roundcube/db.inc.php
-    if [ "$release" = '16.04' ]; then
+    #if [ "$release" = '16.04' ]; then
         mv /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
         mv /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
         chmod 640 /etc/roundcube/debian-db-roundcube.php
         chown root:www-data /etc/roundcube/debian-db-roundcube.php
-    fi
+    #fi
 
     mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
     php5enmod mcrypt 2>/dev/null
