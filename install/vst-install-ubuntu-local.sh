@@ -817,7 +817,7 @@ rm /tmp/vst.pem
 #----------------------------------------------------------#
 #                     Configure Nginx                      #
 #----------------------------------------------------------#
-
+echo "NGINX"
 if [ "$nginx" = 'yes' ]; then
     rm -f /etc/nginx/conf.d/*.conf
     cp -f /usr/local/vesta/install/ubuntu/$release/nginx/nginx.conf /etc/nginx/nginx.conf
@@ -837,7 +837,7 @@ fi
 #----------------------------------------------------------#
 #                    Configure Apache                      #
 #----------------------------------------------------------#
-
+echo "APACHE"
 if [ "$apache" = 'yes'  ]; then
     cp -f /usr/local/vesta/install/ubuntu/$release/apache2/apache2.conf /etc/apache2/apache2.conf
     cp -f /usr/local/vesta/install/ubuntu/$release/apache2/status.conf /etc/apache2/mods-enabled/status.conf
@@ -870,7 +870,7 @@ fi
 #----------------------------------------------------------#
 #                     Configure PHP-FPM                    #
 #----------------------------------------------------------#
-
+echo "PHP FPM"
 if [ "$phpfpm" = 'yes' ]; then
     pool=$(find /etc/php* -type d \( -name "pool.d" -o -name "*fpm.d" \))
     cp -f /usr/local/vesta/install/ubuntu/$release/php-fpm/www.conf $pool/www.conf
@@ -899,7 +899,7 @@ done
 #----------------------------------------------------------#
 #                    Configure Vsftpd                      #
 #----------------------------------------------------------#
-
+ech "VSFTPD"
 if [ "$vsftpd" = 'yes' ]; then
     cp -f /usr/local/vesta/install/ubuntu/$release/vsftpd/vsftpd.conf /etc/vsftpd.conf
     update-rc.d vsftpd defaults
@@ -914,7 +914,7 @@ fi
 #----------------------------------------------------------#
 #                    Configure ProFTPD                     #
 #----------------------------------------------------------#
-
+echo "PROFTPD"
 if [ "$proftpd" = 'yes' ]; then
     echo "127.0.0.1 $servername" >> /etc/hosts
     cp -f /usr/local/vesta/install/ubuntu/$release/proftpd/proftpd.conf /etc/proftpd/proftpd.conf
@@ -927,7 +927,7 @@ fi
 #----------------------------------------------------------#
 #                  Configure MySQL/MariaDB                 #
 #----------------------------------------------------------#
-
+echo "MySQL"
 if [ "$mysql" = 'yes' ]; then
     mycnf="my-small.cnf"
     if [ $memory -gt 1200000 ]; then
@@ -968,7 +968,7 @@ fi
 #----------------------------------------------------------#
 #                   Configure PostgreSQL                   #
 #----------------------------------------------------------#
-
+echo "PostgreSQL"
 if [ "$postgresql" = 'yes' ]; then
     cp -f /usr/local/vesta/install/ubuntu/$release/postgresql/pg_hba.conf /etc/postgresql/*/main/pg_hba.conf
     service postgresql restart
@@ -985,7 +985,7 @@ fi
 #----------------------------------------------------------#
 #                      Configure Bind                      #
 #----------------------------------------------------------#
-
+echo "Named"
 if [ "$named" = 'yes' ]; then
     cp -f /usr/local/vesta/install/ubuntu/$release/bind/named.conf /etc/bind/named.conf
     sed -i "s%listen-on%//listen%" /etc/bind/named.conf.options
@@ -1010,7 +1010,7 @@ fi
 #----------------------------------------------------------#
 #                      Configure Exim                      #
 #----------------------------------------------------------#
-
+echo "Exim"
 if [ "$exim" = 'yes' ]; then
     gpasswd -a Debian-exim mail
     cp -f /usr/local/vesta/install/ubuntu/$release/exim/exim4.conf.template /etc/exim4/exim4.conf.template
@@ -1045,7 +1045,7 @@ fi
 #----------------------------------------------------------#
 #                     Configure Dovecot                    #
 #----------------------------------------------------------#
-
+echo "Dovecot"
 if [ "$dovecot" = 'yes' ]; then
     gpasswd -a dovecot mail
     cp -rf /usr/local/vesta/install/ubuntu/$release/dovecot/ /etc/dovecot/
@@ -1061,7 +1061,7 @@ fi
 #----------------------------------------------------------#
 #                     Configure ClamAV                     #
 #----------------------------------------------------------#
-
+echo "Clamd"
 if [ "$clamd" = 'yes' ]; then
     gpasswd -a clamav mail
     gpasswd -a clamav Debian-exim
@@ -1076,7 +1076,7 @@ fi
 #----------------------------------------------------------#
 #                  Configure SpamAssassin                  #
 #----------------------------------------------------------#
-
+echo "Spamd"
 if [ "$spamd" = 'yes' ]; then
     update-rc.d spamassassin defaults
     sed -i "s/ENABLED=0/ENABLED=1/" /etc/default/spamassassin
@@ -1091,7 +1091,7 @@ fi
 #----------------------------------------------------------#
 #                   Configure Roundcube                    #
 #----------------------------------------------------------#
-
+echo "Roundcube"
 if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     if [ "$apache" = 'yes' ]; then
         cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/apache.conf /etc/roundcube/apache.conf
@@ -1124,7 +1124,7 @@ fi
 #----------------------------------------------------------#
 #                    Configure Fail2Ban                    #
 #----------------------------------------------------------#
-
+echo "Fail2ban"
 if [ "$fail2ban" = 'yes' ]; then
     cd /etc
     cp -f /usr/local/vesta/install/ubuntu/$release/fail2ban/ /etc/fail2ban/
@@ -1147,7 +1147,7 @@ fi
 #----------------------------------------------------------#
 #                   Configure Admin User                   #
 #----------------------------------------------------------#
-
+echo "Delete admin user"
 # Deleting old admin user
 if [ ! -z "$(grep ^admin: /etc/passwd)" ] && [ "$force" = 'yes' ]; then
     chattr -i /home/admin/conf > /dev/null 2>&1
