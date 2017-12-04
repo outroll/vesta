@@ -437,10 +437,6 @@ fi
 #                   Install repository                     #
 #----------------------------------------------------------#
 
-# Updating system
-apt-get -y upgrade
-check_result $? 'apt-get upgrade failed'
-
 # Installing nginx repo
 apt=/etc/apt/sources.list.d
 echo "deb http://nginx.org/packages/mainline/ubuntu/ $codename nginx" > $apt/nginx.list
