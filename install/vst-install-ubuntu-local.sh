@@ -938,11 +938,11 @@ if [ "$mysql" = 'yes' ]; then
     fi
 
     # Configuring MySQL/MariaDB
-    cp -f /usr/local/vesta/install/ubuntu/$release/mysql/$mycnf /etc/mysql/my.cnf
+    #cp -f /usr/local/vesta/install/ubuntu/$release/mysql/$mycnf /etc/mysql/my.cnf
     #if [ "$release" != '16.04' ]; then
         #mysql_install_db
     #fi
-    update-rc.d mysql defaults
+    #update-rc.d mysql defaults
     service mysql start
     check_result $? "mysql start failed"
 
@@ -957,12 +957,12 @@ if [ "$mysql" = 'yes' ]; then
     mysql -e "FLUSH PRIVILEGES"
 
     # Configuring phpMyAdmin
-    if [ "$apache" = 'yes' ]; then
-        cp -f /usr/local/vesta/install/ubuntu/$release/pma/apache.conf /etc/phpmyadmin/apache.conf
-        ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
-    fi
-    cp -f /usr/local/vesta/install/ubuntu/$release/pma/config.inc.php /etc/phpmyadmin/config.inc.php
-    chmod 777 /var/lib/phpmyadmin/tmp
+    #if [ "$apache" = 'yes' ]; then
+    #    cp -f /usr/local/vesta/install/ubuntu/$release/pma/apache.conf /etc/phpmyadmin/apache.conf
+    #    ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
+    #fi
+    #cp -f /usr/local/vesta/install/ubuntu/$release/pma/config.inc.php /etc/phpmyadmin/config.inc.php
+    #chmod 777 /var/lib/phpmyadmin/tmp
 fi
 
 #----------------------------------------------------------#
