@@ -18,6 +18,14 @@ release="$(lsb_release -s -r)"
 codename="$(lsb_release -s -c)"
 vestacp="http://$CHOST/$VERSION/$release"
 
+echo $RHOST
+echo $CHOST
+echo $VERSION
+echo $release
+echo $codename
+echo $arch
+echo $memory
+
 if [ "$release" = '16.04' ]; then
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
