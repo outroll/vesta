@@ -2,7 +2,6 @@ dist: precise
 sudo: required
 
 before_install:
- - sudo add-apt-repository main
  - sudo add-apt-repository universe
  - sudo add-apt-repository restricted
  - sudo add-apt-repository multiverse
