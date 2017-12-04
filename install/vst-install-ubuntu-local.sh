@@ -891,15 +891,15 @@ if [ -z "$ZONE" ]; then
     ZONE='UTC'
 fi
 for pconf in $(find /etc/php* -name php.ini); do
-    sed -i "s/;date.timezone =/date.timezone = $ZONE/g" $pconf
-    sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
+    #sed -i "s/;date.timezone =/date.timezone = $ZONE/g" $pconf
+    #sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
 done
 
 
 #----------------------------------------------------------#
 #                    Configure Vsftpd                      #
 #----------------------------------------------------------#
-ech "VSFTPD"
+echo "VSFTPD"
 if [ "$vsftpd" = 'yes' ]; then
     cp -f /usr/local/vesta/install/ubuntu/$release/vsftpd/vsftpd.conf /etc/vsftpd.conf
     update-rc.d vsftpd defaults
