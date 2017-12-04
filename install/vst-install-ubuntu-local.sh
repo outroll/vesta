@@ -778,20 +778,20 @@ echo "LANGUAGE='$lang'" >> $VESTA/conf/vesta.conf
 echo "VERSION='0.9.8'" >> $VESTA/conf/vesta.conf
 
 # Downloading hosting packages
-cp -rf /usr/local/vesta/install/ubuntu/$release/packages/ $VESTA/data/packages
+cp -rf /usr/local/vesta/install/ubuntu/$release/packages $VESTA/data/
 
 # Downloading templates
-cp -rf /usr/local/vesta/install/ubuntu/$release/templates/ $VESTA/data/templates
+cp -rf /usr/local/vesta/install/ubuntu/$release/templates $VESTA/data/
 
 # Copying index.html to default documentroot
 cp templates/web/skel/public_html/index.html /var/www/
 sed -i 's/%domain%/It worked!/g' /var/www/index.html
 
 # Downloading firewall rules
-cp -rf /usr/local/vesta/install/ubuntu/$release/firewall/ $VESTA/data/firewall
+cp -rf /usr/local/vesta/install/ubuntu/$release/firewall $VESTA/data/
 
 # Downloading firewall rules
-cp -rf /usr/local/vesta/install/ubuntu/$release/firewallv6/ $VESTA/data/firewallv6
+cp -rf /usr/local/vesta/install/ubuntu/$release/firewallv6 $VESTA/data/
 
 # Configuring server hostname
 $VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
@@ -821,11 +821,11 @@ rm /tmp/vst.pem
 if [ "$nginx" = 'yes' ]; then
     rm -f /etc/nginx/conf.d/*.conf
     cp -f /usr/local/vesta/install/ubuntu/$release/nginx/nginx.conf /etc/nginx/nginx.conf
-    cp -f /usr/local/vesta/install/ubuntu/$release/nginx/status.conf -O /etc/nginx/conf.d/status.conf
-    cp -f /usr/local/vesta/install/ubuntu/$release/nginx/phpmyadmin.inc -O /etc/nginx/conf.d/phpmyadmin.inc
-    cp -f /usr/local/vesta/install/ubuntu/$release/nginx/phppgadmin.inc -O /etc/nginx/conf.d/phppgadmin.inc
-    cp -f /usr/local/vesta/install/ubuntu/$release/nginx/webmail.inc -O /etc/nginx/conf.d/webmail.inc
-    cp -f /usr/local/vesta/install/ubuntu/$release/logrotate/nginx -O /etc/logrotate.d/nginx
+    cp -f /usr/local/vesta/install/ubuntu/$release/nginx/status.conf /etc/nginx/conf.d/status.conf
+    cp -f /usr/local/vesta/install/ubuntu/$release/nginx/phpmyadmin.inc /etc/nginx/conf.d/phpmyadmin.inc
+    cp -f /usr/local/vesta/install/ubuntu/$release/nginx/phppgadmin.inc /etc/nginx/conf.d/phppgadmin.inc
+    cp -f /usr/local/vesta/install/ubuntu/$release/nginx/webmail.inc /etc/nginx/conf.d/webmail.inc
+    cp -f /usr/local/vesta/install/ubuntu/$release/logrotate/nginx /etc/logrotate.d/nginx
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
     update-rc.d nginx defaults
