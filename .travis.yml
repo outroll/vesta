@@ -28,7 +28,7 @@ before_install:
  #- sudo mv /usr/local/vesta/data/ips/10.* /usr/local/vesta/data/ips/127.0.0.1
  - sudo sed -i -- 's/172.*.*.*:80/127.0.0.1:80/g' /etc/apache2/conf.d/* && sudo sed -i -- 's/172.*.*.*:8443/127.0.0.1:8443/g' /etc/apache2/conf.d/*
  - sudo sed -i -- 's/172.*.*.*:80;/80;/g' /etc/nginx/conf.d/* && sudo sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' /etc/nginx/conf.d/*
- - sudo sed -i -- 's/172.*.*.*:80;/80;/g' /home/admin/conf/web/* && sudo sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' /home/admin/conf/web/*
+ #- sudo sed -i -- 's/172.*.*.*:80;/80;/g' /home/admin/conf/web/* && sudo sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' /home/admin/conf/web/*
  - sudo /usr/local/vesta/bin/v-list-sys-ips
  
 script:
