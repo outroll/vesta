@@ -890,10 +890,10 @@ ZONE=$(timedatectl 2>/dev/null|grep Timezone|awk '{print $2}')
 if [ -z "$ZONE" ]; then
     ZONE='UTC'
 fi
-for pconf in $(find /etc/php* -name php.ini); do
+#for pconf in $(find /etc/php* -name php.ini); do
     #sed -i "s/;date.timezone =/date.timezone = $ZONE/g" $pconf
     #sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
-done
+#done
 
 
 #----------------------------------------------------------#
