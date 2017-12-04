@@ -24,7 +24,8 @@ before_install:
 
  - sudo cp -rf * /usr/local/vesta
  - sudo ls -la /usr/local/vesta/data/ips
- - sudo su - && cd /usr/local/vesta/data/ips && mv * 127.0.0.1
+ - sudo mv /usr/local/vesta/data/ips/172.* /usr/local/vesta/data/ips/127.0.0.1
+ #- sudo mv /usr/local/vesta/data/ips/10.* /usr/local/vesta/data/ips/127.0.0.1
  - sudo cd /etc/apache2/conf.d && sed -i -- 's/172.*.*.*:80/127.0.0.1:80/g' * && sed -i -- 's/172.*.*.*:8443/127.0.0.1:8443/g' *
  - sudo cd /etc/nginx/conf.d && sed -i -- 's/172.*.*.*:80;/80;/g' * && sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' *
  - sudo cd /home/admin/conf/web && sed -i -- 's/172.*.*.*:80;/80;/g' * && sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' *
