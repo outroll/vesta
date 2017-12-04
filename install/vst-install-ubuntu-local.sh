@@ -62,7 +62,7 @@ php5-mysql php5-curl php5-fpm php5-pgsql awstats webalizer vsftpd
 proftpd-basic bind9 exim4 exim4-daemon-heavy clamav-daemon
 spamassassin dovecot-imapd dovecot-pop3d roundcube-core
 roundcube-mysql roundcube-plugins mysql-server mysql-common
-mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
+mysql-client postgresql postgresql-contrib phppgadmin mc
 flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
 e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
 bsdmainutils cron vesta vesta-nginx vesta-php expect s3cmd"

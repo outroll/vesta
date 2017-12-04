@@ -12,7 +12,6 @@ before_install:
  - sudo apt-key add /tmp/nginx_signing.key
  - sudo sh -c 'echo "deb http://apt.vestacp.com/trusty/ trusty vesta" >> /etc/apt/sources.list'
  - sudo apt-key add install/ubuntu/14.04/deb_signing.key
- - sudo add-apt-repository ppa:nijel/phpmyadmin
 
  - sudo apt-get update -y -qq 
  - sudo apt-get install -y wget lsb-release
