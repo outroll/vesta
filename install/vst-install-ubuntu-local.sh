@@ -448,18 +448,6 @@ fi
 #                   Install repository                     #
 #----------------------------------------------------------#
 
-# Installing nginx repo
-apt=/etc/apt/sources.list.d
-echo "deb http://nginx.org/packages/mainline/ubuntu/ $codename nginx" > $apt/nginx.list
-wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
-apt-key add /tmp/nginx_signing.key
-
-# Installing vesta repo
-echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
-wget $CHOST/deb_signing.key -O deb_signing.key
-apt-key add deb_signing.key
-
-
 #----------------------------------------------------------#
 #                         Backup                           #
 #----------------------------------------------------------#

@@ -7,6 +7,13 @@ before_install:
  - sudo add-apt-repository restricted
  - sudo add-apt-repository multiverse
  - sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu trusty partner" >> /etc/apt/sources.list'
+ - sudo sh -c 'echo "deb http://nginx.org/packages/mainline/ubuntu trusty nginx" >> /etc/apt/sources.list'
+ - sudo sh -c 'echo "deb http://nginx.org/packages/mainline/ubuntu trusty nginx" >> /etc/apt/sources.list'
+ - wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
+ - sudo apt-key add /tmp/nginx_signing.key
+ - sudo sh -c 'echo "deb http://apt.vestacp.com/trusty/ trusty vesta" >> /etc/apt/sources.list'
+ - apt-key add install/ubuntu/14.04/deb_signing.key
+
  - sudo apt-get update -y -qq 
  - sudo apt-get install -y wget lsb-release
  - sudo install/vst-install-ubuntu-local.sh --nginx yes --apache yes --phpfpm no --named yes --remi yes --vsftpd no --proftpd no --iptables no --fail2ban no --quota no --exim yes --dovecot yes --spamassassin no --clamav no --mysql yes --postgresql no --hostname example.com --email test@example.com --password admin -y no --force
