@@ -620,15 +620,12 @@ fi
 #                     Install packages                     #
 #----------------------------------------------------------#
 
-# Update system packages
-apt-get update
-
 # Disable daemon autostart /usr/share/doc/sysv-rc/README.policy-rc.d.gz
 echo -e '#!/bin/sh \nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
 # Install apt packages
-apt-get -y install $software
+apt-get -y -qq install $software
 check_result $? "apt-get install failed"
 
 # Restore policy
