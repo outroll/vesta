@@ -674,7 +674,7 @@ chmod 755 /usr/bin/rssh
 
 # Downlading sudo configuration
 mkdir -p /etc/sudoers.d
-cp -rf /usr/local/vesta/install/ubuntu/$release/sudo/admin -O /etc/sudoers.d/admin
+cp -rf /usr/local/vesta/install/ubuntu/$release/sudo/admin /etc/sudoers.d/admin
 chmod 440 /etc/sudoers.d/admin
 
 # Configuring system env
@@ -686,7 +686,7 @@ echo 'export PATH' >> /root/.bash_profile
 source /root/.bash_profile
 
 # Configuring logrotate for Vesta logs
-cp -rf /usr/local/vesta/install/ubuntu/$release/logrotate/vesta -O /etc/logrotate.d/vesta
+cp -rf /usr/local/vesta/install/ubuntu/$release/logrotate/vesta /etc/logrotate.d/vesta
 
 # Building directory tree and creating some blank files for Vesta
 mkdir -p $VESTA/conf $VESTA/log $VESTA/ssl $VESTA/data/ips \
