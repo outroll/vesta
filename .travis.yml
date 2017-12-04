@@ -23,7 +23,7 @@ before_install:
  - sudo install/vst-install-ubuntu-local.sh --nginx yes --apache yes --phpfpm no --named yes --remi yes --vsftpd no --proftpd no --iptables no --fail2ban no --quota no --exim yes --dovecot yes --spamassassin no --clamav no --mysql yes --postgresql no --hostname example.com --email test@example.com --password admin -y no --force
 
  - sudo cp -rf * /usr/local/vesta
- - sudo /usr/local/vesta/v-list-sys-ips
+ - sudo /usr/local/vesta/bin/v-list-sys-ips
 script:
   - sudo /usr/local/vesta/test/test_actions.sh
   - sudo /usr/local/vesta/test/test_json_listing.sh
