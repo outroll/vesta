@@ -75,7 +75,7 @@ if [ ! -z "$local_ip" ]; then
 fi
 
 # Rebuilding vhost IPv6
-if [ ! -z "$IP6" ]; then
+if [ ! -z "$IP6" ] && [ "$IP6" != "no" ]; then
     local_ip=""
     ipv6=$IP6
     old=$IP6
