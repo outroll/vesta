@@ -6,10 +6,8 @@ services:
 
 before_install:
   - docker build -t tpwebcp .
+  - docker run  -d --cap-add=NET_ADMIN tpwebcp --name tpwebcp /bin/bash -c "/vesta/docker/startup.sh;"
   - docker ps
-  
-before_install:
- - docker run  -d --cap-add=NET_ADMIN tpwebcp --name tpwebcp /bin/bash -c "/vesta/docker/startup.sh;"
  
 script:
   - docker exec tpwebcp /bin/bash -c "sudo su -; /usr/local/vesta/test/test_actions.sh; (exit \$?)"
