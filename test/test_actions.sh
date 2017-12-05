@@ -326,7 +326,6 @@ cmd="v-rebuild-user $user yes"
 $cmd > $tmpfile 2>&1
 echo_result "Rebuilding user config" "$?" "$tmpfile" "$cmd"
 
-exit $OUTPUT
 #----------------------------------------------------------#
 #                          IPv6                            #
 #----------------------------------------------------------#
@@ -488,18 +487,6 @@ echo_result "DNS: Rebuilding domain" "$?" "$tmpfile" "$cmd"
 cmd="v-add-mail-domain $user $domain"
 $cmd > $tmpfile 2>&1
 echo_result "Adding mail domain $domain" "$?" "$tmpfile" "$cmd"
-
-# Add mysql database
-database=d$(random 4)
-cmd="v-add-database $user $database $database dbp4ssw0rd mysql"
-$cmd > $tmpfile 2>&1
-echo_result "Adding mysql database $database" "$?" "$tmpfile" "$cmd"
-
-# Add pgsql database
-#database=d$(random 4)
-#cmd="v-add-database $user $database $database dbp4ssw0rd pgsql"
-#$cmd > $tmpfile 2>&1
-#echo_result "Adding pgsql database $database" "$?" "$tmpfile" "$cmd"
 
 # Rebuild user configs
 cmd="v-rebuild-user $user yes"

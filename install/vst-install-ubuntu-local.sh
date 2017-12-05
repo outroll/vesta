@@ -1092,33 +1092,33 @@ fi
 #                   Configure Roundcube                    #
 #----------------------------------------------------------#
 echo "Roundcube"
-if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
-    if [ "$apache" = 'yes' ]; then
-        cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/apache.conf /etc/roundcube/apache.conf
-        ln -s /etc/roundcube/apache.conf /etc/apache2/conf.d/roundcube.conf
-    fi
-    cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/main.inc.php /etc/roundcube/main.inc.php
-    cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/db.inc.php /etc/roundcube/db.inc.php
-    chmod 640 /etc/roundcube/debian-db-roundcube.php
-    chown root:www-data /etc/roundcube/debian-db-roundcube.php
-    cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/vesta.php /usr/share/roundcube/plugins/password/drivers/vesta.php
-    cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/config.inc.php /etc/roundcube/plugins/password/config.inc.php
-    r="$(gen_pass)"
-    mysql -e "CREATE DATABASE roundcube"
-    mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost IDENTIFIED BY '$r'"
-    sed -i "s/%password%/$r/g" /etc/roundcube/db.inc.php
+#if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
+#    if [ "$apache" = 'yes' ]; then
+#        cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/apache.conf /etc/roundcube/apache.conf
+#        ln -s /etc/roundcube/apache.conf /etc/apache2/conf.d/roundcube.conf
+#    fi
+#    cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/main.inc.php /etc/roundcube/main.inc.php
+#    cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/db.inc.php /etc/roundcube/db.inc.php
+#    chmod 640 /etc/roundcube/debian-db-roundcube.php
+#    chown root:www-data /etc/roundcube/debian-db-roundcube.php
+#    cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/vesta.php /usr/share/roundcube/plugins/password/drivers/vesta.php
+#    cp -f /usr/local/vesta/install/ubuntu/$release/roundcube/config.inc.php /etc/roundcube/plugins/password/config.inc.php
+#    r="$(gen_pass)"
+#    mysql -e "CREATE DATABASE roundcube"
+#    mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost IDENTIFIED BY '$r'"
+#    sed -i "s/%password%/$r/g" /etc/roundcube/db.inc.php
     #if [ "$release" = '16.04' ]; then
-        mv /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
-        mv /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
-        chmod 640 /etc/roundcube/debian-db-roundcube.php
-        chown root:www-data /etc/roundcube/debian-db-roundcube.php
+#        mv /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
+#        mv /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
+#        chmod 640 /etc/roundcube/debian-db-roundcube.php
+#        chown root:www-data /etc/roundcube/debian-db-roundcube.php
     #fi
 
-    mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
-    php5enmod mcrypt 2>/dev/null
-    phpenmod mcrypt 2>/dev/null
-    service apache2 restart
-fi
+#    mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
+#    php5enmod mcrypt 2>/dev/null
+#    phpenmod mcrypt 2>/dev/null
+#    service apache2 restart
+#fi
 
 
 #----------------------------------------------------------#
