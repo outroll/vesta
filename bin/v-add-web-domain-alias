@@ -80,7 +80,7 @@ if [ ! -z "$local_ip" ]; then
         fi
     fi
 fi
-echo "IPV6"
+echo "IPV6 $IP6"
 # Rebuilding vhost IPv6
 if [ ! -z "$IP6" ]; then
     old=$IP6
