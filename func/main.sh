@@ -864,6 +864,13 @@ is_object_format_valid() {
     fi
 }
 
+# Object validator
+is_object_format_valid_old() {
+    if ! [[ "$1" =~ ^[[:alnum:]][-|\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
+        check_result $E_INVALID "invalid $2 format :: $1"
+    fi
+}
+
 # Password validator
 is_password_format_valid() {
     if [ "${#1}" -lt '6' ]; then
@@ -884,7 +891,7 @@ is_format_valid() {
                 antivirus)      is_boolean_format_valid "$arg" 'antivirus' ;;
                 autoreply)      is_autoreply_format_valid "$arg" ;;
                 backup)         is_user_format_valid "$arg" 'backup' ;;
-                charset)        is_object_format_valid "$arg" "$arg_name" ;;
+                charset)        is_object_format_valid_old "$arg" "$arg_name" ;;
                 charsets)       is_common_format_valid "$arg" 'charsets' ;;
                 comment)        is_object_format_valid "$arg" 'comment' ;;
                 database)       is_database_format_valid "$arg" 'database';;
