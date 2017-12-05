@@ -14,9 +14,10 @@ if [ ! -e "$VESTA/data/firewallv6" ]; then
 fi
 
 #download new templates
-$BIN/v-update-web-templates
-$BIN/v-update-dns-templates
-
+if [ -z $0 ]; then
+	$BIN/v-update-web-templates
+	$BIN/v-update-dns-templates
+fi
 #testing
 #rm -rf /usr/local/vesta/data/templates/*
 # cp -rf /usr/local/vesta/install/rhel/7/templates/* /usr/local/vesta/data/templates/es/

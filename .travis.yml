@@ -30,7 +30,7 @@ before_install:
  - sudo sed -i -- 's/172.*.*.*:80;/80;/g' /etc/nginx/conf.d/* && sudo sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' /etc/nginx/conf.d/*
  #- sudo sed -i -- 's/172.*.*.*:80;/80;/g' /home/admin/conf/web/* && sudo sed -i -- 's/172.*.*.*:8080/127.0.0.1:8080/g' /home/admin/conf/web/*
  - sudo /usr/local/vesta/bin/v-list-sys-ips
- - sudo /usr/local/vesta/upd/add_ipv6.sh
+ - sudo /usr/local/vesta/upd/add_ipv6.sh ci
  
 script:
   - sudo /usr/local/vesta/test/test_actions.sh
