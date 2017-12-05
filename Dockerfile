@@ -18,7 +18,7 @@ ADD docker /vesta/docker
 RUN chmod +x /vesta/install/vst-install*
 RUN /vesta/install/vst-install-ubuntu-docker.sh --nginx yes --apache yes \
   --phpfpm no --named yes --remi yes --vsftpd no --proftpd no --iptables no \
-  --fail2ban no --quota no --exim yes --dovecot yes --spamassassin no --clamav no \
+  --fail2ban no --quota no --exim yes --dovecot no --spamassassin no --clamav no \
   --mysql yes --postgresql no --hostname example.com --email test@example.com \
   --password admin -y no
 
