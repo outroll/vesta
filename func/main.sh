@@ -978,6 +978,10 @@ format_domain() { #[removeWWW (default: yes )]
     if [[ "$domain" =~ .*\.$ ]]; then
         domain=$(echo "$domain" |sed -e "s/\.$//")
     fi
+    if [[ "$domain" =~ ^\. ]]; then
+        domain=$(echo "$domain" |sed -e "s/^\.//")
+    fi
+
 }
 
 format_domain_idn() {

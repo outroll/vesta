@@ -27,8 +27,13 @@ source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
 # Additional argument formatting
+<<<<<<< HEAD
 format_domain
 format_domain_idn
+=======
+format_domain_idn
+
+>>>>>>> upstream/master
 
 #----------------------------------------------------------#
 #                    Verifications                         #
