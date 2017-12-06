@@ -14,12 +14,8 @@
 
 # Argument definition
 user=$1
-<<<<<<< HEAD
-domain=$2
-=======
 domain=$(idn -t --quiet -u "$2" )
 restart=$3
->>>>>>> upstream/master
 
 # Includes
 source $VESTA/func/main.sh

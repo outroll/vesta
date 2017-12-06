@@ -12,10 +12,6 @@
 # Argument definition
 user=$1
 domain=$2
-<<<<<<< HEAD
-domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
-=======
->>>>>>> upstream/master
 
 # Includes
 source $VESTA/func/main.sh
@@ -27,14 +23,9 @@ encode_base64() {
 }
 
 # Additional argument formatting
-<<<<<<< HEAD
 
 format_domain
 format_domain_idn
-=======
-format_domain_idn
-
->>>>>>> upstream/master
 
 #----------------------------------------------------------#
 #                    Verifications                         #

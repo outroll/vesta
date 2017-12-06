@@ -55,16 +55,12 @@ shell_list_ssl() {
 }
 
 # Additional argument formatting
-<<<<<<< HEAD
+
 format_domain
-format_domain_idn
-=======
 format_domain_idn
 if [[ "$email" = *[![:ascii:]]* ]]; then
     email=$(idn -t --quiet -a $email)
 fi
-
->>>>>>> upstream/master
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -79,13 +75,6 @@ is_format_valid 'domain_alias' 'format'
 #                       Action                             #
 #----------------------------------------------------------#
 
-<<<<<<< HEAD
-if [[ "$email" = *[![:ascii:]]* ]]; then
-    email=$(idn -t --quiet -a $email)
-fi
-
-=======
->>>>>>> upstream/master
 # Create temporary work directory
 workdir=$(mktemp -d)
 cd $workdir
@@ -138,7 +127,7 @@ openssl x509 -req -sha256 \
 
 
 # Listing certificates
-<<<<<<< HEAD
+
 if [ -e "$domain_idn.crt" ]; then
     crt=$(cat $domain.crt | sed ':a;N;$!ba;s/\n/\\n/g' )
 fi
@@ -149,18 +138,6 @@ fi
 
 if [ -e "$domain_idn.csr" ]; then
     csr=$(cat $domain.csr | sed ':a;N;$!ba;s/\n/\\n/g' )
-=======
-if [ -e "$domain.crt" ]; then
-    crt=$(cat $domain.crt |sed ':a;N;$!ba;s/\n/\\n/g' )
-fi
-
-if [ -e "$domain.key" ]; then
-    key=$(cat $domain.key |sed ':a;N;$!ba;s/\n/\\n/g' )
-fi
-
-if [ -e "$domain.csr" ]; then
-    csr=$(cat $domain.csr |sed ':a;N;$!ba;s/\n/\\n/g' )
->>>>>>> upstream/master
 fi
 
 case $format in
