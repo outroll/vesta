@@ -12,6 +12,7 @@
 # Argument definition
 user=$1
 domain=$2
+csr="$3/$domain.csr"
 format=$4
 
 # Includes
@@ -60,6 +61,7 @@ fi
 source $USER_DATA/ssl/le.conf
 api=$LETSENCRYPTAPI
 r_domain=$(echo "$check_domain" |cut -f 2 -d \')
+
 key="$USER_DATA/ssl/user.key"
 exponent="$EXPONENT"
 modulus="$MODULUS"
