@@ -12,6 +12,14 @@
         <div class="l-sort-toolbar clearfix">
           <table>
             <tr>
+              <td class="step-right">
+                <?
+                  list($http_host, $port) = explode(':', $_SERVER["HTTP_HOST"].":");
+                  $net2ftp = "http://".$http_host."/net2ftp/";
+                  if (!empty($_SESSION['NET2FTP_URL'])) $net2ftp = $_SESSION['NET2FTP_URL'];
+                ?>
+                <a class="vst" href="<?=$net2ftp?>" target="_blank"><?=__('File Manager')?> <i></i></a>
+              </td>
               <td class="l-sort-toolbar__search-box">
                 <form action="/search/" method="get">
                   <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
