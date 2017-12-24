@@ -5,7 +5,7 @@ error_reporting(NULL);
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 // Header
-include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/list_weblog.html');
+include((VESTA_TEMPLATES_DIR.'admin/list_weblog.html');
 
 $v_domain = escapeshellarg($_GET['domain']);
 if ($_GET['type'] == 'access') $type = 'access';
