@@ -6,7 +6,7 @@ define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
 
 define('VESTA_TEMPLATES', '/templates/');
 //Replace $__template_dir
-define('VESTA_TEMPLATES_DIR', dirname(__DIR__).VESTA_TEMPLATES);
+define('VESTA_TEMPLATES_DIR', $_SERVER['DOCUMENT_ROOT'].VESTA_TEMPLATES);
 
 define('JS_LATEST_UPDATE', '1491697868');
 
