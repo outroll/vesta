@@ -12,8 +12,11 @@ cd /etc/init.d/
 ./nginx start
 ./exim4 start
 ./apache2 start
-./dovecot start
+#./dovecot start
 ./mysql start
 if [ "$?" -gt 0 ]; then
     ./mysql start
+    if [ "$?" -gt 0 ]; then
+        cat /var/log/mysql/*
+    fi
 fi
