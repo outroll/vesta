@@ -168,8 +168,10 @@ prepare_web_domain_values() {
 # Add web config
 add_web_config() {
     conf="$HOMEDIR/$user/conf/web/$domain.$1.conf"
+    confv6="$HOMEDIR/$user/conf/web/$domain.$1.ipv6.conf"
     if [[ "$2" =~ stpl$ ]]; then
         conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.conf"
+        confv6="$HOMEDIR/$user/conf/web/$domain.$1.ssl.ipv6.conf"
     fi
     
     domain_idn=$domain
@@ -204,7 +206,24 @@ add_web_config() {
                 -e "s|%ssl_pem%|$ssl_pem|g" \
                 -e "s|%ssl_ca_str%|$ssl_ca_str|g" \
                 -e "s|%ssl_ca%|$ssl_ca|g" \
-        >> $conf
+        > $conf
+        
+        chown root:$user $conf
+        chmod 640 $conf
+        
+        if [ -z "$(grep "$conf" /etc/$1/conf.d/vesta.conf)" ]; then
+            if [ "$1" != 'nginx' ]; then
+                echo "Include $conf" >> /etc/$1/conf.d/vesta.conf
+            else
+                echo "include $conf;" >> /etc/$1/conf.d/vesta.conf
+            fi
+        fi
+
+        trigger="${2/.*pl/.sh}"
+        if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
+            $WEBTPL/$1/$WEB_BACKEND/$trigger \
+                $user $domain $local_ip $ipv6 $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
+        fi
     fi
     
     if [ ! -z $ipv6 ] && [ "$ipv6" != "no" ]; then
@@ -235,24 +254,24 @@ add_web_config() {
                 -e "s|%ssl_pem%|$ssl_pem|g" \
                 -e "s|%ssl_ca_str%|$ssl_ca_str|g" \
                 -e "s|%ssl_ca%|$ssl_ca|g" \
-        >> $conf
-    fi
-
-    chown root:$user $conf
-    chmod 640 $conf
-
-    if [ -z "$(grep "$conf" /etc/$1/conf.d/vesta.conf)" ]; then
-        if [ "$1" != 'nginx' ]; then
-            echo "Include $conf" >> /etc/$1/conf.d/vesta.conf
-        else
-            echo "include $conf;" >> /etc/$1/conf.d/vesta.conf
+        > $confv6
+        
+        chown root:$user $confv6
+        chmod 640 $confv6
+        
+        if [ -z "$(grep "$confv6" /etc/$1/conf.d/vesta.conf)" ]; then
+            if [ "$1" != 'nginx' ]; then
+                echo "Include $confv6" >> /etc/$1/conf.d/vesta.conf
+            else
+                echo "include $confv6;" >> /etc/$1/conf.d/vesta.conf
+            fi
         fi
-    fi
 
-    trigger="${2/.*pl/.sh}"
-    if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
-        $WEBTPL/$1/$WEB_BACKEND/$trigger \
-            $user $domain $local_ip $ipv6 $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
+        trigger="${2/.*pl/.sh}"
+        if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
+            $WEBTPL/$1/$WEB_BACKEND/$trigger \
+                $user $domain $local_ip $ipv6 $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
+        fi
     fi
 }
 
@@ -298,14 +317,15 @@ replace_web_config() {
 
     if [ -e "$conf" ]; then
         sed -i  "s|$old|$new|g" $conf
-    else
-        # fallback to old style configs
-        conf="$HOMEDIR/$user/conf/web/$1.conf"
-        if [[ "$2" =~ stpl$ ]]; then
-            conf="$HOMEDIR/$user/conf/web/s$1.conf"
-        fi
-        get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
-        sed -i  "$top_line,$bottom_line s|$old|$new|g" $conf
+    fi
+    
+    conf="$HOMEDIR/$user/conf/web/$domain.$1.ipv6.conf"
+    if [[ "$2" =~ stpl$ ]]; then
+        conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.ipv6.conf"
+    fi
+
+    if [ -e "$conf" ]; then
+        sed -i  "s|$old|$new|g" $conf
     fi
 }
 
@@ -314,6 +334,30 @@ del_web_config() {
     conf="$HOMEDIR/$user/conf/web/$domain.$1.conf"
     if [[ "$2" =~ stpl$ ]]; then
         conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.conf"
+    fi
+
+    if [ -e "$conf" ]; then
+        sed -i "\|$conf|d" /etc/$1/conf.d/vesta.conf
+        rm -f $conf
+    else
+        # fallback to old style configs
+        conf="$HOMEDIR/$user/conf/web/$1.conf"
+        if [[ "$2" =~ stpl$ ]]; then
+            conf="$HOMEDIR/$user/conf/web/s$1.conf"
+        fi
+        get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
+        sed -i "$top_line,$bottom_line d" $conf
+
+        web_domain=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
+        if [ "$web_domain" -eq '0' ]; then
+            sed -i "/.*\/$user\/.*$1.conf/d" /etc/$1/conf.d/vesta.conf
+            rm -f $conf
+        fi
+    fi
+    
+    conf="$HOMEDIR/$user/conf/web/$domain.$1.ipv6.conf"
+    if [[ "$2" =~ stpl$ ]]; then
+        conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.ipv6.conf"
     fi
 
     if [ -e "$conf" ]; then

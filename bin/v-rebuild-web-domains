@@ -37,15 +37,20 @@ is_object_unsuspended 'user' 'USER' "$user"
 #                       Action                             #
 #----------------------------------------------------------#
 
-# Deleting old configs
+# Deleting new old configs
 sed -i "/.*\/$user\//d" /etc/$WEB_SYSTEM/conf.d/vesta.conf
-rm -f $HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf
-rm -f $HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf
+rm -f $HOMEDIR/$user/conf/web/*.$WEB_SYSTEM.conf
+rm -f $HOMEDIR/$user/conf/web/*.$WEB_SYSTEM.ipv6.conf
+rm -f $HOMEDIR/$user/conf/web/*.$WEB_SYSTEM.ssl.conf
+rm -f $HOMEDIR/$user/conf/web/*.$WEB_SYSTEM.ssl.ipv6.conf
 if [ ! -z "$PROXY_SYSTEM" ]; then
     sed -i "/.*\/$user\//d" /etc/$PROXY_SYSTEM/conf.d/vesta.conf
-    rm -f $HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf
-    rm -f $HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf
+    rm -f $HOMEDIR/$user/conf/web/*.$PROXY_SYSTEM.conf
+    rm -f $HOMEDIR/$user/conf/web/*.$PROXY_SYSTEM.ipv6.conf
+    rm -f $HOMEDIR/$user/conf/web/*.$PROXY_SYSTEM.ssl.conf
+    rm -f $HOMEDIR/$user/conf/web/*.$PROXY_SYSTEM.ssl.ipv6.conf
 fi
+
 if [ ! -z "$WEB_BACKEND" ]; then
     if [ "$WEB_BACKEND_POOL" = 'user' ]; then
         prepare_web_backend
@@ -56,6 +61,17 @@ if [ ! -z "$WEB_BACKEND" ]; then
             rm -f $pool/$backend_type.conf
         done
     fi
+fi
+
+
+# Deleting old configs
+sed -i "/.*\/$user\//d" /etc/$WEB_SYSTEM/conf.d/vesta.conf
+rm -f $HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf
+rm -f $HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf
+if [ ! -z "$PROXY_SYSTEM" ]; then
+    sed -i "/.*\/$user\//d" /etc/$PROXY_SYSTEM/conf.d/vesta.conf
+    rm -f $HOMEDIR/$user/conf/web/$PROXY_SYSTEM.conf
+    rm -f $HOMEDIR/$user/conf/web/s$PROXY_SYSTEM.conf
 fi
 
 # Starting rebuild loop for each web domain
