@@ -27,7 +27,21 @@ $(document).ready(function(){
             $('select[name=v_backup_host]').replaceWith('<input type="text" size="20" class="vst-input" name="v_backup_host" value="' +  (typeof $('input[name=v_backup_host]').val() === 'string' ? $('input[name=v_backup_host]').val() : '') + '">');
         }
     });
-});
+	 $('select[name=v_softaculous]').change(function(){
+        if($(this).val() == 'yes'){
+            $('.softaculous.description').show();
+        } else {
+            $('.softaculous.description').hide();
+        }
+    });
+
+    $('input[name=v_mail_relay]').change(function(){
+        if($(this).is(':checked')){
+            $('.mail-relay').show();
+        } else {
+            $('.mail-relay').hide();
+        }
+	});
 
 
 function toggle_letsencrypt(elm) {

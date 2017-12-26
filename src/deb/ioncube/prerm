@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Run triggers only on updates
+if [ -e /usr/local/vesta/ioncube/ioncube.sh ]; then
+    /usr/local/vesta/ioncube/ioncube.sh delete
+fi
+
+exit 0

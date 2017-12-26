@@ -112,6 +112,9 @@ if ((isset($_SESSION['FIREWALL_SYSTEM'])) && (!empty($_SESSION['FIREWALL_SYSTEM'
 if ((isset($_SESSION['FILEMANAGER_KEY'])) && (!empty($_SESSION['FILEMANAGER_KEY']))) {
     add_top_menu_item('File Manager', '/list/directory', false, null, 8);
 }
+if ((isset($_SESSION['SOFTACULOUS'])) && (!empty($_SESSION['SOFTACULOUS']))) {
+    add_top_menu_item('Apps', '/softaculous/', false, null, 8);
+}
 add_top_menu_item('Server', '/list/server', true, null, 9);
 add_top_menu_item('Plugin', '/list/plugin', true, null, 10);
 
