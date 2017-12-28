@@ -9,6 +9,11 @@ server {
 
     location / {
 
+        if (!-e $request_filename)
+        {
+                rewrite ^(.+)$ /index.php?q=$1 last;
+        }
+
         location ~* ^.+\.(jpeg|jpg|png|gif|bmp|ico|svg|css|js)$ {
             expires     max;
         }
