@@ -47,7 +47,11 @@ mysql_query() {
 
 mysql_dump() {
     err="/tmp/e.mysql"
-    mysqldump --defaults-file=$mycnf --single-transaction -r $1 $2 2> $err
+    if [ "${1%.gz}" != "$1" ]; then
+        mysqldump --defaults-file=$mycnf --single-transaction $2 2> $err |gzip -$BACKUP_GZIP - > $1
+    else
+        mysqldump --defaults-file=$mycnf --single-transaction -r $1 $2 2> $err
+    fi
     if [ '0' -ne "$?" ]; then
         rm -rf $tmpdir
         if [ "$notify" != 'no' ]; then
@@ -88,7 +92,11 @@ psql_query() {
 }
 
 psql_dump() {
-    pg_dump -h $HOST -U $USER -c --inserts -O -x -i -f $1 $2 2>/tmp/e.psql
+    if [ "${1%.gz}" != "$1" ]; then
+        pg_dump -h $HOST -U $USER -c --inserts -O -x -i $2 2> /tmp/e.psql |gzip -$BACKUP_GZIP - > $1
+    else
+        pg_dump -h $HOST -U $USER -c --inserts -O -x -i -f $1 $2 2>/tmp/e.psql
+    fi
     if [ '0' -ne "$?" ]; then
         rm -rf $tmpdir
         if [ "$notify" != 'no' ]; then
