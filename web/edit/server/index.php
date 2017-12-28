@@ -461,7 +461,6 @@ if (!empty($_POST['save'])) {
     }
 
 
-
     // activating google analytics code
     if (empty($_SESSION['error_msg'])) {
         if($_SESSION['GA_CODE'] != $_POST['v_ga_code'] && $_POST['ga_code'] == 'yes'){
@@ -487,6 +486,34 @@ if (!empty($_POST['save'])) {
             if (empty($_SESSION['error_msg'])) {
                 $_SESSION['ok_msg'] = __('Google Analytics Deactivated');
                 unset($_SESSION['GA_CODE']);
+            }
+        }
+    }
+  
+  
+  
+    // activating softaculous
+    if (empty($_SESSION['error_msg'])) {
+        if($_SESSION['SOFTACULOUS'] != $_POST['v_softaculous'] && $_POST['v_softaculous'] == 'yes'){
+            exec (VESTA_CMD."v-add-vesta-softaculous WEB", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Softaculous Activated');
+                $_SESSION['SOFTACULOUS'] = 'yes';
+            }
+        }
+    }
+
+    // disable softaculous
+    if (empty($_SESSION['error_msg'])) {
+        if($_SESSION['SOFTACULOUS'] != $_POST['v_softaculous'] && $_POST['v_softaculous'] == 'no'){
+            exec (VESTA_CMD."v-delete-vesta-softaculous", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Softaculous Disabled');
+                $_SESSION['SOFTACULOUS'] = '';
             }
         }
     }
