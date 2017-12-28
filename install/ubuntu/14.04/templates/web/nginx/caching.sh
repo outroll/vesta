@@ -17,3 +17,4 @@ else
     echo "$str" >> $conf
 fi
 
+sort -u /etc/nginx/conf.d/01_caching_pool.conf -o /etc/nginx/conf.d/01_caching_pool.conf
