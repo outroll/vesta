@@ -65,7 +65,7 @@ help() {
   -v, --vsftpd            Install Vsftpd        [yes|no]  default: yes
   -j, --proftpd           Install ProFTPD       [yes|no]  default: no
   -k, --named             Install Bind          [yes|no]  default: yes
-  -m, --mariadb           Install MariaDB       [yes|no]  default: yes
+  -m, --mysql             Install MariaDB       [yes|no]  default: yes
   -g, --postgresql        Install PostgreSQL    [yes|no]  default: no
   -d, --mongodb           Install MongoDB       [yes|no]  unsupported
   -x, --exim              Install Exim          [yes|no]  default: yes
@@ -150,7 +150,7 @@ for arg; do
         --vsftpd)               args="${args}-v " ;;
         --proftpd)              args="${args}-j " ;;
         --named)                args="${args}-k " ;;
-        --mariadb)              args="${args}-m " ;;
+        --mysql)                args="${args}-m " ;;
         --postgresql)           args="${args}-g " ;;
         --mongodb)              args="${args}-d " ;;
         --exim)                 args="${args}-x " ;;
