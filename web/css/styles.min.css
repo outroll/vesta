@@ -1235,11 +1235,16 @@ div.l-content > div.l-separator:nth-of-type(4) {
 }
 .l-sort-toolbar .vst {
   padding: 0 12px;
-  color: #777;
+  color: #fff;
   text-transform: uppercase;
   font-size: 11px;
   font-weight: bold;
   line-height: 30px;
+  background-color: #5898da;
+  border-color: #5898da;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  display: inline-block;
 }
 .l-sort-toolbar .vst:hover {
   color: #ff6701;
