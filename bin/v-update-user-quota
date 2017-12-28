@@ -16,7 +16,6 @@ user=$1
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
-
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
@@ -24,7 +23,6 @@ source $VESTA/conf/vesta.conf
 check_args '1' "$#" 'USER'
 is_format_valid 'user'
 is_object_valid 'user' 'USER' "$user"
-
 
 #----------------------------------------------------------#
 #                       Action                             #

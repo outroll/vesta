@@ -9,6 +9,9 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
+# Protocol
+protocol="http"
+
 # Argument definition
 restart=$1
 
@@ -29,21 +32,29 @@ case $(head -n1 /etc/issue |cut -f 1 -d ' ') in
     Debian)     version="debian" ;;
     Ubuntu)     version="ubuntu" ;;
     *)          version="rhel" ;;
+    Gentoo)	version="Gentoo";;
+    Arch)	version="Arch";;
+    Slackware)	version="Slackware";;
+    Funtoo)	version="Funtoo";;
+    Mageia)	version="Mageia";;
 esac
 
 # Detecting release
 if [ "$version" = 'rhel' ]; then
     release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
+    vestacp="$protocol://$chost/$version/$release"
 fi
 if [ "$version" = 'ubuntu' ]; then
     release=$(lsb_release -r |awk '{print $2}')
+    vestacp="$protocol://$chost/$version/$release"
 fi
 if [ "$version" = 'debian' ]; then
     release=$(cat /etc/issue|grep -o [0-9]|head -n1)
+    vestacp="$protocol://$chost/$version/$release"
 fi
-
-# Defining download url
-vestacp="http://$chost/$version/$release"
+if [ "$version" = 'Gentoo' ] && [ "$version" = 'Arch' ] && [ "$version" = 'Slackware' ] && [ "$version" = 'Funtoo' ] && [ "$version" = 'Mageia' ]; then
+    release=$(lsb_release -a)
+    vestacp="$protocol://$chost/Ubuntu-12.04"
 
 # Downloading template archive
 cd $(mktemp -d)

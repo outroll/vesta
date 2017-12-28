@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Internal variables
-HOMEDIR='/home'
-BACKUP='/backup'
+HOMEDIR='/home/$USER'
+BACKUP='$HOME/backup'
 BACKUP_GZIP=9
 BACKUP_DISK_LIMIT=95
 BACKUP_LA_LIMIT=5
