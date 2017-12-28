@@ -11,6 +11,10 @@
     CustomLog /var/log/%web_system%/domains/%domain%.bytes bytes
     CustomLog /var/log/%web_system%/domains/%domain%.log combined
     ErrorLog /var/log/%web_system%/domains/%domain%.error.log
+    ErrorDocument 403 /error/404.html
+    ErrorDocument 404 /error/404.html
+    ErrorDocument 500 /error/50x.html
+    
     <Directory %sdocroot%>
         AllowOverride All
         SSLRequireSSL
