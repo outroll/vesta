@@ -1095,15 +1095,20 @@ class UploadHandler
             if ($uploaded_file && is_uploaded_file($uploaded_file)) {
                 // multipart/formdata uploads (POST method uploads)
                 if ($append_file) {
+                    /*
                     file_put_contents(
                         $file_path,
                         fopen($uploaded_file, 'r'),
                         FILE_APPEND
-                    );
+                    );*/
+                    
+                    // append files
+                    chmod($uploaded_file, 0777);
+                    exec (VESTA_CMD . "v-merge-files " . USERNAME . " " . escapeshellarg($file_path) . " " . escapeshellarg($uploaded_file), $output, $return_var);
                 } else {
                     chmod($uploaded_file, 0644);
 //                    move_uploaded_file($uploaded_file, $file_path);
-                    exec (VESTA_CMD . "v-copy-fs-file ". USERNAME ." {$uploaded_file} {$file_path}", $output, $return_var);
+                    exec (VESTA_CMD . "v-copy-fs-file ". USERNAME ." {$uploaded_file} ".escapeshellarg($file_path), $output, $return_var);
 
                     $error = check_return_code($return_var, $output);
                     if ($return_var != 0) {
@@ -1134,7 +1139,7 @@ class UploadHandler
                 //    $this->handle_image_file($file_path, $file);
                 //}
             } else {
-                //$file->size = $file_size;
+                $file->size = $file_size;
                 //if (!$content_range && $this->options['discard_aborted_uploads']) {
                 //    unlink($file_path);
                 //    $file->error = $this->get_error_message('abort');
