@@ -9,33 +9,35 @@ socket=/var/run/mysqld/mysqld.sock
 user=mysql
 pid-file=/var/run/mysqld/mysqld.pid
 socket=/var/run/mysqld/mysqld.sock
-port=3306
 basedir=/usr
 datadir=/var/lib/mysql
 tmpdir=/tmp
 lc-messages-dir=/usr/share/mysql
-log_error=/var/log/mysql/error.log
-
-symbolic-links=0
-
+log-error=/var/log/mysql/error.log
+#log-warnings=2
+skip-name-resolve
 skip-external-locking
-key_buffer_size = 256M
-max_allowed_packet = 32M
-table_open_cache = 256
-sort_buffer_size = 1M
-read_buffer_size = 1M
-read_rnd_buffer_size = 4M
-myisam_sort_buffer_size = 64M
-thread_cache_size = 8
-query_cache_size= 16M
+local-infile=0
+symbolic-links=0
+long-query-time=1
+innodb-file-per-table
 
-#innodb_use_native_aio = 0
-innodb_file_per_table
-
-max_connections=200
-max_user_connections=50
-wait_timeout=10
-interactive_timeout=50
-long_query_time=5
+max-connections=200
+wait-timeout=10
+interactive-timeout=50
+connect-timeout=10
+max-connect-errors=1000000
+thread-cache-size=50
+table-open-cache=10240
+table-definition-cache=4096
+max-allowed-packet=16M
+tmp-table-size=64M
+max-heap-table-size=64M
+key-buffer-size=8M
+innodb-buffer-pool-size=256M
+innodb-buffer-pool-instances=1
+innodb-log-file-size=64M
+innodb-log-buffer-size=8M
+innodb-flush-log-at-trx-commit=2
 
 !includedir /etc/mysql/conf.d/
