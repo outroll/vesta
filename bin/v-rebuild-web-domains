@@ -51,6 +51,7 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
     rm -f $HOMEDIR/$user/conf/web/*.$PROXY_SYSTEM.ssl.ipv6.conf
 fi
 
+# Deleting backend configs
 if [ ! -z "$WEB_BACKEND" ]; then
     if [ "$WEB_BACKEND_POOL" = 'user' ]; then
         prepare_web_backend

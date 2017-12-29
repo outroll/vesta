@@ -218,12 +218,6 @@ add_web_config() {
                 echo "include $conf;" >> /etc/$1/conf.d/vesta.conf
             fi
         fi
-
-        trigger="${2/.*pl/.sh}"
-        if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
-            $WEBTPL/$1/$WEB_BACKEND/$trigger \
-                $user $domain $local_ip $ipv6 $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
-        fi
     fi
     
     if [ ! -z $ipv6 ] && [ "$ipv6" != "no" ]; then
@@ -266,12 +260,12 @@ add_web_config() {
                 echo "include $confv6;" >> /etc/$1/conf.d/vesta.conf
             fi
         fi
+    fi
 
-        trigger="${2/.*pl/.sh}"
-        if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
-            $WEBTPL/$1/$WEB_BACKEND/$trigger \
-                $user $domain $local_ip $ipv6 $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
-        fi
+    trigger="${2/.*pl/.sh}"
+    if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
+        $WEBTPL/$1/$WEB_BACKEND/$trigger \
+            $user $domain $local_ip $ipv6 $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
     fi
 }
 
