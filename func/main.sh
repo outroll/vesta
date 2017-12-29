@@ -695,9 +695,24 @@ is_common_format_valid() {
         check_result $E_INVALID "invalid $2 format :: $1"
     fi
     if [[ $1 =~ \* ]]; then
-        if [ "$(echo $1 | grep -o '*'|wc -l)" -gt 1 ]; then
-            check_result $E_INVALID "invalid $2 format :: $1"
+        if [[ "$(echo $1 | grep -o '\*\.' |wc -l)" -eq 0 ]] && [[ $1 != '*' ]] ; then
+                        check_result $E_INVALID "invalid $2 format :: $1"
         fi
+    fi
+    if [[ $(echo -n "$1" | tail -c 1) =~ [^a-zA-Z0-9_*@] ]]; then
+           check_result $E_INVALID "invalid $2 format :: $1"
+    fi
+    if [[ $(echo -n "$1" | grep -c '\.\.') -gt 0 ]];then
+           check_result $E_INVALID "invalid $2 format :: $1"
+    fi
+    if [[ $(echo -n "$1" | head -c 1) =~ [^a-zA-Z0-9_*@] ]]; then
+           check_result $E_INVALID "invalid $2 format :: $1"
+    fi
+    if [[ $(echo -n "$1" | grep -c '\-\-') -gt 0 ]]; then
+           check_result $E_INVALID "invalid $2 format :: $1"
+    fi
+    if [[ $(echo -n "$1" | grep -c '\_\_') -gt 0 ]]; then
+           check_result $E_INVALID "invalid $2 format :: $1"
     fi
 }
 
@@ -976,12 +991,11 @@ format_domain() { #[removeWWW (default: yes )]
         domain=$(echo "$domain" |sed -e "s/^www.//")
     fi
     if [[ "$domain" =~ .*\.$ ]]; then
-        domain=$(echo "$domain" |sed -e "s/\.$//")
+        domain=$(echo "$domain" |sed -e "s/[.]*$//g")
     fi
     if [[ "$domain" =~ ^\. ]]; then
-        domain=$(echo "$domain" |sed -e "s/^\.//")
+        domain=$(echo "$domain" |sed -e "s/^[.]*//")
     fi
-
 }
 
 format_domain_idn() {
@@ -997,6 +1011,9 @@ format_aliases() {
     if [ ! -z "$aliases" ] && [ "$aliases" != 'none' ]; then
         aliases=$(echo $aliases |tr '[:upper:]' '[:lower:]' |tr ',' '\n')
         aliases=$(echo "$aliases" |sed -e "s/\.$//" |sort -u)
+        aliases=$(echo "$aliases" |tr -s '.')
+        aliases=$(echo "$aliases" |sed -e "s/[.]*$//g")
+        aliases=$(echo "$aliases" |sed -e "s/^[.]*//")
         aliases=$(echo "$aliases" |grep -v www.$domain |sed -e "/^$/d")
         aliases=$(echo "$aliases" |tr '\n' ',' |sed -e "s/,$//")
     fi

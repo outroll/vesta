@@ -85,7 +85,7 @@ gen_pass() {
     echo "$PASS"
 }
 
-# Defning return code check function
+# Defining return code check function
 check_result() {
     if [ $1 -ne 0 ]; then
         echo "Error: $2"
@@ -104,6 +104,20 @@ set_default_value() {
     fi
 }
 
+# Define function to set default language value
+set_default_lang() {
+    if [ -z "$lang" ]; then
+        eval lang=$1
+    fi
+    lang_list="
+        ar cz el fa hu ja no pt se ua
+        bs da en fi id ka pl ro tr vi
+        cn de es fr it nl pt-BR ru tw
+        "
+    if !(echo $lang_list | grep -w $lang 1>&2>/dev/null); then
+        eval lang=$1
+    fi
+}
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -200,8 +214,8 @@ set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
 set_default_value 'remi' 'yes'
 set_default_value 'quota' 'no'
-set_default_value 'lang' 'en'
 set_default_value 'interactive' 'yes'
+set_default_lang 'en'
 
 # Checking software conflicts
 if [ "$phpfpm" = 'yes' ]; then
@@ -223,7 +237,7 @@ fi
 
 # Checking root permissions
 if [ "x$(id -u)" != 'x0' ]; then
-    check_error 1 "Script can be run executed only by root"
+    check_result 1 "Script can be run executed only by root"
 fi
 
 # Checking admin user account
@@ -271,7 +285,7 @@ fi
 #                       Brief Info                         #
 #----------------------------------------------------------#
 
-# Printing nice ascii aslogo
+# Printing nice ascii as logo
 clear
 echo
 echo ' _|      _|  _|_|_|_|    _|_|_|  _|_|_|_|_|    _|_|'
@@ -432,7 +446,7 @@ yum -y update
 check_result $? 'yum update failed'
 
 # Installing EPEL repository
-rpm -Uvh --force $vestacp/epel-release.rpm
+yum install epel-release -y
 check_result $? "Can't install EPEL repository"
 
 # Installing Remi repository
@@ -705,8 +719,8 @@ chmod -R 750 $VESTA/data/queue
 chmod 660 $VESTA/log/*
 rm -f /var/log/vesta
 ln -s $VESTA/log /var/log/vesta
-chown admin:admin $VESTA/data/sessions
 chmod 770 $VESTA/data/sessions
+chown admin:admin $VESTA/data/sessions
 
 # Generating vesta configuration
 rm -f $VESTA/conf/vesta.conf 2>/dev/null
@@ -861,6 +875,11 @@ if [ "$nginx" = 'yes' ]; then
     wget $vestacp/logrotate/nginx -O /etc/logrotate.d/nginx
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
+    if [ "$release" -eq 7 ]; then
+        mkdir /etc/systemd/system/nginx.service.d/
+        echo "[Service]" > /etc/systemd/system/nginx.service.d/limits.conf
+        echo "LimitNOFILE=500000" >> /etc/systemd/system/nginx.service.d/limits.conf
+    fi
     chkconfig nginx on
     service nginx start
     check_result $? "nginx start failed"
@@ -899,6 +918,11 @@ if [ "$apache" = 'yes'  ]; then
     chmod a+x /var/log/httpd
     mkdir -p /var/log/httpd/domains
     chmod 751 /var/log/httpd/domains
+    if [ "$release" -eq 7 ]; then
+        mkdir /etc/systemd/system/httpd.service.d/
+        echo "[Service]" > /etc/systemd/system/httpd.service.d/limits.conf
+        echo "LimitNOFILE=500000" >> /etc/systemd/system/httpd.service.d/limits.conf
+    fi
     chkconfig httpd on
     service httpd start
     check_result $? "httpd start failed"
@@ -983,6 +1007,7 @@ if [ "$mysql" = 'yes' ]; then
 
     mkdir -p /var/lib/mysql
     chown mysql:mysql /var/lib/mysql
+    mkdir -p /etc/my.cnf.d
 
     if [ $release -ne 7 ]; then
         service='mysqld'
@@ -1212,6 +1237,15 @@ if [ "$fail2ban" = 'yes' ]; then
         fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
     fi
+    if [ "$vsftpd" = 'yes' ]; then
+        #Create vsftpd Log File
+        if [ ! -f "/var/log/vsftpd.log" ]; then
+            touch /var/log/vsftpd.log
+        fi
+        fline=$(cat /etc/fail2ban/jail.local |grep -n vsftpd-iptables -A 2)
+        fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
+        sed -i "${fline}s/false/true/" /etc/fail2ban/jail.local
+    fi 
     chkconfig fail2ban on
     /bin/mkdir -p /var/run/fail2ban
     sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/fail2ban/g" /usr/lib/systemd/system/fail2ban.service
@@ -1304,7 +1338,7 @@ command="sudo $VESTA/bin/v-update-sys-rrd"
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
 service crond restart
 
-# Building inititall rrd images
+# Building initial rrd images
 $VESTA/bin/v-update-sys-rrd
 
 # Enabling file system quota

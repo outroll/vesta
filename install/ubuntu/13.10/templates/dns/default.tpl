@@ -19,3 +19,4 @@ ID='18' RECORD='mail' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME
 ID='19' RECORD='www' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
 ID='20' RECORD='pop' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
 ID='21' RECORD='ftp' TYPE='AAAA' PRIORITY='' VALUE='%ipv6%' SUSPENDED='no' TIME='%time%' DATE='%date%'
+

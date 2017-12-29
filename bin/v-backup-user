@@ -69,7 +69,7 @@ while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
 done
 
 # Creating temporary directory
-tmpdir=$(mktemp -p $BACKUP -d)
+tmpdir=$(mktemp -p /tmp -d)
 
 if [ "$?" -ne 0 ]; then
     echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notify
@@ -241,10 +241,7 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
 
         # Backup files
         cd $HOMEDIR/$user/web/$domain
-        tar -cpf $tmpdir/web/$domain/domain_data.tar * ${fargs[@]}
-
-        # Compress archive
-        gzip -$BACKUP_GZIP $tmpdir/web/$domain/domain_data.tar
+        tar -cpf- * ${fargs[@]} |gzip -$BACKUP_GZIP - > $tmpdir/web/$domain/domain_data.tar.gz
     done
 
     # Print total
@@ -343,16 +340,14 @@ if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL" != '*' ]; then
 
         # Backup emails
         cd $HOMEDIR/$user/mail/$domain_idn
+        accounts=()
         for account in $(ls); do
             exclusion=$(echo "$MAIL" |tr ',' '\n' |grep "$domain:")
             exclusion=$(echo "$exclusion" |tr ':' '\n' |grep "^$account$")
 
             # Checking exlusions
             if [ -z "$exclusion" ] && [[ "$MAIL_SYSTEM" =~ exim ]]; then
-                echo "$(date "+%F %T") + $account@$domain" |\
-                    tee -a $BACKUP/$user.log
-                touch $tmpdir/mail/$domain/accounts.tar
-                tar -rpf $tmpdir/mail/$domain/accounts.tar $account
+                accounts+=($account)
             else
                 echo "$(date "+%F %T") excluding mail account $account" |\
                     tee -a $BACKUP/$user.log
@@ -360,8 +355,8 @@ if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL" != '*' ]; then
         done
 
         # Compress archive
-        if [ -e "$tmpdir/mail/$domain/accounts.tar" ]; then
-            gzip -$BACKUP_GZIP $tmpdir/mail/$domain/accounts.tar
+        if [ ${#accounts[@]} -gt 0 ]; then
+            tar -cpf- ${accounts[@]} |gzip -$BACKUP_GZIP - > $tmpdir/mail/$domain/accounts.tar.gz
         fi
     done
 
@@ -481,10 +476,7 @@ if [ "$USER" != '*' ]; then
             echo -e "$(date "+%F %T") adding $udir" |tee -a $BACKUP/$user.log
 
             # Backup files and dirs
-            tar -cpf $tmpdir/user_dir/$udir.tar $udir
-
-            # Compress arhive
-            gzip -$BACKUP_GZIP $tmpdir/user_dir/$udir.tar
+            tar -cpf- $udir |gzip -$BACKUP_GZIP - > $tmpdir/user_dir/$udir.tar.gz
         fi
     done
     set +f
@@ -553,7 +545,7 @@ local_backup(){
 
 # Defining ftp command function
 ftpc() {
-    /usr/bin/ftp -n $HOST $PORT <<EOF
+    /usr/bin/ftp -np $HOST $PORT <<EOF
     quote USER $USERNAME
     quote PASS $PASSWORD
     binary
@@ -839,7 +831,7 @@ google_backup() {
     if [ "$backups_count" -ge "$BACKUPS" ]; then
         backups_rm_number=$((backups_count - BACKUPS))
         for backup in $(echo "$backup_list" |head -n $backups_rm_number); do 
-            echo -e "$(date "+%F %T") Roated gcp backup: $backup"
+            echo -e "$(date "+%F %T") Rotated gcp backup: $backup"
             $gsutil rm $backup > /dev/null 2>&1
         done
     fi
