@@ -1225,6 +1225,41 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     fi
 fi
 
+#----------------------------------------------------------#
+#                   Configure Net2FTP                      #
+#----------------------------------------------------------#
+if [ "$apache" = 'yes' ]; then
+    cd /usr/share
+    wget http://www.net2ftp.com/download/net2ftp_v1.1.zip -O /usr/share/net2ftp.zip
+    unzip /usr/share/net2ftp.zip
+    mv /usr/share/net2ftp_v1.1/files_to_upload/ /usr/share/net2ftp
+    chown apache:apache /usr/share/net2ftp/temp
+    rm -fr /usr/share/net2ftp.zip /usr/share/net2ftp_v1.1/
+
+    echo 'Alias /net2ftp /usr/share/net2ftp
+
+<Directory /usr/share/net2ftp/>
+   Order Deny,Allow
+   Deny from All
+   Allow from All
+    <FilesMatch \.php$>
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+
+</Directory>
+' > /etc/httpd/conf.d/net2ftp.conf
+
+    # Restrict FTP server to localhost
+    sed -i /usr/share/net2ftp/settings_authorizations.inc.php -e 's,\$net2ftp_settings\["allowed_ftpservers"\]\[1\] = "ALL",\/\/\$net2ftp_settings\["allowed_ftpservers"\]\[1\] = "ALL",g'
+    sed -i /usr/share/net2ftp/settings_authorizations.inc.php -e 's,\/\/\$net2ftp_settings\["allowed_ftpservers"\]\[1\] = "localhost",\$net2ftp_settings\["allowed_ftpservers"\]\[1\] = "localhost",g'
+
+    # Restrict FTP port to 21
+    sed -i /usr/share/net2ftp/settings_authorizations.inc.php -e 's,\$net2ftp_settings\["allowed_ftpserverport"\] = "ALL",\/\/\$net2ftp_settings\["allowed_ftpserverport"\] = "ALL",g'
+    sed -i /usr/share/net2ftp/settings_authorizations.inc.php -e 's,\/\/\$net2ftp_settings\["allowed_ftpserverport"\] = "21",\$net2ftp_settings\["allowed_ftpserverport"\] = "21",g'
+
+    # Remove sftp login form
+    sed -i /usr/share/net2ftp/skins/shinra/loginform.template.php -e '58,202d'
+fi
 
 #----------------------------------------------------------#
 #                    Configure Fail2Ban                    #
