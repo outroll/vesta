@@ -21,6 +21,9 @@ local-infile=0
 symbolic-links=0
 long-query-time=1
 innodb-file-per-table
+query-cache-type=0
+query-cache-size=0
+open-files-limit=65535
 
 max-connections=200
 wait-timeout=10
