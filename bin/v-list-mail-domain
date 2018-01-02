@@ -17,6 +17,11 @@ format=${3-shell}
 # Includes
 source $VESTA/func/main.sh
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+
+
 # JSON list function
 json_list() {
     eval $(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
@@ -28,6 +33,8 @@ json_list() {
         "CATCHALL": "'$CATCHALL'",
         "ACCOUNTS": "'$ACCOUNTS'",
         "U_DISK": "'$U_DISK'",
+        "SSL": "'$SSL'",
+        "LETSENCRYPT": "'$LETSENCRYPT'",
         "SUSPENDED": "'$SUSPENDED'",
         "TIME": "'$TIME'",
         "DATE": "'$DATE'"
@@ -44,6 +51,8 @@ shell_list() {
     echo "CATCHALL:       $CATCHALL"
     echo "ACCOUNTS:       $ACCOUNTS"
     echo "DISK:           $U_DISK"
+    echo "SSL:            $SSL"
+    echo "LETSENCRYPT:    $LETSENCRYPT"
     echo "SUSPENDED:      $SUSPENDED"
     echo "TIME:           $TIME"
     echo "DATE:           $DATE"
@@ -52,15 +61,15 @@ shell_list() {
 # PLAIN list function
 plain_list() {
     echo -ne "$DOMAIN\t$ANTIVIRUS\t$ANTISPAM\t$DKIM\t$CATCHALL\t"
-    echo -e "$ACCOUNTS\t$U_DISK\t$SUSPENDED\t$TIME\t$DATE"
+    echo -e "$ACCOUNTS\t$U_DISK\t$SSL\t$LETSENCRYPT\t$SUSPENDED\t$TIME\t$DATE"
 }
 
 # CSV list function
 csv_list() {
     echo -n "DOMAIN,ANTIVIRUS,ANTISPAM,DKIM,CATCHALL,ACCOUNTS,U_DISK,"
-    echo "SUSPENDED,TIME,DATE"
+    echo "SSL,LETSENCRYPT,SUSPENDED,TIME,DATE"
     echo -n "$DOMAIN,$ANTIVIRUS,$ANTISPAM,$DKIM,$CATCHALL,$ACCOUNTS,$U_DISK"
-    echo "$SUSPENDED,$TIME,$DATE"
+    echo "$SSL,$LETSENCRYPT,$SUSPENDED,$TIME,$DATE"
 }
 
 
@@ -71,7 +80,7 @@ csv_list() {
 check_args '2' "$#" 'USER DOMAIN [FORMAT]'
 is_format_valid 'user' 'domain'
 is_object_valid 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -79,7 +88,7 @@ is_object_valid 'mail' 'DOMAIN' "$domain"
 #----------------------------------------------------------#
 
 # Parsing mail domain
-eval $(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
+eval $(grep "DOMAIN='$domain_idn'" $USER_DATA/mail.conf)
 
 # Listing data
 case $format in

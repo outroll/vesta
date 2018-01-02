@@ -48,7 +48,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_hostname" value="<?=htmlentities(trim($v_hostname, "'"))?>">
+                                    <input type="text" size="20" class="vst-input" name="v_hostname" value="<?=htmlentities(trim($v_hostname, "'"))?>"> <?php /* ' */ ?>
                                     <br><br>
                                 </td>
                             </tr>
@@ -500,10 +500,11 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <input type="text" size="20" class="vst-input" name="v_backup_dir" value="<?=trim($v_backup_dir, "'")?>">
+                                                <input type="text" size="20" class="vst-input" name="v_backup_dir" value="<?=trim($v_backup_dir, "'")?>"> <?php /* ' */ ?>
                                                 <br><br>
                                             </td>
-                                        </tr>                                        <tr>
+                                        </tr>
+                                        <tr>
                                             <td class="vst-text input-label step-top">
                                                 <a href="javascript:elementHideShow('remote_backup');" class="vst-text">
                                                 <?php print __('Remote backup');?> <img src="/images/arrow.png">
@@ -522,6 +523,7 @@
                                                             <select class="vst-list" name="v_backup_type">
                                                                 <option value='ftp'><?php print __('ftp'); ?></option>
                                                                 <option value='sftp' <?php if((!empty($v_backup_type)) && ($v_backup_type  == 'sftp')) echo 'selected' ?> ><?php print __('sftp'); ?></option>
+                                                                <option value='s3' <?php if((!empty($v_backup_type)) && ($v_backup_type  == 's3')) echo 'selected' ?> ><?php print __('S3'); ?></option>
                                                             </select>
                                                             <br><br>
                                                         </td>
@@ -533,7 +535,26 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" size="20" class="vst-input" name="v_backup_host" value="<?=trim($v_backup_host, "'")?>">
+                                                            <?php if($v_backup_type == 's3'): ?>
+                                                            <select class="vst-list" name="v_backup_host">
+                                                                <?php foreach(array('us-east-1','us-west-1','us-west-2','eu-west-1','eu-central-1','ap-northeast-1','ap-southeast-1','ap-southeast-2','sa-east-1') as $region): ?>
+                                                                    <option value='<?= $region ?>' <?php if((!empty($v_backup_type)) && (trim($v_backup_host, "'") == $region)) echo 'selected' ?>><?php print __($region); ?></option>
+                                                                <?php endforeach; ?>
+                                                            </select>
+                                                            <?php else: ?>
+                                                                <input type="text" size="20" class="vst-input" name="v_backup_host" value="<?=trim($v_backup_host, "'")?>"> <?php /* ' */ ?>
+                                                            <?php endif ?>
+                                                            <br><br>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="hidden">
+                                                        <td class="vst-text">
+                                                            <?php print __('Bucket') ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="hidden">
+                                                        <td>
+                                                            <input type="text" size="20" class="vst-input" name="v_backup_bucket" value="<?=trim($v_backup_bucket, "'")?>"> <?php /* ' */ ?>
                                                             <br><br>
                                                         </td>
                                                     </tr>
@@ -544,7 +565,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" size="20" class="vst-input" name="v_backup_username" value="<?=trim($v_backup_username, "'")?>">
+                                                            <input type="text" size="20" class="vst-input" name="v_backup_username" value="<?=trim($v_backup_username, "'")?>"> <?php /* ' */ ?>
                                                             <br><br>
                                                         </td>
                                                     </tr>
@@ -555,7 +576,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" size="20" class="vst-input" name="v_backup_password" value="<?=trim($v_backup_password, "'")?>">
+                                                            <input type="text" size="20" class="vst-input" name="v_backup_password" value="<?=trim($v_backup_password, "'")?>"> <?php /* ' */ ?>
                                                             <br><br>
                                                         </td>
                                                     </tr>
@@ -566,7 +587,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" size="20" class="vst-input" name="v_backup_bpath" value="<?=trim($v_backup_bpath, "'")?>">
+                                                            <input type="text" size="20" class="vst-input" name="v_backup_bpath" value="<?=trim($v_backup_bpath, "'")?>"> <?php /* ' */ ?>
                                                             <br><br>
                                                         </td>
                                                     </tr>
@@ -587,6 +608,11 @@
                             <tr>
                                 <td class="vst-text input-label step-left">
                                     <table style="display:<?php if (empty($v_adv)) echo 'none';?> ;" id="ssl">
+                                        <tr>
+                                            <td class="input-label vst-text">
+                                                <label><input type="checkbox" size="20" class="vst-checkbox" name="v_letsencrypt" <?php if($v_letsencrypt == 'yes' || $v_letencrypt == 'on') echo "checked=yes" ?> onclick="toggle_letsencrypt(this)"> <?php print __('Lets Encrypt Support');?></label>
+                                            </td>
+                                        </tr>
                                         <tr>
                                             <td class="vst-text input-label">
                                                 <?php print __('SSL Certificate');?>

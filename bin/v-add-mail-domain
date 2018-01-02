@@ -12,7 +12,6 @@
 # Argument definition
 user=$1
 domain=$2
-domain_idn=$2
 antispam=${3-yes}
 antivirus=${4-yes}
 dkim=${5-yes}
@@ -44,7 +43,7 @@ is_format_valid 'user' 'domain' 'antispam' 'antivirus' 'dkim' 'dkim_size'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_domain_new 'mail' "$domain"
+is_domain_new 'mail' "$domain_idn"
 is_package_full 'MAIL_DOMAINS'
 
 
@@ -59,7 +58,7 @@ date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Adding domain to mail.conf
 s="DOMAIN='$domain' ANTIVIRUS='$antivirus' ANTISPAM='$antispam' DKIM='$dkim'"
-s="$s CATCHALL='' ACCOUNTS='0' U_DISK='0' SUSPENDED='no' TIME='$time'"
+s="$s CATCHALL='' ACCOUNTS='0' U_DISK='0' SSL='no' SUSPENDED='no' TIME='$time'"
 s="$s DATE='$date'"
 echo $s >> $USER_DATA/mail.conf
 touch $USER_DATA/mail/$domain.conf
@@ -115,7 +114,7 @@ fi
 
 # Adding dkim dns records
 if [ ! -z "$DNS_SYSTEM" ] && [ "$dkim" = 'yes' ]; then
-    check_dns_domain=$(is_object_valid 'dns' 'DOMAIN' "$domain")
+    check_dns_domain=$(is_object_valid 'dns' 'DOMAIN' "$domain_idn")
     if [ "$?" -eq 0 ]; then
         p=$(cat $USER_DATA/mail/$domain.pub|grep -v ' KEY---'|tr -d '\n')
         record='_domainkey'

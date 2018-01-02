@@ -14,10 +14,10 @@
     <Directory %docroot%>
         AllowOverride All
         Options +Includes -Indexes +ExecCGI
-        php_admin_value upload_max_filesize 10M
+        php_admin_value upload_max_filesize 100M
         php_admin_value max_execution_time 20
-        php_admin_value post_max_size  8M
-        php_admin_value memory_limit 32M
+        php_admin_value post_max_size  100M
+        php_admin_value memory_limit 128M
         php_admin_flag mysql.allow_persistent  off
         php_admin_flag safe_mode off
         php_admin_value sendmail_path "/usr/sbin/sendmail -t -i -f info@%domain_idn%"

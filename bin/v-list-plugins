@@ -1,0 +1,102 @@
+#!/bin/bash
+# info: list web domains
+# options: [FORMAT]
+#
+# The function to obtain the list of all plugins installed.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    i=1
+    objects=$(grep PLUGIN $VESTA/conf/plugin.conf |wc -l)
+    echo "{"
+    while read str; do
+        eval $str
+        echo -n '    "'$PLUGIN'": {
+        "NAME": "'$NAME'",
+        "VERSION": "'$VERSION'",
+        "BUILDNUMBER": "'$BUILDNUMBER'",
+        "LATEST_VERSION": "'$LATEST_VERSION'",
+        "LATEST_BUILDNUMBER": "'$LATEST_BUILDNUMBER'",
+        "KEY": "'$KEY'",
+        "ACTIVE": "'$ACTIVE'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done < <(cat $VESTA/conf/plugin.conf)
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "PLUGIN   NAME   VERSION   LAST VERSION   KEY   ACTIVE   DATE"
+    echo "------   ----   -------   ------------   ---   ------   ----"
+    while read str; do
+        eval $str
+        echo "$PLUGIN $NAME $VERSION $LATEST_VERSION $KEY $ACTIVE $DATE"
+    done < <(cat $VESTA/conf/plugin.conf)
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    while read str; do
+        eval $str
+        echo -ne "PLUGIN\t$NAME\t$VERSION\t$LATEST_VERSION\t$KEY\t$ACTIVE\t$TIME\t$DATE"
+    done < <(cat $VESTA/conf/plugin.conf)
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "PLUGIN,NAME,VERSION,LAST VERSION,KEY,ACTIVE,TIME,DATE"
+    while read str; do
+        eval $str
+        echo "$PLUGIN,\"$NAME\",$VERSION,$LATEST_VERSION,$KEY,$ACTIVE,$TIME,$DATE"
+    done < <(cat $VESTA/conf/plugin.conf)
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '0' "$#" '[FORMAT]'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

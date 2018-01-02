@@ -1,0 +1,14 @@
+dist: trusty
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build -t tpwebcp .
+  - mkdir -p /tmp
+  - docker run -d --restart=always -v /var/vesta:/vesta --name tpwebcp --cap-add=NET_ADMIN tpwebcp
+ 
+script:
+  - docker exec tpwebcp /bin/bash -c "sudo su -; /usr/local/vesta/test/test_actions.sh; (exit \$?)"
+  - docker exec tpwebcp /bin/bash -c "sudo su -; /usr/local/vesta/test/test_json_listing.sh; (exit \$?)"

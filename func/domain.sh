@@ -84,7 +84,7 @@ is_web_alias_new() {
 
 # Prepare web backend
 prepare_web_backend() {
-    pool=$(find /etc/php* -type d \( -name "pool.d" -o -name "*fpm.d" \))
+    pool=$(find -L /etc/php* -type d \( -name "pool.d" -o -name "*fpm.d" \))
     if [ ! -e "$pool" ]; then
         check_result $E_NOTEXIST "php-fpm pool doesn't exist"
     fi
@@ -137,10 +137,10 @@ prepare_web_domain_values() {
     fi
     group="$user"
     email="info@$domain"
-    docroot="$HOMEDIR/$user/web/$domain/public_html"
+    docroot="$HOMEDIR/$user/web/$domain_idn/public_html"
     sdocroot="$docroot"
     if [ "$SSL_HOME" = 'single' ]; then
-        sdocroot="$HOMEDIR/$user/web/$domain/public_shtml" ;
+        sdocroot="$HOMEDIR/$user/web/$domain_idn/public_shtml" ;
     fi
 
     if [ ! -z "$WEB_BACKEND" ]; then
@@ -152,11 +152,11 @@ prepare_web_domain_values() {
     aliases_idn=''
     prepare_web_aliases $ALIAS
 
-    ssl_crt="$HOMEDIR/$user/conf/web/ssl.$domain.crt"
-    ssl_key="$HOMEDIR/$user/conf/web/ssl.$domain.key"
-    ssl_pem="$HOMEDIR/$user/conf/web/ssl.$domain.pem"
-    ssl_ca="$HOMEDIR/$user/conf/web/ssl.$domain.ca"
-    if [ ! -e "$USER_DATA/ssl/$domain.ca" ]; then
+    ssl_crt="$HOMEDIR/$user/conf/web/ssl.$domain_idn.crt"
+    ssl_key="$HOMEDIR/$user/conf/web/ssl.$domain_idn.key"
+    ssl_pem="$HOMEDIR/$user/conf/web/ssl.$domain_idn.pem"
+    ssl_ca="$HOMEDIR/$user/conf/web/ssl.$domain_idn.ca"
+    if [ ! -e "$USER_DATA/ssl/$domain_idn.ca" ]; then
         ssl_ca_str='#'
     fi
     if [ "$SUSPENDED" = 'yes' ]; then
@@ -168,63 +168,116 @@ prepare_web_domain_values() {
 # Add web config
 add_web_config() {
     conf="$HOMEDIR/$user/conf/web/$domain.$1.conf"
+    confv6="$HOMEDIR/$user/conf/web/$domain.$1.ipv6.conf"
     if [[ "$2" =~ stpl$ ]]; then
         conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.conf"
+        confv6="$HOMEDIR/$user/conf/web/$domain.$1.ssl.ipv6.conf"
     fi
-
+    
     domain_idn=$domain
     format_domain_idn
-
-    cat $WEBTPL/$1/$WEB_BACKEND/$2 | \
-        sed -e "s|%ip%|$local_ip|g" \
-            -e "s|%domain%|$domain|g" \
-            -e "s|%domain_idn%|$domain_idn|g" \
-            -e "s|%alias%|${aliases//,/ }|g" \
-            -e "s|%alias_idn%|${aliases_idn//,/ }|g" \
-            -e "s|%alias_string%|$alias_string|g" \
-            -e "s|%email%|info@$domain|g" \
-            -e "s|%web_system%|$WEB_SYSTEM|g" \
-            -e "s|%web_port%|$WEB_PORT|g" \
-            -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \
-            -e "s|%backend_lsnr%|$backend_lsnr|g" \
-            -e "s|%rgroups%|$WEB_RGROUPS|g" \
-            -e "s|%proxy_system%|$PROXY_SYSTEM|g" \
-            -e "s|%proxy_port%|$PROXY_PORT|g" \
-            -e "s|%proxy_ssl_port%|$PROXY_SSL_PORT|g" \
-            -e "s/%proxy_extentions%/${PROXY_EXT//,/|}/g" \
-            -e "s|%user%|$user|g" \
-            -e "s|%group%|$user|g" \
-            -e "s|%home%|$HOMEDIR|g" \
-            -e "s|%docroot%|$docroot|g" \
-            -e "s|%sdocroot%|$sdocroot|g" \
-            -e "s|%ssl_crt%|$ssl_crt|g" \
-            -e "s|%ssl_key%|$ssl_key|g" \
-            -e "s|%ssl_pem%|$ssl_pem|g" \
-            -e "s|%ssl_ca_str%|$ssl_ca_str|g" \
-            -e "s|%ssl_ca%|$ssl_ca|g" \
-    > $conf
-
-    chown root:$user $conf
-    chmod 640 $conf
-
-    if [ -z "$(grep "$conf" /etc/$1/conf.d/vesta.conf)" ]; then
-        if [ "$1" != 'nginx' ]; then
-            echo "Include $conf" >> /etc/$1/conf.d/vesta.conf
-        else
-            echo "include $conf;" >> /etc/$1/conf.d/vesta.conf
+    
+    if [ ! -z $local_ip ]; then
+        cat $WEBTPL/$1/$WEB_BACKEND/$2 | \
+            sed -e "s|%ip%|$local_ip|g" \
+                -e "s|%ipv6%|$ipv6|g" \
+                -e "s|%domain%|$domain|g" \
+                -e "s|%domain_idn%|$domain_idn|g" \
+                -e "s|%alias%|${aliases//,/ }|g" \
+                -e "s|%alias_idn%|${aliases_idn//,/ }|g" \
+                -e "s|%alias_string%|$alias_string|g" \
+                -e "s|%email%|info@$domain|g" \
+                -e "s|%web_system%|$WEB_SYSTEM|g" \
+                -e "s|%web_port%|$WEB_PORT|g" \
+                -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \
+                -e "s|%backend_lsnr%|$backend_lsnr|g" \
+                -e "s|%rgroups%|$WEB_RGROUPS|g" \
+                -e "s|%proxy_system%|$PROXY_SYSTEM|g" \
+                -e "s|%proxy_port%|$PROXY_PORT|g" \
+                -e "s|%proxy_ssl_port%|$PROXY_SSL_PORT|g" \
+                -e "s/%proxy_extentions%/${PROXY_EXT//,/|}/g" \
+                -e "s|%user%|$user|g" \
+                -e "s|%group%|$user|g" \
+                -e "s|%home%|$HOMEDIR|g" \
+                -e "s|%docroot%|$docroot|g" \
+                -e "s|%sdocroot%|$sdocroot|g" \
+                -e "s|%ssl_crt%|$ssl_crt|g" \
+                -e "s|%ssl_key%|$ssl_key|g" \
+                -e "s|%ssl_pem%|$ssl_pem|g" \
+                -e "s|%ssl_ca_str%|$ssl_ca_str|g" \
+                -e "s|%ssl_ca%|$ssl_ca|g" \
+        > $conf
+        
+        chown root:$user $conf
+        chmod 640 $conf
+        
+        if [ -z "$(grep "$conf" /etc/$1/conf.d/vesta.conf)" ]; then
+            if [ "$1" != 'nginx' ]; then
+                echo "Include $conf" >> /etc/$1/conf.d/vesta.conf
+            else
+                echo "include $conf;" >> /etc/$1/conf.d/vesta.conf
+            fi
+        fi
+    fi
+    
+    if [ ! -z $ipv6 ] && [ "$ipv6" != "no" ]; then
+        cat $WEBTPL/$1/$WEB_BACKEND/$2 | \
+            sed -e "s|%ip%|[$ipv6]|g" \
+                -e "s|%domain%|$domain|g" \
+                -e "s|%domain_idn%|$domain_idn|g" \
+                -e "s|%alias%|${aliases//,/ }|g" \
+                -e "s|%alias_idn%|${aliases_idn//,/ }|g" \
+                -e "s|%alias_string%|$alias_string|g" \
+                -e "s|%email%|info@$domain|g" \
+                -e "s|%web_system%|$WEB_SYSTEM|g" \
+                -e "s|%web_port%|$WEB_PORT|g" \
+                -e "s|%web_ssl_port%|$WEB_SSL_PORT|g" \
+                -e "s|%backend_lsnr%|$backend_lsnr|g" \
+                -e "s|%rgroups%|$WEB_RGROUPS|g" \
+                -e "s|%proxy_system%|$PROXY_SYSTEM|g" \
+                -e "s|%proxy_port%|$PROXY_PORT|g" \
+                -e "s|%proxy_ssl_port%|$PROXY_SSL_PORT|g" \
+                -e "s/%proxy_extentions%/${PROXY_EXT//,/|}/g" \
+                -e "s|%user%|$user|g" \
+                -e "s|%group%|$user|g" \
+                -e "s|%home%|$HOMEDIR|g" \
+                -e "s|%docroot%|$docroot|g" \
+                -e "s|%sdocroot%|$sdocroot|g" \
+                -e "s|%ssl_crt%|$ssl_crt|g" \
+                -e "s|%ssl_key%|$ssl_key|g" \
+                -e "s|%ssl_pem%|$ssl_pem|g" \
+                -e "s|%ssl_ca_str%|$ssl_ca_str|g" \
+                -e "s|%ssl_ca%|$ssl_ca|g" \
+        > $confv6
+        
+        chown root:$user $confv6
+        chmod 640 $confv6
+        
+        if [ -z "$(grep "$confv6" /etc/$1/conf.d/vesta.conf)" ]; then
+            if [ "$1" != 'nginx' ]; then
+                echo "Include $confv6" >> /etc/$1/conf.d/vesta.conf
+            else
+                echo "include $confv6;" >> /etc/$1/conf.d/vesta.conf
+            fi
         fi
     fi
 
     trigger="${2/.*pl/.sh}"
     if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
         $WEBTPL/$1/$WEB_BACKEND/$trigger \
-            $user $domain $local_ip $HOMEDIR \
-            $HOMEDIR/$user/web/$domain/public_html
+            $user $domain $local_ip $ipv6 $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
     fi
 }
 
 # Get config top and bottom line number
 get_web_config_lines() {
+    v_ip=""
+    if [ ! -z $old ]; then
+        v_ip=$old
+    fi
+    if [ -z "$v_ip" ]; then
+        check_result $E_PARSING "V_IP in get_web_config_lines is empty"
+    fi
     tpl_lines=$(egrep -ni "name %domain_idn%" $1 |grep -w %domain_idn%)
     tpl_lines=$(echo "$tpl_lines" |cut -f 1 -d :)
     tpl_last_line=$(wc -l $1 |cut -f 1 -d ' ')
@@ -234,9 +287,9 @@ get_web_config_lines() {
 
     domain_idn=$domain
     format_domain_idn
-    vhost_lines=$(grep -niF "name $domain_idn" $2)
+    vhost_lines=$(grep -ni -A2 "$v_ip" $2| grep -iF "name $domain_idn")
     vhost_lines=$(echo "$vhost_lines" |egrep "$domain_idn($| |;)") #"
-    vhost_lines=$(echo "$vhost_lines" |cut -f 1 -d :)
+    vhost_lines=$(echo "$vhost_lines" |cut -f 1 -d : |cut -f 1 -d \-)
     if [ -z "$vhost_lines" ]; then
         check_result $E_PARSING "can't parse config $2"
     fi
@@ -258,14 +311,15 @@ replace_web_config() {
 
     if [ -e "$conf" ]; then
         sed -i  "s|$old|$new|g" $conf
-    else
-        # fallback to old style configs
-        conf="$HOMEDIR/$user/conf/web/$1.conf"
-        if [[ "$2" =~ stpl$ ]]; then
-            conf="$HOMEDIR/$user/conf/web/s$1.conf"
-        fi
-        get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
-        sed -i  "$top_line,$bottom_line s|$old|$new|g" $conf
+    fi
+    
+    conf="$HOMEDIR/$user/conf/web/$domain.$1.ipv6.conf"
+    if [[ "$2" =~ stpl$ ]]; then
+        conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.ipv6.conf"
+    fi
+
+    if [ -e "$conf" ]; then
+        sed -i  "s|$old|$new|g" $conf
     fi
 }
 
@@ -294,49 +348,74 @@ del_web_config() {
             rm -f $conf
         fi
     fi
+    
+    conf="$HOMEDIR/$user/conf/web/$domain.$1.ipv6.conf"
+    if [[ "$2" =~ stpl$ ]]; then
+        conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.ipv6.conf"
+    fi
+
+    if [ -e "$conf" ]; then
+        sed -i "\|$conf|d" /etc/$1/conf.d/vesta.conf
+        rm -f $conf
+    else
+        # fallback to old style configs
+        conf="$HOMEDIR/$user/conf/web/$1.conf"
+        if [[ "$2" =~ stpl$ ]]; then
+            conf="$HOMEDIR/$user/conf/web/s$1.conf"
+        fi
+        get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
+        sed -i "$top_line,$bottom_line d" $conf
+
+        web_domain=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
+        if [ "$web_domain" -eq '0' ]; then
+            sed -i "/.*\/$user\/.*$1.conf/d" /etc/$1/conf.d/vesta.conf
+            rm -f $conf
+        fi
+    fi
 }
 
 # SSL certificate verification
 is_web_domain_cert_valid() {
-    if [ ! -e "$ssl_dir/$domain.crt" ]; then
-        check_result $E_NOTEXIST "$ssl_dir/$domain.crt not found"
+    if [ ! -e "$ssl_dir/${domain_idn}.crt" ]; then
+        check_result $E_NOTEXIST "$ssl_dir/${domain_idn}.crt not found"
     fi
 
-    if [ ! -e "$ssl_dir/$domain.key" ]; then
-        check_result $E_NOTEXIST "$ssl_dir/$domain.key not found"
+    if [ ! -e "$ssl_dir/${domain_idn}.key" ]; then
+        check_result $E_NOTEXIST "$ssl_dir/${domain_idn}.key not found"
     fi
 
-    crt_vrf=$(openssl verify $ssl_dir/$domain.crt 2>&1)
+    crt_vrf=$(openssl verify $ssl_dir/${domain_idn}.crt 2>&1)
+
     if [ ! -z "$(echo $crt_vrf |grep 'unable to load')" ]; then
         check_result $E_INVALID "SSL Certificate is not valid"
     fi
 
     if [ ! -z "$(echo $crt_vrf |grep 'unable to get local issuer')" ]; then
-        if [ ! -e "$ssl_dir/$domain.ca" ]; then
+        if [ ! -e "$ssl_dir/${domain_idn}.ca" ]; then
             check_result $E_NOTEXIST "Certificate Authority not found"
         fi
     fi
 
-    if [ -e "$ssl_dir/$domain.ca" ]; then
-        s1=$(openssl x509 -text -in $ssl_dir/$domain.crt 2>/dev/null)
+    if [ -e "$ssl_dir/${domain_idn}.ca" ]; then
+        s1=$(openssl x509 -text -in $ssl_dir/${domain_idn}.crt 2>/dev/null)
         s1=$(echo "$s1" |grep Issuer  |awk -F = '{print $6}' |head -n1)
-        s2=$(openssl x509 -text -in $ssl_dir/$domain.ca 2>/dev/null)
+        s2=$(openssl x509 -text -in $ssl_dir/${domain_idn}.ca 2>/dev/null)
         s2=$(echo "$s2" |grep Subject  |awk -F = '{print $6}' |head -n1)
         if [ "$s1" != "$s2" ]; then
             check_result $E_NOTEXIST "SSL intermediate chain is not valid"
         fi
     fi
 
-    key_vrf=$(grep 'PRIVATE KEY' $ssl_dir/$domain.key |wc -l)
+    key_vrf=$(grep 'PRIVATE KEY' $ssl_dir/${domain_idn}.key |wc -l)
     if [ "$key_vrf" -ne 2 ]; then
         check_result $E_INVALID "SSL Key is not valid"
     fi
-    if [ ! -z "$(grep 'ENCRYPTED' $ssl_dir/$domain.key)" ]; then
+    if [ ! -z "$(grep 'ENCRYPTED' $ssl_dir/${domain_idn}.key)" ]; then
         check_result $E_FORBIDEN "SSL Key is protected (remove pass_phrase)"
     fi
 
-    openssl s_server -quiet -cert $ssl_dir/$domain.crt \
-        -key $ssl_dir/$domain.key >> /dev/null 2>&1 &
+    openssl s_server -quiet -cert $ssl_dir/${domain_idn}.crt \
+        -key $ssl_dir/${domain_idn}.key >> /dev/null 2>&1 &
     pid=$!
     sleep 0.5
     disown &> /dev/null
@@ -383,7 +462,7 @@ update_domain_zone() {
     else
         domain_idn=$domain
     fi
-    zn_conf="$HOMEDIR/$user/conf/dns/$domain.db"
+    zn_conf="$HOMEDIR/$user/conf/dns/$domain_idn.db"
     echo "\$TTL $TTL
 @    IN    SOA    $SOA.    root.$domain_idn. (
                                             $SERIAL
@@ -407,12 +486,12 @@ update_domain_zone() {
         if [ "$SUSPENDED" != 'yes' ]; then
             eval echo -e "\"$fields\""|sed "s/%quote%/'/g" >> $zn_conf
         fi
-    done < $USER_DATA/dns/$domain.conf
+    done < $USER_DATA/dns/$domain_idn.conf
 }
 
 # Update zone serial
 update_domain_serial() {
-    zn_conf="$HOMEDIR/$user/conf/dns/$domain.db"
+    zn_conf="$HOMEDIR/$user/conf/dns/$domain_idn.db"
     if [ -e $zn_conf ]; then
         zn_serial=$(head $zn_conf |grep 'SOA' -A1 |tail -n 1 |sed "s/ //g")
         s_date=$(echo ${zn_serial:0:8})
@@ -431,14 +510,14 @@ update_domain_serial() {
     else
         serial="$(date +'%Y%m%d01')"
     fi
-    add_object_key "dns" 'DOMAIN' "$domain" 'SERIAL' 'RECORDS'
-    update_object_value 'dns' 'DOMAIN' "$domain" '$SERIAL' "$serial"
+    add_object_key "dns" 'DOMAIN' "$domain_idn" 'SERIAL' 'RECORDS'
+    update_object_value 'dns' 'DOMAIN' "$domain_idn" '$SERIAL' "$serial"
 }
 
 # Get next DNS record ID
-get_next_dnsrecord(){
+get_next_dnsrecord() {
     if [ -z "$id" ]; then
-        curr_str=$(grep "ID=" $USER_DATA/dns/$domain.conf | cut -f 2 -d \' |\
+        curr_str=$(grep "ID=" $USER_DATA/dns/$domain_idn.conf | cut -f 2 -d \' |\
             sort -n|tail -n1)
         id="$((curr_str +1))"
     fi
@@ -446,17 +525,17 @@ get_next_dnsrecord(){
 
 # Sort DNS records
 sort_dns_records() {
-    conf="$USER_DATA/dns/$domain.conf"
+    conf="$USER_DATA/dns/$domain_idn.conf"
     cat $conf |sort -n -k 2 -t \' >$conf.tmp
     mv -f $conf.tmp $conf
 }
 
 # Check if this is a last record
 is_dns_record_critical() {
-    str=$(grep "ID='$id'" $USER_DATA/dns/$domain.conf)
+    str=$(grep "ID='$id'" $USER_DATA/dns/$domain_idn.conf)
     eval $str
     if [ "$TYPE" = 'A' ] || [ "$TYPE" = 'NS' ]; then
-        records=$(grep "TYPE='$TYPE'" $USER_DATA/dns/$domain.conf| wc -l)
+        records=$(grep "TYPE='$TYPE'" $USER_DATA/dns/$domain_idn.conf| wc -l)
         if [ $records -le 1 ]; then
             echo "Error: at least one $TYPE record should remain active"
             log_event "$E_INVALID" "$ARGUMENTS"
@@ -493,7 +572,7 @@ is_dns_nameserver_valid() {
     t=$2
     r=$3
     if [ "$t" = 'NS' ]; then
-        remote=$(echo $r |grep ".$domain.$")
+        remote=$(echo $r |grep ".$domain_idn.$")
         if [ ! -z "$remote" ]; then
             zone=$USER_DATA/dns/$d.conf
             a_record=$(echo $r |cut -f 1 -d '.')
@@ -505,7 +584,122 @@ is_dns_nameserver_valid() {
     fi
 }
 
+# Add DNS config
+add_dns_config() {
+    spfip4=""
+    spfip6=""
+    if [ ! -z $ip ]; then
+        spfipv4="ip4:$ip";
+    fi
+    if [ ! -z $ipv6 ]; then
+        spfipv6="ip6:$ipv6";
+    fi
+    
+    # Adding dns zone to the user config
+    echo "$template_data" | grep -v '%ip' |\
+        sed -e "s/%ip%/$ip/g" \
+            -e "s/%ipv6%/$ipv6/g" \
+            -e "s/%domain_idn%/$domain_idn/g" \
+            -e "s/%domain%/$domain/g" \
+            -e "s/%spfip4%/$spfipv4/g" \
+            -e "s/%spfip6%/$spfipv6/g" \
+            -e "s/%ns1%/$ns1/g" \
+            -e "s/%ns2%/$ns2/g" \
+            -e "s/%ns3%/$ns3/g" \
+            -e "s/%ns4%/$ns4/g" \
+            -e "s/%ns5%/$ns5/g" \
+            -e "s/%ns6%/$ns6/g" \
+            -e "s/%ns7%/$ns7/g" \
+            -e "s/%ns8%/$ns8/g" \
+            -e "s/%time%/$time/g" \
+            -e "s/%date%/$date/g" > $USER_DATA/dns/$domain.conf
+    if [ ! -z $ip ]; then
+      echo "$template_data" |grep "%ip%" |\
+          sed -e "s/%ip%/$ip/g" \
+              -e "s/%ipv6%/$ipv6/g" \
+              -e "s/%domain_idn%/$domain_idn/g" \
+              -e "s/%domain%/$domain/g" \
+              -e "s/%ns1%/$ns1/g" \
+              -e "s/%ns2%/$ns2/g" \
+              -e "s/%ns3%/$ns3/g" \
+              -e "s/%ns4%/$ns4/g" \
+              -e "s/%ns5%/$ns5/g" \
+              -e "s/%ns6%/$ns6/g" \
+              -e "s/%ns7%/$ns7/g" \
+              -e "s/%ns8%/$ns8/g" \
+              -e "s/%time%/$time/g" \
+              -e "s/%date%/$date/g" >> $USER_DATA/dns/$domain.conf
+    fi
 
+    if [ ! -z $ipv6 ]; then
+      echo "$template_data" |grep "%ipv6%" |\
+          sed -e "s/%ip%/$ip/g" \
+              -e "s/%ipv6%/$ipv6/g" \
+              -e "s/%domain_idn%/$domain_idn/g" \
+              -e "s/%domain%/$domain/g" \
+              -e "s/%ns1%/$ns1/g" \
+              -e "s/%ns2%/$ns2/g" \
+              -e "s/%ns3%/$ns3/g" \
+              -e "s/%ns4%/$ns4/g" \
+              -e "s/%ns5%/$ns5/g" \
+              -e "s/%ns6%/$ns6/g" \
+              -e "s/%ns7%/$ns7/g" \
+              -e "s/%ns8%/$ns8/g" \
+              -e "s/%time%/$time/g" \
+              -e "s/%date%/$date/g" >> $USER_DATA/dns/$domain.conf
+    fi
+}
+
+#Add DNS records
+add_dns_config_records() {
+    template_data=$(cat $DNSTPL/$TPL.tpl)
+
+    # Adding dns zone to the user config
+    template_data=$(echo "$template_data" |grep -v "v=spf1" |egrep "%ip(v6)?%")
+    if [ ! -z "$ip" ]; then
+        template_data=$(echo "$template_data" |grep "%ip%")
+    fi
+    if [ ! -z "$ipv6" ]; then
+        template_data=$(echo "$template_data" |grep "%ipv6%")
+    fi
+    
+    echo "$template_data" |\
+        sed -e "s/%ip%/$ip/g" \
+            -e "s/%ipv6%/$ipv6/g" \
+            -e "s/%time%/$time/g" \
+            -e "s/%date%/$date/g" \
+        |awk -F 'ID=' '{print $2}' \
+        |cut -d\' --complement -s -f1,2 \
+    | while read line; do
+        id=""
+        get_next_dnsrecord
+        echo "ID='$id' $line" >> $USER_DATA/dns/$domain.conf
+    done
+}
+
+#Remove DNS records
+remove_dns_config_records() {
+    template_data=$(cat $DNSTPL/$TPL.tpl)
+    
+    # Search template data
+    template_data=$(echo "$template_data" |grep -v "v=spf1" |egrep "%ip(v6)?%")
+    if [ -z "$ip" ]; then
+        template_data=$(echo "$template_data" |grep "%ip%")
+    fi
+    if [ -z "$ipv6" ]; then
+        template_data=$(echo "$template_data" |grep "%ipv6%")
+    fi
+    
+    echo "$template_data" |\
+        sed -e "s/%ip%/$old/g" \
+            -e "s/%ipv6%/$old/g" \
+        |awk -F 'ID=' '{print $2}' \
+        |cut -d\' --complement -s -f1,2 \
+        |awk -F ' SUSPENDED=' '{print $1}' \
+    | while read line; do
+        sed -i "/$line/d" $USER_DATA/dns/$domain.conf
+    done
+}
 
 #----------------------------------------------------------#
 #                       MAIL                               #
@@ -527,17 +721,47 @@ is_mail_domain_new() {
 
 # Checking mail account existance
 is_mail_new() {
-    check_acc=$(grep "ACCOUNT='$1'" $USER_DATA/mail/$domain.conf)
+    check_acc=$(grep "ACCOUNT='$1'" $USER_DATA/mail/$domain_idn.conf)
     if [ ! -z "$check_acc" ]; then
         check_result $E_EXISTS "mail account $1 is already exists"
     fi
-    check_als=$(awk -F "ALIAS='" '{print $2}' $USER_DATA/mail/$domain.conf )
+    check_als=$(awk -F "ALIAS='" '{print $2}' $USER_DATA/mail/$domain_idn.conf )
     check_als=$(echo "$check_als" | cut -f 1 -d "'" | grep -w $1)
     if [ ! -z "$check_als" ]; then
         check_result $E_EXISTS "mail alias $1 is already exists"
     fi
 }
 
+# Delete mail ssl configuartion
+del_mail_ssl_config() {
+    conf="/etc/dovecot/conf.d/10-ssl.conf"
+
+    get_mail_config_lines $conf
+    sed -i "$top_line,$bottom_line d" $conf
+}
+
+get_mail_config_lines() {
+    v_domain=""
+    if [ ! -z $domain_idn ]; then
+        v_domain=$domain_idn
+    else
+        domain_idn=$domain
+        format_domain_idn
+        v_domain=$domain_idn
+    fi
+    if [ -z "$v_domain" ]; then
+        check_result $E_PARSING "V_DOMAIN in get_mail_config_lines is empty"
+    fi
+
+    vhost_lines=$(grep -ni "local_name ${v_domain} {" $1)
+    vhost_lines=$(echo "$vhost_lines" |cut -f 1 -d : |cut -f 1 -d \-)
+    if [ -z "$vhost_lines" ]; then
+        check_result $E_PARSING "can't parse config $1"
+    fi
+
+    top_line=$vhost_lines
+    bottom_line=$((top_line + 4))
+}
 
 #----------------------------------------------------------#
 #                        CMN                               #
@@ -562,5 +786,5 @@ is_domain_new() {
 
 # Get domain variables
 get_domain_values() {
-    eval $(grep "DOMAIN='$domain'" $USER_DATA/$1.conf)
+    eval $(grep "DOMAIN='$domain_idn'" $USER_DATA/$1.conf)
 }

@@ -55,11 +55,12 @@ shell_list_ssl() {
 }
 
 # Additional argument formatting
+
+format_domain
 format_domain_idn
 if [[ "$email" = *[![:ascii:]]* ]]; then
     email=$(idn -t --quiet -a $email)
 fi
-
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -126,16 +127,17 @@ openssl x509 -req -sha256 \
 
 
 # Listing certificates
-if [ -e "$domain.crt" ]; then
-    crt=$(cat $domain.crt |sed ':a;N;$!ba;s/\n/\\n/g' )
+
+if [ -e "$domain_idn.crt" ]; then
+    crt=$(cat $domain.crt | sed ':a;N;$!ba;s/\n/\\n/g' )
 fi
 
-if [ -e "$domain.key" ]; then
-    key=$(cat $domain.key |sed ':a;N;$!ba;s/\n/\\n/g' )
+if [ -e "$domain_idn.key" ]; then
+    key=$(cat $domain.key | sed ':a;N;$!ba;s/\n/\\n/g' )
 fi
 
-if [ -e "$domain.csr" ]; then
-    csr=$(cat $domain.csr |sed ':a;N;$!ba;s/\n/\\n/g' )
+if [ -e "$domain_idn.csr" ]; then
+    csr=$(cat $domain.csr | sed ':a;N;$!ba;s/\n/\\n/g' )
 fi
 
 case $format in

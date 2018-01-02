@@ -29,6 +29,7 @@ if ((!empty($_GET['domain'])) && (empty($_GET['record_id'])))  {
     $v_username = $user;
     $v_domain = $_GET['domain'];
     $v_ip = $data[$v_domain]['IP'];
+    $v_ipv6 = $data[$v_domain]['IP6'];
     $v_template = $data[$v_domain]['TPL'];
     $v_ttl = $data[$v_domain]['TTL'];
     $v_exp = $data[$v_domain]['EXP'];
@@ -89,6 +90,15 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['recor
     if (($v_ip != $_POST['v_ip']) && (empty($_SESSION['error_msg']))) {
         $v_ip = escapeshellarg($_POST['v_ip']);
         exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." ".$v_domain." ".$v_ip." 'no'", $output, $return_var);
+        check_return_code($return_var,$output);
+        $restart_dns = 'yes';
+        unset($output);
+    }
+  
+    // Change domain IP
+    if (($v_ipv6 != $_POST['v_ipv6']) && (empty($_SESSION['error_msg']))) {
+        $v_ipv6 = escapeshellarg($_POST['v_ipv6']);
+        exec (VESTA_CMD."v-change-dns-domain-ipv6 ".$v_username." ".$v_domain." ".$v_ipv6." 'no'", $output, $return_var);
         check_return_code($return_var,$output);
         $restart_dns = 'yes';
         unset($output);

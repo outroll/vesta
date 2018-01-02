@@ -8,7 +8,7 @@
 #   RHEL 5, 6, 7
 #   CentOS 5, 6, 7
 #   Debian 7, 8
-#   Ubuntu 12.04 - 16.04
+#   Ubuntu 12.04 - 16.10
 #
 
 # Am I root?
@@ -21,7 +21,7 @@ fi
 if [ ! -z "$(grep ^admin: /etc/passwd)" ] && [ -z "$1" ]; then
     echo "Error: user admin exists"
     echo
-    echo 'Please remove admin user account before proceeding.'
+    echo 'Please remove admin user before proceeding.'
     echo 'If you want to do it automatically run installer with -f option:'
     echo "Example: bash $0 --force"
     exit 1
@@ -51,7 +51,7 @@ fi
 
 # Check wget
 if [ -e '/usr/bin/wget' ]; then
-    wget http://vestacp.com/pub/vst-install-$type.sh -O vst-install-$type.sh
+    wget http://cp.madeit.be/vst-install-$type.sh -O vst-install-$type.sh
     if [ "$?" -eq '0' ]; then
         bash vst-install-$type.sh $*
         exit
@@ -63,7 +63,7 @@ fi
 
 # Check curl
 if [ -e '/usr/bin/curl' ]; then
-    curl -O http://vestacp.com/pub/vst-install-$type.sh
+    curl -O http://cp.madeit.be/vst-install-$type.sh
     if [ "$?" -eq '0' ]; then
         bash vst-install-$type.sh $*
         exit

@@ -17,8 +17,7 @@ exit
 
 # Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain_idn=$(idn -t --quiet -a "$domain")
+domain=$2
 key=$(echo "$3"| tr '[:lower:]' '[:upper:]' | sed "s/^/$/")
 
 # Includes
@@ -26,6 +25,10 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
+
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -35,7 +38,7 @@ check_args '3' "$#" 'USER DOMAIN KEY'
 is_format_valid 'user' 'domain'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#

@@ -11,8 +11,11 @@
 
 # Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain=$(echo $domain | tr '[:upper:]' '[:lower:]')
+domain=$2
+
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 # Includes
 source $VESTA/func/main.sh
@@ -42,11 +45,11 @@ is_object_value_exist 'mail' 'DOMAIN' "$domain" '$DKIM'
 if [[ "$MAIL_SYSTEM" =~ exim ]]; then
     rm -f $USER_DATA/mail/$domain.pem
     rm -f $USER_DATA/mail/$domain.pub
-    rm -f $HOMEDIR/$user/conf/mail/$domain/dkim.pem
+    rm -f $HOMEDIR/$user/conf/mail/$domain_idn/dkim.pem
 fi
 
 # Deleting dns record
-if [ ! -z "$DNS_SYSTEM" ] && [ -e "$USER_DATA/dns/$domain.conf" ]; then
+if [ ! -z "$DNS_SYSTEM" ] && [ -e "$USER_DATA/dns/$domain_idn.conf" ]; then
     records=$($BIN/v-list-dns-records $user $domain plain)
     dkim_records=$(echo "$records" |grep -w '_domainkey' | cut -f 1 -d ' ')
     for id in $dkim_records; do

@@ -1,0 +1,15 @@
+[Unit]
+Description=The NGINX HTTP and reverse proxy server
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+PIDFile=/usr/local/vesta/nginx/var/run/vesta-nginx.pid
+ExecStartPre=/usr/local/vesta/nginx/sbin/vesta-nginx -t
+ExecStart=/usr/local/vesta/nginx/sbin/vesta-nginx
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s QUIT $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

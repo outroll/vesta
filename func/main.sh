@@ -11,7 +11,10 @@ USER_DATA=$VESTA/data/users/$user
 WEBTPL=$VESTA/data/templates/web
 DNSTPL=$VESTA/data/templates/dns
 RRD=$VESTA/web/rrd
+PLUGIN=$VESTA/plugin
 SENDMAIL="$VESTA/web/inc/mail-wrapper.php"
+LETSENCRYPTAPI='https://acme-v01.api.letsencrypt.org'
+#LETSENCRYPTAPI='https://acme-staging.api.letsencrypt.org'
 
 # Return codes
 OK=0
@@ -551,6 +554,104 @@ is_ip_format_valid() {
     fi
 }
 
+# IPv6 format validator
+is_ipv6_format_valid() {
+    object_name=${2-ip6}
+    ip_regex='([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
+	t_ip=$(echo $1 |awk -F / '{print $1}')
+    t_cidr=$(echo $1 |awk -F / '{print $2}')
+    valid_cidr=1
+    
+    WORD="[0-9A-Fa-f]\{1,4\}"
+    # flat address, no compressed words
+    FLAT="^${WORD}\(:${WORD}\)\{7\}$"
+    
+    COMP2="^\(${WORD}:\)\{1,1\}\(:${WORD}\)\{1,6\}$"
+    COMP3="^\(${WORD}:\)\{1,2\}\(:${WORD}\)\{1,5\}$"
+    COMP4="^\(${WORD}:\)\{1,3\}\(:${WORD}\)\{1,4\}$"
+    COMP5="^\(${WORD}:\)\{1,4\}\(:${WORD}\)\{1,3\}$"
+    COMP6="^\(${WORD}:\)\{1,5\}\(:${WORD}\)\{1,2\}$"
+    COMP7="^\(${WORD}:\)\{1,6\}\(:${WORD}\)\{1,1\}$"
+    # trailing :: edge case, includes case of only :: (all 0's)
+    EDGE_TAIL="^\(\(${WORD}:\)\{1,7\}\|:\):$"
+    # leading :: edge case
+    EDGE_LEAD="^:\(:${WORD}\)\{1,7\}$"
+   
+    echo $t_ip | grep --silent "\(${FLAT}\)\|\(${COMP2}\)\|\(${COMP3}\)\|\(${COMP4}\)\|\(${COMP5}\)\|\(${COMP6}\)\|\(${COMP7}\)\|\(${EDGE_TAIL}\)\|\(${EDGE_LEAD}\)"
+    if [ $? -ne 0 ]; then
+        check_result $E_INVALID "invalid $object_name format :: $1"
+    fi
+    
+    if [ ! -z "$(echo $1|grep '/')" ]; then
+        if [[ "$t_cidr" -lt 0 ]] || [[ "$t_cidr" -gt 128 ]]; then
+            valid_cidr=0
+        fi
+        if ! [[ "$t_cidr" =~ ^[0-9]+$ ]]; then
+            valid_cidr=0
+        fi
+    fi
+    if [ "$valid_cidr" -eq 0 ]; then
+        check_result $E_INVALID "invalid $object_name format :: $1"
+    fi
+}
+
+is_ip46_format_valid() {
+    t_ip=$(echo $1 |awk -F / '{print $1}')
+    t_cidr=$(echo $1 |awk -F / '{print $2}')
+    valid_octets=0
+    valid_cidr=1
+    for octet in ${t_ip//./ }; do
+        if [[ $octet =~ ^[0-9]{1,3}$ ]] && [[ $octet -le 255 ]]; then
+            ((++valid_octets))
+        fi
+    done
+
+    if [ ! -z "$(echo $1|grep '/')" ]; then
+        if [[ "$t_cidr" -lt 0 ]] || [[ "$t_cidr" -gt 32 ]]; then
+            valid_cidr=0
+        fi
+        if ! [[ "$t_cidr" =~ ^[0-9]+$ ]]; then
+            valid_cidr=0
+        fi
+    fi
+    if [ "$valid_octets" -lt 4 ] || [ "$valid_cidr" -eq 0 ]; then
+        #Check IPV6
+        ipv6_valid=""
+        WORD="[0-9A-Fa-f]\{1,4\}"
+        # flat address, no compressed words
+        FLAT="^${WORD}\(:${WORD}\)\{7\}$"
+
+        COMP2="^\(${WORD}:\)\{1,1\}\(:${WORD}\)\{1,6\}$"
+        COMP3="^\(${WORD}:\)\{1,2\}\(:${WORD}\)\{1,5\}$"
+        COMP4="^\(${WORD}:\)\{1,3\}\(:${WORD}\)\{1,4\}$"
+        COMP5="^\(${WORD}:\)\{1,4\}\(:${WORD}\)\{1,3\}$"
+        COMP6="^\(${WORD}:\)\{1,5\}\(:${WORD}\)\{1,2\}$"
+        COMP7="^\(${WORD}:\)\{1,6\}\(:${WORD}\)\{1,1\}$"
+        # trailing :: edge case, includes case of only :: (all 0's)
+        EDGE_TAIL="^\(\(${WORD}:\)\{1,7\}\|:\):$"
+        # leading :: edge case
+        EDGE_LEAD="^:\(:${WORD}\)\{1,7\}$"
+
+        echo $t_ip | grep --silent "\(${FLAT}\)\|\(${COMP2}\)\|\(${COMP3}\)\|\(${COMP4}\)\|\(${COMP5}\)\|\(${COMP6}\)\|\(${COMP7}\)\|\(${EDGE_TAIL}\)\|\(${EDGE_LEAD}\)"
+        if [ $? -ne 0 ]; then
+           ipv6_valid="INVALID"
+        fi
+
+        if [ ! -z "$(echo $1|grep '/')" ]; then
+            if [[ "$t_cidr" -lt 0 ]] || [[ "$t_cidr" -gt 128 ]]; then
+                valid_cidr=0
+            fi
+            if ! [[ "$t_cidr" =~ ^[0-9]+$ ]]; then
+                valid_cidr=0
+            fi
+        fi
+        
+        if [ ! -z "$ipv6_valid" ] || [ "$valid_cidr" -eq 0 ]; then
+            check_result $E_INVALID "invalid IP format :: $1"
+        fi
+    fi
+}
+
 # Proxy extention format validator
 is_extention_format_valid() {
     exclude="[!|#|$|^|&|(|)|+|=|{|}|:|@|<|>|?|/|\|\"|'|;|%|\`| ]"
@@ -634,7 +735,7 @@ is_date_format_valid() {
 is_dbuser_format_valid() {
     exclude="[!|@|#|$|^|&|*|(|)|+|=|{|}|:|,|<|>|?|/|\|\"|'|;|%|\`| ]"
     if [ 17 -le ${#1} ]; then
-		check_result $E_INVALID "mysql username can be up to 16 characters long"
+        check_result $E_INVALID "mysql username can be up to 16 characters long"
 	fi
     if [[ "$1" =~ $exclude ]]; then
         check_result $E_INVALID "invalid $2 format :: $1"
@@ -643,7 +744,7 @@ is_dbuser_format_valid() {
 
 # DNS record type validator
 is_dns_type_format_valid() {
-    known_dnstype='A,AAAA,NS,CNAME,MX,TXT,SRV,DNSKEY,KEY,IPSECKEY,PTR,SPF,TLSA'
+    known_dnstype='A,AAAA,NS,CNAME,MX,TXT,SRV,DNSKEY,KEY,IPSECKEY,PTR,SPF,TLSA,CAA'
     if [ -z "$(echo $known_dnstype |grep -w $1)" ]; then
         check_result $E_INVALID "invalid dns record type format :: $1"
     fi
@@ -653,6 +754,9 @@ is_dns_type_format_valid() {
 is_dns_record_format_valid() {
     if [ "$rtype" = 'A' ]; then
         is_ip_format_valid "$1"
+    fi
+    if [ "$rtype" = 'AAAA' ]; then
+        is_ipv6_format_valid "$1"
     fi
     if [ "$rtype" = 'NS' ]; then
         is_domain_format_valid "${1::-1}" 'ns_record'
@@ -770,6 +874,13 @@ is_name_format_valid() {
 
 # Object validator
 is_object_format_valid() {
+    if ! [[ "$1" =~ ^[a-z0-9][-|\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
+        check_result $E_INVALID "invalid $2 format :: $1"
+    fi
+}
+
+# Object validator
+is_object_format_valid_old() {
     if ! [[ "$1" =~ ^[[:alnum:]][-|\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
         check_result $E_INVALID "invalid $2 format :: $1"
     fi
@@ -795,7 +906,7 @@ is_format_valid() {
                 antivirus)      is_boolean_format_valid "$arg" 'antivirus' ;;
                 autoreply)      is_autoreply_format_valid "$arg" ;;
                 backup)         is_user_format_valid "$arg" 'backup' ;;
-                charset)        is_object_format_valid "$arg" "$arg_name" ;;
+                charset)        is_object_format_valid_old "$arg" "$arg_name" ;;
                 charsets)       is_common_format_valid "$arg" 'charsets' ;;
                 comment)        is_object_format_valid "$arg" 'comment' ;;
                 database)       is_database_format_valid "$arg" 'database';;
@@ -816,6 +927,8 @@ is_format_valid() {
                 hour)           is_cron_format_valid "$arg" $arg_name ;;
                 id)             is_int_format_valid "$arg" 'id' ;;
                 ip)             is_ip_format_valid "$arg" ;;
+                ipv6)           is_ipv6_format_valid "$arg" ;;
+                ip46)           is_ip46_format_valid "$arg" ;;
                 ip_name)        is_domain_format_valid "$arg" 'IP name';;
                 ip_status)      is_ip_status_format_valid "$arg" ;;
                 job)            is_int_format_valid "$arg" 'job' ;;
@@ -847,6 +960,7 @@ is_format_valid() {
                 record)         is_common_format_valid "$arg" 'record';;
                 restart)        is_boolean_format_valid "$arg" 'restart' ;;
                 rtype)          is_dns_type_format_valid "$arg" ;;
+                type)         	is_name_format_valid "$arg" 'object';;
                 rule)           is_int_format_valid "$arg" "rule id" ;;
                 soa)            is_domain_format_valid "$arg" 'SOA' ;;
                 stats_pass)     is_password_format_valid "$arg" ;;
@@ -855,13 +969,15 @@ is_format_valid() {
                 ttl)            is_int_format_valid "$arg" 'ttl';;
                 user)           is_user_format_valid "$arg" $arg_name;;
                 wday)           is_cron_format_valid "$arg" $arg_name ;;
+                plugin)         is_name_format_valid "$arg" 'object';;
+                key)         	is_name_format_valid "$arg" 'object';;
             esac
         fi
     done
 }
 
 # Domain argument formatting
-format_domain() {
+format_domain() { #[removeWWW (default: yes )]
     if [[ "$domain" = *[![:ascii:]]* ]]; then
         if [[ "$domain" =~ [[:upper:]] ]]; then
             domain=$(echo "$domain" |sed 's/[[:upper:]].*/\L&/')
@@ -871,16 +987,15 @@ format_domain() {
             domain=$(echo "$domain" |tr '[:upper:]' '[:lower:]')
         fi
     fi
-    if [[ "$domain" =~ ^www\..* ]]; then
+    if [[ "$domain" =~ ^www\..* ]] && [ "$1" != "no" ]; then
         domain=$(echo "$domain" |sed -e "s/^www.//")
     fi
     if [[ "$domain" =~ .*\.$ ]]; then
-        domain=$(echo "$domain" |sed -e "s/\.$//")
+        domain=$(echo "$domain" |sed -e "s/[.]*$//g")
     fi
     if [[ "$domain" =~ ^\. ]]; then
-        domain=$(echo "$domain" |sed -e "s/^\.//")
+        domain=$(echo "$domain" |sed -e "s/^[.]*//")
     fi
-
 }
 
 format_domain_idn() {
@@ -896,7 +1011,17 @@ format_aliases() {
     if [ ! -z "$aliases" ] && [ "$aliases" != 'none' ]; then
         aliases=$(echo $aliases |tr '[:upper:]' '[:lower:]' |tr ',' '\n')
         aliases=$(echo "$aliases" |sed -e "s/\.$//" |sort -u)
+        aliases=$(echo "$aliases" |tr -s '.')
+        aliases=$(echo "$aliases" |sed -e "s/[.]*$//g")
+        aliases=$(echo "$aliases" |sed -e "s/^[.]*//")
         aliases=$(echo "$aliases" |grep -v www.$domain |sed -e "/^$/d")
         aliases=$(echo "$aliases" |tr '\n' ',' |sed -e "s/,$//")
     fi
+}
+
+# Get next record ID
+get_next_record_id() {
+	CONF_FILE=$1
+	curr_str=$(grep "ID=" $CONF_FILE | cut -f 2 -d \' | sort -n|tail -n1)
+	id="$((curr_str +1))"
 }

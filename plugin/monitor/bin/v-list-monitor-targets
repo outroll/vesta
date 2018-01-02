@@ -1,0 +1,98 @@
+#!/bin/bash
+# info: list monitor targets
+# options:
+#
+# The function to obtain the list of all targets of the monitor system.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    i=1
+    objects=$(grep TYPE $PLUGIN/monitor/conf/targets.conf |wc -l)
+    echo "{"
+    while read str; do
+        eval $str
+        echo -n '    "'$ID'": {
+        "ID": "'$ID'",
+        "TYPE": "'$TYPE'",
+        "HOSTNAME": "'$HOSTNAME'",
+        "PORT": "'$PORT'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done < <(cat $PLUGIN/monitor/conf/targets.conf)
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "TYPE   HOSTNAME   PORT   DATE"
+    echo "----   --------   ----   ----"
+    while read str; do
+        eval $str
+        echo "$TYPE $HOSTNAME $PORT $DATE"
+    done < <(cat $PLUGIN/monitor/conf/targets.conf)
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    while read str; do
+        eval $str
+        echo -ne "$TYPE\t$HOSTNAME\t$PORT\t$TIME\t$DATE"
+    done < <(cat $PLUGIN/monitor/conf/targets.conf)
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "TYPE,HOSTNAME,PORT,TIME,DATE"
+    while read str; do
+        eval $str
+        echo "$TYPE,$HOSTNAME,$PORT,$TIME,$DATE"
+    done < <(cat $PLUGIN/monitor/conf/targets.conf)
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '0' "$#" '[FORMAT]'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

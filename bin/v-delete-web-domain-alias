@@ -13,6 +13,7 @@
 # Argument definition
 user=$1
 domain=$2
+domain_idn=$2
 dom_alias=$3
 restart=$4
 
@@ -20,6 +21,7 @@ restart=$4
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/func/ip.sh
+source $VESTA/func/ipv6.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -32,8 +34,8 @@ is_format_valid 'user' 'domain' 'dom_alias'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 get_domain_values 'web'
 if [ -z "$(echo $ALIAS |tr ',' '\n' |grep ^$dom_alias$)" ]; then
     check_result $E_NOTEXIST "alias $dom_alias doesn't exist"
@@ -46,38 +48,37 @@ fi
 
 # Preparing domain values for the template substitution
 local_ip=$(get_real_ip $IP)
+
 ALIAS=$(echo "$ALIAS" |\
     sed -e "s/,/\n/g"|\
     sed -e "s/^$dom_alias$//g"|\
     sed -e "/^$/d"|\
     sed -e ':a;N;$!ba;s/\n/,/g')
+
+
+# Preparing domain variables
 prepare_web_domain_values
 
-# Rebuilding vhost
-del_web_config "$WEB_SYSTEM" "$TPL.tpl"
+# Adding web server config
 add_web_config "$WEB_SYSTEM" "$TPL.tpl"
 if [ "$SSL" = 'yes' ]; then
-    del_web_config "$WEB_SYSTEM" "$TPL.stpl"
     add_web_config "$WEB_SYSTEM" "$TPL.stpl"
 fi
 
-# Rebuilding proxy configuration
-if [ ! -z "$PROXY_SYSTEM" ] && [ ! -z "$PROXY" ]; then
-    del_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
+# Adding proxy config
+if [ ! -z "$PROXY_SYSTEM" ]; then
     add_web_config "$PROXY_SYSTEM" "$PROXY.tpl"
     if [ "$SSL" = 'yes' ]; then
-        del_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
         add_web_config "$PROXY_SYSTEM" "$PROXY.stpl"
     fi
 fi
-
 
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
 # Update config
-update_object_value 'web' 'DOMAIN' "$domain" '$ALIAS' "$ALIAS"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$ALIAS' "$ALIAS"
 decrease_user_value "$user" '$U_WEB_ALIASES'
 
 # Restarting web server

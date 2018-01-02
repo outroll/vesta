@@ -40,8 +40,8 @@ is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -61,15 +61,25 @@ else
     sub=$(echo "$dom_alias" | cut -f1 -d . -s)
     root=$(echo "$dom_alias" | sed "s/^$sub.//" )
     if [ -e "$USER_DATA/dns/$root.conf" ]; then
-        if [ "$sub" == '*' ]; then
-            rec=$(grep -w "RECORD='\*'" $USER_DATA/dns/$root.conf)
-        else
-            rec=$(grep -w "RECORD='$sub'" $USER_DATA/dns/$root.conf)
+        total=0
+        if [ $IPV4 == 'yes' ] ; then
+          ((total++))
         fi
-        if [ ! -z "$rec" ]; then
-            eval "$rec"
-            $BIN/v-delete-dns-record $user "$root" "$ID" $restart
+        if [ $IPV6 == 'yes' ] ; then
+          ((total++))
         fi
+        for (( i=1; i<=$total; i++ ))
+        do
+            if [ "$sub" == '*' ]; then
+                rec=$(grep -w "RECORD='\*'" $USER_DATA/dns/$root.conf)
+            else
+                rec=$(grep -w "RECORD='$sub'" $USER_DATA/dns/$root.conf)
+            fi
+            if [ ! -z "$rec" ]; then
+                eval "$rec"
+               $BIN/v-delete-dns-record $user "$root" "$ID"
+            fi
+        done
     fi
 fi
 

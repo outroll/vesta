@@ -919,7 +919,7 @@ input[type="checkbox"] {
   margin: 34px auto;
   position: fixed;
   background-color: #fff;
-  z-index: 100;
+  z-index: 99;
   padding-top: 30px;
   width: 100%;
   overflow: hidden;
@@ -3389,4 +3389,39 @@ form#vstobjects.suspended {
   .helper-container {
     display: none;
   }
+}
+
+
+.l-menu-dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: -2px 0 0;
+    list-style: none;
+    font-size: 14px;
+    background-color: #5d5d5d;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+    background-clip: padding-box;
+}
+.dropdown-menu a {
+    display: block;
+    margin: 0;
+    padding: 0 0 0 10px;
+}
+
+.l-menu-dropdown:hover .dropdown-menu, .dropdown-menu:hover {
+    display: block;
 }

@@ -33,8 +33,8 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
 if [ -z "$MAIL_SYSTEM" ] || [ "$MAIL_SYSTEM" = 'remote' ]; then
     exit
 fi
@@ -46,14 +46,14 @@ fi
 
 # Starting loop
 dom_diks=0
-for account in $(search_objects "mail/$domain" 'SUSPENDED' "no" 'ACCOUNT'); do
+for account in $(search_objects "mail/$domain_idn" 'SUSPENDED' "no" 'ACCOUNT'); do
     home_dir=$HOMEDIR/$user/mail/$domain/$account
     if [ -e "$home_dir" ]; then
         udisk=$(nice -n 19 du -shm $home_dir | cut -f 1 )
     else
         udisk=0
     fi
-    update_object_value "mail/$domain" 'ACCOUNT' "$account"  '$U_DISK' "$udisk"
+    update_object_value "mail/$domain_idn" 'ACCOUNT' "$account"  '$U_DISK' "$udisk"
     dom_diks=$((dom_diks + udisk))
 done
 
@@ -62,7 +62,7 @@ done
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-update_object_value 'mail' 'DOMAIN' "$domain" '$U_DISK' "$dom_diks"
+update_object_value 'mail' 'DOMAIN' "$domain_idn" '$U_DISK' "$dom_diks"
 recalc_user_disk_usage
 
 # Logging

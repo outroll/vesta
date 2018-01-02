@@ -29,7 +29,7 @@ if [ "$release" = '16.04' ]; then
         mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect"
+        bsdmainutils cron vesta vesta-nginx vesta-php expect s3cmd"
 elif [ "$release" = '16.10' ]; then
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
@@ -53,7 +53,7 @@ else
         mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect"
+        bsdmainutils cron vesta vesta-nginx vesta-php expect s3cmd"
 fi
 
 # Defining help function
@@ -118,6 +118,20 @@ set_default_value() {
     fi
 }
 
+# Define function to set default language value
+set_default_lang() {
+    if [ -z "$lang" ]; then
+        eval lang=$1
+    fi
+    lang_list="
+        ar cz el fa hu ja no pt se ua
+        bs da en fi id ka pl ro tr vi
+        cn de es fr it nl pt-BR ru tw
+        "
+    if !(echo $lang_list | grep -w $lang 1>&2>/dev/null); then
+        eval lang=$1
+    fi
+}
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -213,8 +227,8 @@ fi
 set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
 set_default_value 'quota' 'no'
-set_default_value 'lang' 'en'
 set_default_value 'interactive' 'yes'
+set_default_lang 'en'
 
 # Checking software conflicts
 if [ "$phpfpm" = 'yes' ]; then
@@ -627,7 +641,6 @@ check_result $? "apt-get install failed"
 # Restore policy
 rm -f /usr/sbin/policy-rc.d
 
-
 #----------------------------------------------------------#
 #                     Configure system                     #
 #----------------------------------------------------------#
@@ -805,6 +818,11 @@ sed -i 's/%domain%/It worked!/g' /var/www/index.html
 wget $vestacp/firewall.tar.gz -O firewall.tar.gz
 tar -xzf firewall.tar.gz
 rm -f firewall.tar.gz
+
+# Downloading firewall rules
+wget $vestacp/firewallv6.tar.gz -O firewallv6.tar.gz
+tar -xzf firewallv6.tar.gz
+rm -f firewallv6.tar.gz
 
 # Configuring server hostname
 $VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
@@ -1158,6 +1176,15 @@ if [ "$fail2ban" = 'yes' ]; then
         fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
     fi
+    if [ "$vsftpd" = 'yes' ]; then
+        #Create vsftpd Log File
+        if [ ! -f "/var/log/vsftpd.log" ]; then
+            touch /var/log/vsftpd.log
+        fi
+        fline=$(cat /etc/fail2ban/jail.local |grep -n vsftpd-iptables -A 2)
+        fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
+        sed -i "${fline}s/false/true/" /etc/fail2ban/jail.local
+    fi 
     update-rc.d fail2ban defaults
     service fail2ban start
     check_result $? "fail2ban start failed"
@@ -1189,12 +1216,21 @@ $VESTA/bin/v-change-user-language admin $lang
 # Configuring system IPs
 $VESTA/bin/v-update-sys-ip
 
+# Get main ipv6
+ipv6=$(ip addr show | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | grep -ve "^fe80" | tail -1)
+if [ ! -z "$ipv6" ] && [ "::1" != "$ipv6" ]; then
+    netmask="ip addr show | grep '$ipv6' | awk -F '/' '{print $2}' | awk '{print $1}'"
+    netmask=$(eval $netmask)
+    $VESTA/bin/v-add-sys-ipv6 $ipv6 $netmask
+fi
+
 # Get main IP
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
 
 # Configuring firewall
 if [ "$iptables" = 'yes' ]; then
     $VESTA/bin/v-update-firewall
+    $VESTA/bin/v-update-firewall-ipv6
 fi
 
 # Get public IP

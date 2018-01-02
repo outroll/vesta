@@ -9,7 +9,7 @@
     Alias /error/ %home%/%user%/web/%domain%/document_errors/
     SuexecUserGroup %user% %group%
     CustomLog /var/log/httpd/domains/%domain%.bytes bytes
-    CustomLog /var/log/httpd/domains/%domain%.log combined
+    CustomLog /var/log/httpd/domains/%domain%.access.log combined
     ErrorLog /var/log/httpd/domains/%domain%.error.log
     <Directory %docroot%>
         AllowOverride All

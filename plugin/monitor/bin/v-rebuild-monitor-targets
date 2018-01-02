@@ -1,0 +1,59 @@
+#!/bin/bash
+# info: add plugin
+# options: [RESTART]
+#
+# The function adds the target to prometheus
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+restart="${1-yes}"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+check_args '0' "$#" '[RESTART]'
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+#Add global configs
+echo "global:" > $PLUGIN/monitor/prometheus/prometheus.yml
+echo "  scrape_interval:     15s" >> $PLUGIN/monitor/prometheus/prometheus.yml
+echo "  evaluation_interval: 15s" >> $PLUGIN/monitor/prometheus/prometheus.yml
+echo "  external_labels:" >> $PLUGIN/monitor/prometheus/prometheus.yml
+echo "      monitor: '$(hostname)'" >> $PLUGIN/monitor/prometheus/prometheus.yml
+echo "rule_files:" >> $PLUGIN/monitor/prometheus/prometheus.yml
+echo "  # - \"first.rules\"" >> $PLUGIN/monitor/prometheus/prometheus.yml
+echo "  # - \"second.rules\"" >> $PLUGIN/monitor/prometheus/prometheus.yml
+echo "scrape_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
+
+
+#Add targets
+while read str; do
+    eval $str
+    
+    echo "  - job_name: '$TYPE'" >> $PLUGIN/monitor/prometheus/prometheus.yml
+    echo "    static_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
+    echo "      - targets: ['$HOSTNAME:$PORT']" >> $PLUGIN/monitor/prometheus/prometheus.yml
+done < <(cat $PLUGIN/monitor/conf/targets.conf)
+
+if [ "$restart" = "yes" ]; then
+    systemctl restart prometheus.service
+fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

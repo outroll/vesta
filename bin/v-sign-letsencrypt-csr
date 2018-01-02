@@ -19,6 +19,14 @@ format=$4
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+
+# Argument depends on domain
+csr="$3/$domain.csr"
+
+
 # encode base64
 encode_base64() {
     cat |base64 |tr '+/' '-_' |tr -d '\r\n='
@@ -51,7 +59,9 @@ fi
 #----------------------------------------------------------#
 
 source $USER_DATA/ssl/le.conf
-api='https://acme-v01.api.letsencrypt.org'
+api=$LETSENCRYPTAPI
+r_domain=$(echo "$check_domain" |cut -f 2 -d \')
+
 key="$USER_DATA/ssl/user.key"
 exponent="$EXPONENT"
 modulus="$MODULUS"

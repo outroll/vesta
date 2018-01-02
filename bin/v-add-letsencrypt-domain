@@ -27,8 +27,8 @@ source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
 # Additional argument formatting
-format_domain_idn
 
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -40,8 +40,8 @@ is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_system_enabled "$WEB_SSL" 'SSL_SUPPORT'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -95,7 +95,7 @@ if [ "$?" -ne 0 ]; then
     touch $VESTA/data/queue/letsencrypt.pipe
     sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
     send_notice "LETSENCRYPT" "$alias validation failed"
-    check_result "$E_INVALID" "LE $domain validation"
+    check_result "$E_INVALID" "LE $domain validation: $crt"
 fi
 echo "$crt" > $ssl_dir/$domain.crt
 
@@ -131,9 +131,9 @@ fi
 
 # Updating letsencrypt key
 if [ -z "$LETSENCRYPT" ]; then
-    add_object_key "web" 'DOMAIN' "$domain" 'LETSENCRYPT' 'FTP_USER'
+    add_object_key "web" 'DOMAIN' "$domain_idn" 'LETSENCRYPT' 'FTP_USER'
 fi
-update_object_value 'web' 'DOMAIN' "$domain" '$LETSENCRYPT' 'yes'
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$LETSENCRYPT' 'yes'
 
 
 #----------------------------------------------------------#

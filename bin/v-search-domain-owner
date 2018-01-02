@@ -10,12 +10,15 @@
 #----------------------------------------------------------#
 
 # Argument definition
-domain=$(idn -t --quiet -u "$1" )
+domain=$1
 type=${2-any}
 
 # Includes
 source $VESTA/func/main.sh
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #

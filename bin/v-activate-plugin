@@ -1,0 +1,65 @@
+#!/bin/bash
+# info: add plugin
+# options: PLUGIN [KEY] [RESTART]
+#
+# The function adds the plugin to the vestaCP installation
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+plugin=$1
+key=${2-emtpy}
+restart="${3-yes}"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+check_args '1' "$#" 'PLUGIN [RESTART]'
+is_format_valid 'plugin'
+is_object_valid 'plugin' 'PLUGIN' "plugin" #Change to is_plugin_not_active
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+line=$(grep "PLUGIN='$plugin'" $VESTA/conf/plugin.conf)
+eval $line
+
+if [ "$ACTIVE" == "no" ]; then
+    #Check key online
+
+    #Execute plugin install script
+    if [ -f "$VESTA/plugin/$PLUGIN/install/install.sh" ]; then
+        bash $VESTA/plugin/$PLUGIN/install/install.sh
+    fi
+
+    # Deleting old record
+    sed -i "/^PLUGIN='$PLUGIN'/d" $VESTA/conf/plugin.conf
+
+    # Generating timestamp
+    time_n_date=$(date +'%T %F')
+    time=$(echo "$time_n_date" |cut -f 1 -d \ )
+    date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+    # Adding record
+    echo "PLUGIN='$PLUGIN' NAME='$NAME' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
+else
+    #Plugin is already active
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

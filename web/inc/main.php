@@ -3,6 +3,7 @@
 session_start();
 
 define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
+define('VESTA_PLUGIN_CMD', '/usr/bin/sudo /usr/local/vesta/plugin/');
 define('JS_LATEST_UPDATE', '1491697868');
 
 $i = 0;
@@ -142,18 +143,16 @@ function render_page($user, $TAB, $page) {
     top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
 
     // Extarct global variables
-    // I think those variables should be passed via arguments
-    //*
     extract($GLOBALS, EXTR_SKIP);
-    /*/
-    $variables = array_filter($GLOBALS, function($key){return preg_match('/^(v_|[a-z])[a-z\d]+$/', $key);}, ARRAY_FILTER_USE_KEY);
-    extract($variables, EXTR_OVERWRITE);
-    //*/
 
     // Body
-    if (($_SESSION['user'] !== 'admin') && (@include($__template_dir . "user/$page.html"))) {
+    if (is_callable($page)) {
+        echo call_user_func_array($page, array());
+    }
+    elseif($_SESSION['user'] !== 'admin' && @include($__template_dir . "user/$page.html")) {
         // User page loaded
-    } else {
+    }
+    else {
         // Not admin or user page doesn't exist
         // Load admin page
         @include($__template_dir . "admin/$page.html");
@@ -316,7 +315,7 @@ function send_email($to,$subject,$mailtext,$from) {
 }
 
 function list_timezones() {
-    $tz = new DateTimeZone('HAST');
+    /*$tz = new DateTimeZone('HAST');
     $timezone_offsets['HAST'] = $tz->getOffset(new DateTime);
     $tz = new DateTimeZone('HADT');
     $timezone_offsets['HADT'] = $tz->getOffset(new DateTime);
@@ -344,7 +343,7 @@ function list_timezones() {
     $timezone_offsets['AST'] = $tz->getOffset(new DateTime);
     $tz = new DateTimeZone('ADT');
     $timezone_offsets['ADT'] = $tz->getOffset(new DateTime);
-
+    */
     foreach(DateTimeZone::listIdentifiers() as $timezone){
         $tz = new DateTimeZone($timezone);
         $timezone_offsets[$timezone] = $tz->getOffset(new DateTime);
@@ -384,3 +383,5 @@ function is_it_mysql_or_mariadb() {
     if (isset($data['mariadb'])) $mysqltype='mariadb';
     return $mysqltype;
 }
+
+include 'plugin.php';

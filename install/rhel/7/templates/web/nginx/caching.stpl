@@ -1,5 +1,5 @@
 server {
-    listen      %ip%:%proxy_ssl_port%;
+    listen      %ip%:%proxy_ssl_port% http2;
     server_name %domain_idn% %alias_idn%;
     ssl         on;
     ssl_certificate      %ssl_pem%;
@@ -19,7 +19,7 @@ server {
         location ~* ^.+\.(%proxy_extentions%)$ {
             proxy_cache    off;
             root           %sdocroot%;
-            access_log     /var/log/%web_system%/domains/%domain%.log combined;
+            access_log     /var/log/%web_system%/domains/%domain%.access.log combined;
             access_log     /var/log/%web_system%/domains/%domain%.bytes bytes;
             expires        max;
             try_files      $uri @fallback;

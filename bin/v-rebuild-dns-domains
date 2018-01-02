@@ -66,6 +66,7 @@ sed -i "/\/$user\/conf\/dns/d" $dns_conf
 
 # Starting loop
 for domain in $(search_objects 'dns' 'DOMAIN' "*" 'DOMAIN'); do
+   domain_idn=$domain
    if [ "$update_serial" != 'no' ]; then
         update_domain_serial
     fi

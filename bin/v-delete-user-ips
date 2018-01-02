@@ -36,7 +36,7 @@ fi
 #----------------------------------------------------------#
 
 # Parsing user ips
-ip_list=$(grep -H "OWNER='$user'" $VESTA/data/ips/* | cut -f 1 -d:)
+ip_list=$(grep -H -A10 "OWNER='$user'" $VESTA/data/ips/* |grep "VERSION='4'" | cut -f 1 -d '-')
 
 for ip in $ip_list; do 
     ip=$(basename $ip)

@@ -18,6 +18,9 @@ restart="${3-yes}"
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -35,7 +38,7 @@ is_object_unsuspended 'user' 'USER' "$user"
 
 # Working on Web domain
 if [ ! -z "$WEB_SYSTEM" ]; then
-    str=$(grep "DOMAIN='$domain'" $USER_DATA/web.conf |grep "SUSPENDED='no")
+    str=$(grep "DOMAIN='$domain_idn'" $USER_DATA/web.conf |grep "SUSPENDED='no")
     if [  ! -z "$str" ]; then
         domain_found='yes'
         $BIN/v-suspend-web-domain $user $domain 'no'
@@ -45,7 +48,7 @@ fi
 
 # Working on DNS domain
 if [ ! -z "$DNS_SYSTEM" ]; then
-    str=$(grep "DOMAIN='$domain'" $USER_DATA/dns.conf |grep "SUSPENDED='no")
+    str=$(grep "DOMAIN='$domain_idn'" $USER_DATA/dns.conf |grep "SUSPENDED='no")
     if [  ! -z "$str" ]; then
         domain_found='yes'
         $BIN/v-suspend-dns-domain $user $domain 'no'
@@ -55,7 +58,7 @@ fi
 
 # Working on Mail domain
 if [ ! -z "$MAIL_SYSTEM" ]; then
-    str=$(grep "DOMAIN='$domain'" $USER_DATA/mail.conf |grep "SUSPENDED='no")
+    str=$(grep "DOMAIN='$domain_idn'" $USER_DATA/mail.conf |grep "SUSPENDED='no")
     if [  ! -z "$str" ]; then
         domain_found='yes'
         $BIN/v-suspend-mail-domain $user $domain

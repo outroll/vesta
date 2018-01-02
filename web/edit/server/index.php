@@ -75,6 +75,9 @@ foreach ($backup_types as $backup_type) {
         $v_backup_password = "";
         $v_backup_port = $v_remote_backup[$backup_type]['PORT'];
         $v_backup_bpath = $v_remote_backup[$backup_type]['BPATH'];
+        if($v_backup_type=='s3') {
+            $v_backup_bucket = $v_remote_backup[$backup_type]['BUCKET'];
+        }
     }
 }
 
@@ -92,6 +95,15 @@ $v_ssl_not_after = $ssl_str['VESTA']['NOT_AFTER'];
 $v_ssl_signature = $ssl_str['VESTA']['SIGNATURE'];
 $v_ssl_pub_key = $ssl_str['VESTA']['PUB_KEY'];
 $v_ssl_issuer = $ssl_str['VESTA']['ISSUER'];
+
+// Check system configuration
+exec (VESTA_CMD . "v-list-sys-config json", $output, $return_var);
+$data = json_decode(implode('', $output), true);
+unset($output);
+
+$v_letsencrypt = $data['LETSENCRYPT'];
+if (empty($v_letsencrypt)) $v_letsencrypt = 'no';
+
 
 // Check POST request
 if (!empty($_POST['save'])) {
@@ -271,11 +283,18 @@ if (!empty($_POST['save'])) {
     if (empty($_SESSION['error_msg'])) {
         if ((!empty($_POST['v_backup_host'])) && (empty($v_backup_host))) {
             $v_backup_host = escapeshellarg($_POST['v_backup_host']);
-            $v_backup_type = escapeshellarg($_POST['v_backup_type']);
+            $v_backup_type = $_POST['v_backup_type'];
             $v_backup_username = escapeshellarg($_POST['v_backup_username']);
             $v_backup_password = escapeshellarg($_POST['v_backup_password']);
             $v_backup_bpath = escapeshellarg($_POST['v_backup_bpath']);
-            exec (VESTA_CMD."v-add-backup-host '". $v_backup_type ."' '". $v_backup_host ."' '". $v_backup_username ."' '". $v_backup_password ."' '". $v_backup_bpath ."'", $output, $return_var);
+            if($v_backup_type=='s3'){
+                $v_backup_type = escapeshellarg($_POST['v_backup_type']);
+                $v_backup_bucket =  escapeshellarg($_POST['v_backup_bucket']);
+                exec (VESTA_CMD."v-add-backup-host ". $v_backup_type ." ". $v_backup_host .' '. $v_backup_bucket ." ". $v_backup_username ." ". $v_backup_password ." ". $v_backup_bpath , $output, $return_var);
+            }
+            else {
+                exec (VESTA_CMD."v-add-backup-host ". $v_backup_type ." ". $v_backup_host ." ". $v_backup_username ." ". $v_backup_password ." ". $v_backup_bpath ."", $output, $return_var);
+            }
             check_return_code($return_var,$output);
             unset($output);
             if (empty($_SESSION['error_msg'])) $v_backup_host = $_POST['v_backup_host'];
@@ -283,6 +302,7 @@ if (!empty($_POST['save'])) {
             if (empty($_SESSION['error_msg'])) $v_backup_username = $_POST['v_backup_username'];
             if (empty($_SESSION['error_msg'])) $v_backup_password = $_POST['v_backup_password'];
             if (empty($_SESSION['error_msg'])) $v_backup_bpath = $_POST['v_backup_bpath'];
+            if($v_backup_type=='s3' && empty($_SESSION['error_msg'])) $v_backup_bucket = $_POST['v_backup_bucket'];
             $v_backup_new = 'yes';
             $v_backup_adv = 'yes';
             $v_backup_remote_adv = 'yes';
@@ -296,11 +316,17 @@ if (!empty($_POST['save'])) {
             unset($output);
 
             $v_backup_host = escapeshellarg($_POST['v_backup_host']);
-            $v_backup_type = escapeshellarg($_POST['v_backup_type']);
+            $v_backup_type = $_POST['v_backup_type'];
             $v_backup_username = escapeshellarg($_POST['v_backup_username']);
             $v_backup_password = escapeshellarg($_POST['v_backup_password']);
             $v_backup_bpath = escapeshellarg($_POST['v_backup_bpath']);
-            exec (VESTA_CMD."v-add-backup-host '". $v_backup_type ."' '". $v_backup_host ."' '". $v_backup_username ."' '". $v_backup_password ."' '". $v_backup_bpath ."'", $output, $return_var);
+            if($v_backup_type=='s3'){
+                $v_backup_type = escapeshellarg($v_backup_type);
+                exec (VESTA_CMD."v-add-backup-host ". $v_backup_type ." ". $v_backup_host .' '. $v_backup_bucket ." ". $v_backup_username ." ". $v_backup_password ." ". $v_backup_bpath , $output, $return_var);
+            }
+            else {
+                exec (VESTA_CMD."v-add-backup-host ". $v_backup_type ." ". $v_backup_host ." ". $v_backup_username ." ". $v_backup_password ." ". $v_backup_bpath ."", $output, $return_var);
+            }
             check_return_code($return_var,$output);
             unset($output);
             if (empty($_SESSION['error_msg'])) $v_backup_host = $_POST['v_backup_host'];
@@ -308,6 +334,7 @@ if (!empty($_POST['save'])) {
             if (empty($_SESSION['error_msg'])) $v_backup_username = $_POST['v_backup_username'];
             if (empty($_SESSION['error_msg'])) $v_backup_password = $_POST['v_backup_password'];
             if (empty($_SESSION['error_msg'])) $v_backup_bpath = $_POST['v_backup_bpath'];
+            if($v_backup_type=='s3' && empty($_SESSION['error_msg'])) $v_backup_bucket = $_POST['v_backup_bucket'];
             $v_backup_adv = 'yes';
             $v_backup_remote_adv = 'yes';
         }
@@ -316,20 +343,27 @@ if (!empty($_POST['save'])) {
     // Change remote backup host
     if (empty($_SESSION['error_msg'])) {
         if ((!empty($_POST['v_backup_host'])) && ($_POST['v_backup_type'] == $v_backup_type) && (!isset($v_backup_new))) {
-            if (($_POST['v_backup_host'] != $v_backup_host) || ($_POST['v_backup_username'] != $v_backup_username) || ($_POST['v_backup_password'] != $v_backup_password) || ($_POST['v_backup_bpath'] != $v_backup_bpath)){
+            if (($_POST['v_backup_host'] != $v_backup_host) || ($_POST['v_backup_username'] != $v_backup_username) || ($_POST['v_backup_password'] != $v_backup_password) || ($_POST['v_backup_bpath'] != $v_backup_bpath) || ($_POST['v_backup_type'] == 's3' && $_POST['v_backup_bucket'] != $v_backup_bucket)){
                 $v_backup_host = escapeshellarg($_POST['v_backup_host']);
-                $v_backup_type = escapeshellarg($_POST['v_backup_type']);
+                $v_backup_type = $_POST['v_backup_type'];
                 $v_backup_username = escapeshellarg($_POST['v_backup_username']);
                 $v_backup_password = escapeshellarg($_POST['v_backup_password']);
                 $v_backup_bpath = escapeshellarg($_POST['v_backup_bpath']);
-                exec (VESTA_CMD."v-add-backup-host '". $v_backup_type ."' '". $v_backup_host ."' '". $v_backup_username ."' '". $v_backup_password ."' '". $v_backup_bpath ."'", $output, $return_var);
-                check_return_code($return_var,$output);
+                if($v_backup_type=='s3'){
+                    $v_backup_type = escapeshellarg($v_backup_type);
+                    $v_backup_bucket =  escapeshellarg($_POST['v_backup_bucket']);
+                    exec (VESTA_CMD."v-add-backup-host ". $v_backup_type ." ". $v_backup_host .' '. $v_backup_bucket ." ". $v_backup_username ." ". $v_backup_password ." ". $v_backup_bpath , $output, $return_var);
+                }
+                else {
+                    exec (VESTA_CMD."v-add-backup-host ". $v_backup_type ." ". $v_backup_host ." ". $v_backup_username ." ". $v_backup_password ." ". $v_backup_bpath ."", $output, $return_var);
+                }  check_return_code($return_var,$output);
                 unset($output);
                 if (empty($_SESSION['error_msg'])) $v_backup_host = $_POST['v_backup_host'];
                 if (empty($_SESSION['error_msg'])) $v_backup_type = $_POST['v_backup_type'];
                 if (empty($_SESSION['error_msg'])) $v_backup_username = $_POST['v_backup_username'];
                 if (empty($_SESSION['error_msg'])) $v_backup_password = $_POST['v_backup_password'];
                 if (empty($_SESSION['error_msg'])) $v_backup_bpath = $_POST['v_backup_bpath'];
+                if($v_backup_type=='s3' && empty($_SESSION['error_msg'])) $v_backup_bucket = $_POST['v_backup_bucket'];
                 $v_backup_adv = 'yes';
                 $v_backup_remote_adv = 'yes';
             }
@@ -353,7 +387,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Update SSL certificate
-    if ((!empty($_POST['v_ssl_crt'])) && (empty($_SESSION['error_msg']))) {
+    if (( $v_letsencrypt == 'no' ) && (empty($_POST['v_letsencrypt'])) && (!empty($_POST['v_ssl_crt'])) && (empty($_SESSION['error_msg']))) {
         if (($v_ssl_crt != str_replace("\r\n", "\n",  $_POST['v_ssl_crt'])) || ($v_ssl_key != str_replace("\r\n", "\n",  $_POST['v_ssl_key']))) {
             exec ('mktemp -d', $mktemp_output, $return_var);
             $tmpdir = $mktemp_output[0];
@@ -394,7 +428,17 @@ if (!empty($_POST['save'])) {
             $v_ssl_issuer = $ssl_str['VESTA']['ISSUER'];
         }
     }
+    
+    // Add Letsencrypt certificate
+    if ((!empty($_POST['v_ssl'])) && ( $v_letsencrypt == 'no' ) && (!empty($_POST['v_letsencrypt'])) && empty($_SESSION['error_msg'])) {
+        $l_aliases = str_replace("\n", ',', $v_aliases);
+        exec (VESTA_CMD."v-add-letsencrypt-vesta", $output, $return_var);
+        check_return_code($return_var,$output);
+        unset($output);
+        $v_letsencrypt = 'yes';
+    }
 
+    
     // Flush field values on success
     if (empty($_SESSION['error_msg'])) {
         $_SESSION['ok_msg'] = __('Changes has been saved.');
@@ -528,7 +572,6 @@ $sys_arr = $data['config'];
 foreach ($sys_arr as $key => $value) {
     $_SESSION[$key] = $value;
 }
-
 
 // Render page
 render_page($user, $TAB, 'edit_server');

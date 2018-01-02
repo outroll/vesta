@@ -34,8 +34,8 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain"
-is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_valid 'web' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -43,7 +43,7 @@ is_object_unsuspended 'web' 'DOMAIN' "$domain"
 #----------------------------------------------------------#
 
 # Defining log file
-log_file="/var/log/$WEB_SYSTEM/domains/$domain.bytes"
+log_file="/var/log/$WEB_SYSTEM/domains/$domain_idn.bytes"
 
 # Defining bytes
 bytes=0
@@ -71,7 +71,7 @@ echo > $log_file
 
 # Reset counter on the start of the month
 if [ "$(date +%d)" = '01' ]; then
-    update_object_value 'web' 'DOMAIN' "$domain" '$U_BANDWIDTH' '0'
+    update_object_value 'web' 'DOMAIN' "$domain_idn" '$U_BANDWIDTH' '0'
 fi
 
 # Parsing old value
@@ -81,7 +81,7 @@ get_domain_values 'web'
 bandwidth=$((U_BANDWIDTH + mb))
 
 # Updating bandwidth value in config
-update_object_value 'web' 'DOMAIN' "$domain" '$U_BANDWIDTH' "$bandwidth"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$U_BANDWIDTH' "$bandwidth"
 
 # Logging
 log_event "$OK" "$ARGUMENTS"

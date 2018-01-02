@@ -33,9 +33,9 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain"
-is_object_value_exist 'mail' 'DOMAIN' "$domain" '$CATCHALL'
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
+is_object_value_exist 'mail' 'DOMAIN' "$domain_idn" '$CATCHALL'
 
 
 #----------------------------------------------------------#
@@ -53,7 +53,7 @@ fi
 #----------------------------------------------------------#
 
 # Delete catchall in config
-update_object_value 'mail' 'DOMAIN' "$domain" '$CATCHALL' ''
+update_object_value 'mail' 'DOMAIN' "$domain_idn" '$CATCHALL' ''
 
 # Logging
 log_history "deleted catchall email on $domain"

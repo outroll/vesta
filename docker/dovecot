@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# License is public domain.
+
+DAEMON=/usr/sbin/dovecot
+
+test -x $DAEMON || exit 1
+set -e
+
+base_dir=`$DAEMON -a|grep '^base_dir: '|sed 's/^base_dir: //'`
+pidfile=$base_dir/master.pid
+
+if test -f $pidfile; then
+  running=yes
+else
+  running=no
+fi
+
+case "$1" in
+  start)
+    echo -n "* Starting Dovecot"
+    $DAEMON
+    echo "."
+    ;;
+  stop)
+    if test $running = yes; then
+      echo "* Stopping Dovecot"
+      kill `cat $pidfile`
+      echo "."
+    else
+      echo "* Dovecot is already stopped."
+    fi
+    ;;
+  reload)
+    if test $running = yes; then
+      echo -n "Reloading Dovecot configuration"
+      kill -HUP `cat $pidfile`
+      echo "."
+    else
+      echo "* Dovecot isn't running."
+    fi
+    ;;
+  restart|force-reload)
+    echo -n "* Restarting Dovecot"
+    if test $running = yes; then
+      kill `cat $pidfile`
+      sleep 1
+    fi
+    $DAEMON
+    echo "."
+    ;;
+  *)
+    echo "Usage: /etc/init.d/dovecot {start|stop|reload|restart|force-reload}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0

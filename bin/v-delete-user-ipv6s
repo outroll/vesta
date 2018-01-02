@@ -1,0 +1,63 @@
+#!/bin/bash
+# info: delete user ips
+# options: USER
+#
+# The function deletes all user's ip addresses.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/ipv6.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER'
+is_format_valid 'user'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+if [ "$user" = 'admin' ]; then
+    exit
+fi
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Parsing user ips
+ip_list=$(grep -H -A10 "OWNER='$user'" $VESTA/data/ips/* |grep "VERSION='6'" | cut -f 1 -d '-')
+
+for ip in $ip_list; do 
+    ip=$(basename $ip)
+
+    # Checking webdomains and users
+    is_ip_key_empty '$U_WEB_DOMAINS'
+    is_ip_key_empty '$U_SYS_USERS'
+
+    # Assig ip to main account
+    update_ip_value '$OWNER' 'admin'
+    update_ip_value '$STATUS' 'dedicated'
+    increase_user_value 'admin' '$IP_OWNED'
+    increase_user_value 'admin' '$IP_AVAIL'
+done
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

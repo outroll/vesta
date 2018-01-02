@@ -29,7 +29,7 @@ if [ "$release" -eq 8 ]; then
         mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl unrar-free"
+        bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl s3cmd unrar-free"
 else
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
@@ -41,7 +41,7 @@ else
         mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect unrar-free"
+        bsdmainutils cron vesta vesta-nginx vesta-php expect s3cmd unrar-free"
 fi
 
 # Defining help function
@@ -106,6 +106,20 @@ set_default_value() {
     fi
 }
 
+# Define function to set default language value
+set_default_lang() {
+    if [ -z "$lang" ]; then
+        eval lang=$1
+    fi
+    lang_list="
+        ar cz el fa hu ja no pt se ua
+        bs da en fi id ka pl ro tr vi
+        cn de es fr it nl pt-BR ru tw
+        "
+    if !(echo $lang_list | grep -w $lang 1>&2>/dev/null); then
+        eval lang=$1
+    fi
+}
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -201,8 +215,8 @@ fi
 set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
 set_default_value 'quota' 'no'
-set_default_value 'lang' 'en'
 set_default_value 'interactive' 'yes'
+set_default_lang 'en'
 
 # Checking software conflicts
 if [ "$phpfpm" = 'yes' ]; then
@@ -777,6 +791,11 @@ wget $vestacp/firewall.tar.gz -O firewall.tar.gz
 tar -xzf firewall.tar.gz
 rm -f firewall.tar.gz
 
+# Downloading firewallv6 rules
+wget $vestacp/firewallv6.tar.gz -O firewallv6.tar.gz
+tar -xzf firewallv6.tar.gz
+rm -f firewallv6.tar.gz
+
 # Configuring server hostname
 $VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
 
@@ -1193,6 +1212,14 @@ fi
 # Configuring system ips
 $VESTA/bin/v-update-sys-ip
 
+# Get main ipv6
+ipv6=$(ip addr show | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | grep -ve "^fe80" | tail -1)
+if [ ! -z "$ipv6" ] && [ "::1" != "$ipv6" ]; then
+    netmask="ip addr show | grep '$ipv6' | awk -F '/' '{print $2}' | awk '{print $1}'"
+    netmask=$(eval $netmask)
+    $VESTA/bin/v-add-sys-ipv6 $ipv6 $netmask
+fi
+
 # Get main ip
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
 copy_of_ip=$ip
@@ -1200,6 +1227,7 @@ copy_of_ip=$ip
 # Firewall configuration
 if [ "$iptables" = 'yes' ]; then
     $VESTA/bin/v-update-firewall
+    $VESTA/bin/v-update-firewall-ipv6
 fi
 
 # Get public ip

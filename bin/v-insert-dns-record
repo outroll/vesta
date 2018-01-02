@@ -19,6 +19,9 @@ restart=$4
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -29,7 +32,7 @@ is_format_valid 'user' 'domain' 'data'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_valid 'dns' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#
@@ -37,7 +40,7 @@ is_object_valid 'dns' 'DOMAIN' "$domain"
 #----------------------------------------------------------#
 
 # Insert values
-echo "$data" >> $USER_DATA/dns/$domain.conf
+echo "$data" >> $USER_DATA/dns/$domain_idn.conf
 
 
 #----------------------------------------------------------#

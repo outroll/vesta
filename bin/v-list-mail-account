@@ -18,6 +18,10 @@ format=${4-shell}
 # Includes
 source $VESTA/func/main.sh
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+
 # JSON list function
 json_list() {
     echo '{'
@@ -71,7 +75,7 @@ csv_list() {
 check_args '3' "$#" 'USER DOMAIN ACCOUNT [FORMAT]'
 is_format_valid 'user' 'domain' 'account'
 is_object_valid 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
 is_object_valid "mail/$domain" 'ACCOUNT' "$account"
 
 
@@ -81,7 +85,7 @@ is_object_valid "mail/$domain" 'ACCOUNT' "$account"
 #----------------------------------------------------------#
 
 # Parsing mail account
-eval $(grep "ACCOUNT='$account'" $USER_DATA/mail/$domain.conf)
+eval $(grep "ACCOUNT='$account'" $USER_DATA/mail/$domain_idn.conf)
 
 # Listing data
 case $format in

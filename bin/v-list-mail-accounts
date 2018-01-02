@@ -17,11 +17,16 @@ format=${3-shell}
 # Includes
 source $VESTA/func/main.sh
 
+
+# Additional argument formatting
+format_domain
+format_domain_idn
+
 # JSON list function
 json_list() {
     IFS=$'\n'
     i=1
-    objects=$(grep ACCOUNT $USER_DATA/mail/$domain.conf |wc -l)
+    objects=$(grep ACCOUNT $USER_DATA/mail/$domain_idn.conf |wc -l)
     echo "{"
     while read str; do
         eval $str
@@ -68,7 +73,7 @@ shell_list() {
             fi
         fi
         echo "$ACCOUNT $ALIAS $FWD $U_DISK $DATE"
-    done < <(cat $USER_DATA/mail/$domain.conf)
+    done < <(cat $USER_DATA/mail/$domain_idn.conf)
 }
 
 
@@ -79,7 +84,7 @@ plain_list() {
         eval $str
         echo -ne "$ACCOUNT\t$ALIAS\t$FWD\t$FWD_ONLY\t$AUTOREPLY\t"
         echo -e "$QUOTA\t$U_DISK\t$SUSPENDED\t$TIME\t$DATE"
-    done < <(cat $USER_DATA/mail/$domain.conf)
+    done < <(cat $USER_DATA/mail/$domain_idn.conf)
 }
 
 # CSV list function
@@ -91,7 +96,7 @@ csv_list() {
         eval $str
         echo -n "$ACCOUNT,\"$ALIAS\",\"$FWD\",$FWD_ONLY,$AUTOREPLY,"
         echo "$QUOTA,$U_DISK,$SUSPENDED,$TIME,$DATE"
-    done < <(cat $USER_DATA/mail/$domain.conf)
+    done < <(cat $USER_DATA/mail/$domain_idn.conf)
 }
 
 
@@ -102,7 +107,7 @@ csv_list() {
 check_args '2' "$#" 'USER DOMAIN [FORMAT]'
 is_format_valid 'user' 'domain'
 is_object_valid 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_valid 'mail' 'DOMAIN' "$domain_idn"
 
 
 #----------------------------------------------------------#

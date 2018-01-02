@@ -6,9 +6,9 @@
 #                  Variables&Functions                     #
 #----------------------------------------------------------#
 export PATH=$PATH:/sbin
-RHOST='r.vestacp.com'
-CHOST='c.vestacp.com'
-REPO='cmmnt'
+RHOST='repo.madeit.be'
+CHOST='cp.madeit.be'
+REPO='rhel'
 VERSION='rhel'
 VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
@@ -16,7 +16,7 @@ arch=$(uname -i)
 os=$(cut -f 1 -d ' ' /etc/redhat-release)
 release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
-vestacp="http://$CHOST/$VERSION/$release"
+vestacp="http://$CHOST/$VERSION/$release/latest"
 
 if [ "$release" -eq 7 ]; then
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid php php-common php-cli
@@ -27,8 +27,8 @@ if [ "$release" -eq 7 ]; then
     postgresql postgresql-server postgresql-contrib phpPgAdmin e2fsprogs
     openssh-clients ImageMagick curl mc screen ftp zip unzip flex sqlite pcre
     sudo bc jwhois mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype
-    fail2ban rsyslog iptables-services which vesta vesta-nginx vesta-php
-    vim-common expect"
+    fail2ban rsyslog iptables-services iptables-ipv6 which vesta vesta-nginx
+    vesta-php vim-common expect s3cmd"
 else
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
     php php-common php-cli php-bcmath php-gd php-imap php-mbstring php-mcrypt
@@ -38,7 +38,7 @@ else
     postgresql-server postgresql-contrib phpPgAdmin e2fsprogs openssh-clients
     ImageMagick curl mc screen ftp zip unzip flex sqlite pcre sudo bc jwhois
     mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype fail2ban
-    which vesta vesta-nginx vesta-php vim-common expect"
+    which vesta vesta-nginx vesta-php vim-common expect s3cmd"
 fi
 
 # Defining help function
@@ -63,6 +63,7 @@ help() {
   -q, --quota             Filesystem Quota      [yes|no]  default: no
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install   [yes|no]  default: yes
+  -p7, --php7             Install PHP 7         [yes|no]  default: yes
   -s, --hostname          Set hostname
   -e, --email             Set admin email
   -p, --password          Set admin password
@@ -103,6 +104,20 @@ set_default_value() {
     fi
 }
 
+# Define function to set default language value
+set_default_lang() {
+    if [ -z "$lang" ]; then
+        eval lang=$1
+    fi
+    lang_list="
+        ar cz el fa hu ja no pt se ua
+        bs da en fi id ka pl ro tr vi
+        cn de es fr it nl pt-BR ru tw
+        "
+    if !(echo $lang_list | grep -w $lang 1>&2>/dev/null); then
+        eval lang=$1
+    fi
+}
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -116,29 +131,29 @@ for arg; do
     delim=""
     case "$arg" in
         --apache)               args="${args}-a " ;;
-        --nginx)                args="${args}-n " ;;
-        --phpfpm)               args="${args}-w " ;;
-        --vsftpd)               args="${args}-v " ;;
+        --fail2ban)             args="${args}-b " ;;
+        --clamav)               args="${args}-c " ;;
+        --mongodb)              args="${args}-d " ;;
+        --email)                args="${args}-e " ;;
+        --force)                args="${args}-f " ;;
+        --postgresql)           args="${args}-g " ;;
+        --help)                 args="${args}-h " ;;
+        --iptables)             args="${args}-i " ;;
         --proftpd)              args="${args}-j " ;;
         --named)                args="${args}-k " ;;
-        --mysql)                args="${args}-m " ;;
-        --postgresql)           args="${args}-g " ;;
-        --mongodb)              args="${args}-d " ;;
-        --exim)                 args="${args}-x " ;;
-        --dovecot)              args="${args}-z " ;;
-        --clamav)               args="${args}-c " ;;
-        --spamassassin)         args="${args}-t " ;;
-        --iptables)             args="${args}-i " ;;
-        --fail2ban)             args="${args}-b " ;;
-        --remi)                 args="${args}-r " ;;
-        --quota)                args="${args}-q " ;;
         --lang)                 args="${args}-l " ;;
-        --interactive)          args="${args}-y " ;;
-        --hostname)             args="${args}-s " ;;
-        --email)                args="${args}-e " ;;
+        --mysql)                args="${args}-m " ;;
+        --nginx)                args="${args}-n " ;;
         --password)             args="${args}-p " ;;
-        --force)                args="${args}-f " ;;
-        --help)                 args="${args}-h " ;;
+        --quota)                args="${args}-q " ;;
+        --remi)                 args="${args}-r " ;;
+        --hostname)             args="${args}-s " ;;
+        --spamassassin)         args="${args}-t " ;;
+        --vsftpd)               args="${args}-v " ;;
+        --phpfpm)               args="${args}-w " ;;
+        --exim)                 args="${args}-x " ;;
+        --interactive)          args="${args}-y " ;;
+        --dovecot)              args="${args}-z " ;;
         *)                      [[ "${arg:0:1}" == "-" ]] || delim="\""
                                 args="${args}${delim}${arg}${delim} ";;
     esac
@@ -199,8 +214,8 @@ set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
 set_default_value 'remi' 'yes'
 set_default_value 'quota' 'no'
-set_default_value 'lang' 'en'
 set_default_value 'interactive' 'yes'
+set_default_lang 'en'
 
 # Checking software conflicts
 if [ "$phpfpm" = 'yes' ]; then
@@ -431,7 +446,7 @@ yum -y update
 check_result $? 'yum update failed'
 
 # Installing EPEL repository
-rpm -Uvh --force $vestacp/epel-release.rpm
+yum install epel-release -y
 check_result $? "Can't install EPEL repository"
 
 # Installing Remi repository
@@ -455,9 +470,9 @@ echo "[vesta]" > $vrepo
 echo "name=Vesta - $REPO" >> $vrepo
 echo "baseurl=http://$RHOST/$REPO/$release/\$basearch/" >> $vrepo
 echo "enabled=1" >> $vrepo
-echo "gpgcheck=1" >> $vrepo
-echo "gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA" >> $vrepo
-wget $vestacp/GPG.txt -O /etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA
+echo "gpgcheck=0" >> $vrepo
+#echo "gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA" >> $vrepo
+#wget $vestacp/GPG.txt -O /etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA
 
 
 #----------------------------------------------------------#
@@ -618,7 +633,6 @@ else
 fi
 check_result $? "yum install failed"
 
-
 #----------------------------------------------------------#
 #                     Configure system                     #
 #----------------------------------------------------------#
@@ -645,6 +659,7 @@ fi
 
 # Disable iptables
 service iptables stop
+service ip6tables stop
 
 # Configuring NTP synchronization
 echo '#!/bin/sh' > /etc/cron.daily/ntpdate
@@ -670,7 +685,6 @@ if [ "$release" -eq '7' ]; then
     echo "DefaultStartLimitBurst=60" >> /etc/systemd/system.conf
     systemctl daemon-reexec
 fi
-
 
 #----------------------------------------------------------#
 #                     Configure VESTA                      #
@@ -794,7 +808,10 @@ echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/vesta.conf
 echo "LANGUAGE='$lang'" >> $VESTA/conf/vesta.conf
 
 # Version
-echo "VERSION='0.9.8'" >> $VESTA/conf/vesta.conf
+echo "VERSION='0.0.4'" >> $VESTA/conf/vesta.conf
+
+#Letsencrypt
+echo "LETSENCRYPT='no'" >> $VESTA/conf/vesta.conf
 
 # Downloading hosting packages
 cd $VESTA/data
@@ -816,6 +833,12 @@ chkconfig firewalld off >/dev/null 2>&1
 wget $vestacp/firewall.tar.gz -O firewall.tar.gz
 tar -xzf firewall.tar.gz
 rm -f firewall.tar.gz
+
+# Downloading firewall ipv6 rules
+chkconfig firewalld off >/dev/null 2>&1
+wget $vestacp/firewallv6.tar.gz -O firewallv6.tar.gz
+tar -xzf firewallv6.tar.gz
+rm -f firewallv6.tar.gz
 
 # Configuring server hostname
 $VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
@@ -852,6 +875,11 @@ if [ "$nginx" = 'yes' ]; then
     wget $vestacp/logrotate/nginx -O /etc/logrotate.d/nginx
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
+    if [ "$release" -eq 7 ]; then
+        mkdir /etc/systemd/system/nginx.service.d/
+        echo "[Service]" > /etc/systemd/system/nginx.service.d/limits.conf
+        echo "LimitNOFILE=500000" >> /etc/systemd/system/nginx.service.d/limits.conf
+    fi
     chkconfig nginx on
     service nginx start
     check_result $? "nginx start failed"
@@ -890,6 +918,11 @@ if [ "$apache" = 'yes'  ]; then
     chmod a+x /var/log/httpd
     mkdir -p /var/log/httpd/domains
     chmod 751 /var/log/httpd/domains
+    if [ "$release" -eq 7 ]; then
+        mkdir /etc/systemd/system/httpd.service.d/
+        echo "[Service]" > /etc/systemd/system/httpd.service.d/limits.conf
+        echo "LimitNOFILE=500000" >> /etc/systemd/system/httpd.service.d/limits.conf
+    fi
     chkconfig httpd on
     service httpd start
     check_result $? "httpd start failed"
@@ -1193,6 +1226,7 @@ if [ "$fail2ban" = 'yes' ]; then
     wget $vestacp/fail2ban.tar.gz -O fail2ban.tar.gz
     tar -xzf fail2ban.tar.gz
     rm -f fail2ban.tar.gz
+
     if [ "$dovecot" = 'no' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n dovecot-iptables -A 2)
         fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
@@ -1203,6 +1237,15 @@ if [ "$fail2ban" = 'yes' ]; then
         fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
     fi
+    if [ "$vsftpd" = 'yes' ]; then
+        #Create vsftpd Log File
+        if [ ! -f "/var/log/vsftpd.log" ]; then
+            touch /var/log/vsftpd.log
+        fi
+        fline=$(cat /etc/fail2ban/jail.local |grep -n vsftpd-iptables -A 2)
+        fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
+        sed -i "${fline}s/false/true/" /etc/fail2ban/jail.local
+    fi 
     chkconfig fail2ban on
     /bin/mkdir -p /var/run/fail2ban
     sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/fail2ban/g" /usr/lib/systemd/system/fail2ban.service
@@ -1237,19 +1280,30 @@ $VESTA/bin/v-change-user-language admin $lang
 # Configuring system ips
 $VESTA/bin/v-update-sys-ip
 
+# Get main ipv6
+ipv6=$(ip addr show | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | grep -ve "^fe80" | tail -1)
+if [ ! -z "$ipv6" ] && [ "::1" != "$ipv6" ]; then
+    netmask="ip addr show | grep '$ipv6' | awk -F '/' '{print $2}' | awk '{print $1}'"
+    netmask=$(eval $netmask)
+    $VESTA/bin/v-add-sys-ipv6 $ipv6 $netmask
+fi
+
+
 # Get main ip
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
+# Get public ip
+pub_ip=$(wget http://cp.madeit.be/my-ip.php -O - 2>/dev/null)
+if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
+    $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
+fi
+if [ -z "$pub_ip" ]; then
+    ip=$main_ip
+fi
 
 # Firewall configuration
 if [ "$iptables" = 'yes' ]; then
     $VESTA/bin/v-update-firewall
-fi
-
-# Get public ip
-pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
-if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
-    $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
-    ip=$pub_ip
+    $VESTA/bin/v-update-firewall-ipv6
 fi
 
 # Configuring mysql host
@@ -1310,12 +1364,13 @@ $VESTA/bin/v-add-cron-vesta-autoupdate
 #----------------------------------------------------------#
 
 # Sending install notification to vestacp.com
-wget vestacp.com/notify/?$codename -O /dev/null -q
+wget cp.madeit.be/notify.php/?$codename -O /dev/null -q
 
 # Comparing hostname and ip
 host_ip=$(host $servername| head -n 1 | awk '{print $NF}')
 if [ "$host_ip" = "$ip" ]; then
     ip="$servername"
+    $VESTA/bin/v-add-letsencrypt-vesta
 fi
 
 # Sending notification to admin email
