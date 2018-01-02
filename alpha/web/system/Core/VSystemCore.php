@@ -63,13 +63,13 @@ if(!class_exists('V_SystemCore')){
 				$this->system->startup=microtime(true);
 				
 				//include_once(EPath.'Core/VSystemLoader.php');
-				//$this->load=new skwr_core_loader();
-				//in_once(EPath.'Core/SKWR_ERROR.php');
+				//$this->load=new V_SystemLoader();
+				//in_once(EPath.'Core/VSystemError.php');
 				//$this->load->core('ERROR','erro');
-				//$this->error=$this->erro=new skwr_core_error();
-				//$this->load->sk_register_class('erro', 'skwr_error');
-				//$this->load->sk_register_class('error', 'skwr_error');
-				//$this->load->sk_register_class('load', 'skwr_core_loader');
+				//$this->error=$this->erro=new V_SystemError();
+				//$this->load->sk_register_class('erro', 'V_SystemError');
+				//$this->load->sk_register_class('error', 'V_SystemError');
+				//$this->load->sk_register_class('load', 'V_SystemLoader');
 			}
 			/**
 			* proceed_initiation
