@@ -51,7 +51,8 @@ json_list() {
         "MAIL_URL": "'$MAIL_URL'",
         "DB_PMA_URL": "'$DB_PMA_URL'",
         "DB_PGA_URL": "'$DB_PGA_URL'",
-        "SOFTACULOUS": "'$SOFTACULOUS'"
+        "SOFTACULOUS": "'$SOFTACULOUS'",
+        "GA_CODE": "'$GA_CODE'"
     }
 }'
 }

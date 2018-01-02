@@ -9,6 +9,17 @@
   <script type="text/javascript" src="/js/templates.js?<?=JS_LATEST_UPDATE?>"></script>
   <script type="text/javascript" src="/js/jquery.finder.js?<?=JS_LATEST_UPDATE?>"></script>
 
+  <?php if ((isset($_SESSION['GA_CODE'])) && (!empty($_SESSION['GA_CODE']))) {?>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<?=$_SESSION['GA_CODE']?>"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', "<?=$_SESSION['GA_CODE']?>");
+  </script>
+  <?php } ?>
+
   <script>
     $(function() {
       hover_menu();

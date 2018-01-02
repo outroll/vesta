@@ -460,6 +460,38 @@ if (!empty($_POST['save'])) {
         }
     }
 
+
+    // activating google analytics code
+    if (empty($_SESSION['error_msg'])) {
+        if($_SESSION['GA_CODE'] != $_POST['v_ga_code'] && $_POST['ga_code'] == 'yes'){
+            $module = 'filemanager';
+            $ga_code = escapeshellarg($_POST['v_ga_code']);
+            exec (VESTA_CMD."v-activate-ga-code ".$ga_code, $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Google Analytics Activated');
+                $_SESSION['GA_CODE'] = $_POST['v_ga_code'];
+            }
+        }
+    }
+    // disable google analytics
+    if (empty($_SESSION['error_msg'])) {
+        if($_POST['ga_code'] == 'cancel' && $_SESSION['GA_CODE']){
+            $module = 'filemanager';
+            $ga_code = escapeshellarg($_SESSION['GA_CODE']);
+            exec (VESTA_CMD."v-deactivate-ga-code ".$ga_code, $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Google Analytics Deactivated');
+                unset($_SESSION['GA_CODE']);
+            }
+        }
+    }
+  
+  
+  
     // activating softaculous
     if (empty($_SESSION['error_msg'])) {
         if($_SESSION['SOFTACULOUS'] != $_POST['v_softaculous'] && $_POST['v_softaculous'] == 'yes'){
@@ -485,7 +517,6 @@ if (!empty($_POST['save'])) {
             }
         }
     }
-
 }
 
 // Check system configuration

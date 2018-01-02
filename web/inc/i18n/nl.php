@@ -757,4 +757,12 @@ $LANG['nl'] = array(
     'maximum characters length, including prefix' => 'maximaal %s karakters lang, inclusief prefix',
 
     'Email Credentials' => 'Email Credentials',
+
+    'Google Analytics Activated' => 'Google Analytics geactiveerd',
+    'Google Analytics Deactivated' => 'Google Analytics gedeactiveerd',
+    'Google Analytics' => 'Google Analytics',
+    'Disable Google Analytics' => 'Google Analytics uitschakelen',
+    'Track the usage of Vesta through Google Analytics.' => 'Monitor de bezoeker van Vesta via Google Analytics.',
+    'Tracking Code' => 'Tracking Code',
+    'Enter Tracking Code' => 'Tracking Code invullen',
 );

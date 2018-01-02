@@ -1,0 +1,50 @@
+#!/bin/bash
+# info: deactivate google analytics
+# options: TRACKINGCODE
+#
+# The function deactivates vesta license
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+code=$1
+
+# Importing system environment
+source /etc/profile
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+# Checking arg number
+check_args '1' "$#" 'TRACKINGCODE'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Updating vesta.conf
+if [ ! -z "$(grep "${module}_KEY" $VESTA/conf/vesta.conf)" ]; then
+    sed -i "s/GA_CODE=.*/GA_CODE=''/g" $VESTA/conf/vesta.conf
+fi
+
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

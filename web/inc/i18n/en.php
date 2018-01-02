@@ -755,4 +755,12 @@ $LANG['en'] = array(
 
     'Email Credentials' => 'Email Credentials',
 
+    'Google Analytics Activated' => 'Google Analytics Activated',
+    'Google Analytics Deactivated' => 'Google Analytics Deactivated',
+    'Google Analytics' => 'Google Analytics',
+    'Disable Google Analytics' => 'Disable Google Analytics',
+    'Track the usage of Vesta through Google Analytics.' => 'Track the usage of Vesta through Google Analytics.',
+    'Tracking Code' => 'Tracking Code',
+    'Enter Tracking Code' => 'Enter Tracking Code',
+
 );
