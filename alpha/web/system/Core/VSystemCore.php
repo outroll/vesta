@@ -180,7 +180,8 @@ if(!class_exists('V_SystemCore')){
 			* @since	  0.0.1
 			*/
 			public function debug_state(){
-				return $this->debug_states()['DEBUG'];
+				$debug_states=$this->debug_states();
+				return $debug_states['DEBUG'];
 			}
 			/**
 			* system_debug
@@ -239,8 +240,9 @@ if(!class_exists('V_SystemCore')){
 			* @author     SkullWritter <geral@skullwritter.com>
 			* @since	  0.0.1
 			*/
-			public function system_debug_state(){
-				return $this->system_debug_states()['SYSTEM_DEBUG'];
+			public function system_debug_state(){~
+			$system_debug_states=$this->system_debug_states();
+				return $system_debug_states['SYSTEM_DEBUG'];
 			}
 			/**
 			* __clone
