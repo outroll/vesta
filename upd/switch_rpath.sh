@@ -11,6 +11,11 @@ if [ ! -e "/etc/apache2/mods-available/remoteip.load" ]; then
     exit
 fi
 
+if [ -f "/etc/apache2/mods-enabled/remoteip.load" ]; then
+    echo "RemoteIP is already activated"
+    exit
+fi
+
 # Disabling rpaf
 /usr/sbin/a2dismod rpaf > /dev/null 2>&1
 rm -f /etc/apache2/mods-enabled/rpaf.conf
@@ -26,6 +31,8 @@ for ip in $(ls /usr/local/vesta/data/ips); do
     echo "    RemoteIPInternalProxy $ip" >> $conf
 done
 echo "</IfModule>" >> $conf
+
+sed -i "s/LogFormat \"%h/LogFormat \"%a/g" /etc/apache2/apache2.conf
 
 # Restarting apache
 /usr/sbin/apachectl restart > /dev/null 2>&1

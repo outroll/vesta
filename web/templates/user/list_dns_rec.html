@@ -1,6 +1,6 @@
     <div class="l-center">
       <div class="l-sort clearfix noselect">
-        <a href="/add/dns/?domain=<?=htmlentities($_GET['domain'])?>" title="<?=str_replace(' ', '&nbsp;', __('Add DNS Record'))?>" class="l-sort__create-btn"></a>
+        <a href="/add/dns/?domain=<?=htmlentities($_GET['domain'])?>" title="<?=__('Add DNS Record')?>" class="l-sort__create-btn"></a>
         <div class="l-sort-toolbar clearfix">
           <table>
             <tr>
@@ -30,11 +30,7 @@
             </tr>
           </table>
         </div>
-
       </div>
-
-      <? display_error_block(); ?>
-
       <!-- /.l-sort -->
     </div>
 
@@ -47,7 +43,7 @@
 
     <div class="l-center units">
 
-    <div class="l-unit">
+    <div class="l-unit header">
       <div class="subtitle"><?=__('Listing')?>  <?=htmlentities($_GET['domain'])?></div>
     </div>
 
@@ -76,8 +72,8 @@
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__edit"><a href="/edit/dns/?domain=<?=$_GET['domain']?>&record_id=<?=$data[$key]['ID']?>"><?=__('edit')?> <i></i></a></div>
-              <div class="actions-panel__col actions-panel__delete">
+              <div class="actions-panel__col actions-panel__edit shortcut-enter" key-action="href"><a href="/edit/dns/?domain=<?=$_GET['domain']?>&record_id=<?=$data[$key]['ID']?>"><?=__('edit')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
+              <div class="actions-panel__col actions-panel__delete shortcut-delete" key-action="js">
                 <a id="delete_link_<?=$i?>" class="data-controls do_delete">
                   <?=__('delete')?> <i class="do_delete"></i>
                   <input type="hidden" name="delete_url" value="/delete/dns/?domain=<?=$_GET['domain']?>&record_id=<?=$data[$key]['ID']?>&token=<?=$_SESSION['token']?>" />
@@ -85,6 +81,7 @@
                     <p class="confirmation"><?=__('DELETE_RECORD_CONFIRMATION',$data[$key]['RECORD'])?></p>
                   </div>
                 </a>
+                <span class="shortcut delete">&nbsp;Del</span>
               </div>
 
             </div>
@@ -95,9 +92,9 @@
         <!-- /.l-unit-toolbar -->
 
         <div class="l-unit__col l-unit__col--left clearfix">
-          <div class="l-unit__suspended""><?__('suspended')?></div>
-          <div class="text-center jump-top">
-            <i class="l-icon-star"></i>
+          <div class="l-unit__suspended"><?__('suspended')?></div>
+          <div class="text-center jump-small-top">
+            <i class="l-icon-star" title="<?=__('save to favorites')?>"></i>
           </div>
         </div>
         <!-- /.l-unit__col -->
@@ -122,7 +119,7 @@
     <div id="vstobjects">
         <div class="l-separator"></div>
     <div class="l-center">
-        <div class="l-unit">
+        <div class="l-unit-ft">
           <table class='data'></table>
           <div class="l-unit__col l-unit__col--left clearfix"></div>
           <div class="data-count l-unit__col l-unit__col--right clearfix">
@@ -133,6 +130,9 @@
                 echo __('%s records',$i);
               }
             ?>
+          </div>
+          <div class="data-count l-unit__col l-unit__col--right back clearfix">
+            <a class="button cancel" href="/list/dns/"><?=__('Back')?></a>
           </div>
       </div>
     </div>

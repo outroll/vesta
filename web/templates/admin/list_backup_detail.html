@@ -1,6 +1,6 @@
     <div class="l-center">
       <div class="l-sort clearfix noselect">
-        <a href="/schedule/restore/?backup=<?=htmlentities($_GET['backup'])?>" class="l-sort__create-btn restore" title="<?=str_replace(' ', '&nbsp;', __('Restore All'))?>"></a>
+        <a href="/schedule/restore/?backup=<?=htmlentities($_GET['backup'])?>" class="l-sort__create-btn restore" title="<?=__('Restore All')?>"></a>
         <div class="l-sort-toolbar clearfix">
           <table>
             <tr>
@@ -12,15 +12,15 @@
                 </form>
               </td>
               <td class="toggle-all">
-                <input id="toggle-all" type="checkbox" name="toggle-all" value="toggle-all">
+                <input id="toggle-all" type="checkbox" name="toggle-all" value="toggle-all" onchange="checkedAll('objects');">
                 <label for="toggle-all" class="check-label toggle-all"><?=__('toggle all')?></label>
               </td>
               <td>
-                <form action="/bulk/restore/" method="post">
+                <form action="/bulk/restore/" method="post" id="objects">
                 <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
                 <input type="hidden" name="backup" value="<?=htmlentities($_GET['backup']); ?>">
                 <div class="l-select">
-                  <select name="action" id="">
+                  <select name="action">
                     <option value=""><?=__('apply to selected')?></option>
                     <option value="restore"><?php print __('restore') ?></option>
                   </select>
@@ -30,11 +30,7 @@
             </tr>
           </table>
         </div>
-
       </div>
-
-      <? display_error_block(); ?>
-
       <!-- /.l-sort -->
     </div>
 
@@ -43,7 +39,7 @@
 
 
     <div class="l-center units">
-    <div class="l-unit">
+    <div class="l-unit header">
       <div class="subtitle"><?=__('Listing')?>  <?=htmlentities($_GET['backup'])?></div>
     </div>
 
@@ -52,6 +48,7 @@
         $web = explode(',',$data[$backup]['WEB']);
         foreach ($web as $key) {
           if (!empty($key)) {
+            ++$i;
       ?>
 
       <div class="l-unit">
@@ -62,7 +59,7 @@
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right">
-            <div class="actions-panel__col actions-panel__update"><a href="/schedule/restore/?backup=<?=$backup?>&type=web&object=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('restore')?> <i></i></a></div>
+            <div class="actions-panel__col actions-panel__update shortcut-r" key-action="href"><a href="/schedule/restore/?backup=<?=$backup?>&type=web&object=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('restore')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
             <!-- /.actiona-panel -->
           </div>
           <!-- l-unit-toolbar__col -->
@@ -113,7 +110,7 @@
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
-            <div class="actions-panel__col actions-panel__update"><a href="/schedule/restore/?backup=<?=$backup?>&type=mail&object=<?=$key?>"><?=__('restore')?> <i></i></a></div>
+            <div class="actions-panel__col actions-panel__update shortcut-r" key-action="href"><a href="/schedule/restore/?backup=<?=$backup?>&type=mail&object=<?=$key?>"><?=__('restore')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
             <!-- /.actiona-panel -->
           </div>
           <!-- l-unit-toolbar__col -->
@@ -161,7 +158,7 @@
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right">
-            <div class="actions-panel__col actions-panel__update"><a href="/schedule/restore/?backup=<?=$backup?>&type=dns&object=<?=$key?>"><?=__('restore')?> <i></i></a></div>
+            <div class="actions-panel__col actions-panel__update shortcut-r" key-action="href"><a href="/schedule/restore/?backup=<?=$backup?>&type=dns&object=<?=$key?>"><?=__('restore')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
             <!-- /.actiona-panel -->
           </div>
           <!-- l-unit-toolbar__col -->
@@ -208,7 +205,7 @@
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right">
-            <div class="actions-panel__col actions-panel__update"><a href="/schedule/restore/?backup=<?=$backup?>&type=db&object=<?=$key?>"><?=__('restore')?> <i></i></a></div>
+            <div class="actions-panel__col actions-panel__update shortcut-r" key-action="href"><a href="/schedule/restore/?backup=<?=$backup?>&type=db&object=<?=$key?>"><?=__('restore')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
             <!-- /.actiona-panel -->
           </div>
           <!-- l-unit-toolbar__col -->
@@ -256,7 +253,7 @@
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right">
-            <div class="actions-panel__col actions-panel__update"><a href="/schedule/restore/?backup=<?=$backup?>&type=cron&object=records"><?=__('restore')?> <i></i></a></div>
+            <div class="actions-panel__col actions-panel__update shortcut-r" key-action="href"><a href="/schedule/restore/?backup=<?=$backup?>&type=cron&object=records"><?=__('restore')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
             <!-- /.actiona-panel -->
           </div>
           <!-- l-unit-toolbar__col -->
@@ -304,7 +301,7 @@
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right">
-            <div class="actions-panel__col actions-panel__update"><a href="/schedule/restore/?backup=<?=$backup?>&type=udir&object=<?=$key?>"><?=__('restore')?> <i></i></a></div>
+            <div class="actions-panel__col actions-panel__update shortcut-r" key-action="href"><a href="/schedule/restore/?backup=<?=$backup?>&type=udir&object=<?=$key?>"><?=__('restore')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
             <!-- /.actiona-panel -->
           </div>
           <!-- l-unit-toolbar__col -->
@@ -335,7 +332,6 @@
       <!-- /.l-separator -->
       <? }} ?>
 
-
       <div class="l-unit">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
@@ -344,7 +340,7 @@
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right">
-            <div class="actions-panel__col actions-panel__update"><a href="/schedule/restore/?backup=<?=$backup?>&type=cron"><?=__('restore')?> <i></i></a></div>
+            <div class="actions-panel__col actions-panel__update shortcut-r" key-action="href"><a href="/schedule/restore/?backup=<?=$backup?>&type=cron"><?=__('restore')?> <i></i></a><span class="shortcut">&nbsp;R</span></div>
             <!-- /.actiona-panel -->
           </div>
           <!-- l-unit-toolbar__col -->
@@ -383,7 +379,7 @@
         <div class="l-unit-ft">
           <table class='data'></table>
           <div class="l-unit__col l-unit__col--left clearfix"></div>
-          <div class="data-count l-unit__col l-unit__col--right clearfix">
+          <div class="data-count l-unit__col l-unit__col--right total clearfix">
             <?php
               if ( $i == 1) {
                 echo __('1 item');
@@ -391,6 +387,9 @@
                 echo __('%s items',$i);
               }
             ?>
+          </div>
+          <div class="data-count l-unit__col l-unit__col--right back clearfix">
+            <a class="button cancel" href="/list/backup/"><?=__('Back')?></a>
           </div>
         </div>
       </div>

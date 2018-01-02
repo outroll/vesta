@@ -1,3 +1,13 @@
+# Check if script already running or not
+is_procces_running() {
+    SCRIPT=$(basename $0)
+    for pid in $(pidof -x $SCRIPT); do
+        if [ $pid != $$ ]; then
+            check_result $E_INUSE "$SCRIPT is already running"
+        fi
+    done
+}
+
 send_api_cmd() {
     answer=$(curl -s -k \
         --data-urlencode "user=$USER" \
@@ -106,12 +116,12 @@ remote_dns_health_check() {
             else
                 subj="DNS sync failed"
                 email=$($BIN/v-get-user-value admin CONTACT)
-                cat $tmpfile |$send_mail -s "$subj" $email
+                cat $tmpfile |$SENDMAIL -s "$subj" $email
             fi
 
             # Deleting tmp file
             rm -f $tmpfile
-            log_event "$E_CONNECT" "$EVENT"
+            log_event "$E_CONNECT" "$ARGUMENTS"
 
             # Suspending remote host
             dconf="../../conf/dns-cluster"

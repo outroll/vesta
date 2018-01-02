@@ -10,7 +10,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 key=$(echo "$1" | tr '[:lower:]' '[:upper:]' )
 value=$2
 
@@ -18,13 +18,15 @@ value=$2
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
+PATH="$PATH:/usr/local/sbin:/sbin:/usr/sbin:/root/bin"
+
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
 check_args '2' "$#" 'KEY VALUE'
-validate_format 'key'
+is_format_valid 'key'
 
 
 #----------------------------------------------------------#
@@ -50,6 +52,6 @@ fi
 #----------------------------------------------------------#
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add system firewall
-# opions: NONE
+# options: NONE
 #
 # The script enables firewall
 
@@ -52,6 +52,6 @@ $BIN/v-update-firewall
 #----------------------------------------------------------#
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

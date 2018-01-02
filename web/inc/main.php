@@ -1,11 +1,51 @@
 <?php
+
 session_start();
 
-require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n.php');
+define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
+define('JS_LATEST_UPDATE', '1491697868');
+
+$i = 0;
+
+require_once(dirname(__FILE__).'/i18n.php');
+
+
+// Saving user IPs to the session for preventing session hijacking
+$user_combined_ip = $_SERVER['REMOTE_ADDR'];
+
+if(isset($_SERVER['HTTP_CLIENT_IP'])){
+    $user_combined_ip .=  '|'. $_SERVER['HTTP_CLIENT_IP'];
+}
+if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
+    $user_combined_ip .=  '|'. $_SERVER['HTTP_X_FORWARDED_FOR'];
+}
+if(isset($_SERVER['HTTP_FORWARDED_FOR'])){
+    $user_combined_ip .=  '|'. $_SERVER['HTTP_FORWARDED_FOR'];
+}
+if(isset($_SERVER['HTTP_X_FORWARDED'])){
+    $user_combined_ip .=  '|'. $_SERVER['HTTP_X_FORWARDED'];
+}
+if(isset($_SERVER['HTTP_FORWARDED'])){
+    $user_combined_ip .=  '|'. $_SERVER['HTTP_FORWARDED'];
+}
+
+if(!isset($_SESSION['user_combined_ip'])){
+    $_SESSION['user_combined_ip'] = $user_combined_ip;
+}
+
+// Checking user to use session from the same IP he has been logged in
+if($_SESSION['user_combined_ip'] != $user_combined_ip && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'){
+    session_destroy();
+    session_start();
+    $_SESSION['request_uri'] = $_SERVER['REQUEST_URI'];
+    header("Location: /login/");
+    exit;
+}
 
 // Check system settings
 if ((!isset($_SESSION['VERSION'])) && (!defined('NO_AUTH_REQUIRED'))) {
     session_destroy();
+    session_start();
     $_SESSION['request_uri'] = $_SERVER['REQUEST_URI'];
     header("Location: /login/");
     exit;
@@ -24,10 +64,6 @@ if (isset($_SESSION['user'])) {
         $_SESSION['token'] = $token;
     }
 }
-
-define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
-
-$i = 0;
 
 if (isset($_SESSION['language'])) {
     switch ($_SESSION['language']) {
@@ -80,7 +116,6 @@ function get_favourites(){
 }
 
 
-
 function check_error($return_var) {
     if ( $return_var > 0 ) {
         header("Location: /error/");
@@ -89,11 +124,49 @@ function check_error($return_var) {
 }
 
 function check_return_code($return_var,$output) {
-   if ($return_var != 0) {
+    if ($return_var != 0) {
         $error = implode('<br>', $output);
         if (empty($error)) $error = __('Error code:',$return_var);
         $_SESSION['error_msg'] = $error;
     }
+}
+
+function render_page($user, $TAB, $page) {
+    $__template_dir = dirname(__DIR__) . '/templates/';
+    $__pages_js_dir = dirname(__DIR__) . '/js/pages/';
+
+    // Header
+    include($__template_dir . 'header.html');
+
+    // Panel
+    top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
+
+    // Extarct global variables
+    // I think those variables should be passed via arguments
+    //*
+    extract($GLOBALS, EXTR_SKIP);
+    /*/
+    $variables = array_filter($GLOBALS, function($key){return preg_match('/^(v_|[a-z])[a-z\d]+$/', $key);}, ARRAY_FILTER_USE_KEY);
+    extract($variables, EXTR_OVERWRITE);
+    //*/
+
+    // Body
+    if (($_SESSION['user'] !== 'admin') && (@include($__template_dir . "user/$page.html"))) {
+        // User page loaded
+    } else {
+        // Not admin or user page doesn't exist
+        // Load admin page
+        @include($__template_dir . "admin/$page.html");
+    }
+
+    // Including common js files
+    @include_once(dirname(__DIR__) . '/templates/scripts.html');
+    // Including page specific js file
+    if(file_exists($__pages_js_dir.$page.'.js'))
+       echo '<script type="text/javascript" src="/js/pages/'.$page.'.js?'.JS_LATEST_UPDATE.'"></script>';
+
+    // Footer
+    include($__template_dir . 'footer.html');
 }
 
 function top_panel($user, $TAB) {
@@ -106,10 +179,25 @@ function top_panel($user, $TAB) {
     }
     $panel = json_decode(implode('', $output), true);
     unset($output);
+
+
+    // getting notifications
+    $command = VESTA_CMD."v-list-user-notifications '".$user."' 'json'";
+    exec ($command, $output, $return_var);
+    $notifications = json_decode(implode('', $output), true);
+    foreach($notifications as $message){
+        if($message['ACK'] == 'no'){
+            $panel[$user]['NOTIFICATIONS'] = 'yes';
+            break;
+        }
+    }
+    unset($output);
+
+
     if ( $user == 'admin' ) {
-        include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/panel.html');
+        include(dirname(__FILE__).'/../templates/admin/panel.html');
     } else {
-        include($_SERVER['DOCUMENT_ROOT'].'/templates/user/panel.html');
+        include(dirname(__FILE__).'/../templates/user/panel.html');
     }
 }
 
@@ -227,31 +315,6 @@ function send_email($to,$subject,$mailtext,$from) {
     mail($to, $subject, $message, $header);
 }
 
-function display_error_block() {
-    if (!empty($_SESSION['error_msg'])) {
-        echo '
-            <div>
-                <script type="text/javascript">
-                    $(function() {
-                        $( "#dialog:ui-dialog" ).dialog( "destroy" );
-                        $( "#dialog-message" ).dialog({
-                            modal: true,
-                            buttons: {
-                                Ok: function() {
-                                    $( this ).dialog( "close" );
-                                }
-                            }
-                        });
-                    });
-                </script>
-                <div id="dialog-message" title="">
-                    <p>'. htmlentities($_SESSION['error_msg']) .'</p>
-                </div>
-            </div>'."\n";
-        unset($_SESSION['error_msg']);
-    }
-}
-
 function list_timezones() {
     $tz = new DateTimeZone('HAST');
     $timezone_offsets['HAST'] = $tz->getOffset(new DateTime);
@@ -297,4 +360,27 @@ function list_timezones() {
         $timezone_list[$timezone] = "$timezone [ $current_time ] ${pretty_offset}";
     }
     return $timezone_list;
+}
+
+/**
+ * A function that tells is it MySQL installed on the system, or it is MariaDB.
+ *
+ * Explaination:
+ * $_SESSION['DB_SYSTEM'] has 'mysql' value even if MariaDB is installed, so you can't figure out is it really MySQL or it's MariaDB.
+ * So, this function will make it clear.
+ * 
+ * If MySQL is installed, function will return 'mysql' as a string.
+ * If MariaDB is installed, function will return 'mariadb' as a string.
+ * 
+ * Hint: if you want to check if PostgreSQL is installed - check value of $_SESSION['DB_SYSTEM']
+ *
+ * @return string
+ */
+function is_it_mysql_or_mariadb() {
+    exec (VESTA_CMD."v-list-sys-services json", $output, $return_var);
+    $data = json_decode(implode('', $output), true);
+    unset($output);
+    $mysqltype='mysql';
+    if (isset($data['mariadb'])) $mysqltype='mariadb';
+    return $mysqltype;
 }

@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 restart=$2
 
@@ -23,7 +23,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '1' "$#" 'USER'
-validate_format 'user'
+is_format_valid 'user'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 
@@ -43,12 +43,10 @@ done
 #----------------------------------------------------------#
 
 # Restarting named
-if [ "$restart" != 'no' ]; then
-    $BIN/v-restart-dns
-    check_result $? "Bind restart failed" >/dev/null
-fi
+$BIN/v-restart-dns $restart
+check_result $? "Bind restart failed" >/dev/null
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

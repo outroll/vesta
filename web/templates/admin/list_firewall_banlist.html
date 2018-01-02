@@ -1,6 +1,6 @@
     <div class="l-center">
       <div class="l-sort clearfix noselect">
-        <a href="/add/firewall/banlist/" class="l-sort__create-btn" title="<?=str_replace(' ', '&nbsp;', __('Ban IP Address'))?>"></a>
+        <a href="/add/firewall/banlist/" class="l-sort__create-btn" title="<?=__('Ban IP Address')?>"></a>
 
         <div class="l-sort-toolbar clearfix">
           <table>
@@ -17,7 +17,7 @@
                 <label for="toggle-all" class="check-label toggle-all"><?=__('toggle all')?></label>
               </td>
               <td>
-                <form action="/bulk/firewall/banlist/" method="post">
+                <form action="/bulk/firewall/banlist/" method="post" id="objects">
                 <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
                 <div class="l-select">
                   <select name="action" id="">
@@ -30,11 +30,7 @@
             </tr>
           </table>
         </div>
-
       </div>
-
-      <? display_error_block(); ?>
-
       <!-- /.l-sort -->
     </div>
 
@@ -47,25 +43,27 @@
         foreach ($data as $key => $value) {
           ++$i;
           list($ip,$chain) = explode(":",$key);
+
       ?>
 
       <div class="l-unit<? if($status == 'suspended') echo ' l-unit--suspended';?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
-            <input id="check<?php echo $i ?>" class="ch-toggle" type="checkbox" name="ipchain[]" value="<?php echo $ip . ':' . $chain ?>">
+            <input id="check<?php echo $i ?>" class="ch-toggle" type="checkbox" name="ipchain[]" value="<?php echo $ip . ':' . $value['CHAIN'] ?>">
             <label for="check<?php echo $i ?>" class="check-label"></label>
           </div>
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__delete">
+              <div class="actions-panel__col actions-panel__delete shortcut-delete" key-action="js">
                 <a id="delete_link_<?=$i?>" class="data-controls do_delete">
                   <?=__('delete')?> <i class="do_delete"></i>
-                  <input type="hidden" name="delete_url" value="/delete/firewall/banlist/?ip=<?=$ip?>&chain=<?=$chain?>&token=<?=$_SESSION['token']?>" />
+                  <input type="hidden" name="delete_url" value="/delete/firewall/banlist/?ip=<?=$ip?>&chain=<?=$value['CHAIN']?>&token=<?=$_SESSION['token']?>" />
                   <div id="delete_dialog_<?=$i?>" class="confirmation-text-delete hidden" title="<?=__('Confirmation')?>">
                     <p class="confirmation"><?=__('DELETE_IP_CONFIRMATION',$key)?></p>
                   </div>
                 </a>
+                <span class="shortcut delete">&nbsp;Del</span>
               </div>
 
             </div>
@@ -81,7 +79,7 @@
           <div class="l-unit__stats">
             <div class="clearfix l-unit__stat-col--left wide"><b><?=$data[$key]['DATE']?></b> &nbsp; <?=$data[$key]['TIME']?> </div>
             <div class="clearfix l-unit__stat-col--left"></div>
-            <div class="clearfix l-unit__stat-col--left wide-3"><b><?=$chain?></b></div>
+            <div class="clearfix l-unit__stat-col--left wide-3"><b><?=__($value['CHAIN'])?></b></div>
             <div class="clearfix l-unit__stat-col--left"><b><?=$ip?></b></div>
           </div>
           <!-- /.l-unit__stats -->
@@ -114,6 +112,9 @@
                 echo __('%s IP addresses',$i);
               }
             ?>
+          </div>
+          <div class="data-count l-unit__col l-unit__col--right back clearfix">
+            <a class="button cancel" href="/list/firewall/"><?=__('Back')?></a>
           </div>
       </div>
     </div>

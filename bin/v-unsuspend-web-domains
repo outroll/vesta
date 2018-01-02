@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 restart=$2
 
@@ -24,7 +24,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '1' "$#" 'USER [RESTART]'
-validate_format 'user'
+is_format_valid 'user'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 
@@ -44,17 +44,13 @@ done
 #----------------------------------------------------------#
 
 # Restarting web server
-if [ "$restart" != 'no' ]; then
-    $BIN/v-restart-web
-    check_result $? "Web restart failed" >/dev/null
+$BIN/v-restart-web $restart
+check_result $? "Web restart failed" >/dev/null
 
-    if [ ! -z "$PROXY_SYSTEM" ]; then
-        $BIN/v-restart-proxy
-        check_result $? "Proxy restart failed" >/dev/null
-    fi
-fi
+$BIN/v-restart-proxy $restart
+check_result $? "Proxy restart failed" >/dev/null
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

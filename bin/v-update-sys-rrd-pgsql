@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 period=${1-daily}
 
 # Includes
@@ -37,9 +37,7 @@ fi
 
 # Parsing db hosts
 conf="$VESTA/conf/pgsql.conf"
-fields='$HOST'
-nohead=1
-hosts=$(shell_list)
+hosts=$(grep HOST $conf |awk '{print $1}' |cut -f 2 -d \')
 check_row=$(echo "$hosts" |wc -l)
 if [ 0 -eq "$check_row" ]; then
     exit
@@ -80,7 +78,7 @@ for host in $hosts; do
         # Checking empty vars
         if [ -z $HOST ] || [ -z $USER ] || [ -z $PASSWORD ]; then
             echo "Error: config is broken"
-            log_event "$E_PARSING" "$EVENT"
+            log_event "$E_PARSING" "$ARGUMENTS"
             exit $E_PARSING
         fi
 

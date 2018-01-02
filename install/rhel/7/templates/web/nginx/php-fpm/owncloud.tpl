@@ -39,7 +39,7 @@ server {
         try_files $uri $uri/ /index.php;
 
         location ~ \.php(?:$|/) {
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
             include         /etc/nginx/fastcgi_params;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             fastcgi_param PATH_INFO $fastcgi_path_info;
@@ -66,6 +66,11 @@ server {
     location ~* "/\.(htaccess|htpasswd)$" {
         deny    all;
         return  404;
+    }
+
+    location /vstats/ {
+        alias   %home%/%user%/web/%domain%/stats/;
+        include %home%/%user%/conf/web/%domain%.auth*;
     }
 
     include     /etc/nginx/conf.d/phpmyadmin.inc*;

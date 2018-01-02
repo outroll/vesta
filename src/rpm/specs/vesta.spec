@@ -1,6 +1,6 @@
 Name:           vesta
 Version:        0.9.8
-Release:        15
+Release:        18
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPL
@@ -36,6 +36,12 @@ if [ $1 -ge 2 ]; then
     if [ -e /usr/local/vesta/upd/add_notifications.sh ]; then
         /usr/local/vesta/upd/add_notifications.sh
     fi
+    if [ -e /usr/local/vesta/upd/fix_sessions.sh ]; then
+        /usr/local/vesta/upd/fix_sessions.sh
+    fi
+    if [ -e /usr/local/vesta/upd/fix_nginx_auth.sh ]; then
+        /usr/local/vesta/upd/fix_nginx_auth.sh
+    fi
 fi
 %files
 %{_vestadir}
@@ -50,6 +56,31 @@ fi
 %config(noreplace) %{_vestadir}/web/css/uploadify.css
 
 %changelog
+* Mon Nov 14 2016 Serghey Rodin <builder@vestacp.com> - 0.9.8-17
+- System Config Editor
+- Let's Encrypt GUI
+- Google Nearline expiremental backup support
+- User notifcation panel
+- ClamAV fixes for CentOS/Debian/Ubuntu
+- i18n updates
+- Web stats support for php-fpm systems
+- Georgian Translation
+- Filemanager improvements
+- Imap/Pop3 JS helpers
+- Dozen bugfixes including security issues
+
+
+* Mon Jun 27 2016 Serghey Rodin <builder@vestacp.com> - 0.9.8-16
+- Full keyboard control
+- Cron Helper
+- LetsEncrypt Support cli-only
+- Language files update
+- File permission in File Manager
+- Handle DES passwords
+- New templates for PHP-FPM
+- Core refactoring
+- Dozen bugfixes including security issues
+
 * Fri Nov 06 2015 Serghey Rodin <builder@vestacp.com> - 0.9.8-15
 - File Manager (commercial plugin)
 - SFTP Chroot (commercial plugin)

@@ -1,8 +1,8 @@
 <?php
-// Init
 error_reporting(NULL);
 $TAB = 'SERVER';
 
+// Main include
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 // Check user
@@ -46,28 +46,22 @@ foreach ($dns_cluster as $key => $value) {
     $v_dns_cluster = 'yes';
 }
 
-// List MySQL hosts
-exec (VESTA_CMD."v-list-database-hosts mysql json", $output, $return_var);
-$v_mysql_hosts = json_decode(implode('', $output), true);
+// List Database hosts
+exec (VESTA_CMD."v-list-database-hosts json", $output, $return_var);
+$db_hosts = json_decode(implode('', $output), true);
 unset($output);
-foreach ($v_mysql_hosts as $key => $value) {
-    $v_mysql = 'yes';
-}
-
-// List PostgreSQL hosts
-exec (VESTA_CMD."v-list-database-hosts pgsql json", $output, $return_var);
-$v_pgsql_hosts = json_decode(implode('', $output), true);
-unset($output);
-foreach ($v_pgsql_hosts as $key => $value) {
-    $v_psql = 'yes';
-}
+$v_mysql_hosts = array_values(array_filter($db_hosts, function($host){return $host['TYPE'] === 'mysql';}));
+$v_mysql = count($v_mysql_hosts) ? 'yes' : 'no';
+$v_pgsql_hosts = array_values(array_filter($db_hosts, function($host){return $host['TYPE'] === 'pgsql';}));
+$v_pgsql = count($v_pgsql_hosts) ? 'yes' : 'no';
+unset($db_hosts);
 
 // List backup settings
 $v_backup_dir = "/backup";
 if (!empty($_SESSION['BACKUP'])) $v_backup_dir = $_SESSION['BACKUP'];
 $v_backup_gzip = '5';
 if (!empty($_SESSION['BACKUP_GZIP'])) $v_backup_gzip = $_SESSION['BACKUP_GZIP'];
-$backup_types = split(",",$_SESSION['BACKUP_SYSTEM']);
+$backup_types = explode(",",$_SESSION['BACKUP_SYSTEM']);
 foreach ($backup_types as $backup_type) {
     if ($backup_type == 'local') {
         $v_backup = 'yes';
@@ -83,6 +77,21 @@ foreach ($backup_types as $backup_type) {
         $v_backup_bpath = $v_remote_backup[$backup_type]['BPATH'];
     }
 }
+
+// List ssl certificate info
+exec (VESTA_CMD."v-list-sys-vesta-ssl json", $output, $return_var);
+$ssl_str = json_decode(implode('', $output), true);
+unset($output);
+$v_ssl_crt = $ssl_str['VESTA']['CRT'];
+$v_ssl_key = $ssl_str['VESTA']['KEY'];
+$v_ssl_ca = $ssl_str['VESTA']['CA'];
+$v_ssl_subject = $ssl_str['VESTA']['SUBJECT'];
+$v_ssl_aliases = $ssl_str['VESTA']['ALIASES'];
+$v_ssl_not_before = $ssl_str['VESTA']['NOT_BEFORE'];
+$v_ssl_not_after = $ssl_str['VESTA']['NOT_AFTER'];
+$v_ssl_signature = $ssl_str['VESTA']['SIGNATURE'];
+$v_ssl_pub_key = $ssl_str['VESTA']['PUB_KEY'];
+$v_ssl_issuer = $ssl_str['VESTA']['ISSUER'];
 
 // Check POST request
 if (!empty($_POST['save'])) {
@@ -184,7 +193,6 @@ if (!empty($_POST['save'])) {
         }
     }
 
-
     // Update webmail url
     if (empty($_SESSION['error_msg'])) {
         if ($_POST['v_mail_url'] != $_SESSION['MAIL_URL']) {
@@ -207,7 +215,7 @@ if (!empty($_POST['save'])) {
 
     // Update phpPgAdmin url
     if (empty($_SESSION['error_msg'])) {
-        if ($_POST['v_psql_url'] != $_SESSION['DB_PGA_URL']) {
+        if ($_POST['v_pgsql_url'] != $_SESSION['DB_PGA_URL']) {
             exec (VESTA_CMD."v-change-sys-config-value DB_PGA_URL '".escapeshellarg($_POST['v_pgsql_url'])."'", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
@@ -236,7 +244,6 @@ if (!empty($_POST['save'])) {
             $v_backup_adv = 'yes';
         }
     }
-
 
     // Change backup gzip level
     if (empty($_SESSION['error_msg'])) {
@@ -309,7 +316,7 @@ if (!empty($_POST['save'])) {
     // Change remote backup host
     if (empty($_SESSION['error_msg'])) {
         if ((!empty($_POST['v_backup_host'])) && ($_POST['v_backup_type'] == $v_backup_type) && (!isset($v_backup_new))) {
-            if (($_POST['v_backup_host'] != $v_backup_host) || ($_POST['v_backup_username'] != $v_backup_username) || ($_POST['v_backup_password'] || $v_backup_password) || ($_POST['v_backup_bpath'] == $v_backup_bpath)){
+            if (($_POST['v_backup_host'] != $v_backup_host) || ($_POST['v_backup_username'] != $v_backup_username) || ($_POST['v_backup_password'] != $v_backup_password) || ($_POST['v_backup_bpath'] != $v_backup_bpath)){
                 $v_backup_host = escapeshellarg($_POST['v_backup_host']);
                 $v_backup_type = escapeshellarg($_POST['v_backup_type']);
                 $v_backup_username = escapeshellarg($_POST['v_backup_username']);
@@ -329,7 +336,6 @@ if (!empty($_POST['save'])) {
         }
     }
 
-
     // Delete remote backup host
     if (empty($_SESSION['error_msg'])) {
         if ((empty($_POST['v_backup_host'])) && (!empty($v_backup_host))) {
@@ -343,6 +349,49 @@ if (!empty($_POST['save'])) {
             if (empty($_SESSION['error_msg'])) $v_backup_bpath = '';
             $v_backup_adv = '';
             $v_backup_remote_adv = '';
+        }
+    }
+
+    // Update SSL certificate
+    if ((!empty($_POST['v_ssl_crt'])) && (empty($_SESSION['error_msg']))) {
+        if (($v_ssl_crt != str_replace("\r\n", "\n",  $_POST['v_ssl_crt'])) || ($v_ssl_key != str_replace("\r\n", "\n",  $_POST['v_ssl_key']))) {
+            exec ('mktemp -d', $mktemp_output, $return_var);
+            $tmpdir = $mktemp_output[0];
+
+            // Certificate
+            if (!empty($_POST['v_ssl_crt'])) {
+                $fp = fopen($tmpdir."/certificate.crt", 'w');
+                fwrite($fp, str_replace("\r\n", "\n",  $_POST['v_ssl_crt']));
+                fwrite($fp, "\n");
+                fclose($fp);
+            }
+
+            // Key
+            if (!empty($_POST['v_ssl_key'])) {
+                $fp = fopen($tmpdir."/certificate.key", 'w');
+                fwrite($fp, str_replace("\r\n", "\n", $_POST['v_ssl_key']));
+                fwrite($fp, "\n");
+                fclose($fp);
+            }
+
+            exec (VESTA_CMD."v-change-sys-vesta-ssl ".$tmpdir, $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+
+            // List ssl certificate info
+            exec (VESTA_CMD."v-list-sys-vesta-ssl json", $output, $return_var);
+            $ssl_str = json_decode(implode('', $output), true);
+            unset($output);
+            $v_ssl_crt = $ssl_str['VESTA']['CRT'];
+            $v_ssl_key = $ssl_str['VESTA']['KEY'];
+            $v_ssl_ca = $ssl_str['VESTA']['CA'];
+            $v_ssl_subject = $ssl_str['VESTA']['SUBJECT'];
+            $v_ssl_aliases = $ssl_str['VESTA']['ALIASES'];
+            $v_ssl_not_before = $ssl_str['VESTA']['NOT_BEFORE'];
+            $v_ssl_not_after = $ssl_str['VESTA']['NOT_AFTER'];
+            $v_ssl_signature = $ssl_str['VESTA']['SIGNATURE'];
+            $v_ssl_pub_key = $ssl_str['VESTA']['PUB_KEY'];
+            $v_ssl_issuer = $ssl_str['VESTA']['ISSUER'];
         }
     }
 
@@ -381,7 +430,6 @@ if (!empty($_POST['save'])) {
         }
     }
 
-
     // activating filemanager licence
     if (empty($_SESSION['error_msg'])) {
         if($_SESSION['FILEMANAGER_KEY'] != $_POST['v_filemanager_licence'] && $_POST['v_filemanager'] == 'yes'){
@@ -411,28 +459,49 @@ if (!empty($_POST['save'])) {
             }
         }
     }
+
+    // activating softaculous
+    if (empty($_SESSION['error_msg'])) {
+        if($_SESSION['SOFTACULOUS'] != $_POST['v_softaculous'] && $_POST['v_softaculous'] == 'yes'){
+            exec (VESTA_CMD."v-add-vesta-softaculous WEB", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Softaculous Activated');
+                $_SESSION['SOFTACULOUS'] = 'yes';
+            }
+        }
+    }
+
+    // disable softaculous
+    if (empty($_SESSION['error_msg'])) {
+        if($_SESSION['SOFTACULOUS'] != $_POST['v_softaculous'] && $_POST['v_softaculous'] == 'no'){
+            exec (VESTA_CMD."v-delete-vesta-softaculous", $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            if (empty($_SESSION['error_msg'])) {
+                $_SESSION['ok_msg'] = __('Softaculous Disabled');
+                $_SESSION['SOFTACULOUS'] = '';
+            }
+        }
+    }
+
 }
 
 // Check system configuration
 exec (VESTA_CMD . "v-list-sys-config json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+unset($output);
+
 $sys_arr = $data['config'];
 foreach ($sys_arr as $key => $value) {
     $_SESSION[$key] = $value;
 }
 
-// Header
-include($_SERVER['DOCUMENT_ROOT'].'/templates/header.html');
 
-// Panel
-top_panel($user,$TAB);
-
-// Display body
-include($_SERVER['DOCUMENT_ROOT'].'/templates/admin/edit_server.html');
+// Render page
+render_page($user, $TAB, 'edit_server');
 
 // Flush session messages
 unset($_SESSION['error_msg']);
 unset($_SESSION['ok_msg']);
-
-// Footer
-include($_SERVER['DOCUMENT_ROOT'].'/templates/footer.html');

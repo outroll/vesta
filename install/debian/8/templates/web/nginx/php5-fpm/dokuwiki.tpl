@@ -28,7 +28,7 @@ server {
         }
     }
 
-    location ^~ /lib/ {
+    location ~ ^/lib.*\.(gif|png|ico|jpg)$ {
         expires 30d;
     }
 
@@ -52,6 +52,11 @@ server {
     location ~* "/\.(htaccess|htpasswd)$" {
         deny    all;
         return  404;
+    }
+
+    location /vstats/ {
+        alias   %home%/%user%/web/%domain%/stats/;
+        include %home%/%user%/conf/web/%domain%.auth*;
     }
 
     include     /etc/nginx/conf.d/phpmyadmin.inc*;

@@ -1,6 +1,6 @@
     <div class="l-center">
       <div class="l-sort clearfix noselect">
-        <a href="/add/package/" class="l-sort__create-btn" title="<?=str_replace(' ', '&nbsp;', __('Add Package'))?>"></a>
+        <a href="/add/package/" class="l-sort__create-btn" title="<?=__('Add Package')?>"></a>
         <ul class="context-menu sort-order" style="display:none;">
           <li entity="sort-date" sort_as_int="1"><span class="name active"><?=__('Date')?></span><span class="up">&nbsp;</span></li>
           <li entity="sort-name"><span class="name"><?=__('Package Name')?></span><span class="up">&nbsp;</span></li>
@@ -20,9 +20,6 @@
                 <input id="toggle-all" type="checkbox" name="toggle-all" value="toggle-all" onChange="checkedAll('objects');">
                 <label for="toggle-all" class="check-label toggle-all"><?=__('toggle all')?></label>
               </td>
-              <td class="sort-by">
-                <?=__('sort by');?>: <span><b><?=__('Date')?></b></span> <i class="l-icon-down-arrow media-top"></i>
-              </td>
               <td>
                 <form action="/bulk/package/" method="post" id="objects">
                 <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
@@ -34,14 +31,13 @@
                 </div>
                 <input type="submit" class="l-sort-toolbar__filter-apply" value="" />
               </td>
+              <td class="sort-by">
+                <?=__('sort by');?>: <span><b><?=__('Date')?></b></span> <i class="l-icon-down-arrow media-top"></i>
+              </td>
             </tr>
           </table>
         </div>
-
       </div>
-
-      <? display_error_block(); ?>
-
       <!-- /.l-sort -->
     </div>
 
@@ -56,8 +52,8 @@
       ?>
 
 
-      <div class="l-unit <? if($data[$key]['SUSPENDED'] == 'yes') echo 'l-unit--suspended'; if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo ' l-unit--starred'; ?>" 
-v_unit_id="<?=$key?>" v_section="package" sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>" 
+      <div class="l-unit <? if($data[$key]['SUSPENDED'] == 'yes') echo 'l-unit--suspended'; if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo ' l-unit--starred'; ?>"
+v_unit_id="<?=$key?>" v_section="package" sort-date="<?=strtotime($data[$key]['DATE'].' '.$data[$key]['TIME'])?>" sort-name="<?=$key?>"
 sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else echo '0'; ?>">
         <div class="l-unit-toolbar clearfix">
           <div class="l-unit-toolbar__col l-unit-toolbar__col--left">
@@ -67,8 +63,8 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__edit"><a href="/edit/package/?package=<?=$key?>"><?=__('edit')?> <i></i></a></div>
-              <div class="actions-panel__col actions-panel__delete">
+              <div class="actions-panel__col actions-panel__edit shortcut-enter" key-action="href"><a href="/edit/package/?package=<?=$key?>"><?=__('edit')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
+              <div class="actions-panel__col actions-panel__delete shortcut-delete" key-action="js">
                 <a id="delete_link_<?=$i?>" class="data-controls do_delete">
                   <?=__('delete')?> <i class="do_delete"></i>
                   <input type="hidden" name="delete_url" value="/delete/package/?package=<?=$key?>&token=<?=$_SESSION['token']?>" />
@@ -76,6 +72,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                     <p class="confirmation"><?=__('DELETE_PACKAGE_CONFIRMATION',$key)?></p>
                   </div>
                 </a>
+                <span class="shortcut delete">&nbsp;Del</span>
               </div>
 
             </div>
@@ -89,9 +86,9 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
           <div class="l-unit__date">
             <?=translate_date($data[$key]['DATE'])?>
           </div>
-          <div class="l-unit__suspended""><?__('suspended')?></div>
+          <div class="l-unit__suspended"><?__('suspended')?></div>
           <div class="text-center">
-            <i class="l-icon-star"></i>
+            <i class="l-icon-star" title="<?=__('save to favorites')?>"></i>
           </div>
         </div>
         <!-- /.l-unit__col -->
@@ -109,7 +106,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Web Template')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['WEB_TEMPLATE'])?></b>
+                      <b><?=$data[$key]['WEB_TEMPLATE']?></b>
                     </div>
                   </div>
                 </td>
@@ -125,7 +122,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix last">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Backups')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['BACKUPS'])?></b>
+                      <b><?=$data[$key]['BACKUPS']?></b>
                     </div>
                   </div>
                 </td>
@@ -137,7 +134,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Proxy Template')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['PROXY_TEMPLATE'])?></b>
+                      <b><?=$data[$key]['PROXY_TEMPLATE']?></b>
                     </div>
                   </div>
                   <? } ?>
@@ -154,7 +151,12 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix last">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Bandwidth')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
+<?php if (preg_match('/[a-z]/i', $data[$key]['BANDWIDTH'])): ?>
+                      <b><?=__($data[$key]['BANDWIDTH'])?></b>
+<?php else: ?>
                       <b><?=humanize_usage_size($data[$key]['BANDWIDTH'])?></b> <?=humanize_usage_measure($data[$key]['BANDWIDTH'])?>
+
+<?php endif; ?>
                     </div>
                   </div>
                 </td>
@@ -165,7 +167,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('DNS Template')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['DNS_TEMPLATE'])?></b>
+                      <b><?=$data[$key]['DNS_TEMPLATE']?></b>
                     </div>
                   </div>
                 </td>
@@ -181,7 +183,12 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix last">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Disk')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
+<?php if (preg_match('/[a-z]/i', $data[$key]['DISK_QUOTA'])): ?>
+                      <b><?=__($data[$key]['DISK_QUOTA'])?></b>
+<?php else: ?>
                       <b><?=humanize_usage_size($data[$key]['DISK_QUOTA'])?></b> <?=humanize_usage_measure($data[$key]['DISK_QUOTA'])?>
+
+<?php endif; ?>
                     </div>
                   </div>
                 </td>
@@ -192,7 +199,7 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                   <div class="l-unit__stat-cols clearfix">
                     <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('SSH Access')?>:</div>
                     <div class="l-unit__stat-col l-unit__stat-col--right">
-                      <b><?=__($data[$key]['SHELL'])?></b>
+                      <b><?=$data[$key]['SHELL']?></b>
                     </div>
                   </div>
                 </td>
