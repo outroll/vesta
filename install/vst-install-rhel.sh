@@ -1140,6 +1140,9 @@ if [ "$dovecot" = 'yes' ]; then
     tar -xzf dovecot.tar.gz
     rm -f dovecot.tar.gz
     chown -R root:root /etc/dovecot*
+    touch /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
+    chmod 660 /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
+    chown dovecot.mail /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
     chkconfig dovecot on
     service dovecot start
     check_result $? "dovecot start failed"
