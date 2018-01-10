@@ -754,5 +754,8 @@ $LANG['en'] = array(
     'maximum characters length, including prefix' => 'maximum %s characters length, including prefix',
 
     'Email Credentials' => 'Email Credentials',
+    
+    'Enable Dynamic DNS' => 'Enable Dynamic DNS',
+    'Dynamic DNS Token' => 'Dynamic DNS Token',
 
 );
