@@ -1,12 +1,13 @@
 <?php
-define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
+define('VESTA_CMD', 'sudo /usr/local/vesta/bin/');
 
 if (isset($_POST['user']) || isset($_POST['hash'])) {
 
     // Authentication
     $auth_code = 1;
     if (empty($_POST['hash'])) {
-        // Check user permission to use API
+      
+      // Check user permission to use API
         if ($_POST['user'] != 'admin') {
             echo 'Error: only admin is allowed to use API';
             exit;
@@ -28,7 +29,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
     }
 
     if ($auth_code != 0 ) {
-        echo 'Error: authentication failed';
+        echo 'Error: authentication failed' >> $VESTA/'apiaccesslog.log';
         exit;
     }
 

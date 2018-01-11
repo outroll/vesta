@@ -24,7 +24,6 @@ format_domain
 format_domain_idn
 # TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
 
-
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
@@ -61,7 +60,7 @@ done < $log_file
 # Converting to Mb
 mb=$(echo "$bytes / 1024 / 1024"|bc)
 
-# Nulling log
+# Nulling displaying of log
 echo > $log_file
 
 
