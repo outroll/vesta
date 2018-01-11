@@ -1143,6 +1143,8 @@ if [ "$dovecot" = 'yes' ]; then
     touch /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
     chmod 660 /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
     chown dovecot:mail /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
+    cd /etc/dovecot/sieve/
+    sievec default.sieve
     chkconfig dovecot on
     service dovecot start
     check_result $? "dovecot start failed"
