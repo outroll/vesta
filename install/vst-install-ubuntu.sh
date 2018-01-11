@@ -1102,7 +1102,7 @@ if [ "$dovecot" = 'yes' ]; then
     chown -R root:root /etc/dovecot*
     touch /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
     chmod 660 /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
-    chown dovecot.mail /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
+    chown dovecot:mail /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
     update-rc.d dovecot defaults
     service dovecot start
     check_result $? "dovecot start failed"
