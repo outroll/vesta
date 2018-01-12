@@ -56,7 +56,7 @@ else
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect vim-common
-        vesta-ioncube vesta-softaculous"
+        vesta-ioncube vesta-softaculous dovecot-sieve dovecot-managesieved"
 fi
 
 # Defining help function
