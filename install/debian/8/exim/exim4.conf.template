@@ -250,9 +250,14 @@ localuser_fwd_only:
   transport = devnull
   condition = ${if exists{/etc/exim4/domains/$domain/fwd_only}{${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/fwd_only}{true}{false}}}}
 
+localuser_spam:
+  driver = accept
+  transport = local_spam_delivery
+  condition = ${if eq {${if match{$h_X-Spam-Status:}{\N^Yes\N}{yes}{no}}} {${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/passwd}{yes}{no_such_user}}}}
+
 localuser:
   driver = accept
-  transport = dovecot_delivery
+  transport = local_delivery
   condition = ${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/passwd}{true}{false}}
 
 catchall:
@@ -260,7 +265,7 @@ catchall:
   headers_add = X-redirected: yes
   require_files = /etc/exim4/domains/$domain/aliases
   data = ${extract{1}{:}{${lookup{*@$domain}lsearch{/etc/exim4/domains/$domain/aliases}}}}
-  file_transport = dovecot_delivery
+  file_transport = local_delivery
   redirect_router = dnslookup
 
 terminate_alias:
@@ -294,16 +299,40 @@ procmail:
   initgroups
   return_output
 
-dovecot_delivery:
-  driver = pipe
-  command = /usr/lib/dovecot/dovecot-lda -e -d $local_part@$domain -f $sender_address -a $original_local_part@$original_domain
-  return_path_add
-  log_output = true
-  delivery_date_add
-  envelope_to_add
+local_delivery:
+  driver = appendfile
+  maildir_format
+  maildir_use_size_file
   user = ${extract{2}{:}{${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/passwd}}}}
   group = mail
-  return_output
+  create_directory
+  directory_mode = 770
+  mode = 660
+  use_lockfile = no
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+  directory = "${extract{5}{:}{${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/passwd}}}}/mail/$domain/$local_part"
+  quota = ${extract{6}{:}{${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/passwd}}}}M
+  quota_warn_threshold = 75%
+
+local_spam_delivery:
+  driver = appendfile
+  maildir_format
+  maildir_use_size_file
+  user = ${extract{2}{:}{${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/passwd}}}}
+  group = mail
+  create_directory
+  directory_mode = 770
+  mode = 660
+  use_lockfile = no
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+  directory = "${extract{5}{:}{${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/passwd}}}}/mail/$domain/$local_part/.Spam"
+  quota = ${extract{6}{:}{${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/passwd}}}}M
+  quota_directory = "${extract{5}{:}{${lookup{$local_part}lsearch{/etc/exim4/domains/$domain/passwd}}}}/mail/$domain/$local_part"
+  quota_warn_threshold = 75%
 
 address_pipe:
   driver = pipe
