@@ -24,7 +24,7 @@ if ((!empty($_GET['domain'])) && (empty($_GET['record_id'])))  {
     check_return_code($return_var,$output);
     $data = json_decode(implode('', $output), true);
     unset($output);
-
+    
     // Parse dns domain
     $v_username = $user;
     $v_domain = $_GET['domain'];
@@ -56,7 +56,13 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
     check_return_code($return_var,$output);
     $data = json_decode(implode('', $output), true);
     unset($output);
-
+    
+    //RB TEST. TODO: REMOVE THIS.
+    echo '<pre>';
+    echo '<br>';
+    print_r($data);
+    echo '</pre>';
+    
     // Parse dns record
     $v_username = $user;
     $v_domain = $_GET['domain'];
@@ -72,7 +78,7 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
         $v_status =  'active';
     }
     $v_date = $data[$v_record_id]['DATE'];
-    $v_time = $data[$v_record_id]['TIME'];
+    $v_time = $data[$v_record_id]['TIME'];   
 }
 
 // Check POST request for dns domain
