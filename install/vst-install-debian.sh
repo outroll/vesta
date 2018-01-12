@@ -29,7 +29,8 @@ if [ "$release" -eq 9 ]; then
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
-        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools"
+        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools
+	dovecot-sieve dovecot-managesieved"
 elif [ "$release" -eq 8 ]; then
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
@@ -42,7 +43,8 @@ elif [ "$release" -eq 8 ]; then
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
-        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools"
+        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools
+	dovecot-sieve dovecot-managesieved"
 else
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
@@ -55,7 +57,8 @@ else
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect unrar-free
-        vim-common vesta-ioncube vesta-softaculous net-tools"
+        vim-common vesta-ioncube vesta-softaculous net-tools
+	dovecot-sieve dovecot-managesieved"
 fi
 
 # Defining help function
@@ -1089,6 +1092,11 @@ if [ "$dovecot" = 'yes' ]; then
     tar -xzf dovecot.tar.gz
     rm -f dovecot.tar.gz
     chown -R root:root /etc/dovecot*
+    touch /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
+    chmod 660 /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
+    chown dovecot:mail /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
+    cd /etc/dovecot/sieve/
+    sievec default.sieve
     update-rc.d dovecot defaults
     service dovecot start
     check_result $? "dovecot start failed"
