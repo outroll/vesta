@@ -1,0 +1,18 @@
+#!/bin/bash
+# info: add ddns on record
+# options: USER DOMAIN ID KEY
+#
+# The call adds DDNS functionality to the DNS record with the specified key.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+id=$3
+key=$
+
+# Includes
