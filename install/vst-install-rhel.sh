@@ -1140,9 +1140,9 @@ if [ "$dovecot" = 'yes' ]; then
     tar -xzf dovecot.tar.gz
     rm -f dovecot.tar.gz
     chown -R root:root /etc/dovecot*
-    touch /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
-    chmod 660 /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
-    chown dovecot:mail /var/log/{dovecot-lda-errors.log,dovecot-lda.log}
+    touch /var/log/{dovecot-lda-errors.log,dovecot-lda.log,dovecot-sieve-errors.log,dovecot-sieve.log}
+    chmod 660 /var/log/{dovecot-lda-errors.log,dovecot-lda.log,dovecot-sieve-errors.log,dovecot-sieve.log}
+    chown dovecot:mail /var/log/{dovecot-lda-errors.log,dovecot-lda.log,dovecot-sieve-errors.log,dovecot-sieve.log}
     cd /etc/dovecot/sieve/
     sievec default.sieve
     chkconfig dovecot on
