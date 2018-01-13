@@ -1,0 +1,100 @@
+#!/bin/bash
+# info: authenticate ddns key
+# options: USER DOMAIN RECORD TYPE KEY [FORMAT]
+#
+# The function for authenticating a DDNS key for a DNS record.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+record=$(idn -t --quiet -u "$3" )
+record=$(echo "$record" | tr '[:upper:]' '[:lower:]')
+rtype=$(echo "$4"| tr '[:lower:]' '[:upper:]')
+key=$5
+format=${6-shell}
+id="$rtype-$record.$domain"
+valid='false'
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '5' "$#" 'USER DOMAIN RECORD TYPE KEY [FORMAT]'
+is_format_valid 'user' 'domain' 'record' 'rtype' 'key'
+is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+is_object_valid "ddns" 'ID' "$id"
+
+# JSON authentication output function
+json_auth() {
+    IFS=$'\n'
+    echo "{"
+        echo '    "'$id'": {
+        "KEY": "'$key'",
+        "VALID": '$valid'
+    }'
+echo '}'
+}
+
+# SHELL authentication output function
+shell_auth() {
+    IFS=$'\n'
+    echo "ID   KEY   VALID"
+    echo "--   ---   -----"
+    echo "$id $key $valid"
+}
+
+# PLAIN authentication output function
+plain_auth() {
+    IFS=$'\n'
+    echo -e "$id\t$key\t$valid"
+}
+
+# CSV authentication output function
+csv_auth() {
+    IFS=$'\n'
+    echo "ID,KEY,VALID"
+    echo "$id,$key,$valid"
+}
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Authenticate DDNS key
+result=$(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'" | wc -l)
+if [ "$result" == "1" ]; then
+    valid="true";
+fi
+
+# Listing data
+case $format in
+    json)   json_auth ;;
+    plain)  plain_auth ;;
+    csv)    csv_auth ;;
+    shell)  shell_auth |column -t ;;
+esac
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+#Logging
+log_history "authenticated ddns key for dns $rtype record $record on $domain"
+log_event "$OK" "$ARGUMENTS"
+
+exit

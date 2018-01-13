@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: add ddns on dns record
-# options: USER DOMAIN RECORD TYPE KEY
+# info: delete ddns for dns record
+# options: USER DOMAIN RECORD TYPE
 #
-# The function for adding DDNS functionality to the DNS record with the specified key.
+# The function for removing DDNS functionality from the DNS record.
 
 
 #----------------------------------------------------------#
@@ -12,49 +12,45 @@
 # Argument definition
 user=$1
 domain=$2
+domain_idn=$2
 record=$(idn -t --quiet -u "$3" )
 record=$(echo "$record" | tr '[:upper:]' '[:lower:]')
 rtype=$(echo "$4"| tr '[:lower:]' '[:upper:]')
-key=$5
-id="$record.$domain-$rtype"
+id="$rtype-$record.$domain"
 
 # Includes
 source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/func/ddns.sh ##TODO: Clean this up by removing if unnecessary.
 source $VESTA/conf/vesta.conf
 
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
-check_args '5' "$#" 'USER DOMAIN RECORD TYPE KEY'
+
+check_args '4' "$#" 'USER DOMAIN RECORD TYPE'
 is_format_valid 'user' 'domain' 'record' 'rtype'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'dns' 'DOMAIN' "$domain"
-is_object_new "ddns" 'ID' "$id"
+is_object_valid "ddns" 'ID' "$id"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Deleting ddns from ddns conf
+sed -i "/^ID='$id'/d" $USER_DATA/ddns.conf
 
 
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-# Generating timestamp
-time_n_date=$(date +'%T %F')
-time=$(echo "$time_n_date" |cut -f 1 -d \ )
-date=$(echo "$time_n_date" |cut -f 2 -d \ )
-
-# Adding ddns to ddns conf
-ddns_rec="ID='$id' DOMAIN='$domain' RECORD='$record' TYPE='$rtype' KEY='$key'"
-ddns_rec="$ddns_rec TIME='$time' DATE='$date'"
-echo "$ddns_rec" >> $USER_DATA/ddns.conf
-chmod 660 $USER_DATA/ddns.conf
-
 #Logging
-log_history "added ddns configuration for dns $rtype record $record for $domain"
+log_history "deleted ddns configuration for dns $rtype record $record on $domain"
 log_event "$OK" "$ARGUMENTS"
 
 exit

@@ -1,0 +1,103 @@
+#!/bin/bash
+# info: list ddns
+# options: USER [FORMAT]
+#
+# The function for obtaining the list of all user's DDNS configuration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+format=${2-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    i=1
+    objects=$(grep "ID=" $USER_DATA/ddns.conf |wc -l)
+    echo "{"
+    while read str; do
+        eval $str
+        echo -n '    "'$ID'": {
+        "DOMAIN": "'$DOMAIN'",
+        "RECORD": "'$RECORD'",
+        "TYPE": "'$TYPE'",
+        "KEY": "'$KEY'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done < <(cat $USER_DATA/ddns.conf)
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "ID   DOMAIN   RECORD   TYPE   KEY   TIME   DATE"
+    echo "--   ------   ------   ----   ---   ----   ----"
+    while read str; do
+        eval $str
+        echo "$ID $DOMAIN $RECORD $TYPE $KEY $TIME $DATE"
+    done < <(cat $USER_DATA/ddns.conf)
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    while read str; do
+        eval $str
+        echo -ne "$ID\t$DOMAIN\t$RECORD\t$TYPE\t$KEY\t$TIME\t"
+        echo -e "$DATE"
+    done < <(cat $USER_DATA/ddns.conf)
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "ID,DOMAIN,RECORD,TYPE,KEY,TIME,DATE"
+    while read str; do
+        eval $str
+        echo "$ID,$DOMAIN,$RECORD,$TYPE,$KEY,$TIME,$DATE"
+    done < <(cat $USER_DATA/ddns.conf)
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER [FORMAT]'
+is_format_valid 'user'
+is_object_valid 'user' 'USER' "$user"
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

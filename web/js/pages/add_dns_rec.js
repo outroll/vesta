@@ -49,7 +49,6 @@ App.Listeners.DB.keypress_dns_rec_entry = function() {
 App.Listeners.DB.keypress_dns_rec_entry();
 
 //
-//
 // Generates a random API key
 randomString = function() {
     var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
