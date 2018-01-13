@@ -12,7 +12,6 @@
 # Argument definition
 user=$1
 domain=$2
-domain_idn=$2
 record=$(idn -t --quiet -u "$3" )
 record=$(echo "$record" | tr '[:upper:]' '[:lower:]')
 rtype=$(echo "$4"| tr '[:lower:]' '[:upper:]')
@@ -25,6 +24,7 @@ source $VESTA/func/domain.sh
 source $VESTA/func/ddns.sh ##TODO: Clean this up by removing if unnecessary.
 source $VESTA/conf/vesta.conf
 
+
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
@@ -36,6 +36,7 @@ is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'dns' 'DOMAIN' "$domain"
 is_object_new "ddns" 'ID' "$id"
+
 
 #----------------------------------------------------------#
 #                       Vesta                              #
