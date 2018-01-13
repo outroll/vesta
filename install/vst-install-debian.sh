@@ -1097,6 +1097,8 @@ if [ "$dovecot" = 'yes' ]; then
     chown dovecot:mail /var/log/{dovecot-lda-errors.log,dovecot-lda.log,dovecot-sieve-errors.log,dovecot-sieve.log}
     cd /etc/dovecot/sieve/
     sievec default.sieve
+    sed -i 's/#postmaster_address\ =.*/postmaster_address\ =\ '$email'/g' /etc/dovecot/conf.d/10-master.conf
+    sed -i 's/#hostname\ =.*/hostname\ =\ '$servername'/g' /etc/dovecot/conf.d/10-master.conf
     update-rc.d dovecot defaults
     service dovecot start
     check_result $? "dovecot start failed"
