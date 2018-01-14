@@ -105,33 +105,27 @@
                                     <input type="text" size="20" class="vst-input" name="v_priority" value="<?=htmlentities(trim($v_priority, "'"))?>">
                                 </td>
                             </tr>
-                            
-                            <!-- TODO: NEW STUFF -->
-                            <!--TODO: REMOVE this tag and clean up.-->
                             <tr>
                                 <td class="step-top vst-text">
-                                    <label><input type="checkbox" size="20" class="vst-checkbox" name="v_ddns" <?php if($v_ddns == 'yes' || $v_ddns == 'on') echo "checked=yes" ?> onclick="javascript:elementHideShow('ddnstable');"> <?php print __('Enable Dynamic DNS');?></label>
+                                    <label><input type="checkbox" size="20" class="vst-checkbox" name="v_ddns" <?php if(!empty($v_ddns_key)) echo "checked=yes" ?> onclick="javascript:elementHideShow('ddnstable');"> <?php print __('Enable Dynamic DNS');?></label>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <table style="display:<?php if (empty($v_ddns)) { echo 'none';} else {echo 'block';}?>;" id="ddnstable">
+                                    <table style="display:<?php if (empty($v_ddns_key)) { echo 'none';} else {echo 'block';}?>;" id="ddnstable">
                                       <tr>
                                             <td class="vst-text input-label step-left">
-                                                <?php print __('Dynamic DNS Token');?>  / <a href="javascript:randomString();" class="generate"><?php print __('generate');?></a>
+                                                <?php print __('Dynamic DNS Key');?>  / <a href="javascript:randomString();" class="generate"><?php print __('generate');?></a>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="step-left">
-                                                <input type="text" size="20" class="vst-input" name="v_ddns_token" value="<?=htmlentities(trim($v_ddns_token, "'"))?>">
+                                                <input type="text" size="20" class="vst-input" name="v_ddns_key" value="<?=htmlentities(trim($v_ddns_key, "'"))?>">
                                             </td>
                                         </tr>
                                     </table>
                                 </td>
                             </tr>
-                            <!-- End of New Stuff -->
-                            
-                            
                         </table>
                         <table class="data-col2">
                             <tr>

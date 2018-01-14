@@ -9,5 +9,5 @@ randomString = function() {
         var rnum = Math.floor(Math.random() * chars.length);
         randomstring += chars.substr(rnum, 1);
     }
-    document.v_edit_dns_rec.v_ddns_token.value = randomstring;
+    document.v_edit_dns_rec.v_ddns_key.value = randomstring;
 }

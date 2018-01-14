@@ -57,12 +57,6 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
     $data = json_decode(implode('', $output), true);
     unset($output);
     
-    //RB TEST. TODO: REMOVE THIS.
-    echo '<pre>';
-    echo '<br>';
-    print_r($data);
-    echo '</pre>';
-    
     // Parse dns record
     $v_username = $user;
     $v_domain = $_GET['domain'];
@@ -79,6 +73,22 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
     }
     $v_date = $data[$v_record_id]['DATE'];
     $v_time = $data[$v_record_id]['TIME'];
+}
+
+// List ddns record
+if ((!empty($_GET['domain'])) && (!empty($_GET['record_id']))) {
+    exec (VESTA_CMD."v-get-ddns-for-dns-record ".$user." ".$v_domain." ".$v_rec." ".$v_type." json", $output, $return_var);
+    $data = json_decode(implode('', $output), true);
+    unset($output);
+    
+    if ($data) {
+        
+        // Construct ddns id
+        $v_ddns_id = $v_type."-".$v_rec.".".$v_domain;
+    
+        // Parse ddns record
+        $v_ddns_key = $data[$v_ddns_id]['KEY']; 
+    }
 }
 
 // Check POST request for dns domain
@@ -134,6 +144,9 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['recor
         unset($output);
         $restart_dns = 'yes';
     }
+    
+    // Change DDNS key
+    // TODO: Stubbed out method.
 
     // Restart dns server
     if (!empty($restart_dns) && (empty($_SESSION['error_msg']))) {

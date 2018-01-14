@@ -16,6 +16,7 @@ record=$(idn -t --quiet -u "$3" )
 record=$(echo "$record" | tr '[:upper:]' '[:lower:]')
 rtype=$(echo "$4"| tr '[:lower:]' '[:upper:]')
 key=$5
+ddns_key=$key
 id="$rtype-$record.$domain"
 
 # Includes
@@ -28,7 +29,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '5' "$#" 'USER DOMAIN RECORD TYPE KEY'
-is_format_valid 'user' 'domain' 'record' 'rtype' 'key'
+is_format_valid 'user' 'domain' 'record' 'rtype' 'ddns_key'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"

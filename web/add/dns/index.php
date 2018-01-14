@@ -117,6 +117,8 @@ if (!empty($_POST['ok_rec'])) {
     $v_type = escapeshellarg($_POST['v_type']);
     $v_val = escapeshellarg($_POST['v_val']);
     $v_priority = escapeshellarg($_POST['v_priority']);
+    $v_ddns = escapeshellarg($_POST['v_ddns']);
+    $v_ddns_key = escapeshellarg($_POST['v_ddns_key']);
 
     // Add dns record
     if (empty($_SESSION['error_msg'])) {
@@ -126,6 +128,13 @@ if (!empty($_POST['ok_rec'])) {
         $v_type = $_POST['v_type'];
     }
 
+    // Add ddns record
+    if (empty($_SESSION['error_msg']) && !empty($v_ddns)) {
+        exec (VESTA_CMD."v-add-ddns-for-dns-record ".$user." ".$v_domain." ".$v_rec." ".$v_type." ".$v_ddns_key, $output, $return_var);
+        check_return_code($return_var,$output);
+        unset($output);
+    }
+    
     // Flush field values on success
     if (empty($_SESSION['error_msg'])) {
         $_SESSION['ok_msg'] = __('DNS_RECORD_CREATED_OK',htmlentities($_POST[v_rec]),htmlentities($_POST[v_domain]));
@@ -133,6 +142,8 @@ if (!empty($_POST['ok_rec'])) {
         unset($v_rec);
         unset($v_val);
         unset($v_priority);
+        unset($v_ddns);
+        unset($v_ddns_key);
     }
 }
 

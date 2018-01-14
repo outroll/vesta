@@ -768,6 +768,15 @@ is_password_format_valid() {
     fi
 }
 
+# Key validator
+is_key_format_valid() {
+    if [[ "$1" =~ [^0-9A-Za-z]+ ]]; then
+        check_result $E_INVALID "invalid key format :: $1"
+    elif [[ "${#1}" -lt '12' ]]; then
+        check_result $E_INVALID "invalid key length :: $1"
+    fi
+}
+
 # Format validation controller
 is_format_valid() {
     for arg_name in $*; do
@@ -806,6 +815,7 @@ is_format_valid() {
                 ip_status)      is_ip_status_format_valid "$arg" ;;
                 job)            is_int_format_valid "$arg" 'job' ;;
                 key)            is_user_format_valid "$arg" "$arg_name" ;;
+                ddns_key)       is_key_format_valid "$arg" "$arg_name" ;;
                 lname)          is_name_format_valid "$arg" "last name" ;;
                 malias)         is_user_format_valid "$arg" "$arg_name" ;;
                 max_db)         is_int_format_valid "$arg" 'max db';;
