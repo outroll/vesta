@@ -118,6 +118,7 @@ is_package_full() {
         WEB_ALIASES) used=$(echo $aliases |tr ',' '\n' |wc -l);;
         DNS_DOMAINS) used=$(wc -l $USER_DATA/dns.conf);;
         DNS_RECORDS) used=$(wc -l $USER_DATA/dns/$domain.conf);;
+        DDNS_RECORDS) used=$(wc -l $USER_DATA/ddns.conf);;
         MAIL_DOMAINS) used=$(wc -l $USER_DATA/mail.conf);;
         MAIL_ACCOUNTS) used=$(wc -l $USER_DATA/mail/$domain.conf);;
         DATABASES) used=$(wc -l $USER_DATA/db.conf);;

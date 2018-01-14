@@ -35,6 +35,7 @@ is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'dns' 'DOMAIN' "$domain"
 is_object_new "ddns" 'ID' "$id"
+is_package_full 'DDNS_RECORDS'
 
 
 #----------------------------------------------------------#

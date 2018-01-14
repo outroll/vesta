@@ -36,6 +36,7 @@ if (!empty($_POST['ok'])) {
     if (!isset($_POST['v_web_aliases'])) $errors[] = __('web aliases');
     if (!isset($_POST['v_dns_domains'])) $errors[] = __('dns domains');
     if (!isset($_POST['v_dns_records'])) $errors[] = __('dns records');
+    if (!isset($_POST['v_ddns_records'])) $errors[] = __('ddns records');
     if (!isset($_POST['v_mail_domains'])) $errors[] = __('mail domains');
     if (!isset($_POST['v_mail_accounts'])) $errors[] = __('mail accounts');
     if (!isset($_POST['v_databases'])) $errors[] = __('databases');
@@ -67,6 +68,7 @@ if (!empty($_POST['ok'])) {
     $v_web_aliases = escapeshellarg($_POST['v_web_aliases']);
     $v_dns_domains = escapeshellarg($_POST['v_dns_domains']);
     $v_dns_records = escapeshellarg($_POST['v_dns_records']);
+    $v_ddns_records = escapeshellarg($_POST['v_ddns_records']);
     $v_mail_domains = escapeshellarg($_POST['v_mail_domains']);
     $v_mail_accounts = escapeshellarg($_POST['v_mail_accounts']);
     $v_databases = escapeshellarg($_POST['v_databases']);
@@ -115,6 +117,7 @@ if (!empty($_POST['ok'])) {
         $pkg .= "WEB_ALIASES=".$v_web_aliases."\n";
         $pkg .= "DNS_DOMAINS=".$v_dns_domains."\n";
         $pkg .= "DNS_RECORDS=".$v_dns_records."\n";
+        $pkg .= "DDNS_RECORDS=".$v_ddns_records."\n";
         $pkg .= "MAIL_DOMAINS=".$v_mail_domains."\n";
         $pkg .= "MAIL_ACCOUNTS=".$v_mail_accounts."\n";
         $pkg .= "DATABASES=".$v_databases."\n";
@@ -191,6 +194,7 @@ if (empty($v_web_domains)) $v_web_domains = "'1'";
 if (empty($v_web_aliases)) $v_web_aliases = "'1'";
 if (empty($v_dns_domains)) $v_dns_domains = "'1'";
 if (empty($v_dns_records)) $v_dns_records = "'1'";
+if (empty($v_ddns_records)) $v_ddns_records = "'0'";
 if (empty($v_mail_domains)) $v_mail_domains = "'1'";
 if (empty($v_mail_accounts)) $v_mail_accounts = "'1'";
 if (empty($v_databases)) $v_databases = "'1'";

@@ -216,6 +216,17 @@
                             </tr>
                             <tr>
                                 <td class="vst-text input-label">
+                                    <?php print __('DDNS records');?>  <span class="optional">(<?=__('all domains')?>)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_ddns_records" value="<?=htmlentities(trim($v_ddns_records, "'"))?>">
+                                    <img id="unlim-dns-records" class="unlim-trigger" src="/images/unlim.png" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
                                     <?php print __('Mail Domains');?>
                                 </td>
                             </tr>
