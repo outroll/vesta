@@ -35,6 +35,7 @@ $config['plugins'] = array(
     'archive',
     'zipdownload',
     'password',
+    'managesieve'
 );
 
 $config['skin'] = 'larry';

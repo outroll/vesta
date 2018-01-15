@@ -28,7 +28,7 @@ if [ "$release" -eq 7 ]; then
     openssh-clients ImageMagick curl mc screen ftp zip unzip flex sqlite pcre
     sudo bc jwhois mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype
     fail2ban rsyslog iptables-services which vesta vesta-nginx vesta-php
-    vim-common expect vesta-ioncube vesta-softaculous"
+    vim-common expect vesta-ioncube vesta-softaculous dovecot-pigeonhole"
 else
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
     php php-common php-cli php-bcmath php-gd php-imap php-mbstring php-mcrypt
@@ -39,7 +39,7 @@ else
     ImageMagick curl mc screen ftp zip unzip flex sqlite pcre sudo bc jwhois
     mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype fail2ban
     which vesta vesta-nginx vesta-php vim-common expect vesta-ioncube
-    vesta-softaculous"
+    vesta-softaculous dovecot-pigeonhole"
 fi
 
 # Defining help function
@@ -1140,6 +1140,13 @@ if [ "$dovecot" = 'yes' ]; then
     tar -xzf dovecot.tar.gz
     rm -f dovecot.tar.gz
     chown -R root:root /etc/dovecot*
+    touch /var/log/{dovecot-lda-errors.log,dovecot-lda.log,dovecot-sieve-errors.log,dovecot-sieve.log}
+    chmod 660 /var/log/{dovecot-lda-errors.log,dovecot-lda.log,dovecot-sieve-errors.log,dovecot-sieve.log}
+    chown dovecot:mail /var/log/{dovecot-lda-errors.log,dovecot-lda.log,dovecot-sieve-errors.log,dovecot-sieve.log}
+    cd /etc/dovecot/sieve/
+    sievec default.sieve
+    sed -i 's/#postmaster_address\ =.*/postmaster_address\ =\ '$email'/g' /etc/dovecot/conf.d/10-master.conf
+    sed -i 's/#hostname\ =.*/hostname\ =\ '$servername'/g' /etc/dovecot/conf.d/10-master.conf
     chkconfig dovecot on
     service dovecot start
     check_result $? "dovecot start failed"
