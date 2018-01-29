@@ -77,20 +77,20 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
 
 // List ddns record
 if ((!empty($_GET['domain'])) && (!empty($_GET['record_id']))) {
-    exec (VESTA_CMD."v-get-ddns-for-dns-record ".$user." ".$v_domain." ".$v_rec." ".$v_type." json", $output, $return_var);
+    // Construct the ddns id
+    $v_ddns_id = $v_domain."-".$v_record_id;
+
+    // Getch ddns record
+    exec (VESTA_CMD."v-get-ddns ".$v_username." ".$v_ddns_id." json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
     unset($output);
-    
+
+    // Parse ddns record
     if ($data) {
-        
-        // Construct ddns id
-        $v_ddns_id = $v_type."-".$v_rec.".".$v_domain;
-    
-        // Parse ddns record
         $v_ddns_key = $data[$v_ddns_id]['KEY']; 
     }
 }
-
+       
 // Check POST request for dns domain
 if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['record_id']))) {
     $v_domain = escapeshellarg($_POST['v_domain']);
@@ -144,9 +144,6 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['recor
         unset($output);
         $restart_dns = 'yes';
     }
-    
-    // Change DDNS key
-    // TODO: Stubbed out method.
 
     // Restart dns server
     if (!empty($restart_dns) && (empty($_SESSION['error_msg']))) {
@@ -192,6 +189,32 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['reco
         check_return_code($return_var,$output);
         unset($output);
         $restart_dns = 'yes';
+    }
+
+    // Change ddns key
+    if (((!isset($_POST['v_ddns']) || ($v_ddns_key != $_POST['v_ddns_key']))) && (empty($_SESSION['error_msg']))) {
+        
+        // Delete key
+        if (!isset($_POST['v_ddns'])) {
+            exec (VESTA_CMD."v-delete-ddns ".$v_username." ".$v_domain." ".$v_record_id." false", $output, $return_var);
+            check_return_code($return_var,$output);
+            $v_ddns_key = '';
+            unset($output);
+            
+        // Add key
+        } elseif (empty($v_ddns_key)) {
+            $v_ddns_key = escapeshellarg($_POST['v_ddns_key']);
+            exec (VESTA_CMD."v-add-ddns ".$v_username." ".$v_domain." ".$v_record_id." ".$v_ddns_key, $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+            
+        // Update Key
+        } else {
+            $v_ddns_key = escapeshellarg($_POST['v_ddns_key']);
+            exec (VESTA_CMD."v-change-ddns-key ".$v_username." ".$v_domain." ".$v_record_id." ".$v_ddns_key, $output, $return_var);
+            check_return_code($return_var,$output);
+            unset($output);
+        }
     }
 
     // Restart dns server

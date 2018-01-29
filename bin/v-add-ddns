@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: delete ddns for dns record
-# options: USER DOMAIN RECORD TYPE
+# info: add ddns for dns record
+# options: USER DOMAIN RECORD_ID KEY
 #
-# The function for removing DDNS functionality from the DNS record.
+# The function for adding DDNS functionality to the DNS record.
 
 
 #----------------------------------------------------------#
@@ -12,11 +12,10 @@
 # Argument definition
 user=$1
 domain=$2
-domain_idn=$2
-record=$(idn -t --quiet -u "$3" )
-record=$(echo "$record" | tr '[:upper:]' '[:lower:]')
-rtype=$(echo "$4"| tr '[:lower:]' '[:upper:]')
-id="$rtype-$record.$domain"
+record_id=$3
+key=$4
+ddns_key=$key
+id="$domain-$record_id"
 
 # Includes
 source $VESTA/func/main.sh
@@ -27,22 +26,32 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '4' "$#" 'USER DOMAIN RECORD TYPE'
-is_format_valid 'user' 'domain' 'record' 'rtype'
+check_args '4' "$#" 'USER DOMAIN RECORD_ID KEY'
+is_format_valid 'user' 'domain' 'record_id' 'ddns_key'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'dns' 'DOMAIN' "$domain"
-is_object_valid "ddns" 'ID' "$id"
+is_object_valid "dns/$domain" 'ID' "$record_id"
+is_object_new "ddns" 'ID' "$id"
+is_package_full 'DDNS_RECORDS'
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-# Deleting ddns from ddns conf
-sed -i "/^ID='$id'/d" $USER_DATA/ddns.conf
+# Generating timestamp
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+# Adding ddns to ddns conf
+ddns_rec="ID='$id' DOMAIN='$domain' RECORD_ID='$record_id' KEY='$key'"
+ddns_rec="$ddns_rec TIME='$time' DATE='$date'"
+echo "$ddns_rec" >> $USER_DATA/ddns.conf
+chmod 660 $USER_DATA/ddns.conf
 
 
 #----------------------------------------------------------#
@@ -50,7 +59,7 @@ sed -i "/^ID='$id'/d" $USER_DATA/ddns.conf
 #----------------------------------------------------------#
 
 #Logging
-log_history "deleted ddns configuration for dns $rtype record $record on $domain"
+log_history "added ddns configuration for dns record $record_id on $domain"
 log_event "$OK" "$ARGUMENTS"
 
 exit

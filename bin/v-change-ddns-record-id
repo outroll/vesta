@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: change dns domain record id
-# options: USER DOMAIN ID NEWID [RESTART]
+# info: change ddns dns record id
+# options: USER DOMAIN ID NEWID
 #
-# The function for changing internal record id.
+# The function for changing the associated dns record id.
 
 
 #----------------------------------------------------------#
@@ -15,7 +15,8 @@ domain=$2
 domain_idn=$2
 id=$3
 newid=$4
-restart=$5
+ddns_id=$domain-$id
+new_ddns_id=$domain-$newid
 
 # Includes
 source $VESTA/func/main.sh
@@ -32,57 +33,32 @@ format_domain_idn
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '4' "$#" 'USER DOMAIN ID NEWID [RESTART]'
+check_args '4' "$#" 'USER DOMAIN ID NEWID'
 is_format_valid 'user' 'domain' 'id' 'newid'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'dns' 'DOMAIN' "$domain"
-is_object_valid "dns/$domain" 'ID' "$id"
-is_object_new "dns/$domain" 'ID' "$newid"
+is_object_valid "dns/$domain" 'ID' "$newid"
+is_object_valid "ddns" 'ID' "$ddns_id"
+is_object_new "ddns" 'ID' "$new_ddns_id"
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-# Change id
-sed -i "s/^ID='$id'/ID='$newid'/" $USER_DATA/dns/$domain.conf
-
-# Sorting records
-sort_dns_records
-
-# Updating zone
-if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
-    update_domain_serial
-    update_domain_zone
-fi
-
-# Updating dns-cluster queue
-if [ ! -z "$DNS_CLUSTER" ]; then
-    # Check for first sync
-    dlock=$(grep "domain $user $domain" $VESTA/data/queue/dns-cluster.pipe)
-    if [ -z "$dlock" ]; then
-        cmd="$BIN/v-add-remote-dns-domain $user $domain records"
-        echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
-    fi
-fi
-
-# Update related DDNS keys
-$BIN/v-change-ddns-record-id $user $domain $id $newid
+# Change ddns id and ddns dns record id
+sed -i "s/^ID='$ddns_id' DOMAIN='$domain' RECORD_ID='$id'/ID='$new_ddns_id' DOMAIN='$domain' RECORD_ID='$newid'/" $USER_DATA/ddns.conf
 
 
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-# Restarting named
-$BIN/v-restart-dns $restart
-check_result $? "DNS restart failed" >/dev/null
-
 # Logging
-log_history "changed dns record id on $domain"
+log_history "changed ddns dns record id for dns record $id (now $newid) on $domain"
 log_event "$OK" "$ARGUMENTS"
 
 exit

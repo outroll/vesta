@@ -26,8 +26,7 @@ json_list() {
         eval $str
         echo -n '    "'$ID'": {
         "DOMAIN": "'$DOMAIN'",
-        "RECORD": "'$RECORD'",
-        "TYPE": "'$TYPE'",
+        "RECORD_ID": "'$RECORD_ID'",
         "KEY": "'$KEY'",
         "TIME": "'$TIME'",
         "DATE": "'$DATE'"
@@ -45,11 +44,11 @@ json_list() {
 # SHELL list function
 shell_list() {
     IFS=$'\n'
-    echo "ID   DOMAIN   RECORD   TYPE   KEY   TIME   DATE"
-    echo "--   ------   ------   ----   ---   ----   ----"
+    echo "ID   DOMAIN   RECORD_ID   KEY   TIME   DATE"
+    echo "--   ------   ---------   ---   ----   ----"
     while read str; do
         eval $str
-        echo "$ID $DOMAIN $RECORD $TYPE $KEY $TIME $DATE"
+        echo "$ID $DOMAIN $RECORD_ID $KEY $TIME $DATE"
     done < <(cat $USER_DATA/ddns.conf)
 }
 
@@ -58,7 +57,7 @@ plain_list() {
     IFS=$'\n'
     while read str; do
         eval $str
-        echo -ne "$ID\t$DOMAIN\t$RECORD\t$TYPE\t$KEY\t$TIME\t"
+        echo -ne "$ID\t$DOMAIN\t$RECORD_ID\t$KEY\t$TIME\t"
         echo -e "$DATE"
     done < <(cat $USER_DATA/ddns.conf)
 }
@@ -66,10 +65,10 @@ plain_list() {
 # CSV list function
 csv_list() {
     IFS=$'\n'
-    echo "ID,DOMAIN,RECORD,TYPE,KEY,TIME,DATE"
+    echo "ID,DOMAIN,RECORD_ID,KEY,TIME,DATE"
     while read str; do
         eval $str
-        echo "$ID,$DOMAIN,$RECORD,$TYPE,$KEY,$TIME,$DATE"
+        echo "$ID,$DOMAIN,$RECORD_ID,$KEY,$TIME,$DATE"
     done < <(cat $USER_DATA/ddns.conf)
 }
 

@@ -64,6 +64,9 @@ if [ ! -z "$DNS_CLUSTER" ]; then
     fi
 fi
 
+# Delete related DDNS keys
+$BIN/v-delete-ddns-for-dns-record $user $domain_idn $id false
+
 
 #----------------------------------------------------------#
 #                       Vesta                              #

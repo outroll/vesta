@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: authenticate ddns key
-# options: USER DOMAIN RECORD TYPE KEY [FORMAT]
+# options: USER ID KEY [FORMAT]
 #
 # The function for authenticating a DDNS key for a DNS record.
 
@@ -11,14 +11,12 @@
 
 # Argument definition
 user=$1
-domain=$2
-record=$(idn -t --quiet -u "$3" )
-record=$(echo "$record" | tr '[:upper:]' '[:lower:]')
-rtype=$(echo "$4"| tr '[:lower:]' '[:upper:]')
-key=$5
-format=${6-shell}
-id="$rtype-$record.$domain"
+id=$2
+key=$3
+format=${4-shell}
 valid='false'
+domain=''
+record_id=''
 
 # Includes
 source $VESTA/func/main.sh
@@ -29,45 +27,59 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '5' "$#" 'USER DOMAIN RECORD TYPE KEY [FORMAT]'
-is_format_valid 'user' 'domain' 'record' 'rtype' 'key'
-is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
-is_object_valid 'user' 'USER' "$user"
-is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'dns' 'DOMAIN' "$domain"
-is_object_unsuspended 'dns' 'DOMAIN' "$domain"
-is_object_valid "ddns" 'ID' "$id"
+check_args '3' "$#" 'USER DDNS_ID KEY [FORMAT]'
 
-# JSON authentication output function
+# JSON list function
 json_auth() {
     IFS=$'\n'
+    i=1
+    objects=$(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'" |wc -l)
     echo "{"
-        echo '    "'$id'": {
-        "KEY": "'$key'",
-        "VALID": '$valid'
+    while read str; do
+        eval $str
+        echo -n '    "'$ID'": {
+        "DOMAIN": "'$DOMAIN'",
+        "RECORD_ID": "'$RECORD_ID'",
+        "VALID": true
     }'
-echo '}'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done < <(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'")
+    echo '}'
 }
 
 # SHELL authentication output function
 shell_auth() {
     IFS=$'\n'
-    echo "ID   KEY   VALID"
-    echo "--   ---   -----"
-    echo "$id $key $valid"
+    echo "ID   DOMAIN   RECORD_ID   VALID"
+    echo "--   ------   ---------   -----"
+    while read str; do
+        eval $str
+        echo "$ID $DOMAIN $RECORD_ID true"
+    done < <(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'")
 }
 
 # PLAIN authentication output function
 plain_auth() {
     IFS=$'\n'
-    echo -e "$id\t$key\t$valid"
+    while read str; do
+        eval $str
+        echo -e "$ID\t$DOMAIN\t$RECORD_ID\ttrue"
+    done < <(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'")
 }
 
 # CSV authentication output function
 csv_auth() {
     IFS=$'\n'
-    echo "ID,KEY,VALID"
-    echo "$id,$key,$valid"
+    echo "ID,DOMAIN,RECORD_ID,VALID"
+    while read str; do
+        eval $str
+        echo "$ID,$DOMAIN,$RECORD_ID,true"
+    done < <(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'")
 }
 
 
@@ -76,10 +88,10 @@ csv_auth() {
 #----------------------------------------------------------#
 
 # Authenticate DDNS key
-result=$(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'" | wc -l)
-if [ "$result" == "1" ]; then
-    valid="true";
-fi
+#result=$(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'" | wc -l)
+#if [ "$result" == "1" ]; then
+#    valid="true";
+#fi
 
 # Listing data
 case $format in
@@ -94,7 +106,7 @@ esac
 #----------------------------------------------------------#
 
 #Logging
-log_history "authenticated ddns key for dns $rtype record $record on $domain"
+log_history "attempted authentication of ddns key for dns record $record_id on $domain authentication successful $valid"
 log_event "$OK" "$ARGUMENTS"
 
 exit

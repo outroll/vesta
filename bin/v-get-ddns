@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: get ddns for dns record
-# options: USER DOMAIN RECORD TYPE [FORMAT]
+# options: USER ID [FORMAT]
 #
 # The function for obtaining the DDNS configuration for a DNS record.
 
@@ -11,13 +11,8 @@
 
 # Argument definition
 user=$1
-domain=${2-shell}
-domain_idn=$2
-record=$(idn -t --quiet -u "$3" )
-record=$(echo "$record" | tr '[:upper:]' '[:lower:]')
-rtype=$(echo "$4"| tr '[:lower:]' '[:upper:]')
-format=${5-shell}
-id="$rtype-$record.$domain"
+id=$2
+format=${3-shell}
 
 # Includes
 source $VESTA/func/main.sh
@@ -33,8 +28,7 @@ json_list() {
         eval $str
         echo -n '    "'$ID'": {
         "DOMAIN": "'$DOMAIN'",
-        "RECORD": "'$RECORD'",
-        "TYPE": "'$TYPE'",
+        "RECORD_ID": "'$RECORD_ID'",
         "KEY": "'$KEY'",
         "TIME": "'$TIME'",
         "DATE": "'$DATE'"
@@ -52,11 +46,11 @@ json_list() {
 # SHELL list function
 shell_list() {
     IFS=$'\n'
-    echo "ID   DOMAIN   RECORD   TYPE   KEY   TIME   DATE"
-    echo "--   ------   ------   ----   ---   ----   ----"
+    echo "ID   DOMAIN   RECORD_ID   KEY   TIME   DATE"
+    echo "--   ------   ---------   ---   ----   ----"
     while read str; do
         eval $str
-        echo "$ID $DOMAIN $RECORD $TYPE $KEY $TIME $DATE"
+        echo "$ID $DOMAIN $RECORD_ID $KEY $TIME $DATE"
     done < <(grep "ID='$id'" $USER_DATA/ddns.conf)
 }
 
@@ -65,7 +59,7 @@ plain_list() {
     IFS=$'\n'
     while read str; do
         eval $str
-        echo -ne "$ID\t$DOMAIN\t$RECORD\t$TYPE\t$KEY\t$TIME\t"
+        echo -ne "$ID\t$DOMAIN\t$RECORD_ID\t$KEY\t$TIME\t"
         echo -e "$DATE"
     done < <(grep "ID='$id'" $USER_DATA/ddns.conf)
 }
@@ -73,10 +67,10 @@ plain_list() {
 # CSV list function
 csv_list() {
     IFS=$'\n'
-    echo "ID,DOMAIN,RECORD,TYPE,KEY,TIME,DATE"
+    echo "ID,DOMAIN,RECORD_ID,KEY,TIME,DATE"
     while read str; do
         eval $str
-        echo "$ID,$DOMAIN,$RECORD,$TYPE,$KEY,$TIME,$DATE"
+        echo "$ID,$DOMAIN,$RECORD_ID,$KEY,$TIME,$DATE"
     done < <(grep "ID='$id'" $USER_DATA/ddns.conf)
 }
 
@@ -85,13 +79,10 @@ csv_list() {
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '4' "$#" 'USER DOMAIN RECORD TYPE [FORMAT]'
-is_format_valid 'user' 'domain' 'record' 'rtype'
+check_args '2' "$#" 'USER ID [FORMAT]'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'dns' 'DOMAIN' "$domain"
-is_object_unsuspended 'dns' 'DOMAIN' "$domain"
 is_object_valid "ddns" 'ID' "$id"
 
 

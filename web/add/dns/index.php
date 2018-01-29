@@ -127,10 +127,19 @@ if (!empty($_POST['ok_rec'])) {
         unset($output);
         $v_type = $_POST['v_type'];
     }
-
+    
     // Add ddns record
     if (empty($_SESSION['error_msg']) && !empty($v_ddns)) {
-        exec (VESTA_CMD."v-add-ddns-for-dns-record ".$user." ".$v_domain." ".$v_rec." ".$v_type." ".$v_ddns_key, $output, $return_var);
+        
+        // Get newly created dns record
+        exec (VESTA_CMD."v-list-dns-records ".$user." ".$v_domain." json", $output, $return_var);
+        check_return_code($return_var,$output);
+        $dns_records = json_decode(implode('', $output), true);
+        $dns_record = end($dns_records);
+        unset($output);
+
+        // Create ddns record
+        exec (VESTA_CMD."v-add-ddns ".$user." ".$v_domain." ".$dns_record['ID']." ".$v_ddns_key, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
