@@ -1,9 +1,4 @@
 <?php
-
-// TODO: accept both POST and GET methods.
-// TODO: Create method to authenticate the DDNS key and update DNS records here.
-//system(), exec(), passthru() and backticks. None of them protects you from shell injection by default. You have to use escapeshellarg() or escapeshellcmd().
-
 // Main include
 include($_SERVER['DOCUMENT_ROOT']."/api/index.php");
 
