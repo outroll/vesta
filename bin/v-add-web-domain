@@ -90,8 +90,8 @@ chown root:$user /var/log/$WEB_SYSTEM/domains/$domain.* $conf
 chmod 640 /var/log/$WEB_SYSTEM/domains/$domain.*
 chmod 751 $HOMEDIR/$user/web/$domain $HOMEDIR/$user/web/$domain/*
 chmod 551 $HOMEDIR/$user/web/$domain/stats $HOMEDIR/$user/web/$domain/logs
-chmod 644 $HOMEDIR/$user/web/$domain/public_*html/*
-chmod -R a+X $HOMEDIR/$user/web/$domain/public_*html/
+find $HOMEDIR/$user/web/$domain/public_*html/ -type f -exec chmod 644 {} \;
+find $HOMEDIR/$user/web/$domain/public_*html -mindepth 1 -type d -exec chmod 755 {} \;
 
 # Addding PHP-FPM backend
 if [ ! -z "$WEB_BACKEND" ]; then
