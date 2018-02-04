@@ -14,20 +14,11 @@ user=$1
 id=$2
 key=$3
 format=${4-shell}
-valid='false'
-domain=''
-record_id=''
+valid='was not'
 
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
-
-
-#----------------------------------------------------------#
-#                    Verifications                         #
-#----------------------------------------------------------#
-
-check_args '3' "$#" 'USER DDNS_ID KEY [FORMAT]'
 
 # JSON list function
 json_auth() {
@@ -84,14 +75,22 @@ csv_auth() {
 
 
 #----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER ID KEY [FORMAT]'
+# Intentionally do not validate any of this for security purposes.
+
+
+#----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
 # Authenticate DDNS key
-#result=$(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'" | wc -l)
-#if [ "$result" == "1" ]; then
-#    valid="true";
-#fi
+result=$(grep "ID='$id'" $USER_DATA/ddns.conf | grep "KEY='$key'" | wc -l)
+if [ "$result" == "1" ]; then
+    valid="was";
+fi
 
 # Listing data
 case $format in
@@ -106,7 +105,7 @@ esac
 #----------------------------------------------------------#
 
 #Logging
-log_history "attempted authentication of ddns key for dns record $record_id on $domain authentication successful $valid"
+log_history "attempted authentication for ddns $id $valid successful "
 log_event "$OK" "$ARGUMENTS"
 
 exit

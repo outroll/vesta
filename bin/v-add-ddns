@@ -1,8 +1,8 @@
 #!/bin/bash
 # info: add ddns for dns record
-# options: USER DOMAIN RECORD_ID KEY
+# options: USER DOMAIN RECORD_ID KEY [ID]
 #
-# The function for adding DDNS functionality to the DNS record.
+# The function for adding DDNS functionality to a DNS record.
 
 
 #----------------------------------------------------------#
@@ -15,10 +15,11 @@ domain=$2
 record_id=$3
 key=$4
 ddns_key=$key
-id="$domain-$record_id"
+id=''
 
 # Includes
 source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -26,7 +27,7 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '4' "$#" 'USER DOMAIN RECORD_ID KEY'
+check_args '4' "$#" 'USER DOMAIN RECORD_ID KEY [ID]'
 is_format_valid 'user' 'domain' 'record_id' 'ddns_key'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
@@ -34,6 +35,10 @@ is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'dns' 'DOMAIN' "$domain"
 is_object_valid "dns/$domain" 'ID' "$record_id"
+is_not_empty 'key' "$ddns_key"
+is_ddns_unique
+get_next_ddnsrecord
+is_format_valid 'id'
 is_object_new "ddns" 'ID' "$id"
 is_package_full 'DDNS_RECORDS'
 

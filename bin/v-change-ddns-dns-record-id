@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: change ddns key
-# options: USER ID KEY
+# info: change ddns dns record id
+# options: USER ID NEWID
 #
-# The function for changing DDNS record key.
+# The function for changing the ddns dns record id.
 
 
 #----------------------------------------------------------#
@@ -12,56 +12,49 @@
 # Argument definition
 user=$1
 id=$2
-key=$3
-ddns_key=$key
+newid=$3
 
 # Includes
 source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
-
-# Get associated DDNS variables
-domain=$($BIN/v-get-ddns $user $id plain | cut -f2 )
-record_id=$($BIN/v-get-ddns $user $id plain | cut -f3 )
 
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '3' "$#" 'USER ID KEY'
-is_format_valid 'user' 'id' 'ddns_key'
+check_args '3' "$#" 'USER ID NEWID'
+is_format_valid 'user' 'id' 'newid'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid "ddns" 'ID' "$id"
-is_not_empty 'key' "$ddns_key"
+
+# Get additional DDNS variables for verification
+domain=$($BIN/v-get-ddns $user $id plain | cut -f2 )
+record_id=$($BIN/v-get-ddns $user $id plain | cut -f3 )
+
+is_object_valid 'dns' 'DOMAIN' "$domain"
+is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+is_object_valid "dns/$domain" 'ID' "$newid"
+
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-# Deleting ddns from ddns conf
-sed -i "/^ID='$id'/d" $USER_DATA/ddns.conf
-
-# Generating timestamp
-time_n_date=$(date +'%T %F')
-time=$(echo "$time_n_date" |cut -f 1 -d \ )
-date=$(echo "$time_n_date" |cut -f 2 -d \ )
-
-# Adding ddns to ddns conf
-ddns_rec="ID='$id' DOMAIN='$domain' RECORD_ID='$record_id' KEY='$key'"
-ddns_rec="$ddns_rec TIME='$time' DATE='$date'"
-echo "$ddns_rec" >> $USER_DATA/ddns.conf
-chmod 660 $USER_DATA/ddns.conf
+# Change ddns id and ddns dns record id
+sed -i "s/^ID='$id' DOMAIN='$domain' RECORD_ID='$record_id'/ID='$id' DOMAIN='$domain' RECORD_ID='$newid'/" $USER_DATA/ddns.conf
 
 
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-#Logging
-log_history "updated ddns key for dns record $record_id on $domain"
+# Logging
+log_history "changed ddns dns record id for dns record $id (now $newid) on $domain"
 log_event "$OK" "$ARGUMENTS"
 
 exit

@@ -430,6 +430,32 @@ sort_dns_records() {
     mv -f $conf.tmp $conf
 }
 
+# Get next DDNS record ID
+get_next_ddnsrecord(){
+    if [ -z "$id" ]; then
+        curr_str=$(grep "ID=" $USER_DATA/ddns.conf | cut -f 2 -d \' |\
+            sort -n|tail -n1)
+        id="$((curr_str +1))"
+    fi
+}
+
+# Sort DDNS records
+sort_ddns_records() {
+    conf="$USER_DATA/ddns.conf"
+    cat $conf |sort -n -k 2 -t \' >$conf.tmp
+    mv -f $conf.tmp $conf
+}
+
+# Check if record is unique
+is_ddns_unique() {
+    records=$(grep "DOMAIN='$domain'" $USER_DATA/ddns.conf | grep "RECORD_ID='$record_id'" | wc -l)
+    if [ ! "$records" = '0' ]; then
+            echo "Error: only one DDNS configuration can exist for a given dns record"
+            log_event "$E_INVALID" "$ARGUMENTS"
+            exit $E_INVALID
+    fi
+}
+
 # Check if this is a last record
 is_dns_record_critical() {
     str=$(grep "ID='$id'" $USER_DATA/dns/$domain.conf)

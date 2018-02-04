@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: change ddns dns record id
-# options: USER DOMAIN ID NEWID
+# info: change dns domain record by ddns
+# options: USER ID VALUE
 #
-# The function for changing the associated dns record id.
+# The function for changing DNS record with DDNS id.
 
 
 #----------------------------------------------------------#
@@ -11,54 +11,62 @@
 
 # Argument definition
 user=$1
-domain=$2
-domain_idn=$2
-id=$3
-newid=$4
-ddns_id=$domain-$id
-new_ddns_id=$domain-$newid
+id=$2
+dvalue=$3
 
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
-# Additional argument formatting
-format_domain
-format_domain_idn
-# TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
-
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '4' "$#" 'USER DOMAIN ID NEWID'
-is_format_valid 'user' 'domain' 'id' 'newid'
+check_args '3' "$#" 'USER ID VALUE'
+is_format_valid 'user' 'id' 'dvalue'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
+is_object_valid "ddns" 'ID' "$id"
+
+# Get additional DDNS variables for verification
+domain=$($BIN/v-get-ddns $user $id plain | cut -f2 )
+record_id=$($BIN/v-get-ddns $user $id plain | cut -f3 )
+
 is_object_valid 'dns' 'DOMAIN' "$domain"
 is_object_unsuspended 'dns' 'DOMAIN' "$domain"
-is_object_valid "dns/$domain" 'ID' "$newid"
-is_object_valid "ddns" 'ID' "$ddns_id"
-is_object_new "ddns" 'ID' "$new_ddns_id"
+is_object_valid "dns/$domain" 'ID' "$record_id"
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-# Change ddns id and ddns dns record id
-sed -i "s/^ID='$ddns_id' DOMAIN='$domain' RECORD_ID='$id'/ID='$new_ddns_id' DOMAIN='$domain' RECORD_ID='$newid'/" $USER_DATA/ddns.conf
+# Get the current value of the record
+current_value=$( $BIN/v-list-dns-records $user $domain plain | awk -F"\t" '$1 == "'$record_id'" { print $5 }' )
+
+# Stop running if the current value is equal to the new value
+if [ "$current_value" == "$dvalue" ]; then
+    echo "No changes to the DNS were needed"
+    exit
+fi
+
+# Change DNS record
+$BIN/v-change-dns-record $user $domain $record_id $dvalue
 
 
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
+# Restarting named
+$BIN/v-restart-dns
+check_result $? "DNS restart failed" >/dev/null
+
 # Logging
-log_history "changed ddns dns record id for dns record $id (now $newid) on $domain"
+log_history "ddns service successfully triggered dns record $record_id on $domain to change to $dvalue"
 log_event "$OK" "$ARGUMENTS"
 
 exit

@@ -45,6 +45,10 @@ is_dns_record_critical
 #                       Action                             #
 #----------------------------------------------------------#
 
+# Delete related DDNS key if applicable
+ddns_id=$($BIN/v-get-ddns-for-dns-record $user $domain_idn $id plain false | cut -f1 )
+$BIN/v-delete-ddns $user $ddns_id false
+
 # Deleting record
 sed -i "/^ID='$id'/d" $USER_DATA/dns/$domain.conf
 
@@ -63,9 +67,6 @@ if [ ! -z "$DNS_CLUSTER" ]; then
         echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
     fi
 fi
-
-# Delete related DDNS keys
-$BIN/v-delete-ddns-for-dns-record $user $domain_idn $id false
 
 
 #----------------------------------------------------------#

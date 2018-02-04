@@ -499,6 +499,13 @@ sync_cron_jobs() {
     chmod 600 $crontab
 }
 
+# Provided argument is not empty
+is_not_empty() {
+    if [ -z "$2" ]; then
+        check_result $E_INVALID "$1 is empty"
+    fi
+}
+
 # User format validator
 is_user_format_valid() {
     if [ ${#1} -eq 1 ]; then
@@ -797,6 +804,7 @@ is_format_valid() {
                 day)            is_cron_format_valid "$arg" $arg_name ;;
                 dbpass)         is_password_format_valid "$arg" ;;
                 dbuser)         is_dbuser_format_valid "$arg" 'dbuser';;
+                ddns_key)       is_key_format_valid "$arg" "$arg_name" ;;
                 dkim)           is_boolean_format_valid "$arg" 'dkim' ;;
                 dkim_size)      is_int_format_valid "$arg" ;;
                 domain)         is_domain_format_valid "$arg" ;;
@@ -810,13 +818,11 @@ is_format_valid() {
                 host)           is_object_format_valid "$arg" "$arg_name" ;;
                 hour)           is_cron_format_valid "$arg" $arg_name ;;
                 id)             is_int_format_valid "$arg" 'id' ;;
-                record_id)      is_int_format_valid "$arg" 'id' ;;
                 ip)             is_ip_format_valid "$arg" ;;
                 ip_name)        is_domain_format_valid "$arg" 'IP name';;
                 ip_status)      is_ip_status_format_valid "$arg" ;;
                 job)            is_int_format_valid "$arg" 'job' ;;
                 key)            is_user_format_valid "$arg" "$arg_name" ;;
-                ddns_key)       is_key_format_valid "$arg" "$arg_name" ;;
                 lname)          is_name_format_valid "$arg" "last name" ;;
                 malias)         is_user_format_valid "$arg" "$arg_name" ;;
                 max_db)         is_int_format_valid "$arg" 'max db';;
@@ -842,6 +848,7 @@ is_format_valid() {
                 proxy_ext)      is_extention_format_valid "$arg" ;;
                 quota)          is_int_format_valid "$arg" 'quota' ;;
                 record)         is_common_format_valid "$arg" 'record';;
+                record_id)      is_int_format_valid "$arg" 'id' ;;
                 restart)        is_boolean_format_valid "$arg" 'restart' ;;
                 rtype)          is_dns_type_format_valid "$arg" ;;
                 rule)           is_int_format_valid "$arg" "rule id" ;;

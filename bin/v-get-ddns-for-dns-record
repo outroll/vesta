@@ -1,8 +1,8 @@
 #!/bin/bash
 # info: get ddns for dns record
-# options: USER ID [FORMAT]
+# options: USER DOMAIN ID [FORMAT] [VERIFY]
 #
-# The function for obtaining a DDNS configuration.
+# The function for obtaining the DDNS configuration for a DNS record.
 
 
 #----------------------------------------------------------#
@@ -11,8 +11,10 @@
 
 # Argument definition
 user=$1
-id=$2
-format=${3-shell}
+domain=$2
+record_id=$3
+format=${4-shell}
+verify=${5-true}
 
 # Includes
 source $VESTA/func/main.sh
@@ -22,7 +24,7 @@ source $VESTA/conf/vesta.conf
 json_list() {
     IFS=$'\n'
     i=1
-    objects=$(grep "ID='$id'" $USER_DATA/ddns.conf |wc -l)
+    objects=$(grep "DOMAIN='$domain'" $USER_DATA/ddns.conf | grep "RECORD_ID='$record_id'" |wc -l)
     echo "{"
     while read str; do
         eval $str
@@ -39,7 +41,7 @@ json_list() {
             echo
         fi
         ((i++))
-    done < <(grep "ID='$id'" $USER_DATA/ddns.conf)
+    done < <(grep "DOMAIN='$domain'" $USER_DATA/ddns.conf | grep "RECORD_ID='$record_id'" )
     echo '}'
 }
 
@@ -51,7 +53,7 @@ shell_list() {
     while read str; do
         eval $str
         echo "$ID $DOMAIN $RECORD_ID $KEY $TIME $DATE"
-    done < <(grep "ID='$id'" $USER_DATA/ddns.conf)
+    done < <(grep "DOMAIN='$domain'" $USER_DATA/ddns.conf | grep "RECORD_ID='$record_id'" )
 }
 
 # PLAIN list function
@@ -61,7 +63,7 @@ plain_list() {
         eval $str
         echo -ne "$ID\t$DOMAIN\t$RECORD_ID\t$KEY\t$TIME\t"
         echo -e "$DATE"
-    done < <(grep "ID='$id'" $USER_DATA/ddns.conf)
+    done < <(grep "DOMAIN='$domain'" $USER_DATA/ddns.conf | grep "RECORD_ID='$record_id'" )
 }
 
 # CSV list function
@@ -71,7 +73,7 @@ csv_list() {
     while read str; do
         eval $str
         echo "$ID,$DOMAIN,$RECORD_ID,$KEY,$TIME,$DATE"
-    done < <(grep "ID='$id'" $USER_DATA/ddns.conf)
+    done < <(grep "DOMAIN='$domain'" $USER_DATA/ddns.conf | grep "RECORD_ID='$record_id'" )
 }
 
 
@@ -79,12 +81,16 @@ csv_list() {
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '2' "$#" 'USER ID [FORMAT]'
-is_format_valid 'user' 'id'
+check_args '3' "$#" 'USER DOMAIN RECORD_ID [FORMAT] [VERIFY]'
+is_format_valid 'user' 'domain' 'record_id'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid "ddns" 'ID' "$id"
+if [ "$verify" = "true" ]; then
+    is_object_valid 'dns' 'DOMAIN' "$domain"
+    is_object_unsuspended 'dns' 'DOMAIN' "$domain"
+    is_object_valid "dns/$domain" 'ID' "$record_id"
+fi
 
 
 #----------------------------------------------------------#

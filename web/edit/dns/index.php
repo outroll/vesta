@@ -77,16 +77,16 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
 
 // List ddns record
 if ((!empty($_GET['domain'])) && (!empty($_GET['record_id']))) {
-    // Construct the ddns id
-    $v_ddns_id = $v_domain."-".$v_record_id;
 
-    // Getch ddns record
-    exec (VESTA_CMD."v-get-ddns ".$v_username." ".$v_ddns_id." json", $output, $return_var);
+    // Get ddns record
+    exec (VESTA_CMD."v-get-ddns-for-dns-record ".$v_username." ".$v_domain." ".$v_record_id." json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
     unset($output);
-
+    
     // Parse ddns record
     if ($data) {
+        reset($data);
+        $v_ddns_id = key($data);
         $v_ddns_key = $data[$v_ddns_id]['KEY']; 
     }
 }
@@ -160,6 +160,24 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['recor
 
 // Check POST request for dns record
 if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['record_id']))) {
+    
+    // Check empty fields
+    if (empty($_POST['v_domain'])) $errors[] = 'domain';
+    if (empty($_POST['v_rec'])) $errors[] = 'record';
+    if (empty($_POST['v_type'])) $errors[] = 'type';
+    if (empty($_POST['v_val'])) $errors[] = 'value';
+    if ($_POST['v_ddns'] && empty($_POST['v_ddns_key'])) $errors[] = 'ddns key';
+    if (!empty($errors[0])) {
+        foreach ($errors as $i => $error) {
+            if ( $i == 0 ) {
+                $error_msg = $error;
+            } else {
+                $error_msg = $error_msg.", ".$error;
+            }
+        }
+        $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
+    }
+    if ($_POST['v_ddns'] && strlen($_POST['v_ddns_key']) < 12 ) $_SESSION['error_msg'] = 'Field "ddns key" can not be less than 12 characters.';
 
     // Check token
     if ((!isset($_POST['token'])) || ($_SESSION['token'] != $_POST['token'])) {
@@ -196,7 +214,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['reco
         
         // Delete key
         if (!isset($_POST['v_ddns'])) {
-            exec (VESTA_CMD."v-delete-ddns ".$v_username." ".$v_domain." ".$v_record_id." false", $output, $return_var);
+            exec (VESTA_CMD."v-delete-ddns ".$v_username." ".$v_ddns_id." false", $output, $return_var);
             check_return_code($return_var,$output);
             $v_ddns_key = '';
             unset($output);
@@ -211,7 +229,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['reco
         // Update Key
         } else {
             $v_ddns_key = escapeshellarg($_POST['v_ddns_key']);
-            exec (VESTA_CMD."v-change-ddns-key ".$v_username." ".$v_domain." ".$v_record_id." ".$v_ddns_key, $output, $return_var);
+            exec (VESTA_CMD."v-change-ddns-key ".$v_username." ".$v_ddns_id." ".$v_ddns_key, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
         }

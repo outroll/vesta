@@ -69,8 +69,11 @@ if [ ! -z "$DNS_CLUSTER" ]; then
     fi
 fi
 
-# Update related DDNS keys
-$BIN/v-change-ddns-record-id $user $domain $id $newid
+# Change related DDNS key if applicable
+ddns_id=$($BIN/v-get-ddns-for-dns-record $user $domain_idn $id plain false | cut -f1 )
+if [ ! -z "$ddns_id" ]; then
+    $BIN/v-change-ddns-dns-record-id $user $ddns_id $newid false
+fi
 
 
 #----------------------------------------------------------#

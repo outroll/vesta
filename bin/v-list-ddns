@@ -2,7 +2,7 @@
 # info: list ddns
 # options: USER [FORMAT]
 #
-# The function for obtaining the list of all user's DDNS configuration.
+# The function for obtaining the list of all DDNS configurations for a user.
 
 
 #----------------------------------------------------------#

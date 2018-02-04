@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: delete ddns for dns record
-# options: USER DOMAIN RECORD_ID [VALIDATE]
+# options: USER ID [VERIFY]
 #
 # The function for removing DDNS functionality from the DNS record.
 
@@ -11,10 +11,8 @@
 
 # Argument definition
 user=$1
-domain=$2
-record_id=$3
-id="$domain-$record_id"
-validate=${4-true}
+id=$2
+verify=${3-true}
 
 # Includes
 source $VESTA/func/main.sh
@@ -25,12 +23,12 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '3' "$#" 'USER DOMAIN RECORD_ID [VALIDATE]'
-is_format_valid 'user' 'domain' 'record_id'
+check_args '2' "$#" 'USER ID [VERIFY]'
+is_format_valid 'user' 'id'
 is_system_enabled "$DNS_SYSTEM" 'DNS_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-if [ $validate = "true" ]; then
+if [ "$verify" = "true" ]; then
    is_object_valid "ddns" 'ID' "$id"
 fi
 

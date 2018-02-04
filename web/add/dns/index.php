@@ -100,6 +100,7 @@ if (!empty($_POST['ok_rec'])) {
     if (empty($_POST['v_rec'])) $errors[] = 'record';
     if (empty($_POST['v_type'])) $errors[] = 'type';
     if (empty($_POST['v_val'])) $errors[] = 'value';
+    if ($_POST['v_ddns'] && empty($_POST['v_ddns_key'])) $errors[] = 'ddns key';
     if (!empty($errors[0])) {
         foreach ($errors as $i => $error) {
             if ( $i == 0 ) {
@@ -110,6 +111,7 @@ if (!empty($_POST['ok_rec'])) {
         }
         $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
     }
+    if ($_POST['v_ddns'] && strlen($_POST['v_ddns_key']) < 12 ) $_SESSION['error_msg'] = 'Field "ddns key" can not be less than 12 characters.';
 
     // Protect input
     $v_domain = escapeshellarg($_POST['v_domain']);
@@ -117,9 +119,7 @@ if (!empty($_POST['ok_rec'])) {
     $v_type = escapeshellarg($_POST['v_type']);
     $v_val = escapeshellarg($_POST['v_val']);
     $v_priority = escapeshellarg($_POST['v_priority']);
-    $v_ddns = escapeshellarg($_POST['v_ddns']);
-    $v_ddns_key = escapeshellarg($_POST['v_ddns_key']);
-
+    
     // Add dns record
     if (empty($_SESSION['error_msg'])) {
         exec (VESTA_CMD."v-add-dns-record ".$user." ".$v_domain." ".$v_rec." ".$v_type." ".$v_val." ".$v_priority, $output, $return_var);
@@ -129,7 +129,9 @@ if (!empty($_POST['ok_rec'])) {
     }
     
     // Add ddns record
-    if (empty($_SESSION['error_msg']) && !empty($v_ddns)) {
+    if (empty($_SESSION['error_msg']) && isset($_POST['v_ddns'])) {
+        
+        $v_ddns_key = escapeshellarg($_POST['v_ddns_key']);
         
         // Get newly created dns record
         exec (VESTA_CMD."v-list-dns-records ".$user." ".$v_domain." json", $output, $return_var);

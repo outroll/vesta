@@ -53,7 +53,7 @@ if (!$data) {
 }
 
 // Get DDNS id.
-$id = key($data);
+$id = escapeshellarg(key($data));
 
 // Get IP address of remote system
 $ip_address = $_SERVER['REMOTE_ADDR'];
@@ -62,20 +62,10 @@ if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
 }
 
 // Sanatize variables
-$ip_address = escapeshellarg($ip_address);
-$domain = escapeshellarg($data[$id]['DOMAIN']);
-$record_id = escapeshellarg($data[$id]['RECORD_ID']);
-$new_value = escapeshellarg($ip_address);
+$new_ip = escapeshellarg($ip_address);
 
 // Change DNS record
-exec (VESTA_CMD."v-change-dns-record ".$user." ".$domain." ".$record_id." ".$new_value, $output, $return_var);
-if ($debugger) {
-    print_r($output);
-}
-unset($output);
-
-// Restart DNS server
-exec (VESTA_CMD."v-restart-dns", $output, $return_var);
+exec (VESTA_CMD."v-change-dns-record-by-ddns ".$user." ". $id ." ".$new_ip, $output, $return_var);
 if ($debugger) {
     print_r($output);
 }
@@ -83,6 +73,6 @@ unset($output);
 
 // Output success message.
 if ($debugger) {
-    echo 'Success! Set record to ip address: ' . $ip_address;
+    echo 'Complete! Attempted to set set record to ip address: ' . $new_ip;
     echo '</pre>';
 }
