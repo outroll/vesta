@@ -265,9 +265,6 @@ if [ ! -z "$DNS_SYSTEM" ] && [ "$DNS" != '*' ]; then
     fi
 
     # DDNS
-
-##############################################################################
-
     echo -e "\n-- DDNS --" |tee -a $BACKUP/$user.log
     mkdir $tmpdir/ddns/
 
@@ -283,9 +280,6 @@ if [ ! -z "$DNS_SYSTEM" ] && [ "$DNS" != '*' ]; then
         echo -e "$(date "+%F %T") *** $ddns_record ddns configurations ***" |\
             tee -a $BACKUP/$user.log
     fi
-
-#############################################################################
-
 fi
 
 # Mail domains

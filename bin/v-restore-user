@@ -507,7 +507,6 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
     $BIN/v-restart-dns
     check_result $? "DNS restart failed"
 
-#########################
     # Restoring DDNS
     echo -e  "\n-- DDNS --" |tee -a $tmpdir/restore.log
 
@@ -530,8 +529,6 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
 
     # Restoring ddns configuration 
     cp $tmpdir/ddns/ddns.conf $USER_DATA/ddns.conf
-#########################
-
 fi
 
 # Restoring mail domains
