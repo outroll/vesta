@@ -16,7 +16,7 @@ arch=$(uname -i)
 os='ubuntu'
 release="$(lsb_release -s -r)"
 codename="$(lsb_release -s -c)"
-vestacp="http://$CHOST/$VERSION/$release"
+vestacp="https://$CHOST/$VERSION/$release"
 
 if [ "$release" = '16.04' ]; then
     software="nginx apache2 apache2-utils apache2.2-common
@@ -470,13 +470,13 @@ check_result $? 'apt-get upgrade failed'
 
 # Installing nginx repo
 apt=/etc/apt/sources.list.d
-echo "deb http://nginx.org/packages/mainline/ubuntu/ $codename nginx" \
+echo "deb https://nginx.org/packages/mainline/ubuntu/ $codename nginx" \
     > $apt/nginx.list
-wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
+wget https://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
 apt-key add /tmp/nginx_signing.key
 
 # Installing vesta repo
-echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
+echo "deb https://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
 wget $CHOST/deb_signing.key -O deb_signing.key
 apt-key add deb_signing.key
 
