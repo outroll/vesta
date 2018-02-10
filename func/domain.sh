@@ -311,12 +311,6 @@ is_web_domain_cert_valid() {
         check_result $E_INVALID "SSL Certificate is not valid"
     fi
 
-    if [ ! -z "$(echo $crt_vrf |grep 'unable to get local issuer')" ]; then
-        if [ ! -e "$ssl_dir/$domain.ca" ]; then
-            check_result $E_NOTEXIST "Certificate Authority not found"
-        fi
-    fi
-
     if [ -e "$ssl_dir/$domain.ca" ]; then
         s1=$(openssl x509 -text -in $ssl_dir/$domain.crt 2>/dev/null)
         s1=$(echo "$s1" |grep Issuer  |awk -F = '{print $6}' |head -n1)
