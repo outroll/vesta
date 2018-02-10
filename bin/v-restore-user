@@ -506,6 +506,32 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
     # Restarting DNS
     $BIN/v-restart-dns
     check_result $? "DNS restart failed"
+
+#########################
+    # Restoring DDNS
+    echo -e  "\n-- DDNS --" |tee -a $tmpdir/restore.log
+
+    # Unpacking ddns container
+    tar xf $BACKUP/$backup -C $tmpdir ./ddns
+    if [ "$?" -ne 0 ]; then
+        rm -rf $tmpdir
+        error="Can't unpack ddns container"
+        echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+        check_result "$E_PARSING" "$error"
+    fi
+
+    ddns=$(wc -l $tmpdir/ddns/ddns.conf |cut -f 1 -d' ')
+    if [ "$ddns" -eq 1 ]; then
+        echo -e "$(date "+%F %T") $ddns ddns configuration" |tee -a $tmpdir/restore.log
+    else
+        echo -e "$(date "+%F %T") $ddns ddns configurations"|tee -a $tmpdir/restore.log
+    fi
+
+    # Restoring ddns configuration 
+    cp $tmpdir/ddns/ddns.conf $USER_DATA/ddns.conf
+#########################
+
 fi
 
 # Restoring mail domains

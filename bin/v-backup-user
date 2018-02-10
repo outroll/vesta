@@ -263,6 +263,29 @@ if [ ! -z "$DNS_SYSTEM" ] && [ "$DNS" != '*' ]; then
     else
         echo -e "$(date "+%F %T") *** $i domains ***"|tee -a $BACKUP/$user.log
     fi
+
+    # DDNS
+
+##############################################################################
+
+    echo -e "\n-- DDNS --" |tee -a $BACKUP/$user.log
+    mkdir $tmpdir/ddns/
+
+    # Backup ddns.conf
+    cp $USER_DATA/ddns.conf $tmpdir/ddns/
+    ddns_record=$(wc -l $USER_DATA/ddns.conf|cut -f 1 -d ' ')
+
+    # Print total
+    if [ "$ddns_record" -eq 1 ]; then
+        echo -e "$(date "+%F %T") *** $ddns_record ddns configuration ***" |\
+            tee -a $BACKUP/$user.log
+    else
+        echo -e "$(date "+%F %T") *** $ddns_record ddns configurations ***" |\
+            tee -a $BACKUP/$user.log
+    fi
+
+#############################################################################
+
 fi
 
 # Mail domains
