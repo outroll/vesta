@@ -16,7 +16,7 @@ arch=$(uname -i)
 os=$(cut -f 1 -d ' ' /etc/redhat-release)
 release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
-vestacp="http://$CHOST/$VERSION/$release"
+vestacp="https://$CHOST/$VERSION/$release"
 
 if [ "$release" -eq 7 ]; then
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid php php-common php-cli
@@ -470,7 +470,7 @@ fi
 nrepo="/etc/yum.repos.d/nginx.repo"
 echo "[nginx]" > $nrepo
 echo "name=nginx repo" >> $nrepo
-echo "baseurl=http://nginx.org/packages/centos/$release/\$basearch/" >> $nrepo
+echo "baseurl=https://nginx.org/packages/centos/$release/\$basearch/" >> $nrepo
 echo "gpgcheck=0" >> $nrepo
 echo "enabled=1" >> $nrepo
 
@@ -478,7 +478,7 @@ echo "enabled=1" >> $nrepo
 vrepo='/etc/yum.repos.d/vesta.repo'
 echo "[vesta]" > $vrepo
 echo "name=Vesta - $REPO" >> $vrepo
-echo "baseurl=http://$RHOST/$REPO/$release/\$basearch/" >> $vrepo
+echo "baseurl=https://$RHOST/$REPO/$release/\$basearch/" >> $vrepo
 echo "enabled=1" >> $vrepo
 echo "gpgcheck=1" >> $vrepo
 echo "gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA" >> $vrepo
