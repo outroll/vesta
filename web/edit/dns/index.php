@@ -56,7 +56,7 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['record_id'])))  {
     check_return_code($return_var,$output);
     $data = json_decode(implode('', $output), true);
     unset($output);
-    
+
     // Parse dns record
     $v_username = $user;
     $v_domain = $_GET['domain'];
@@ -90,7 +90,7 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['record_id']))) {
         $v_ddns_key = $data[$v_ddns_id]['KEY']; 
     }
 }
-       
+
 // Check POST request for dns domain
 if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['record_id']))) {
     $v_domain = escapeshellarg($_POST['v_domain']);
@@ -160,7 +160,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['recor
 
 // Check POST request for dns record
 if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['record_id']))) {
-    
+
     // Check empty fields
     if (empty($_POST['v_domain'])) $errors[] = 'domain';
     if (empty($_POST['v_rec'])) $errors[] = 'record';
@@ -218,14 +218,14 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['reco
             check_return_code($return_var,$output);
             $v_ddns_key = '';
             unset($output);
-            
+
         // Add key
         } elseif (empty($v_ddns_key)) {
             $v_ddns_key = escapeshellarg($_POST['v_ddns_key']);
             exec (VESTA_CMD."v-add-ddns ".$v_username." ".$v_domain." ".$v_record_id." ".$v_ddns_key, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
-            
+
         // Update Key
         } else {
             $v_ddns_key = escapeshellarg($_POST['v_ddns_key']);
@@ -253,7 +253,6 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['reco
         exit;
     }
 }
-
 
 // Render page
 if (empty($_GET['record_id']))  {

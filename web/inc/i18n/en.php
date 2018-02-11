@@ -754,8 +754,12 @@ $LANG['en'] = array(
     'maximum characters length, including prefix' => 'maximum %s characters length, including prefix',
 
     'Email Credentials' => 'Email Credentials',
-    
+
     'Enable Dynamic DNS' => 'Enable Dynamic DNS',
-    'Dynamic DNS Token' => 'Dynamic DNS Token',
+    'Dynamic DNS Key' => 'Dynamic DNS Key',
+    'Dynamic DNS Service URL' => 'Dynamic DNS Service URL',
+    'DDNS Records' => 'DDNS Records',
+    "You first need to add this record to get the Dynamic DNS URL" => "You first need to add this record to get the Dynamic DNS URL"
+    "To dynamically update this record's IP address, simply use CURL to fetch this URL" => "To dynamically update this record's IP address, simply use CURL to fetch this URL",
 
 );
