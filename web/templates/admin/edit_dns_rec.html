@@ -127,6 +127,29 @@
                                                 <input type="text" size="20" class="vst-input" name="v_ddns_key" value="<?=htmlentities(trim($v_ddns_key, "'"))?>">
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td class="step-left">
+                                                <table width="600px">
+                                                    <tr>
+                                                        <td class="vst-text input-label"><?php print __('Dynamic DNS Service URL');?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="optional"><?php print __("To dynamically update this record's IP address, simply use CURL to fetch this URL");?>:</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <?php 
+                                                                $v_ddns_url = "https://".$_SERVER['SERVER_ADDR'].":".$_SERVER['SERVER_PORT']."/ddns/?user=".$_SERVER['USER']."&id=".$v_ddns_id."&key=";
+                                                                $v_ddns_url_key = htmlentities(trim($v_ddns_key, "'"));
+                                                            ?>
+                                                            <br>
+                                                            <input type="hidden" value="<?=$v_ddns_url?>" id="ddns-base-url">
+                                                            <textarea class="vst-textinput ddns-address" name="v_aliases" readonly="readonly" onClick="this.select();" id="ddns-url"><?=$v_ddns_url?><?=$v_ddns_url_key?></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
                                     </table>
                                 </td>
                             </tr>

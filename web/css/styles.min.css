@@ -2854,6 +2854,11 @@ a.button.cancel {
 .data-dotted {
   vertical-align: top;
 }
+.ddns-address {
+  white-space: nowrap;
+  overflow: auto;
+  height: auto;
+}
 .mail-infoblock-td {
   vertical-align: top;
 }

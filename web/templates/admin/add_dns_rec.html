@@ -123,6 +123,18 @@
                                                 <input type="text" size="20" class="vst-input" name="v_ddns_key" value="<?=htmlentities(trim($v_ddns_key, "'"))?>">
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td class="step-left">
+                                                <table width="600px">
+                                                    <tr>
+                                                        <td class="vst-text input-label"><?php print __('Dynamic DNS Service URL');?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="optional"><?php print __('You need to first add this record to get the Dynamic DNS URL');?></span></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
                                     </table>
                                 </td>
                             </tr>

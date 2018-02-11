@@ -10,4 +10,15 @@ randomString = function() {
         randomstring += chars.substr(rnum, 1);
     }
     document.v_edit_dns_rec.v_ddns_key.value = randomstring;
-}
+    updateDdnsUrl();
+};
+
+$(document).ready(function() {
+    $('input[name=v_ddns_key]').change(function(){
+        updateDdnsUrl();
+    });
+});
+
+updateDdnsUrl = function () {
+    $('#ddns-url').val($('#ddns-base-url').val() + $('input[name=v_ddns_key]').val());
+};
