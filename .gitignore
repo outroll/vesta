@@ -2,4 +2,6 @@
 *.zip
 *.gzip
 *.gz
+.vscode
+.DS_Store
 /nbproject

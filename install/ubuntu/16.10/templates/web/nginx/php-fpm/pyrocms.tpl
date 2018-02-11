@@ -8,7 +8,7 @@ server {
     error_log   /var/log/nginx/domains/%domain%.error.log error;
 
     location /installer {
-        try_files $uri $uri/ /installer/index.php?$query_string;
+            try_files $uri $uri/ /installer/index.php?$query_string;
     }
 
     location / {
@@ -51,7 +51,7 @@ server {
 
     location /vstats/ {
         alias   %home%/%user%/web/%domain%/stats/;
-        include %home%/%user%/web/%domain%/stats/auth.conf*;
+        include %home%/%user%/conf/web/%domain%.auth*;
     }
 
     include     /etc/nginx/conf.d/phpmyadmin.inc*;

@@ -1,6 +1,6 @@
 Name:           vesta-php
 Version:        0.9.8
-Release:        18
+Release:        19
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPL
@@ -39,6 +39,13 @@ rm -rf $RPM_BUILD_ROOT/.lock
 
 %clean
 rm -rf %{buildroot}
+
+%post
+if [ $1 -eq 1 ]; then
+    if [ -e /usr/local/vesta/ioncube/ioncube.sh ]; then
+        /usr/local/vesta/ioncube/ioncube.sh add
+    fi
+fi
 
 %postun
 if [ $1 -ge 1 ]; then
