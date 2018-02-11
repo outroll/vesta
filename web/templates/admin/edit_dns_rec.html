@@ -109,7 +109,6 @@
                                     <input type="text" size="20" class="vst-input" name="v_record_id" value="<?=htmlentities(trim($v_record_id, "'"))?>">
                                 </td>
                             </tr>
-
                             <tr>
                                 <td class="step-top vst-text">
                                     <label><input type="checkbox" size="20" class="vst-checkbox" name="v_ddns" <?php if(!empty($v_ddns_key)) echo "checked=yes" ?> onclick="javascript:elementHideShow('ddnstable');"> <?php print __('Enable Dynamic DNS');?></label>
@@ -154,6 +153,7 @@
                                     </table>
                                 </td>
                             </tr>
+
                         </table>
                         <table class="data-col2">
                             <tr>
