@@ -254,6 +254,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['reco
     }
 }
 
+
 // Render page
 if (empty($_GET['record_id']))  {
     // Display body for dns domain
