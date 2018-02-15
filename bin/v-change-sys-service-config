@@ -95,7 +95,7 @@ if [ "$update" = 'yes' ] && [ "$restart" != 'no' ]; then
 
     if [ "$service" = 'php' ]; then
         if [ "$WEB_SYSTEM" = "nginx" ]; then
-            service=$(ls /usr/sbin/php*fpm* |cut -f 4 -d /)
+            service=$(ls /etc/init.d/php*fpm* |cut -f 4 -d / |sed -n 1p)
         else
             service=$WEB_SYSTEM
         fi
@@ -104,7 +104,8 @@ if [ "$update" = 'yes' ] && [ "$restart" != 'no' ]; then
     service $service restart >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         for config in $dst; do
-            mv -f $config.vst.back $config
+            cat $config.vst.back > $config
+            rm -f $config.vst.back
         done
         check_result $E_RESTART "$service failed to start with new config"
     fi

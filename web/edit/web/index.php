@@ -230,8 +230,8 @@ if (!empty($_POST['save'])) {
         $restart_proxy = 'yes';
     }
 
-    // Change proxy template / Update extension list
-    if ((!empty($_SESSION['PROXY_SYSTEM'])) && (!empty($v_proxy)) && (!empty($_POST['v_proxy'])) && (empty($_SESSION['error_msg']))) {
+    // Change proxy template / Update extension list (admin only)
+    if ((!empty($_SESSION['PROXY_SYSTEM'])) && (!empty($v_proxy)) && (!empty($_POST['v_proxy'])) && (empty($_SESSION['error_msg'])) && ($_SESSION['user'] == 'admin')) {
         $ext = preg_replace("/\n/", " ", $_POST['v_proxy_ext']);
         $ext = preg_replace("/,/", " ", $ext);
         $ext = preg_replace('/\s+/', ' ',$ext);
@@ -625,6 +625,7 @@ if (!empty($_POST['save'])) {
                 }
 
                 // Change FTP account path
+                $v_ftp_username_for_emailing = $v_ftp_user_data['v_ftp_user'];
                 $v_ftp_username = $user . '_' . $v_ftp_user_data['v_ftp_user']; //preg_replace("/^".$user."_/", "", $v_ftp_user_data['v_ftp_user']);
                 $v_ftp_username = escapeshellarg($v_ftp_username);
                     $v_ftp_path = escapeshellarg(trim($v_ftp_user_data['v_ftp_path']));
@@ -645,7 +646,7 @@ if (!empty($_POST['save'])) {
                     $subject = __("FTP login credentials");
                     $hostname = exec('hostname');
                     $from = __('MAIL_FROM',$hostname);
-                    $mailtext = __('FTP_ACCOUNT_READY',$_GET['domain'],$user,$v_ftp_username,$v_ftp_user_data['v_ftp_password']);
+                    $mailtext = __('FTP_ACCOUNT_READY',$_GET['domain'],$user,$v_ftp_username_for_emailing,$v_ftp_user_data['v_ftp_password']);
                     send_email($to, $subject, $mailtext, $from);
                     unset($v_ftp_email);
                 }

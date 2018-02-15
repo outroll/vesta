@@ -280,6 +280,7 @@
                                                 <br><br>
                                             </td>
                                         </tr>
+
                                     </table>
                                 </td>
                             </tr>
@@ -662,7 +663,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <?=__('ISSUER')?>
+                                                            <?=__('ISSUER')?>:
                                                         </td>
                                                         <td class="details">
                                                             <?=$v_ssl_issuer?>
@@ -846,6 +847,38 @@
                                                 </div>
                                             </td>
                                         </tr>
+
+
+
+
+                                        <tr>
+                                            <td class="vst-text" id="module-softaculous">
+                                                <?php print __('Softaculous') ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <select class="vst-list" name="v_softaculous">
+                                                    <option value='no'><?=__('no')?></option>
+                                                    <option value='yes' <? if($_GET['lead'] == 'softaculous' || $_SESSION['SOFTACULOUS'] == 'yes') echo 'selected="selected"'; ?>><?=__('yes')?></option>
+                                                </select>
+                                                <br><br>
+                                                <div class="softaculous description" <? if ($_SESSION['SOFTACULOUS'] != 'yes') { ?>style="display:none" <? } ?>>
+                                                    <h5>* plugin installation will run in background</h5>
+                                                    Softaculous is a great Auto Installer having 426 great scripts, 1115 PHP Classes 
+                                                    and we are still adding more. Softaculous is ideal for Web Hosting companies and 
+                                                    it could give a significant boost to your sales. These scripts cover most of the 
+                                                    uses a customer could ever have. We have covered a wide array of Categories so that 
+                                                    everyone could find the required script one would need to power their Web Site.
+                                                    <ul>
+                                                        <li>
+                                                            <a href="https://www.softaculous.com/softaculous/" class="purchase" target="_blank"><?=__('Get Premium License')?></a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+
                                     </table>
                                 </td>
                             </tr>

@@ -12,6 +12,7 @@
 # Argument definition
 user=$1
 domain=$2
+domain_idn=$2
 
 # Includes
 source $VESTA/func/main.sh
@@ -61,7 +62,7 @@ build_webalizer() {
 }
 
 build_awstats() {
-    if [ -e "/etc/redhat-release" ]; then
+    if [ -d "/etc/sysconfig" ]; then
         awstats="/usr/share/awstats/wwwroot/cgi-bin/awstats.pl"
         wwwroot="/usr/share/awstats/wwwroot"
         if [  ! -e "$awstats" ]; then

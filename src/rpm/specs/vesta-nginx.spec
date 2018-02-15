@@ -1,6 +1,6 @@
 Name:           vesta-nginx
 Version:        0.9.8
-Release:        17
+Release:        19
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        BSD-like
@@ -55,7 +55,7 @@ fi
 
 
 %changelog
-* Wed Jul 30 2013 Serghey Rodin <builder@vestacp.com> - 0.9.8-1
+* Tue Jul 30 2013 Serghey Rodin <builder@vestacp.com> - 0.9.8-1
 - upgraded to nginx-1.4.2
 
 * Sat Apr 06 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-2

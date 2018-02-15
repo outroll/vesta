@@ -38,8 +38,15 @@ source $VESTA/conf/vesta.conf
 
 # Check backup ownership function
 is_backup_available() {
-    if ! [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]]; then
-         check_result $E_FORBIDEN "permission denied"
+    passed=false
+    if [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]]; then
+        passed=true
+    elif [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]]; then
+        passed=true
+    fi
+    
+    if [ $passed = false ]; then
+        check_result $E_FORBIDEN "permission denied"
     fi
 }
 
@@ -62,7 +69,11 @@ ftp_download() {
     if [ -z "$PORT" ]; then
         PORT='21'
     fi
-    ftpc "cd $BPATH" "get $1"
+    if [ -z $BPATH ]; then
+        ftpc "get $1"
+    else
+        ftpc "cd $BPATH" "get $1"
+    fi
 }
 
 # sftp command function
@@ -100,8 +111,6 @@ sftpc() {
                     send "\$arg\r"
                     incr count
                 } else {
-                    incr count
-                } else {
                     send "exit\r"
                     set output "Disconnected."
                     if {[info exists rc] != 1} {
@@ -131,7 +140,11 @@ sftp_download() {
         PORT='22'
     fi
     cd $BACKUP
-    sftpc "cd $BPATH" "get $1" > /dev/null 2>&1
+    if [ -z $BPATH ]; then
+        sftpc "get $1" > /dev/null 2>&1
+    else
+        sftpc "cd $BPATH" "get $1" > /dev/null 2>&1
+    fi
 
 }
 
@@ -217,7 +230,7 @@ while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
 done
 
 # Creating temporary directory
-tmpdir=$(mktemp -p $BACKUP -d)
+tmpdir=$(mktemp -p /tmp -d)
 if [ "$?" -ne 0 ]; then
     echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notify
     sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
@@ -360,8 +373,10 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
 
             # Copying ssl certificates
             if [ "$SSL" = 'yes' ]; then
-                for crt in $(ls $tmpdir/web/$domain/conf |grep ssl); do
-                    crt=$(echo "$crt" |sed "s/ssl.//")
+                certificates=$(ls $tmpdir/web/$domain/conf| grep ssl)
+                certificates=$(echo "$certificates" |grep $domain)
+                for crt in $certificates; do
+                    crt=$(echo $crt|sed -e "s/ssl.//")
                     cp -f $tmpdir/web/$domain/conf/ssl.$crt $USER_DATA/ssl/$crt
                 done
             fi
@@ -369,8 +384,8 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
             # Concatenating web.conf keys
             str="DOMAIN='$domain' IP='$IP' IP6='$IP6' ALIAS='$ALIAS'"
             str="$str TPL='$TPL' SSL='$SSL' SSL_HOME='$SSL_HOME'"
-            str="$str FTP_USER='$FTP_USER' FTP_MD5='$FTP_MD5'"
-            str="$str BACKEND='$BACKEND' PROXY='$PROXY'"
+            str="$str LETSENCRYPT='$LETSENCRYPT' FTP_USER='$FTP_USER'"
+            str="$str FTP_MD5='$FTP_MD5' BACKEND='$BACKEND' PROXY='$PROXY'"
             str="$str PROXY_EXT='$PROXY_EXT' STATS='$STATS'"
             str="$str STATS_USER='$STATS_USER' STATS_CRYPT='$STATS_CRYPT'"
             str="$str U_DISK='$U_DISK' U_BANDWIDTH='0' SUSPENDED='no'"
@@ -567,6 +582,9 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
 
         # Rebuilding mail config
         rebuild_mail_domain_conf
+        
+        domain_idn=$domain
+        format_domain_idn
 
         # Restoring emails
         if [ -e "$tmpdir/mail/$domain/accounts.tar.gz" ]; then
