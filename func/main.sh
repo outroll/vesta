@@ -634,8 +634,8 @@ is_date_format_valid() {
 is_dbuser_format_valid() {
     exclude="[!|@|#|$|^|&|*|(|)|+|=|{|}|:|,|<|>|?|/|\|\"|'|;|%|\`| ]"
     if [ 17 -le ${#1} ]; then
-		check_result $E_INVALID "mysql username can be up to 16 characters long"
-	fi
+        check_result $E_INVALID "mysql username can be up to 16 characters long"
+    fi
     if [[ "$1" =~ $exclude ]]; then
         check_result $E_INVALID "invalid $2 format :: $1"
     fi
@@ -723,8 +723,12 @@ is_ip_status_format_valid() {
 
 # Cron validator
 is_cron_format_valid() {
-    limit=60
+    limit=59
     check_format=''
+    if [ "$2" = 'hour' ]; then
+        limit=23
+    fi
+    
     if [ "$2" = 'day' ]; then
         limit=31
     fi
@@ -753,9 +757,13 @@ is_cron_format_valid() {
             fi
         done
     fi
-    if [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -le $limit ]; then
-        check_format='ok'
-    fi
+    crn_values=$(echo $1 |tr "," " " | tr "-" " ")
+    for crn_vl in $crn_values
+        do
+            if [[ "$crn_vl" =~ ^[0-9]+$ ]] && [ "$crn_vl" -le $limit ]; then
+                 check_format='ok'
+              fi
+        done
     if [ "$check_format" != 'ok' ]; then
         check_result $E_INVALID "invalid $2 format :: $1"
     fi
@@ -770,7 +778,7 @@ is_name_format_valid() {
 
 # Object validator
 is_object_format_valid() {
-    if ! [[ "$1" =~ ^[[:alnum:]][-|\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
+    if ! [[ "$1" =~ ^[[:alnum:]][-|\.|_[:alnum:]]{0,64}[[:alnum:]]$ ]]; then
         check_result $E_INVALID "invalid $2 format :: $1"
     fi
 }
@@ -794,7 +802,7 @@ is_format_valid() {
                 antispam)       is_boolean_format_valid "$arg" 'antispam' ;;
                 antivirus)      is_boolean_format_valid "$arg" 'antivirus' ;;
                 autoreply)      is_autoreply_format_valid "$arg" ;;
-                backup)         is_user_format_valid "$arg" 'backup' ;;
+                backup)         is_object_format_valid "$arg" 'backup' ;;
                 charset)        is_object_format_valid "$arg" "$arg_name" ;;
                 charsets)       is_common_format_valid "$arg" 'charsets' ;;
                 comment)        is_object_format_valid "$arg" 'comment' ;;
