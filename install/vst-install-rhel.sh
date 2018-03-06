@@ -28,7 +28,7 @@ if [ "$release" -eq 7 ]; then
     openssh-clients ImageMagick curl mc screen ftp zip unzip flex sqlite pcre
     sudo bc jwhois mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype
     fail2ban rsyslog iptables-services which vesta vesta-nginx vesta-php
-    vim-common expect"
+    vim-common expect vesta-ioncube vesta-softaculous"
 else
     software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
     php php-common php-cli php-bcmath php-gd php-imap php-mbstring php-mcrypt
@@ -38,7 +38,8 @@ else
     postgresql-server postgresql-contrib phpPgAdmin e2fsprogs openssh-clients
     ImageMagick curl mc screen ftp zip unzip flex sqlite pcre sudo bc jwhois
     mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype fail2ban
-    which vesta vesta-nginx vesta-php vim-common expect"
+    which vesta vesta-nginx vesta-php vim-common expect vesta-ioncube
+    vesta-softaculous"
 fi
 
 # Defining help function
@@ -60,6 +61,7 @@ help() {
   -i, --iptables          Install Iptables      [yes|no]  default: yes
   -b, --fail2ban          Install Fail2ban      [yes|no]  default: yes
   -r, --remi              Install Remi repo     [yes|no]  default: yes
+  -o, --softaculous       Install Softaculous   [yes|no]  default: yes
   -q, --quota             Filesystem Quota      [yes|no]  default: no
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install   [yes|no]  default: yes
@@ -84,7 +86,7 @@ gen_pass() {
     echo "$PASS"
 }
 
-# Defning return code check function
+# Defining return code check function
 check_result() {
     if [ $1 -ne 0 ]; then
         echo "Error: $2"
@@ -100,6 +102,21 @@ set_default_value() {
     fi
     if [ "$variable" != 'yes' ] && [ "$variable" != 'no' ]; then
         eval $1=$2
+    fi
+}
+
+# Define function to set default language value
+set_default_lang() {
+    if [ -z "$lang" ]; then
+        eval lang=$1
+    fi
+    lang_list="
+        ar cz el fa hu ja no pt se ua
+        bs da en fi id ka pl ro tr vi
+        cn de es fr it nl pt-BR ru tw
+        bg ko sr th ur"
+    if !(echo $lang_list |grep -w $lang 1>&2>/dev/null); then
+        eval lang=$1
     fi
 }
 
@@ -131,6 +148,7 @@ for arg; do
         --iptables)             args="${args}-i " ;;
         --fail2ban)             args="${args}-b " ;;
         --remi)                 args="${args}-r " ;;
+        --softaculous)          args="${args}-o " ;;
         --quota)                args="${args}-q " ;;
         --lang)                 args="${args}-l " ;;
         --interactive)          args="${args}-y " ;;
@@ -146,7 +164,7 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:q:l:y:s:e:p:fh" Option; do
+while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
     case $Option in
         a) apache=$OPTARG ;;            # Apache
         n) nginx=$OPTARG ;;             # Nginx
@@ -164,6 +182,7 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:q:l:y:s:e:p:fh" Option; do
         i) iptables=$OPTARG ;;          # Iptables
         b) fail2ban=$OPTARG ;;          # Fail2ban
         r) remi=$OPTARG ;;              # Remi repo
+        o) softaculous=$OPTARG ;;       # Softaculous plugin
         q) quota=$OPTARG ;;             # FS Quota
         l) lang=$OPTARG ;;              # Language
         y) interactive=$OPTARG ;;       # Interactive install
@@ -198,9 +217,10 @@ fi
 set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
 set_default_value 'remi' 'yes'
+set_default_value 'softaculous' 'yes'
 set_default_value 'quota' 'no'
-set_default_value 'lang' 'en'
 set_default_value 'interactive' 'yes'
+set_default_lang 'en'
 
 # Checking software conflicts
 if [ "$phpfpm" = 'yes' ]; then
@@ -222,7 +242,7 @@ fi
 
 # Checking root permissions
 if [ "x$(id -u)" != 'x0' ]; then
-    check_error 1 "Script can be run executed only by root"
+    check_result 1 "Script can be run executed only by root"
 fi
 
 # Checking admin user account
@@ -270,7 +290,7 @@ fi
 #                       Brief Info                         #
 #----------------------------------------------------------#
 
-# Printing nice ascii aslogo
+# Printing nice ascii as logo
 clear
 echo
 echo ' _|      _|  _|_|_|_|    _|_|_|  _|_|_|_|_|    _|_|'
@@ -342,6 +362,11 @@ if [ "$vsftpd" = 'yes' ]; then
 fi
 if [ "$proftpd" = 'yes' ]; then
     echo '   - ProFTPD FTP Server'
+fi
+
+# Softaculous
+if [ "$softaculous" = 'yes' ]; then
+    echo '   - Softaculous Plugin'
 fi
 
 # Firewall stack
@@ -431,7 +456,7 @@ yum -y update
 check_result $? 'yum update failed'
 
 # Installing EPEL repository
-rpm -Uvh --force $vestacp/epel-release.rpm
+yum install epel-release -y
 check_result $? "Can't install EPEL repository"
 
 # Installing Remi repository
@@ -598,6 +623,9 @@ if [ "$postgresql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/php-pgsql//')
     software=$(echo "$software" | sed -e 's/phpPgAdmin//')
 fi
+if [ "$softaculous" = 'no' ]; then
+    software=$(echo "$software" | sed -e 's/vesta-softaculous//')
+fi
 if [ "$iptables" = 'no' ] || [ "$fail2ban" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/fail2ban//')
 fi
@@ -705,8 +733,8 @@ chmod -R 750 $VESTA/data/queue
 chmod 660 $VESTA/log/*
 rm -f /var/log/vesta
 ln -s $VESTA/log /var/log/vesta
-chown admin:admin $VESTA/data/sessions
 chmod 770 $VESTA/data/sessions
+chown admin:admin $VESTA/data/sessions
 
 # Generating vesta configuration
 rm -f $VESTA/conf/vesta.conf 2>/dev/null
@@ -852,6 +880,12 @@ if [ "$nginx" = 'yes' ]; then
     wget $vestacp/logrotate/nginx -O /etc/logrotate.d/nginx
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
+    if [ "$release" -eq 7 ]; then
+        mkdir /etc/systemd/system/nginx.service.d
+        cd /etc/systemd/system/nginx.service.d
+        echo "[Service]" > limits.conf
+        echo "LimitNOFILE=500000" >> limits.conf
+    fi
     chkconfig nginx on
     service nginx start
     check_result $? "nginx start failed"
@@ -890,6 +924,12 @@ if [ "$apache" = 'yes'  ]; then
     chmod a+x /var/log/httpd
     mkdir -p /var/log/httpd/domains
     chmod 751 /var/log/httpd/domains
+    if [ "$release" -eq 7 ]; then
+        mkdir /etc/systemd/system/httpd.service.d
+        cd /etc/systemd/system/httpd.service.d
+        echo "[Service]" > limits.conf
+        echo "LimitNOFILE=500000" >> limits.conf
+    fi
     chkconfig httpd on
     service httpd start
     check_result $? "httpd start failed"
@@ -974,6 +1014,7 @@ if [ "$mysql" = 'yes' ]; then
 
     mkdir -p /var/lib/mysql
     chown mysql:mysql /var/lib/mysql
+    mkdir -p /etc/my.cnf.d
 
     if [ $release -ne 7 ]; then
         service='mysqld'
@@ -1166,12 +1207,14 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     cd /usr/share/roundcubemail/plugins/password
     wget $vestacp/roundcube/vesta.php -O drivers/vesta.php
     wget $vestacp/roundcube/config.inc.php -O config.inc.php
-    sed -i "s/localhost/$servername/g" /usr/share/roundcubemail/plugins/password/config.inc.php
+    sed -i "s/localhost/$servername/g" \
+        /usr/share/roundcubemail/plugins/password/config.inc.php
     chmod a+r /etc/roundcubemail/*
     chmod -f 777 /var/log/roundcubemail
     r="$(gen_pass)"
     mysql -e "CREATE DATABASE roundcube"
-    mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost IDENTIFIED BY '$r'"
+    mysql -e "GRANT ALL ON roundcube.* TO 
+            roundcube@localhost IDENTIFIED BY '$r'"
     sed -i "s/%password%/$r/g" /etc/roundcubemail/config.inc.php
     chmod 640 /etc/roundcubemail/config.inc.php
     chown root:apache /etc/roundcubemail/config.inc.php
@@ -1202,10 +1245,23 @@ if [ "$fail2ban" = 'yes' ]; then
         fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
     fi
+    if [ "$vsftpd" = 'yes' ]; then
+        #Create vsftpd Log File
+        if [ ! -f "/var/log/vsftpd.log" ]; then
+            touch /var/log/vsftpd.log
+        fi
+        fline=$(cat /etc/fail2ban/jail.local |grep -n vsftpd-iptables -A 2)
+        fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
+        sed -i "${fline}s/false/true/" /etc/fail2ban/jail.local
+    fi 
     chkconfig fail2ban on
     /bin/mkdir -p /var/run/fail2ban
-    sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/fail2ban/g" /usr/lib/systemd/system/fail2ban.service
-    systemctl daemon-reload
+    if [ -e "/usr/lib/systemd/system/fail2ban.service" ]; then
+        exec_pre='ExecStartPre=/bin/mkdir -p /var/run/fail2ban'
+        sed -i "s|\[Service\]|[Service]\n$exec_pre|g" \
+            /usr/lib/systemd/system/fail2ban.service
+        systemctl daemon-reload
+    fi
     service fail2ban start
     check_result $? "fail2ban start failed"
 fi
@@ -1283,12 +1339,17 @@ command="sudo $VESTA/bin/v-update-sys-rrd"
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
 service crond restart
 
-# Building inititall rrd images
+# Building initial rrd images
 $VESTA/bin/v-update-sys-rrd
 
 # Enabling file system quota
 if [ "$quota" = 'yes' ]; then
     $VESTA/bin/v-add-sys-quota
+fi
+
+# Enabling softaculous plugin
+if [ "$softaculous" = 'yes' ]; then
+    $VESTA/bin/v-add-vesta-softaculous
 fi
 
 # Starting vesta service
