@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 domain=$(idn -t --quiet -u "$1" )
 type=${2-any}
 
@@ -50,6 +50,6 @@ echo $owner
 #----------------------------------------------------------#
 
 # Logging
-#log_event "$OK" "$EVENT"
+#log_event "$OK" "$ARGUMENTS"
 
 exit

@@ -1,50 +1,37 @@
-            <?php
-                $back = $_SESSION['back'];
-                if (empty($back)) {
-                    $back = "location.href='/list/db/'";
-                } else {
-                    $back = "location.href='".$back."'";
-                }
-            ?> 
-            <table class="submenu">
-                <tr>
-                    <td style="padding: 20px 10px;" ><a class="name"><b><?php print __('Adding database');?></b></a>
-                        <?php
-                            if (!empty($_SESSION['error_msg'])) {
-                                echo "<span class=\"vst-error\"> → ".$_SESSION['error_msg']."</span>";
-                            } else {
-                                if (!empty($_SESSION['ok_msg'])) {
-                                    echo "<span class=\"vst-ok\"> → ".$_SESSION['ok_msg']."</span>";
-                                }
-                            }
-                        ?> 
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <form id="vstobjects" name="v_add_db" method="post">
-            <script type="text/javascript">
-                function elementHideShow(elementToHideOrShow) {
-                    var el = document.getElementById(elementToHideOrShow);
-                    if (el.style.display == "block") {
-                        el.style.display = "none";
+    <div class="l-center">
+      <div class="l-sort clearfix">
+        <div class="l-sort-toolbar clearfix float-left">
+                <span class="title"><b><?=__('Adding database')?></b></span>
+                  <?php
+                    if (!empty($_SESSION['error_msg'])) {
+                      echo "<span class=\"vst-error\"> → ".htmlentities($_SESSION['error_msg'])."</span>";
                     } else {
-                        el.style.display = "block";
+                      if (!empty($_SESSION['ok_msg'])) {
+                        echo "<span class=\"vst-ok\"> → ".$_SESSION['ok_msg']."</span>";
+                      }
                     }
-                }
-                function randomString() {
-                    var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-                    var string_length = 10;
-                    var randomstring = '';
-                    for (var i=0; i<string_length; i++) {
-                        var rnum = Math.floor(Math.random() * chars.length);
-                        randomstring += chars.substring(rnum,rnum+1);
-                    }
-                    document.v_add_db.v_password.value = randomstring;
-                }
-            </script>
-            <table class='data'>
+                  ?>
+        </div>
+      </div>
+    </div>
+
+    <div class="l-separator"></div>
+    <!-- /.l-separator -->
+
+    <div class="l-center">
+        <?php
+          $back = $_SESSION['back'];
+          if (empty($back)) {
+            $back = "location.href='/list/db/'";
+          } else {
+            $back = "location.href='".$back."'";
+          }
+        ?>
+        <form id="vstobjects" name="v_add_db" method="post">
+            <input type="hidden" name="token" value="<?=$_SESSION['token']?>" />
+            <input type="hidden" name="ok" value="Add" />
+
+            <table class="data mode-add">
                 <tr class="data-add">
                     <td class="data-dotted">
                         <table class="data-col1">
@@ -54,45 +41,49 @@
                     <td class="data-dotted">
                         <table class="data-col2" width="600px">
                             <tr>
-                                <td style="padding:24px 0 0 0; color:#777;" >
-                                    <?php print __('Prefix will be automaticaly added to database name and database user',$user."_");?>
+                                <td class="step-top hint" style="color:#777;" >
+                                    <?php print __('Prefix will be automaticaly added to database name and database user',"<b>".$user."_</b>");?>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="vst-text" style="padding: 12px 0 0 0;">
-                                    <?php print __('Database');?> 
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="text" size="20" class="vst-input" name="v_database" <?php if (!empty($v_database)) echo "value=".$v_database; ?>>
-                                    <small class="hint"></small>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="vst-text" style="padding: 12px 0 0 0;">
-                                    <?php print __('User');?> 
+                                <td class="vst-text input-label">
+                                    <?php print __('Database');?>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_dbuser" <?php if (!empty($v_dbuser)) echo "value=".$v_dbuser; ?>>
+                                    <input type="text" size="20" class="vst-input" name="v_database" value="<?=htmlentities(trim($v_database, "'"))?>">
                                     <small class="hint"></small>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="vst-text" style="padding: 12px 0 0 0;">
+                                <td class="vst-text input-label">
+                                    <?php
+                                        print __('User');
+                                        // if (is_it_mysql_or_mariadb()=='mysql')
+                                        echo "&nbsp;&nbsp;&nbsp;&nbsp;<em><small>(".__('maximum characters length, including prefix', 16).")</small></em>";
+                                    ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_dbuser" value="<?=htmlentities(trim($v_dbuser, "'"))?>">
+                                    <small class="hint"></small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
                                     <?php print __('Password');?> / <a href="javascript:randomString();" class="generate"><?php print __('generate');?></a>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_password">
+                                    <input type="text" size="20" class="vst-input password" name="v_password">
                                 </td>
                             </tr>
                             <tr>
-                                <td class="vst-text" style="padding: 12px 0 0 0;">
-                                    <?php print __('Type');?> 
+                                <td class="vst-text input-label">
+                                    <?php print __('Type');?>
                                 </td>
                             </tr>
                             <tr>
@@ -100,36 +91,36 @@
                                     <select class="vst-list" name="v_type">
                                         <?php
                                             foreach ($db_types as $key => $value) {
-                                                echo "\n\t\t\t\t\t\t\t\t\t\t<option value=\"".$value."\"";
+                                                echo "\n\t\t\t\t\t\t\t\t\t\t<option value=\"".htmlentities($value)."\"";
                                                 if ((!empty($v_type)) && ( $value == $v_type )) echo ' selected';
-                                                echo ">".$value."</option>";
+                                                echo ">".htmlentities($value)."</option>";
                                             }
-                                        ?> 
+                                        ?>
                                     </select>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="vst-text" style="padding: 12px 0 0 0;">
-                                    <?php print __('Host');?> 
+                                <td class="vst-text input-label">
+                                    <?php print __('Host');?>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <select class="vst-list" name="v_host">
                                         <?php
-                                            foreach ($db_hosts as $key => $value) {
-                                                echo "\n\t\t\t\t\t\t\t\t\t\t<option value=\"".$key."\"";
-                                                if ((!empty($v_host)) && ( $key == $v_host )) echo ' selected';
-                                                echo ">".$key."</option>";
+                                            foreach ($db_hosts as $value) {
+                                                echo "\n\t\t\t\t\t\t\t\t\t\t<option value=\"".htmlentities($value)."\"";
+                                                if ((!empty($v_host)) && ( $value == $v_host )) echo ' selected';
+                                                echo ">".htmlentities($value)."</option>";
                                             }
-                                        ?> 
+                                        ?>
                                     </select>
                                 </td>
                             </tr>
 
                             <tr>
-                                <td class="vst-text" style="padding: 12px 0 0 0;">
-                                    <?php print __('Charset');?> 
+                                <td class="vst-text input-label">
+                                    <?php print __('Charset');?>
                                 </td>
                             </tr>
                             <tr>
@@ -174,23 +165,23 @@
                                     </select>
                                 </td>
                             <tr>
-                                <td class="vst-text" style="padding: 12px 0 0 0;">
-                                    <?php print __('Send login credentials to email address') ?> 
+                                <td class="vst-text input-label">
+                                    <?php print __('Send login credentials to email address') ?>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text"  class="vst-input" name="v_db_email" <?php if (!empty($v_db_email)) echo "value=".$v_db_email; ?>>
+                                    <input type="text"  class="vst-input" name="v_db_email" value="<?=htmlentities(trim($v_db_email, "'"))?>">
                                 </td>
                             </tr>
                         </table>
                         <table class="data-col2">
                             <tr>
-                                <td style="padding: 24px 0 0 0;" width="116px">
-                                    <input type="submit" name="ok" value="<?php print __('Add');?>" class="button">
+                                <td class="step-top" width="116px">
+                                    <input type="submit" name="ok" value="<?=__('Add')?>" class="button">
                                 </td>
-                                <td style="padding: 24px 0 0 0;">
-                                    <input type="button" class="button" value="<?php print __('Back');?>" onclick="<?php echo $back ?>">
+                                <td class="step-top">
+                                    <input type="button" class="button cancel" value="<?=__('Back');?>" onclick="<?=$back?>">
                                 </td>
                             </tr>
                         </table>
@@ -198,10 +189,9 @@
                 </tr>
             </table>
         </form>
+    </div>
 
-
-    <script type="text/javascript">
-        GLOBAL.DB_USER_PREFIX = '<?php echo $user; ?>_';
-        GLOBAL.DB_DBNAME_PREFIX = '<?php echo $user; ?>_';
+    <script>
+      GLOBAL.DB_USER_PREFIX = <?=json_encode($user.'_')?>;
+      GLOBAL.DB_DBNAME_PREFIX = <?=json_encode($user.'_')?>;
     </script>
-    <script type="text/javascript" src="/js/pages/add.db.js"></script>

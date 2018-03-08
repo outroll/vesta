@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 domain=$1
 
 # Includes
@@ -22,7 +22,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '1' "$#" 'HOSTNAME'
-validate_format 'domain'
+is_format_valid 'domain'
 
 
 #----------------------------------------------------------#
@@ -31,18 +31,16 @@ validate_format 'domain'
 
 hostname $domain
 
-# RHEL/CentOS
-if [ -e "/etc/redhat-release" ]; then
+if [ -d "/etc/sysconfig" ]; then
+    # RHEL/CentOS/Amazon
     touch /etc/sysconfig/network
     if [ -z "$(grep HOSTNAME /etc/sysconfig/network)" ]; then
         echo "HOSTNAME='$domain'" >> /etc/sysconfig/network
     else
         sed -i "s/HOSTNAME=.*/HOSTNAME='$domain'/" /etc/sysconfig/network
     fi
-fi
-
-# Debian/Ubuntu
-if [ ! -e "/etc/redhat-release" ]; then
+else
+    # Debian/Ubuntu
     echo "$domain" > /etc/hostname
 fi
 
@@ -52,6 +50,6 @@ fi
 #----------------------------------------------------------#
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

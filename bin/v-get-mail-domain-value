@@ -9,14 +9,19 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
-domain=$(idn -t --quiet -u "$2" )
-domain_idn=$(idn -t --quiet -a "$domain")
+domain=$2
+domain_idn=$2
 key=$(echo "$3"| tr '[:lower:]' '[:upper:]' | sed "s/^/$/")
 
 # Includes
 source $VESTA/func/main.sh
+
+# Additional argument formatting
+format_domain
+format_domain_idn
+# TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
 
 
 #----------------------------------------------------------#
@@ -24,7 +29,7 @@ source $VESTA/func/main.sh
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN KEY'
-validate_format 'user' 'domain'
+is_format_valid 'user' 'domain'
 is_object_valid 'user' 'USER' "$user"
 is_object_valid 'mail' 'DOMAIN' "$domain"
 
@@ -42,6 +47,6 @@ get_object_value 'mail' 'DOMAIN' "$domain" "$key"
 #----------------------------------------------------------#
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit 
