@@ -164,9 +164,9 @@ APT::Install-Suggests "\""false"\"";\n\
   \
   # Fix Debian repository configuration \
   if [ "$os" == "debian" ]; then \
-    mkdir -p /var/cache/yum/{base,extras,updates,centosplus};
-  printf "Enable contrib and non-free components in debian repositories...\n" && \
-  sed -i "s>main>main contrib non-free>" /etc/apt/sources.list; \
+    printf "Enable contrib and non-free components in debian repositories...\n" && \
+    sed -i "s>main contrib non-free>main>" /etc/apt/sources.list; \
+    sed -i "s>main>main contrib non-free>" /etc/apt/sources.list; \
   fi && \
   \
   printf "Refresh the package manager...\n" && \
