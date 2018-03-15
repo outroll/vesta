@@ -122,12 +122,12 @@ case $os in
     ;;
 
   centos)
-    type="centos";
+    type="rhel";
     supported_releases=("5 6 7");
     supported_codenames=("centos5 centos6 centos7");
     ;;
 
-  centos)
+  rhel)
     type="rhel";
     supported_releases=("5 6 7");
     supported_codenames=("rhel5 rhel6 rhel7");
