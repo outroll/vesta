@@ -3,39 +3,50 @@
 # http://vestacp.com
 
 #
+# Style guides
+# https://google.github.io/styleguide/shell.xml
+# https://github.com/icy/bash-coding-style
+#
+
+#
 # Currently Supported Operating Systems:
 #
 #   RHEL 5, 6, 7
 #   CentOS 5, 6, 7
-#   Debian 7, 8
-#   Ubuntu 12.04 - 16.10
+#   Debian 7, 8, 9
+#   Ubuntu LTS 12.04, 14.04, 16.04
 #
+
+
+#----------------------------------------------------------#
+#                  Check system privileges                 #
+#----------------------------------------------------------#
 
 # Am I root?
 if [ "x$(id -u)" != 'x0' ]; then
-    echo 'Error: this script can only be executed by root'
-    exit 1
-fi
+  echo "Error: this script can only be executed by root";
+  exit 1;
+fi;
 
 # Check admin user account
 if [ ! -z "$(grep ^admin: /etc/passwd)" ] && [ -z "$1" ]; then
-    echo "Error: user admin exists"
-    echo
-    echo 'Please remove admin user before proceeding.'
-    echo 'If you want to do it automatically run installer with -f option:'
-    echo "Example: bash $0 --force"
-    exit 1
-fi
+  echo "Error: user admin exists";
+  echo;
+  echo "Please remove admin user before proceeding.";
+  echo "If you want to do it automatically run installer with -f option:";
+  echo "Example: bash $0 --force";
+  exit 1;
+fi;
 
 # Check admin group
 if [ ! -z "$(grep ^admin: /etc/group)" ] && [ -z "$1" ]; then
-    echo "Error: group admin exists"
-    echo
-    echo 'Please remove admin group before proceeding.'
-    echo 'If you want to do it automatically run installer with -f option:'
-    echo "Example: bash $0 --force"
-    exit 1
-fi
+  echo "Error: group admin exists";
+  echo;
+  echo "Please remove admin group before proceeding.";
+  echo "If you want to do it automatically run installer with -f option:";
+  echo "Example: bash $0 --force";
+  exit 1;
+fi;
 
 
 #----------------------------------------------------------#
@@ -98,34 +109,34 @@ fi;
 # Validate distribution, release codename and set type
 printf "\nDetected distribution ${os} ${release} (${codename})\n";
 case $os in
-    debian)
-      type="debian";
-      supported_releases=("7 8 9");
-      supported_codenames=("wheezy jessie stretch");
-      ;;
+  debian)
+    type="debian";
+    supported_releases=("7 8 9");
+    supported_codenames=("wheezy jessie stretch");
+    ;;
 
-    ubuntu)
-      type="ubuntu";
-      supported_releases=("12 14 16");
-      supported_codenames=("precise trusty xenial");
-      ;;
+  ubuntu)
+    type="ubuntu";
+    supported_releases=("12 14 16");
+    supported_codenames=("precise trusty xenial");
+    ;;
 
-    centos)
-      type="centos";
-      supported_releases=("5 6 7");
-      supported_codenames=("centos5 centos6 centos7");
-      ;;
+  centos)
+    type="centos";
+    supported_releases=("5 6 7");
+    supported_codenames=("centos5 centos6 centos7");
+    ;;
 
-    centos)
-      type="rhel";
-      supported_releases=("5 6 7");
-      supported_codenames=("rhel5 rhel6 rhel7");
-      ;;
+  centos)
+    type="rhel";
+    supported_releases=("5 6 7");
+    supported_codenames=("rhel5 rhel6 rhel7");
+    ;;
 
-    *)
-      printf "\nUnsupported distribution\n";
-      exit 1;
-      ;;
+  *)
+    printf "\nUnsupported distribution\n";
+    exit 1;
+    ;;
 esac;
 if [[ ! " ${supported_releases[@]} " =~ " ${release} " ]]; then
   printf "\nUnsupported distribution release\n";
@@ -220,28 +231,30 @@ elif [ "$os" == "centos" ] || [ "$os" == "rhel" ]; then \
 fi;
 
 
-# Check wget
-if [ -e '/usr/bin/wget' ]; then
-    wget http://vestacp.com/pub/vst-install-$type.sh -O vst-install-$type.sh
-    if [ "$?" -eq '0' ]; then
-        bash vst-install-$type.sh $*
-        exit
-    else
-        echo "Error: vst-install-$type.sh download failed."
-        exit 1
-    fi
-fi
+#----------------------------------------------------------#
+#                     Execute installer                    #
+#----------------------------------------------------------#
 
-# Check curl
-if [ -e '/usr/bin/curl' ]; then
-    curl -O http://vestacp.com/pub/vst-install-$type.sh
-    if [ "$?" -eq '0' ]; then
-        bash vst-install-$type.sh $*
-        exit
-    else
-        echo "Error: vst-install-$type.sh download failed."
-        exit 1
-    fi
-fi
+# Donwload installer if it does not exist or is not readable \
+if [ ! -r "vst-install-$type.sh" ]; then \
+  # Look for wget \
+  if [ -e "/usr/bin/wget" ]; then \
+    wget http://vestacp.com/pub/vst-install-$type.sh -O vst-install-$type.sh; \
+  # Look for curl \
+  elif [ -e "/usr/bin/curl" ]; then \
+    curl -O http://vestacp.com/pub/vst-install-$type.sh; \
+  else \
+    echo "Error: Could not find wget or curl to download installer."; \
+  fi; \
+fi;
 
-exit
+# Check if installer exists and is readable \
+if [ -r "vst-install-$type.sh" ]; then \
+  chmod +x vst-install-$type.sh && \
+  source vst-install-$type.sh; \
+else \
+  echo "Error: vst-install-$type.sh download failed." && \
+  exit 1; \
+fi;
+
+exit;
