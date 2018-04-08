@@ -15,7 +15,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
         $v_user = escapeshellarg($_POST['user']);
         $v_password = tempnam("/tmp","vst");
         $fp = fopen($v_password, "w");
-        fwrite($fp, $_POST['password']."\n");
+        fwrite($fp, escapeshellarg($_POST['password'])."\n");
         fclose($fp);
         $v_ip_addr = escapeshellarg($_SERVER["REMOTE_ADDR"]);
         exec(VESTA_CMD ."v-check-user-password ".$v_user." ".escapeshellarg($v_password)." '".$v_ip_addr."'",  $output, $auth_code);
@@ -70,8 +70,8 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
     // Check command
     if ($cmd == "'v-make-tmp-file'") {
         // Used in DNS Cluster
-        $fp = fopen($_POST['arg2'], 'w');
-        fwrite($fp, $_POST['arg1']."\n");
+        $fp = fopen(escapeshellarg($_POST['arg2']), 'w');
+        fwrite($fp, escapeshellarg($_POST['arg1'])."\n");
         fclose($fp);
         $return_var = 0;
     } else {
