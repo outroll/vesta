@@ -69,7 +69,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
     if ($cmd == "'v-make-tmp-file'") {
         // Used in DNS Cluster
         $fp = fopen(escapeshellarg($_POST['arg2']), 'w');
-        fwrite($fp, $_POST['arg1']."\n");
+        fwrite($fp, escapeshellarg($_POST['arg1'])."\n");
         fclose($fp);
         $return_var = 0;
     } else {
