@@ -66,7 +66,7 @@ if [ -e '/usr/bin/curl' ]; then
     curl -O http://vestacp.com/pub/vst-install-$type.sh
     if [ "$?" -eq '0' ]; then
         bash vst-install-$type.sh $*
-        if [[ $PATH != *"/usr/local/vesta/bin"* ]];then
+        if [[ $PATH != *"/usr/local/vesta/bin"* ]]; then
             PATH=$PATH:/usr/local/vesta/bin
         fi
         exit
