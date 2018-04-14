@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: check user password
-# options: USER PASSWORD [IP]
+# info: check user hash
+# options: USER HASH [IP]
 #
-# The function verifies user password from file
+# The function verifies user hash
 
 
 #----------------------------------------------------------#
@@ -11,7 +11,7 @@
 
 # Argument definition
 user=$1
-password=$2; HIDE=2
+hash=$2; HIDE=2
 ip=${3-127.0.0.1}
 
 # Includes
@@ -28,7 +28,7 @@ date=$(echo "$time_n_date" |cut -f 2 -d \ )
 #----------------------------------------------------------#
 
 
-check_args '2' "$#" 'USER PASSWORD'
+check_args '2' "$#" 'USER HASH'
 is_format_valid 'user'
 
 # Checking user
@@ -38,11 +38,11 @@ if [ ! -d "$VESTA/data/users/$user" ] && [ "$user" != 'root' ]; then
     exit 9
 fi
 
-# Checking user password
-is_password_valid
+# Checking user hash
+is_hash_valid
 
-# Checking empty password
-if [[ -z "$password" ]]; then
+# Checking empty hash
+if [[ -z "$hash" ]]; then
     echo "Error: password missmatch"
     echo "$date $time $user $ip failed to login" >> $VESTA/log/auth.log
     exit 9
@@ -76,15 +76,6 @@ else
 fi
 
 if [ -z "$salt" ]; then
-    echo "Error: password missmatch"
-    echo "$date $time $user $ip failed to login" >> $VESTA/log/auth.log
-    exit 9
-fi
-
-# Generating hash
-set -o noglob
-hash=$($BIN/v-generate-password-hash $method $salt <<< "$password")
-if [[ -z "$hash" ]]; then
     echo "Error: password missmatch"
     echo "$date $time $user $ip failed to login" >> $VESTA/log/auth.log
     exit 9
