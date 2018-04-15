@@ -61,10 +61,11 @@ fi
 # Parsing data
 if [ "$period" = 'daily' ]; then
     mem=$(free -m)
-    used=$(echo "$mem" |grep Mem |awk '{print $3}')
     if [ -z "$(echo "$mem" | grep available)" ]; then
+        used=$(echo "$mem" |grep Mem |awk '{print $3-($6+$7)}')
         free=$(echo "$mem" |grep buffers/cache |awk '{print $4}')
     else
+        used=$(echo "$mem" |grep Mem |awk '{print $3}')
         free=$(echo "$mem" |grep Mem |awk '{print $7}')
     fi
     swap=$(echo "$mem" |grep Swap |awk '{print $3}')
