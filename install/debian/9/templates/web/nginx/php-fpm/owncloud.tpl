@@ -23,7 +23,7 @@ server {
     rewrite ^/webdav(.*)$ /remote.php/webdav$1 redirect;
 
     error_page 403 = /core/templates/403.php;
-    error_page 404 = /core/templates/404.php;
+    error_page 403 = /core/templates/403.php;
 
     location ~ ^/(?:\.htaccess|data|config|db_structure\.xml|README){
         deny all;
@@ -55,8 +55,8 @@ server {
         add_header Cache-Control "public, must-revalidate, proxy-revalidate";
     }
 
-    #error_page  403 /error/404.html;
-    #error_page  404 /error/404.html;
+    #error_page  403 /error/403.html;
+    #error_page  403 /error/403.html;
     error_page  500 502 503 504 /error/50x.html;
 
     location /error/ {
@@ -65,7 +65,7 @@ server {
 
     location ~* "/\.(htaccess|htpasswd)$" {
         deny    all;
-        return  404;
+        return  403;
     }
 
     location /vstats/ {

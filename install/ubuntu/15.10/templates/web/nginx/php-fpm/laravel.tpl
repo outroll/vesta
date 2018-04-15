@@ -15,7 +15,7 @@ server {
         location ~ [^/]\.php(/|$) {
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             if (!-f $document_root$fastcgi_script_name) {
-                return  404;
+                return  403;
             }
 
             fastcgi_pass    %backend_lsnr%;
@@ -24,8 +24,8 @@ server {
         }
     }
 
-    error_page  403 /error/404.html;
-    error_page  404 /error/404.html;
+    error_page  403 /error/403.html;
+    error_page  403 /error/403.html;
     error_page  500 502 503 504 /error/50x.html;
 
     location /error/ {
@@ -34,7 +34,7 @@ server {
 
     location ~* "/\.(htaccess|htpasswd)$" {
         deny    all;
-        return  404;
+        return  403;
     }
 
     location /vstats/ {

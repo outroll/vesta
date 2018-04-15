@@ -6,7 +6,7 @@ server {
     index       index.php;
     autoindex   off;
     charset     UTF-8;
-    error_page  404 403 = /errors/404.php;
+    error_page  403 403 = /errors/403.php;
     add_header  "X-UA-Compatible" "IE=Edge";
 
     access_log  /var/log/nginx/domains/%domain%.log combined;
@@ -142,8 +142,8 @@ server {
     }
 
     # PHP entry point for main application
-    location ~ (index|get|static|report|404|503)\.php$ {
-        try_files $uri =404;
+    location ~ (index|get|static|report|403|503)\.php$ {
+        try_files $uri =403;
 
         fastcgi_pass   %backend_lsnr%;
         fastcgi_buffers 1024 4k;
