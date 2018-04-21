@@ -111,6 +111,13 @@ if (!empty($_POST['ok_rec'])) {
         $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
     }
 
+    // Don't allow SPF and TXT longer than 255
+    if ($_POST['v_type'] == 'TXT' || $_POST['v_type'] == 'SPF') {
+        if (strlen($_POST['v_val']) > 255) {
+            $_SESSION['error_msg'] = __(htmlentities($_POST[v_type]) . ' can\'t contain more than 255 characters.');
+        }
+    }
+    
     // Protect input
     $v_domain = escapeshellarg($_POST['v_domain']);
     $v_rec = escapeshellarg($_POST['v_rec']);
