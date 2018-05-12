@@ -7,11 +7,11 @@
 #!/bin/bash
 
 for i in `$VESTA/bin/v-list-sys-users | awk '{if(NR>2)print}'`; do
-find /home/$i/web/ -name 'public_html' -type d -print0 | xargs -0 -I {} find '{}' -type f -print0 | xargs -0 -I {} chmod 0644 {};
-find /home/$i/web/ -name 'public_html' -type d -print0 | xargs -0 -I {} find '{}' -type f -print0 | xargs -0 -I {} chown $i:$i {};
+find /home/$i/web/ -name 'public_*html' -type d -print0 | xargs -0 -I {} find '{}' -type f -print0 | xargs -0 -I {} chmod 0644 {};
+find /home/$i/web/ -name 'public_*html' -type d -print0 | xargs -0 -I {} find '{}' -type f -print0 | xargs -0 -I {} chown $i:$i {};
 
-find /home/$i/web/ -name 'public_html' -type d -print0 | xargs -0 -I {} find '{}' -type d -print0 | xargs -0 -I {} chmod 0755 {};
-find /home/$i/web/ -name 'public_html' -type d -print0 | xargs -0 -I {} find '{}' -type d -print0 | xargs -0 -I {} chown $i:$i {};
+find /home/$i/web/ -name 'public_*html' -type d -print0 | xargs -0 -I {} find '{}' -type d -print0 | xargs -0 -I {} chmod 0755 {};
+find /home/$i/web/ -name 'public_*html' -type d -print0 | xargs -0 -I {} find '{}' -type d -print0 | xargs -0 -I {} chown $i:$i {};
 
 done
 echo "All Done."
