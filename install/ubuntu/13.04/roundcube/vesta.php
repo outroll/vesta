@@ -7,7 +7,8 @@
  * @author Serghey Rodin <skid@vestacp.com>
  */
 
-    function password_save($curpass, $passwd)
+class rcube_vesta_password {
+    function save($curpass, $passwd)
     {
         $rcmail = rcmail::get_instance();
         $vesta_host = $rcmail->config->get('password_vesta_host');
@@ -60,3 +61,4 @@
         }
 
     }
+}
