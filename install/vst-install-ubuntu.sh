@@ -25,8 +25,8 @@ if [ "$release" = '16.04' ] || [ "$release" = '18.04' ]; then
         php-mysql php-curl php-fpm php-pgsql awstats webalizer vsftpd
         proftpd-basic bind9 exim4 exim4-daemon-heavy clamav-daemon
         spamassassin dovecot-imapd dovecot-pop3d roundcube-core
-        roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
+        roundcube-mysql roundcube-plugins mariadb-server mariadb-common
+        mariadb-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect vim-common
@@ -38,8 +38,8 @@ elif [ "$release" = '16.10' ] || [ "$release" = '17.10' ]; then
         php7.0-cgi php7.0-mysql php7.0-curl php7.0-fpm php7.0-pgsql awstats
         webalizer vsftpd proftpd-basic bind9 exim4 exim4-daemon-heavy
         clamav-daemon spamassassin dovecot-imapd dovecot-pop3d roundcube-core
-        roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
+        roundcube-mysql roundcube-plugins mariadb-server mariadb-common
+        mariadb-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect vim-common
@@ -51,8 +51,8 @@ else
         php5-mysql php5-curl php5-fpm php5-pgsql awstats webalizer vsftpd
         proftpd-basic bind9 exim4 exim4-daemon-heavy clamav-daemon
         spamassassin dovecot-imapd dovecot-pop3d roundcube-core
-        roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
+        roundcube-mysql roundcube-plugins mariadb-server mariadb-common
+        mariadb-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect vim-common
@@ -189,7 +189,7 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
         v) vsftpd=$OPTARG ;;            # Vsftpd
         j) proftpd=$OPTARG ;;           # Proftpd
         k) named=$OPTARG ;;             # Named
-        m) mysql=$OPTARG ;;             # MySQL
+        m) mysql=$OPTARG ;;             # MariaDB
         g) postgresql=$OPTARG ;;        # PostgreSQL
         d) mongodb=$OPTARG ;;           # MongoDB (unsupported)
         x) exim=$OPTARG ;;              # Exim
@@ -281,7 +281,7 @@ check_result $? "No access to Vesta repository"
 # Check installed packages
 tmpfile=$(mktemp -p /tmp)
 dpkg --get-selections > $tmpfile
-for pkg in exim4 mysql-server apache2 nginx vesta; do
+for pkg in exim4 mariadb-server apache2 nginx vesta; do
     if [ ! -z "$(grep $pkg $tmpfile)" ]; then
         conflicts="$pkg $conflicts"
     fi
@@ -360,7 +360,7 @@ fi
 
 # DB stack
 if [ "$mysql" = 'yes' ]; then
-    echo '   - MySQL Database Server'
+    echo '   - MariaDB Database Server'
 fi
 if [ "$postgresql" = 'yes' ]; then
     echo '   - PostgreSQL Database Server'
@@ -475,6 +475,11 @@ echo "deb http://nginx.org/packages/mainline/ubuntu/ $codename nginx" \
 wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
 apt-key add /tmp/nginx_signing.key
 
+# Installing MariaDB repo
+apt=/etc/apt/sources.list.d
+echo "deb http://nyc2.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu $codename main" > $apt/mariadb.list
+apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+
 # Installing vesta repo
 echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
 wget $CHOST/deb_signing.key -O deb_signing.key
@@ -536,7 +541,7 @@ service dovecot stop > /dev/null 2>&1
 cp /etc/dovecot.conf $vst_backups/dovecot > /dev/null 2>&1
 cp -r /etc/dovecot/* $vst_backups/dovecot > /dev/null 2>&1
 
-# Backing up MySQL/MariaDB configuration and data
+# Backing up MariaDB configuration and data
 service mysql stop > /dev/null 2>&1
 killall -9 mysqld > /dev/null 2>&1
 mv /var/lib/mysql $vst_backups/mysql/mysql_datadir > /dev/null 2>&1
@@ -615,9 +620,9 @@ if [ "$dovecot" = 'no' ]; then
     software=$(echo "$software" | sed -e "s/dovecot-pop3d//")
 fi
 if [ "$mysql" = 'no' ]; then
-    software=$(echo "$software" | sed -e 's/mysql-server//')
-    software=$(echo "$software" | sed -e 's/mysql-client//')
-    software=$(echo "$software" | sed -e 's/mysql-common//')
+    software=$(echo "$software" | sed -e 's/mariadb-server//')
+    software=$(echo "$software" | sed -e 's/mariadb-client//')
+    software=$(echo "$software" | sed -e 's/mariadb-common//')
     software=$(echo "$software" | sed -e 's/php7.0-mysql//')
     software=$(echo "$software" | sed -e 's/php5-mysql//')
     software=$(echo "$software" | sed -e 's/php-mysql//')
@@ -964,7 +969,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                  Configure MySQL/MariaDB                 #
+#                  Configure MariaDB                       #
 #----------------------------------------------------------#
 
 if [ "$mysql" = 'yes' ]; then
@@ -975,8 +980,8 @@ if [ "$mysql" = 'yes' ]; then
     if [ $memory -gt 3900000 ]; then
         mycnf="my-large.cnf"
     fi
-
-    # Configuring MySQL/MariaDB
+    
+    # Configuring MariaDB
     cp -f $vestacp/mysql/$mycnf /etc/mysql/my.cnf
     if [ "$release" != '16.04' ]; then
         mysql_install_db
@@ -990,7 +995,7 @@ if [ "$mysql" = 'yes' ]; then
     service mysql start
     check_result $? "mysql start failed"
 
-    # Securing MySQL/MariaDB installation
+    # Securing MariaDB installation
     mysqladmin -u root password $vpass
     echo -e "[client]\npassword='$vpass'\n" > /root/.my.cnf
     chmod 600 /root/.my.cnf
@@ -1239,7 +1244,7 @@ if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
     ip=$pub_ip
 fi
 
-# Configuring MySQL/MariaDB host
+# Configuring MariaDB host
 if [ "$mysql" = 'yes' ]; then
     $VESTA/bin/v-add-database-host mysql localhost root $vpass
     $VESTA/bin/v-add-database admin default default $(gen_pass) mysql
