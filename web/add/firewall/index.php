@@ -24,7 +24,8 @@ if (!empty($_POST['ok'])) {
     // Check empty fields
     if (empty($_POST['v_action'])) $errors[] = __('action');
     if (empty($_POST['v_protocol'])) $errors[] = __('protocol');
-    if (!isset($_POST['v_port'])) $errors[] = __('port');
+    if (!isset($_POST['v_sport'])) $errors[] = __('sport');
+    if (!isset($_POST['v_dport'])) $errors[] = __('dport');
     if (empty($_POST['v_ip'])) $errors[] = __('ip address');
     if (!empty($errors[0])) {
         foreach ($errors as $i => $error) {
@@ -40,16 +41,20 @@ if (!empty($_POST['ok'])) {
     // Protect input
     $v_action = escapeshellarg($_POST['v_action']);
     $v_protocol = escapeshellarg($_POST['v_protocol']);
-    $v_port = str_replace(" ",",", $_POST['v_port']);
-    $v_port = preg_replace('/\,+/', ',', $v_port);
-    $v_port = trim($v_port, ",");
-    $v_port = escapeshellarg($v_port);
+    $v_sport = str_replace(" ",",", $_POST['v_sport']);
+    $v_sport = preg_replace('/\,+/', ',', $v_sport);
+    $v_sport = trim($v_sport, ",");
+    $v_sport = escapeshellarg($v_sport);
+    $v_dport = str_replace(" ",",", $_POST['v_dport']);
+    $v_dport = preg_replace('/\,+/', ',', $v_dport);
+    $v_dport = trim($v_dport, ",");
+    $v_dport = escapeshellarg($v_dport);
     $v_ip = escapeshellarg($_POST['v_ip']);
     $v_comment = escapeshellarg($_POST['v_comment']);
 
     // Add firewall rule
     if (empty($_SESSION['error_msg'])) {
-        exec (VESTA_CMD."v-add-firewall-rule ".$v_action." ".$v_ip." ".$v_port." ".$v_protocol." ".$v_comment, $output, $return_var);
+        exec (VESTA_CMD."v-add-firewall-rule ".$v_action." ".$v_ip." ".$v_sport." ".$v_dport." ".$v_protocol." ".$v_comment, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }

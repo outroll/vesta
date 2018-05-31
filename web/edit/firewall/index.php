@@ -29,7 +29,8 @@ unset($output);
 $v_rule = $_GET['rule'];
 $v_action = $data[$v_rule]['ACTION'];
 $v_protocol = $data[$v_rule]['PROTOCOL'];
-$v_port = $data[$v_rule]['PORT'];
+$v_sport = $data[$v_rule]['SPORT'];
+$v_dport = $data[$v_rule]['DPORT'];
 $v_ip = $data[$v_rule]['IP'];
 $v_comment = $data[$v_rule]['COMMENT'];
 $v_date = $data[$v_rule]['DATE'];
@@ -53,24 +54,31 @@ if (!empty($_POST['save'])) {
     $v_rule = escapeshellarg($_GET['rule']);
     $v_action = escapeshellarg($_POST['v_action']);
     $v_protocol = escapeshellarg($_POST['v_protocol']);
-    $v_port = str_replace(" ",",", $_POST['v_port']);
-    $v_port = preg_replace('/\,+/', ',', $v_port);
-    $v_port = trim($v_port, ",");
-    $v_port = escapeshellarg($v_port);
+    $v_sport = str_replace(" ",",", $_POST['v_sport']);
+    $v_sport = preg_replace('/\,+/', ',', $v_sport);
+    $v_sport = trim($v_sport, ",");
+    $v_sport = escapeshellarg($v_sport);
+    $v_dport = str_replace(" ",",", $_POST['v_dport']);
+    $v_dport = preg_replace('/\,+/', ',', $v_dport);
+    $v_dport = trim($v_dport, ",");
+    $v_dport = escapeshellarg($v_dport);
     $v_ip = escapeshellarg($_POST['v_ip']);
     $v_comment = escapeshellarg($_POST['v_comment']);
 
     // Change Status
-    exec (VESTA_CMD."v-change-firewall-rule ".$v_rule." ".$v_action." ".$v_ip."  ".$v_port." ".$v_protocol." ".$v_comment, $output, $return_var);
+    exec (VESTA_CMD."v-change-firewall-rule ".$v_rule." ".$v_action." ".$v_ip." ".$v_sport." ".$v_dport." ".$v_protocol." ".$v_comment, $output, $return_var);
     check_return_code($return_var,$output);
     unset($output);
 
     $v_rule = $_GET['v_rule'];
     $v_action = $_POST['v_action'];
     $v_protocol = $_POST['v_protocol'];
-    $v_port = str_replace(" ",",", $_POST['v_port']);
-    $v_port = preg_replace('/\,+/', ',', $v_port);
-    $v_port = trim($v_port, ",");
+    $v_sport = str_replace(" ",",", $_POST['v_sport']);
+    $v_sport = preg_replace('/\,+/', ',', $v_sport);
+    $v_sport = trim($v_sport, ",");
+    $v_dport = str_replace(" ",",", $_POST['v_dport']);
+    $v_dport = preg_replace('/\,+/', ',', $v_dport);
+    $v_dport = trim($v_dport, ",");
     $v_ip = $_POST['v_ip'];
     $v_comment = $_POST['v_comment'];
 
