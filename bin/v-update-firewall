@@ -54,7 +54,7 @@ fi
 # Checking custom OpenSSH  port
 sshport=$(grep '^Port ' /etc/ssh/sshd_config | head -1 | cut -d ' ' -f 2)
 if [[ "$sshport" =~ ^[0-9]+$ ]] && [ "$sshport" -ne "22"  ]; then
-    sed -i "s/PORT='22'/PORT=\'$sshport\'/" $rules
+    sed -i "s/DPORT='22'/DPORT=\'$sshport\'/" $rules
 fi
 
 # Creating temporary file
@@ -83,33 +83,44 @@ for line in $(sort -r -n -k 2 -t \' $rules); do
     eval $line
     if [ "$SUSPENDED" = 'no' ]; then
         proto="-p $PROTOCOL"
-        port="--dport $PORT"
+        sport="--sport $SPORT"
+        dport="--dport $DPORT"
         ip="-s $IP"
         state=""
         action="-j $ACTION"
 
         # Adding multiport module
-        if [[ "$PORT" =~ ,|-|: ]] ; then
-            port="-m multiport --dports ${PORT//-/:}"
+        if [[ "$SPORT" =~ ,|-|: ]] ; then
+            sport="-m multiport --sports ${SPORT//-/:}"
+        fi
+
+        # Adding multiport module
+        if [[ "$DPORT" =~ ,|-|: ]] ; then
+            dport="-m multiport --dports ${DPORT//-/:}"
+        fi
+
+        # Accepting all src ports
+        if [[ "$SPORT" = "0" ]] || [ "$PROTOCOL" = 'ICMP' ] || [ "$SPORT" = "" ]; then
+            sport=""
         fi
 
         # Accepting all dst ports
-        if [[ "$PORT" = "0" ]] || [ "$PROTOCOL" = 'ICMP' ]; then
-            port=""
+        if [[ "$DPORT" = "0" ]] || [ "$PROTOCOL" = 'ICMP' ] || [ "$DPORT" = "" ]; then
+            dport=""
         fi
 
         # Checking FTP for contrack module
-        if [ "$TYPE" = "FTP" ] || [ "$PORT" = '21' ]; then
+        if [ "$TYPE" = "FTP" ] || [ "$DPORT" = '21' ]; then
             if [ "$conntrack_ftp" != 'no' ]; then
                 state="-m conntrack --ctstate NEW"
             else
-                port="-m multiport --dports 20,21,12000:12100"
+                dport="-m multiport --dports 20,21,12000:12100"
             fi
             ftp="yes"
         fi
 
         # Adding firewall rule
-        echo "$iptables -A INPUT $proto $port $ip $state $action" >> $tmp
+        echo "$iptables -A INPUT $proto $sport $dport $ip $state $action" >> $tmp
     fi
 done
 

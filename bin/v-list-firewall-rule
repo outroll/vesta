@@ -21,7 +21,8 @@ json_list() {
     echo '    "'$RULE'": {
         "ACTION": "'$ACTION'",
         "PROTOCOL": "'$PROTOCOL'",
-        "PORT": "'$PORT'",
+        "SPORT": "'$SPORT'",
+        "DPORT": "'$DPORT'",
         "IP": "'$IP'",
         "COMMENT": "'$COMMENT'",
         "SUSPENDED": "'$SUSPENDED'",
@@ -35,7 +36,8 @@ json_list() {
 shell_list() {
     echo "ACTION:         $ACTION"
     echo "PROTOCOL:       $PROTOCOL"
-    echo "PORT:           $PORT"
+    echo "SPORT:           $SPORT"
+    echo "DPORT:           $DPORT"
     echo "IP:             $IP"
     echo "COMMENT:        $COMMENT"
     echo "SUSPENDED:      $SUSPENDED"
@@ -45,14 +47,14 @@ shell_list() {
 
 # PLAIN list function
 plain_list() {
-    echo -ne "$RULE\t$ACTION\t$PROTOCOL\t$PORT\t$IP\t$COMMENT\t"
+    echo -ne "$RULE\t$ACTION\t$PROTOCOL\t$SPORT\t$DPORT\t$IP\t$COMMENT\t"
     echo -e "$SUSPENDED\t$TIME\t$DATE"
 }
 
 # CSV list function
 csv_list() {
-    echo "RULE,ACTION,PROTOCOL,PORT,IP,COMMENT,SUSPENDED,TIME,DATE"
-    echo "$RULE,$ACTION,$PROTOCOL,$PORT,$IP,$COMMENT,$SUSPENDED,$TIME,$DATE"
+    echo "RULE,ACTION,PROTOCOL,SPORT,DPORT,IP,COMMENT,SUSPENDED,TIME,DATE"
+    echo "$RULE,$ACTION,$PROTOCOL,$SPORT,$DPORT,$IP,$COMMENT,$SUSPENDED,$TIME,$DATE"
 }
 
 

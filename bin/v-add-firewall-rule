@@ -15,11 +15,12 @@ source /etc/profile
 # Argument definition
 action=$(echo $1|tr '[:lower:]' '[:upper:]')
 ip=$2
-port_ext=$3
-protocol=${4-TCP}
+sport_ext=$3
+dport_ext=$4
+protocol=${5-TCP}
 protocol=$(echo $protocol|tr '[:lower:]' '[:upper:]')
-comment=$5
-rule=$6
+comment=$6
+rule=$7
 
 # Includes
 source $VESTA/func/main.sh
@@ -46,8 +47,8 @@ sort_fw_rules() {
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '3' "$#" 'ACTION IP PORT [PROTOCOL] [COMMENT] [RULE]'
-is_format_valid 'action' 'protocol' 'port_ext' 'ip'
+check_args '3' "$#" 'ACTION IP SPORT DPORT [PROTOCOL] [COMMENT] [RULE]'
+is_format_valid 'action' 'protocol' 'sport_ext' 'dport_ext' 'ip'
 is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
 get_next_fw_rule
 is_format_valid 'rule'
@@ -67,7 +68,7 @@ time=$(echo "$time_n_date" |cut -f 1 -d \ )
 date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Concatenating rule
-str="RULE='$rule' ACTION='$action' PROTOCOL='$protocol' PORT='$port_ext'"
+str="RULE='$rule' ACTION='$action' PROTOCOL='$protocol' SPORT='$sport_ext' DPORT='$dport_ext'"
 str="$str IP='$ip' COMMENT='$comment' SUSPENDED='no'"
 str="$str TIME='$time' DATE='$date'"
 
