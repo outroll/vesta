@@ -224,7 +224,7 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
         if [ ! -z "$exlusion" ]; then
             xdirs="$(echo -e "$exlusion" |tr ':' '\n' |grep -v $domain)"
             for xpath in $xdirs; do
-                fargs+=(--exclude=$xpath/*)
+                fargs+=(--exclude=$xpath)
                 echo "$(date "+%F %T") excluding directory $xpath"
                 msg="$msg\n$(date "+%F %T") excluding directory $xpath"
             done

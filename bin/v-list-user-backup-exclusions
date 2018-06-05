@@ -33,7 +33,7 @@ json_list() {
                     echo -n '""'
                 fi
             else
-                echo -n "\"${key//:/,}\""
+                echo -n "\"${key}\""
             fi
             ((j++))
         done
