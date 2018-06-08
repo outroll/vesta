@@ -71,12 +71,22 @@
 
                             <tr>
                                 <td class="vst-text input-label">
-                                    <?php print __('Port');?> <span class="optional">(<?php print __('ranges are acceptable');?>)</span>
+                                    <?php print __('Source port');?> <span class="optional">(<?php print __('ranges are acceptable');?>)</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" size="20" class="vst-input" name="v_port" value="<?=htmlentities(trim($v_port, "'"))?>">
+                                    <input type="text" size="20" class="vst-input" name="v_sport" value="<?=htmlentities(trim($v_sport, "'"))?>">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="vst-text input-label">
+                                    <?php print __('Destination port');?> <span class="optional">(<?php print __('ranges are acceptable');?>)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" size="20" class="vst-input" name="v_dport" value="<?=htmlentities(trim($v_dport, "'"))?>">
                                 </td>
                             </tr>
                             <tr>

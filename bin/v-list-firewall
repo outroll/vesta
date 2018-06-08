@@ -26,7 +26,8 @@ json_list() {
         echo -n '    "'$RULE'": {
         "ACTION": "'$ACTION'",
         "PROTOCOL": "'$PROTOCOL'",
-        "PORT": "'$PORT'",
+        "SPORT": "'$SPORT'",
+        "DPORT": "'$DPORT'",
         "IP": "'$IP'",
         "COMMENT": "'$COMMENT'",
         "SUSPENDED": "'$SUSPENDED'",
@@ -46,11 +47,11 @@ json_list() {
 # SHELL list function
 shell_list() {
     IFS=$'\n'
-    echo "RULE^ACTION^PROTO^PORT^IP^SPND^DATE"
-    echo "----^------^-----^----^--^----^----"
+    echo "RULE^ACTION^PROTO^SPORT^DPORT^IP^SPND^DATE"
+    echo "----^------^-----^-----^-----^--^----^----"
     while read str; do
         eval $str
-        echo "$RULE^$ACTION^$PROTOCOL^$PORT^$IP^$SUSPENDED^$DATE"
+        echo "$RULE^$ACTION^$PROTOCOL^$SPORT^$DPORT^$IP^$SUSPENDED^$DATE"
     done < <(cat $VESTA/data/firewall/rules.conf)
 }
 
@@ -59,7 +60,7 @@ plain_list() {
     IFS=$'\n'
     while read str; do
         eval $str
-        echo -ne "$RULE\t$ACTION\t$PROTOCOL\t$PORT\t$IP\t$COMMENT\t"
+        echo -ne "$RULE\t$ACTION\t$PROTOCOL\t$SPORT\t$DPORT\t$IP\t$COMMENT\t"
         echo -e "$SUSPENDED\t$TIME\t$DATE"
     done < <(cat $VESTA/data/firewall/rules.conf)
 }
@@ -70,7 +71,7 @@ csv_list() {
     echo "RULE,ACTION,PROTOCOL,PORT,IP,COMMENT,SUSPENDED,TIME,DATE"
     while read str; do
         eval $str
-        echo -n "$RULE,$ACTION,$PROTOCOL,$PORT,$IP,\"$COMMENT\","
+        echo -n "$RULE,$ACTION,$PROTOCOL,$SPORT,$DPORT,$IP,\"$COMMENT\","
         echo "$SUSPENDED,$TIME,$DATE"
     done < <(cat $VESTA/data/firewall/rules.conf)
 }
