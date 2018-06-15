@@ -3,6 +3,11 @@
 session_start();
 
 define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
+
+define('VESTA_TEMPLATES', '/templates/');
+//Replace $__template_dir
+define('VESTA_TEMPLATES_DIR', $_SERVER['DOCUMENT_ROOT'].VESTA_TEMPLATES);
+
 define('JS_LATEST_UPDATE', '1491697868');
 
 $i = 0;
@@ -132,11 +137,10 @@ function check_return_code($return_var,$output) {
 }
 
 function render_page($user, $TAB, $page) {
-    $__template_dir = dirname(__DIR__) . '/templates/';
     $__pages_js_dir = dirname(__DIR__) . '/js/pages/';
 
     // Header
-    include($__template_dir . 'header.html');
+    include(VESTA_TEMPLATES_DIR.'header.html');
 
     // Panel
     top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
@@ -151,22 +155,22 @@ function render_page($user, $TAB, $page) {
     //*/
 
     // Body
-    if (($_SESSION['user'] !== 'admin') && (@include($__template_dir . "user/$page.html"))) {
+    if (($_SESSION['user'] !== 'admin') && (@include(VESTA_TEMPLATES_DIR."user/$page.html"))) {
         // User page loaded
     } else {
         // Not admin or user page doesn't exist
         // Load admin page
-        @include($__template_dir . "admin/$page.html");
+        @include(VESTA_TEMPLATES_DIR."admin/$page.html");
     }
 
     // Including common js files
-    @include_once(dirname(__DIR__) . '/templates/scripts.html');
+    @include_once(VESTA_TEMPLATES_DIR.'scripts.html');
     // Including page specific js file
     if(file_exists($__pages_js_dir.$page.'.js'))
        echo '<script type="text/javascript" src="/js/pages/'.$page.'.js?'.JS_LATEST_UPDATE.'"></script>';
 
     // Footer
-    include($__template_dir . 'footer.html');
+    include(VESTA_TEMPLATES_DIR.'footer.html');
 }
 
 function top_panel($user, $TAB) {
@@ -195,9 +199,9 @@ function top_panel($user, $TAB) {
 
 
     if ( $user == 'admin' ) {
-        include(dirname(__FILE__).'/../templates/admin/panel.html');
+        include(VESTA_TEMPLATES_DIR.'admin/panel.html');
     } else {
-        include(dirname(__FILE__).'/../templates/user/panel.html');
+        include(VESTA_TEMPLATES_DIR.'user/panel.html');
     }
 }
 

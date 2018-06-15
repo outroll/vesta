@@ -32,4 +32,4 @@ $GLOBAL_JS .= '<script type="text/javascript">GLOBAL.ROOT_DIR = "' . $panel[$use
 
 
 // Footer
-include($_SERVER['DOCUMENT_ROOT'].'/templates/file_manager/main.php');
+include(VESTA_TEMPLATES_DIR.'file_manager/main.php');

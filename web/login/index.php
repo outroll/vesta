@@ -149,5 +149,5 @@ if (empty($_SESSION['language'])) {
 $_SESSION['token'] = md5(uniqid(mt_rand(), true));
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n/'.$_SESSION['language'].'.php');
-require_once('../templates/header.html');
-require_once('../templates/login.html');
+require_once(VESTA_TEMPLATES_DIR.'header.html');
+require_once(VESTA_TEMPLATES_DIR.'login.html');

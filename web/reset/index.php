@@ -78,15 +78,15 @@ if ((!empty($_POST['user'])) && (!empty($_POST['code'])) && (!empty($_POST['pass
 if (empty($_SESSION['language'])) $_SESSION['language'] = detect_user_language();
 
 if (empty($_GET['action'])) {
-    require_once '../templates/header.html';
-    require_once '../templates/reset_1.html';
+    require_once(VESTA_TEMPLATES_DIR.'header.html');
+    require_once(VESTA_TEMPLATES_DIR.'reset_1.html');
 } else {
-    require_once '../templates/header.html';
+    require_once(VESTA_TEMPLATES_DIR.'header.html');
     if ($_GET['action'] == 'code' ) {
-        require_once '../templates/reset_2.html';
+        require_once(VESTA_TEMPLATES_DIR.'reset_2.html');
     }
     if (($_GET['action'] == 'confirm' ) && (!empty($_GET['code']))) {
-        require_once '../templates/reset_3.html';
+        require_once(VESTA_TEMPLATES_DIR.'reset_3.html');
     }
 }
 
