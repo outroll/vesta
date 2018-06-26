@@ -71,6 +71,9 @@ rebuild_user_conf() {
         echo "$BIN/v-update-web-domains-disk $user" \
             >> $VESTA/data/queue/disk.pipe
 
+        if [[ -L "$HOMEDIR/$user/web" ]]; then
+            rm $HOMEDIR/$user/web
+        fi
         mkdir -p $HOMEDIR/$user/conf/web
         mkdir -p $HOMEDIR/$user/web
         mkdir -p $HOMEDIR/$user/tmp
@@ -105,6 +108,9 @@ rebuild_user_conf() {
         echo "$BIN/v-update-mail-domains-disk $user" \
             >> $VESTA/data/queue/disk.pipe
 
+        if [[ -L "$HOMEDIR/$user/mail" ]]; then
+            rm $HOMEDIR/$user/mail
+        fi
         mkdir -p $HOMEDIR/$user/conf/mail
         mkdir -p $HOMEDIR/$user/mail
         chmod 751 $HOMEDIR/$user/mail
@@ -535,12 +541,30 @@ rebuild_mail_domain_conf() {
 rebuild_mysql_database() {
     mysql_connect $HOST
     mysql_query "CREATE DATABASE \`$DB\` CHARACTER SET $CHARSET" >/dev/null
-    if [ "$(echo $mysql_ver |cut -d '.' -f2)" -ge 7 ]; then
-        mysql_query "CREATE USER IF NOT EXISTS \`$DBUSER\`" >/dev/null
-        mysql_query "CREATE USER IF NOT EXISTS \`$DBUSER\`@localhost" >/dev/null
-        query="UPDATE mysql.user SET authentication_string='$MD5'"
-        query="$query WHERE User='$DBUSER'"
+    if [ "$mysql_fork" = "mysql" ]; then
+        # mysql
+        if [ "$(echo $mysql_ver |cut -d '.' -f2)" -ge 7 ]; then
+            # mysql >= 5.7
+            mysql_query "CREATE USER IF NOT EXISTS \`$DBUSER\`" > /dev/null
+            mysql_query "CREATE USER IF NOT EXISTS \`$DBUSER\`@localhost" > /dev/null
+            query="UPDATE mysql.user SET authentication_string='$MD5'"
+            query="$query WHERE User='$DBUSER'"
+        else
+            # mysql < 5.7
+            query="UPDATE mysql.user SET Password='$MD5' WHERE User='$DBUSER'"
+        fi
     else
+        # mariadb
+        if [ "$(echo $mysql_ver |cut -d '.' -f1)" -eq 5 ]; then
+            # mariadb = 5
+            mysql_query "CREATE USER \`$DBUSER\`" > /dev/null
+            mysql_query "CREATE USER \`$DBUSER\`@localhost" > /dev/null
+        else
+            # mariadb = 10
+            mysql_query "CREATE USER IF NOT EXISTS \`$DBUSER\`" > /dev/null
+            mysql_query "CREATE USER IF NOT EXISTS \`$DBUSER\`@localhost" > /dev/null
+        fi
+        # mariadb any version
         query="UPDATE mysql.user SET Password='$MD5' WHERE User='$DBUSER'"
     fi
     mysql_query "GRANT ALL ON \`$DB\`.* TO \`$DBUSER\`@\`%\`" >/dev/null

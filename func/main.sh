@@ -273,8 +273,24 @@ is_object_value_exist() {
 is_password_valid() {
     if [[ "$password" =~ ^/tmp/ ]]; then
         if [ -f "$password" ]; then
-            password=$(head -n1 $password)
+            password="$(head -n1 $password)"
         fi
+    fi
+}
+
+# Check if hash is transmitted via file
+is_hash_valid() {
+    if [[ "$hash" =~ ^/tmp/ ]]; then
+        if [ -f "$hash" ]; then
+            hash="$(head -n1 $hash)"
+        fi
+    fi
+}
+
+# Check if directory is a symlink
+is_dir_symlink() {
+    if [[ -L "$1" ]]; then
+        check_result $E_FORBIDEN "$1 directory is a symlink"
     fi
 }
 
@@ -516,7 +532,7 @@ is_user_format_valid() {
 is_domain_format_valid() {
     object_name=${2-domain}
     exclude="[!|@|#|$|^|&|*|(|)|+|=|{|}|:|,|<|>|?|_|/|\|\"|'|;|%|\`| ]"
-    if [[ $1 =~ $exclude ]] || [[ $1 =~ ^[0-9]+$ ]] || [[ $1 =~ "\.\." ]]; then
+    if [[ $1 =~ $exclude ]] || [[ $1 =~ ^[0-9]+$ ]] || [[ $1 =~ "\.\." ]] || [[ $1 =~ "$(printf '\t')" ]]; then
         check_result $E_INVALID "invalid $object_name format :: $1"
     fi
 }
