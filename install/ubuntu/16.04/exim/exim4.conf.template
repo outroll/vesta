@@ -6,7 +6,7 @@
 
 #SPAMASSASSIN = yes
 #SPAM_SCORE = 50
-#CLAMD =  yes
+#CLAMD = yes
 
 add_environment = <; PATH=/bin:/usr/bin
 keep_environment =
@@ -43,8 +43,8 @@ never_users = root
 host_lookup = *
 rfc1413_hosts = *
 rfc1413_query_timeout = 5s
-ignore_bounce_errors_after = 2d
-timeout_frozen_after = 7d
+ignore_bounce_errors_after = 1d
+timeout_frozen_after = 2d
 
 DKIM_DOMAIN = ${lc:${domain:$h_from:}}
 DKIM_FILE = /etc/exim4/domains/${lc:${domain:$h_from:}}/dkim.pem
