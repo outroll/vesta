@@ -1095,7 +1095,6 @@ if [ "$clamd" = 'yes' ]; then
     gpasswd -a clamav mail
     gpasswd -a clamav Debian-exim
     cp -f $vestacp/clamav/clamd.conf /etc/clamav/
-    /usr/bin/freshclam
     update-rc.d clamav-daemon defaults
     service clamav-daemon start
     check_result $? "clamav-daeom start failed"
