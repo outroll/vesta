@@ -42,7 +42,11 @@ server {
     location ~ /vendor/.*\.php$ {
         deny all;
         return 404;
-    }        
+    }  
+    
+    location @rewrite {
+        rewrite ^/(.*)$ /index.php?q=$1;
+    }          
 
     location ~ ^/sites/.*/files/styles/ {
         try_files $uri @rewrite;
