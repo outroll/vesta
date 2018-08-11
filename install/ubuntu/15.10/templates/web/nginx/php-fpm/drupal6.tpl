@@ -7,62 +7,52 @@ server {
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
     error_log   /var/log/nginx/domains/%domain%.error.log error;
 
-    location = /favicon.ico {
-        log_not_found off;
-        access_log off;
-    }
-
-    location = /robots.txt {
-        allow all;
-        log_not_found off;
-        access_log off;
-    }
-
-    location ~* \.(txt|log)$ {
-        allow 192.168.0.0/16;
-        deny all;
-    }
-
-    location ~ \..*/.*\.php$ {
-        return 403;
-        }
-
-    location ~ ^/sites/.*/private/ {
-        return 403;
-    }
-
-    location ~ ^/sites/[^/]+/files/.*\.php$ {
-        deny all;
-    }
-
-    location / {
-        try_files $uri @rewrite;
-    }
-
     location @rewrite {
         rewrite ^/(.*)$ /index.php?q=$1;
     }
+
+    location / {
+        location = /favicon.ico {
+            log_not_found off;
+            access_log off;
+        }
+
+        location = /robots.txt {
+            allow all;
+            log_not_found off;
+            access_log off;
+        }
+
+        location ~ \..*/.*\.php$ {
+            return 403;
+        }
+
+        location ~ ^/sites/.*/private/ {
+            return 403;
+        }
+
+        location ~ ^/sites/[^/]+/files/.*\.php$ {
+            deny all;
+        }
     
-    location ~ /vendor/.*\.php$ {
-        deny all;
-        return 404;
-    }    
+        try_files $uri @rewrite; 
 
-    location ~* ^.+\.(jpeg|jpg|png|gif|bmp|ico|svg|css|js)$ {
-        try_files $uri @rewrite;
-        expires max;
-        log_not_found off;
-    }
+        location ~* ^.+\.(jpeg|jpg|png|gif|bmp|ico|svg|css|js)$ {
+            try_files $uri @rewrite;
+            expires max;
+            log_not_found off;
+        }
 
-    location ~ ^/sites/.*/files/imagecache/ {
-        try_files $uri @rewrite;
-    }
-        
-    location ~ '\.php$|^/update.php' {
-        fastcgi_split_path_info ^(.+?\.php)(|/.*)$;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_pass %backend_lsnr%;             
-        include /etc/nginx/fastcgi_params;
+        location ~ ^/sites/.*/files/imagecache/ {
+            try_files $uri @rewrite;
+        }
+            
+        location ~ '\.php$|^/update.php' {
+            fastcgi_split_path_info ^(.+?\.php)(|/.*)$;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_pass %backend_lsnr%;             
+            include /etc/nginx/fastcgi_params;
+        }        
     }
 
     error_page  403 /error/404.html;
