@@ -1,11 +1,13 @@
 <?php
 define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
+define('VESTA_E_PASSWORD', 9);
 
 if (isset($_POST['user']) || isset($_POST['hash'])) {
 
     // Authentication
     if (empty($_POST['hash'])) {
         if ($_POST['user'] != 'admin') {
+            header('X-Vesta-Return-Code: ' . VESTA_E_PASSWORD);
             echo 'Error: authentication failed';
             exit;
         }
@@ -44,6 +46,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
 
         // Check API answer
         if ( $return_var > 0 ) {
+            header('X-Vesta-Return-Code: ' . $return_var);
             echo 'Error: authentication failed';
             exit;
         }
@@ -55,6 +58,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
 
             // Check API answer
             if ( $return_var > 0 ) {
+                header('X-Vesta-Return-Code: ' . $return_var);
                 echo 'Error: authentication failed';
                 exit;
             }
@@ -64,6 +68,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
     }
 
     if ( $return_var > 0 ) {
+        header('X-Vesta-Return-Code: ' . $return_var);
         echo 'Error: authentication failed';
         exit;
     }
@@ -113,6 +118,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
         exec ($cmdquery, $output, $return_var);
     }
 
+    header('X-Vesta-Return-Code: ' . $return_var);
     if ((!empty($_POST['returncode'])) && ($_POST['returncode'] == 'yes')) {
         echo $return_var;
     } else {
