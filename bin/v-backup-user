@@ -68,8 +68,12 @@ while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
     (( ++i))
 done
 
+if [ -z "$BACKUP_TEMP" ]; then
+    BACKUP_TEMP=$BACKUP
+fi
+
 # Creating temporary directory
-tmpdir=$(mktemp -p /tmp -d)
+tmpdir=$(mktemp -p $BACKUP_TEMP -d)
 
 if [ "$?" -ne 0 ]; then
     echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notify
@@ -388,14 +392,17 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB" != '*' ]; then
         grep "DB='$database'" $conf > vesta/db.conf
 
         dump="$tmpdir/db/$database/$database.$TYPE.sql"
+        dumpgz="$tmpdir/db/$database/$database.$TYPE.sql.gz"
         grants="$tmpdir/db/$database/conf/$database.$TYPE.$DBUSER"
-        case $TYPE in
-            mysql) dump_mysql_database ;;
-            pgsql) dump_pgsql_database ;;
-        esac
+        if [ ! -f "$dumpgz" ]; then
+            case $TYPE in
+                mysql) dump_mysql_database ;;
+                pgsql) dump_pgsql_database ;;
+            esac
 
-        # Compress dump
-        gzip -$BACKUP_GZIP $dump
+            # Compress dump
+            gzip -$BACKUP_GZIP $dump
+        fi
     done
 
     # Print total
@@ -499,7 +506,7 @@ local_backup(){
     backup_list=$(ls -lrt $BACKUP/ |awk '{print $9}' |grep "^$user\." | grep ".tar")
     backups_count=$(echo "$backup_list" |wc -l)
     if [ "$BACKUPS" -le "$backups_count" ]; then
-        backups_rm_number=$((backups_count - BACKUPS))
+        backups_rm_number=$((backups_count - BACKUPS + 1))
 
         # Removing old backup
         for backup in $(echo "$backup_list" |head -n $backups_rm_number); do
@@ -615,7 +622,7 @@ ftp_backup() {
     fi
     backups_count=$(echo "$backup_list" |wc -l)
     if [ "$backups_count" -ge "$BACKUPS" ]; then
-        backups_rm_number=$((backups_count - BACKUPS))
+        backups_rm_number=$((backups_count - BACKUPS + 1))
         for backup in $(echo "$backup_list" |head -n $backups_rm_number); do 
             backup_date=$(echo $backup |sed -e "s/$user.//" -e "s/.tar$//")
             echo -e "$(date "+%F %T") Rotated ftp backup: $backup_date" |\
@@ -770,7 +777,7 @@ sftp_backup() {
     fi
     backups_count=$(echo "$backup_list" |wc -l)
     if [ "$backups_count" -ge "$BACKUPS" ]; then
-        backups_rm_number=$((backups_count - BACKUPS))
+        backups_rm_number=$((backups_count - BACKUPS + 1))
         for backup in $(echo "$backup_list" |head -n $backups_rm_number); do
             backup_date=$(echo $backup |sed -e "s/$user.//" -e "s/.tar.*$//")
             echo -e "$(date "+%F %T") Rotated sftp backup: $backup_date" |\

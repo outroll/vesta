@@ -229,8 +229,12 @@ while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
     (( ++i))
 done
 
+if [ -z "$BACKUP_TEMP" ]; then
+    BACKUP_TEMP=$BACKUP
+fi
+
 # Creating temporary directory
-tmpdir=$(mktemp -p /tmp -d)
+tmpdir=$(mktemp -p $BACKUP_TEMP -d)
 if [ "$?" -ne 0 ]; then
     echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notify
     sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
@@ -373,8 +377,10 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
 
             # Copying ssl certificates
             if [ "$SSL" = 'yes' ]; then
-                for crt in $(ls $tmpdir/web/$domain/conf |grep ssl); do
-                    crt=$(echo "$crt" |sed "s/ssl.//")
+                certificates=$(ls $tmpdir/web/$domain/conf| grep ssl)
+                certificates=$(echo "$certificates" |grep $domain)
+                for crt in $certificates; do
+                    crt=$(echo $crt|sed -e "s/ssl.//")
                     cp -f $tmpdir/web/$domain/conf/ssl.$crt $USER_DATA/ssl/$crt
                 done
             fi

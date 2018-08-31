@@ -29,7 +29,7 @@ if [ "$release" -eq 9 ]; then
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
-        unrar-free vim-common vesta-ioncube vesta-softaculous"
+        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools"
 elif [ "$release" -eq 8 ]; then
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
@@ -42,7 +42,7 @@ elif [ "$release" -eq 8 ]; then
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
-        unrar-free vim-common vesta-ioncube vesta-softaculous"
+        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools"
 else
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
@@ -55,7 +55,7 @@ else
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect unrar-free
-        vim-common vesta-ioncube vesta-softaculous"
+        vim-common vesta-ioncube vesta-softaculous net-tools"
 fi
 
 # Defining help function
@@ -1110,8 +1110,8 @@ if [ "$clamd" = 'yes' ]; then
     fi
     chown -R clamav:clamav /var/run/clamav
     if [ -e "/lib/systemd/system/clamav-daemon.service" ]; then
-        exec_pre1='ExecStartPre=/bin/mkdir -p /var/run/clamav'
-        exec_pre2='ExecStartPre=/bin/chown -R clamav:clamav /var/run/clamav'
+        exec_pre1='ExecStartPre=-/bin/mkdir -p /var/run/clamav'
+        exec_pre2='ExecStartPre=-/bin/chown -R clamav:clamav /var/run/clamav'
         sed -i "s|\[Service\]/|[Service]\n$exec_pre1\n$exec_pre2|g" \
             /lib/systemd/system/clamav-daemon.service
         systemctl daemon-reload
@@ -1165,13 +1165,15 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
         /etc/roundcube/plugins/password/config.inc.php
     mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
     chmod a+r /etc/roundcube/main.inc.php
-    if [ "$release" -eq 8 ]; then
+    if [ "$release" -eq 8 ] || [ "$release" -eq 9 ]; then
         mv -f /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
         mv -f /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
         chmod 640 /etc/roundcube/debian-db-roundcube.php
         chmod 640 /etc/roundcube/config.inc.php
         chown root:www-data /etc/roundcube/debian-db-roundcube.php
         chown root:www-data /etc/roundcube/config.inc.php
+    fi
+    if [ "$release" -eq 8 ]; then
         # RoundCube tinyMCE fix
         tinymceFixArchiveURL=$vestacp/roundcube/roundcube-tinymce.tar.gz
         tinymceParentFolder=/usr/share/roundcube/program/js

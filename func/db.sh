@@ -38,11 +38,19 @@ mysql_connect() {
         exit $E_CONNECT
     fi
     mysql_ver=$(cat $mysql_out |tail -n1 |cut -f 1 -d -)
+    mysql_fork="mysql"
+    check_mysql_fork=$(grep "MariaDB" $mysql_out)
+    if [ ! -z "$check_mysql_fork" ]; then
+        mysql_fork="mariadb"
+    fi
     rm -f $mysql_out
 }
 
 mysql_query() {
-    mysql --defaults-file=$mycnf -e "$1" 2>/dev/null
+    sql_tmp=$(mktemp)
+    echo "$1" > $sql_tmp
+    mysql --defaults-file=$mycnf < "$sql_tmp"  2>/dev/null
+    rm -f "$sql_tmp"
 }
 
 mysql_dump() {
@@ -84,7 +92,10 @@ psql_connect() {
 }
 
 psql_query() {
-    psql -h $HOST -U $USER -c "$1" 2>/dev/null
+    sql_tmp=$(mktemp)
+    echo "$1" > $sql_tmp
+    psql -h $HOST -U $USER -f "$sql_tmp" 2>/dev/null
+    rm -f $sql_tmp
 }
 
 psql_dump() {

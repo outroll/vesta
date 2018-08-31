@@ -1,6 +1,6 @@
 Name:           vesta
 Version:        0.9.8
-Release:        18
+Release:        22
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPL
@@ -30,17 +30,20 @@ rm -rf %{buildroot}
 
 %post
 if [ $1 -ge 2 ]; then
-    if [ -e /usr/local/vesta/upd/add_sudo.sh ]; then
+    if [ -x /usr/local/vesta/upd/add_sudo.sh ]; then
         /usr/local/vesta/upd/add_sudo.sh
     fi
-    if [ -e /usr/local/vesta/upd/add_notifications.sh ]; then
+    if [ -x /usr/local/vesta/upd/add_notifications.sh ]; then
         /usr/local/vesta/upd/add_notifications.sh
     fi
-    if [ -e /usr/local/vesta/upd/fix_sessions.sh ]; then
+    if [ -x /usr/local/vesta/upd/fix_sessions.sh ]; then
         /usr/local/vesta/upd/fix_sessions.sh
     fi
-    if [ -e /usr/local/vesta/upd/fix_nginx_auth.sh ]; then
+    if [ -x /usr/local/vesta/upd/fix_nginx_auth.sh ]; then
         /usr/local/vesta/upd/fix_nginx_auth.sh
+    fi
+    if [ -x /usr/local/vesta/upd/fix_roundcube.sh ]; then
+        /usr/local/vesta/upd/fix_roundcube.sh
     fi
 fi
 %files
@@ -56,6 +59,24 @@ fi
 %config(noreplace) %{_vestadir}/web/css/uploadify.css
 
 %changelog
+* Fri May 11 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-21
+- Additional security fixes
+
+* Sun Apr 08 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-20
+- Hardening password checks
+
+* Wed Jan 10 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-19
+- Fixed backup restore function
+
+* Fri Dec 29 2017 Serghey Rodin <builder@vestacp.com> - 0.9.8-18
+- Let's Encrypt for internationalized domains (IDN)
+- Softaculous Application Installer
+- Debian 9 support sponsored by isicore.com
+- Ubuntu 16.10 and 17.04 support
+- Korean, Urdu, Thai, Brazilian Portuguese, Serbian and Bulgarian language support
+- We've made 1478 commits
+- 29 bugs closed / 141 pull requests merged
+
 * Mon Nov 14 2016 Serghey Rodin <builder@vestacp.com> - 0.9.8-17
 - System Config Editor
 - Let's Encrypt GUI
