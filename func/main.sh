@@ -790,8 +790,15 @@ is_name_format_valid() {
     #problem: the ' sign in names
     #before: ^[[:alnum:]][-|\ |\.|_[:alnum:]]{0,28}[[:alnum:]]$
     #after : ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$
-    if ! [[ "$1" =~ ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$ ]]; then
-        check_result $E_INVALID "invalid $2 format :: $1"
+    # [[ "O\'Malley" =~ ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$ ]] &&
+    if [[ "$1" =~ ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$ ]]; then
+        if [[ $1 != ${BASH_REMATCH} ]]; then
+            check_result $E_INVALID "invalid $2 format :: $1"
+        fi
+    else
+        if [[ $1 != ^[[:alnum:]][-|\ |\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
+            check_result $E_INVALID "invalid $2 format :: $1"
+        fi
     fi
 }
 
