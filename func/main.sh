@@ -796,8 +796,15 @@ is_name_format_valid() {
             check_result $E_INVALID "invalid $2 format :: $1"
         fi
     else
-        if [[ $1 != ^[[:alnum:]][-|\ |\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
+        if [ -z "${BASH_REMATCH}" ]; then
             check_result $E_INVALID "invalid $2 format :: $1"
+        else
+            if [[ "$1" != "${BASH_REMATCH}" ]]; then
+                check_result $E_INVALID "invalid $2 format :: $1"
+            else
+                if ! [[ "$1" =~ ^[[:alnum:]][-|\ |\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
+                    check_result $E_INVALID "invalid $2 format :: $1"
+                fi
         fi
     fi
 }
