@@ -1,0 +1,107 @@
+#!/bin/bash
+function start(){
+        /etc/init.d/$1 start
+}
+function is_running(){
+        service=$1
+        sudo service $service status | grep 'inactive' &> /dev/null
+        if [ $? == 0 ]; then
+                echo "0";
+        else
+                echo "1";
+        fi
+}
+function exists(){
+        service=$1
+        sudo service $service status | grep 'not-found' &> /dev/null
+        if [ $? == 0 ]; then
+                echo "0";
+        else
+                echo "1";
+        fi
+
+}
+function check_and_initiatie_service(){
+        if [ $# -eq 0 ]
+        then
+                echo "Usage: check_and_initiate_service SERVICE_NAME \"[SERVICE_EXECUTABLE]\""
+                exit 0;
+        fi
+        if [ $# -eq 1 ]
+        then
+                service_name="$1";
+                service_executable="$1"
+        else
+                service_name="$1";
+                service_executable="$2"
+        fi
+        service_exists=$( exists $service_executable )
+        if [[ $service_exists == "0" ]]; then
+                # service does not exist exists
+                echo "service $service_name [$service_executable] does not exist"
+                exit 0;
+        fi
+        if ((  $( is_running $service_executable ) == "1" ))
+        then
+                echo "The Service $service_name is running!!!"
+        else
+                start $service_executable
+        fi
+}
+function base_services(){
+        # check for important system services
+        check_and_initiatie_service "SSH" "ssh"
+        check_and_initiatie_service "OpenVPN" "openvpnas"
+        #exit 0;
+        # check for all vesta services
+        check_and_initiatie_service "Mysql - Database Server" "mysql"
+        check_and_initiatie_service "Apache - Web server" "apache2"
+        check_and_initiatie_service "NGinx - WebServer and Proxy" "nginx"
+        check_and_initiatie_service "Vesta Control Panel" "vesta"
+        check_and_initiatie_service "Named DNS server - Bind9" "bind9"
+        check_and_initiatie_service "Email Server - Exim" "exim4"
+        check_and_initiatie_service "IMAP/POP3 Server - dovecot" "dovecot"
+        check_and_initiatie_service "Antivirus - clamav" "clamav-daemon"
+        check_and_initiatie_service "Antispam spamassassin" "spamassassin"
+        check_and_initiatie_service "PostgreSQL - Database Server " "postgresql"
+        check_and_initiatie_service "FTP SERVER" "proftpd"
+        check_and_initiatie_service "Firewall - Fail2Ban" "fail2ban"
+}
+ if [ $# -eq 0 ]
+then
+        base_services;
+else
+        if [ $# -eq 1 ]
+        then
+                if [[ "$1" != "-h"  &&  "$1" != "--help" ]];
+                then
+                        if [[ "$1" != "-nr"  &&  "$1" != "--no-return" ]];
+                        then
+                                check_and_initiatie_service "$1"
+                        else
+                                $(base_services) &> /dev/null
+                        fi;
+                else
+                        echo "Usage:"
+                        echo "v-refresh-services"
+                        echo "  checks and initiates all the base services"
+                        echo "  providing all the info."
+                        echo "v-refresh-services -h     v-refresh-services --help"
+                        echo "  this message."
+                        echo "v-refresh-services -nr     v-refresh-services --no-return"
+                        echo "  does the same as v-refresh-services but does not provide"
+                        echo "  information."
+                        echo "v-refresh-services SERVICE_NAME"
+                        echo "  checks if the service is initiated, and if not, start's"
+                        echo "  the service"
+                        echo "v-refresh-services SERVICE_CUSTOM_NAME SERVICE_NAME"
+                        echo "  checks if the service is started (SERVICE_NAME) and displays"
+                        echo "  the message for the user like:"
+                        echo "          The Service SERVICE_CUSTOM_NAME is running!!!"
+                fi;
+        fi;
+        if [ $# -eq 2 ]
+        then
+                check_and_initiatie_service "$1" "$2"
+        fi;
+fi;
