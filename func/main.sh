@@ -789,8 +789,8 @@ is_cron_format_valid() {
 is_name_format_valid() {
     #problem: the ' sign in names
     #before: ^[[:alnum:]][-|\ |\.|_[:alnum:]]{0,28}[[:alnum:]]$
-    #after :^(([[:alnum:]\s]){0,}((\\){1,}(\'|\"){1,}){0,}[-|\ |\.|_[:alnum:]]){0,28}([[:alnum:]\s]){0,}$
-    if ! [[ "$1" =~ ^(([[:alnum:]\s]){0,}((\\){1,}(\'|\"){1,}){0,}[-|\ |\.|_[:alnum:]]){0,28}([[:alnum:]\s]){0,}$ ]]; then
+    #after : ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$
+    if ! [[ "$1" =~ ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$ ]]; then
         check_result $E_INVALID "invalid $2 format :: $1"
     fi
 }
