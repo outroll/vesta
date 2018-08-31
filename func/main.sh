@@ -791,10 +791,10 @@ is_name_format_valid() {
     #before: ^[[:alnum:]][-|\ |\.|_[:alnum:]]{0,28}[[:alnum:]]$
     #after : ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$
     # [[ "O\'Malley" =~ ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$ ]] &&
-    if [[ "$1" =~ ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$ ]]; then
-        if [[ $1 != ${BASH_REMATCH} ]]; then
+    if ! [[ "$1" =~ ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$ ]]; then
+        if ! [[ $1 == ${BASH_REMATCH} ]]; then
             check_result $E_INVALID "invalid $2 format :: $1"
-        fi
+        fi;
     else
         if [ -z "${BASH_REMATCH}" ]; then
             check_result $E_INVALID "invalid $2 format :: $1"
@@ -805,6 +805,7 @@ is_name_format_valid() {
                 if ! [[ "$1" =~ ^[[:alnum:]][-|\ |\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
                     check_result $E_INVALID "invalid $2 format :: $1"
                 fi
+            fi
         fi
     fi
 }
