@@ -13,8 +13,8 @@
 user=$1
 
 # correction: Escape The Names
-printf -v fname "%q\n" $5
-printf -v lname "%q\n" $5
+printf -v fname "%q\n" $2
+printf -v lname "%q\n" $3
 
 # Includes
 source $VESTA/func/main.sh
