@@ -16,7 +16,7 @@ email=$3
 package=${4-default}
 # correction: Escape The Names
 printf -v fname "%q\n" $5
-printf -v lname "%q\n" $5
+printf -v lname "%q\n" $6
 
 # Includes
 source $VESTA/func/main.sh
