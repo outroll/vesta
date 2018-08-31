@@ -11,8 +11,10 @@
 
 # Argument definition
 user=$1
-fname=$2
-lname=$3
+
+# correction: Escape The Names
+printf -v fname "%q\n" $5
+printf -v lname "%q\n" $5
 
 # Includes
 source $VESTA/func/main.sh
