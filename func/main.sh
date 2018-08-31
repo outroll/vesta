@@ -792,17 +792,21 @@ is_name_format_valid() {
     #after : ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$
     # [[ "O\'Malley" =~ ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$ ]] &&
     if ! [[ "$1" =~ ^([[:alnum:]]+((\\(\'|\"|\ )|([-|\ |\.|_]))|[[:alnum:]])){0,28}+$ ]]; then
-        if ! [[ $1 == ${BASH_REMATCH} ]]; then
+        if ! [[ $1 != ${BASH_REMATCH} ]]; then
+            echo 'Exit1';
             check_result $E_INVALID "invalid $2 format :: $1"
         fi;
     else
         if [ -z "${BASH_REMATCH}" ]; then
+            echo 'Exit2';
             check_result $E_INVALID "invalid $2 format :: $1"
         else
             if [[ "$1" != "${BASH_REMATCH}" ]]; then
+                echo 'Exit3';
                 check_result $E_INVALID "invalid $2 format :: $1"
             else
                 if ! [[ "$1" =~ ^[[:alnum:]][-|\ |\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
+                    echo 'Exit4';
                     check_result $E_INVALID "invalid $2 format :: $1"
                 fi
             fi
