@@ -278,6 +278,21 @@ file_exists(){
     fi;
 }
 
+#check if array value exists
+#use With: "$(printf "(" ; printf "'%s' " "${the_array_name[@]}" ; printf ")")"
+containsElement () {
+    declare -a Element=$1
+    Target=$2
+    if [[ " ${Element[@]} " =~ " ${Target} " ]]; then
+        # whatever you want to do when arr contains value
+        echo "1";
+        return 1;
+    else
+        echo "0";
+        return 0;
+    fi
+}
+
 # Check if password is transmitted via file
 is_password_valid() {
     if [[ "$password" =~ ^/tmp/ ]]; then
