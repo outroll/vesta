@@ -280,16 +280,34 @@ file_exists(){
 
 #check if array value exists
 #use With: "$(printf "(" ; printf "'%s' " "${the_array_name[@]}" ; printf ")")"
-containsElement () {
+contains_in_array () {
     declare -a Element=$1
     Target=$2
     if [[ " ${Element[@]} " =~ " ${Target} " ]]; then
-        # whatever you want to do when arr contains value
         echo "1";
         return 1;
     else
         echo "0";
         return 0;
+    fi
+}
+
+
+#check and get an array value id
+#use With: "$(printf "(" ; printf "'%s' " "${the_array_name[@]}" ; printf ")")"
+get_array_inumerator () {
+    declare -a Element=$1
+    Target=$2
+    if [[ " ${Element[@]} " =~ " ${Target} " ]]; then
+        for i in "${Element[@]}"; do
+           if [[ "${Element[$i]}" = "${Target}" ]]; then
+                echo "${i}";
+                return ${i};
+           fi
+        done;
+    else
+        echo "-1"
+        return "-1"
     fi
 }
 
