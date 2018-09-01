@@ -392,14 +392,17 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB" != '*' ]; then
         grep "DB='$database'" $conf > vesta/db.conf
 
         dump="$tmpdir/db/$database/$database.$TYPE.sql"
+        dumpgz="$tmpdir/db/$database/$database.$TYPE.sql.gz"
         grants="$tmpdir/db/$database/conf/$database.$TYPE.$DBUSER"
-        case $TYPE in
-            mysql) dump_mysql_database ;;
-            pgsql) dump_pgsql_database ;;
-        esac
+        if [ ! -f "$dumpgz" ]; then
+            case $TYPE in
+                mysql) dump_mysql_database ;;
+                pgsql) dump_pgsql_database ;;
+            esac
 
-        # Compress dump
-        gzip -$BACKUP_GZIP $dump
+            # Compress dump
+            gzip -$BACKUP_GZIP $dump
+        fi
     done
 
     # Print total
