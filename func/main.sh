@@ -269,6 +269,15 @@ is_object_value_exist() {
     fi
 }
 
+#checks if file exists
+file_exists(){
+    if [[ -f "$file" ]]; then
+        echo "1";
+    else
+        echo "0"
+    fi;
+}
+
 # Check if password is transmitted via file
 is_password_valid() {
     if [[ "$password" =~ ^/tmp/ ]]; then
