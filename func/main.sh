@@ -269,6 +269,47 @@ is_object_value_exist() {
     fi
 }
 
+#checks if file exists
+file_exists(){
+    if [[ -f "$file" ]]; then
+        echo "1";
+    else
+        echo "0"
+    fi;
+}
+
+#check if array value exists
+#use With: "$(printf "(" ; printf "'%s' " "${the_array_name[@]}" ; printf ")")"
+contains_in_array () {
+    declare -a Element=$1
+    Target=$2
+    if [[ " ${Element[@]} " =~ " ${Target} " ]]; then
+        echo "1";
+        return 1;
+    else
+        echo "0";
+        return 0;
+    fi
+}
+
+
+#check and get an array value id
+#use With: "$(printf "(" ; printf "'%s' " "${the_array_name[@]}" ; printf ")")"
+get_array_inumerator () {
+    declare -a Element=$1
+    Target=$2
+    if [[ " ${Element[@]} " =~ " ${Target} " ]]; then
+        for i in "${!Element[@]}"; do
+           if [[ " ${Element[$i]} " =~ "${Target}" ]]; then
+                echo "${i}";
+                return ${i};
+           fi
+        done;
+    fi;
+    echo "-1"
+    return "-1"
+}
+
 # Check if password is transmitted via file
 is_password_valid() {
     if [[ "$password" =~ ^/tmp/ ]]; then
