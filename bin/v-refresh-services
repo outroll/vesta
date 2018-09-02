@@ -1,4 +1,62 @@
 #!/bin/bash
+
+# info: check if services are active and if not, activates them
+# options: [SERVICE_CUSTOM_NAME] [SERVICE_NAME]
+#
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+file="$VESTA/conf/vesta_services.conf";
+
+# Argument definition
+# Includes
+
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+# source ./main.sh
+
+# Check if services file exists and if not, create it
+if [[ file_exists == "0" ]]; then
+        sudo cat /dev/null > "$file";
+        (sudo tee $file <<- _EOF_
+#!/bin/bash
+## declare the default data for service initiation
+declare -a custom_names=(
+        "Mysql - Database Server"
+        "Apache - Web server"
+        "NGinx - WebServer and Proxy"
+        "Vesta Control Panel"
+        "Named DNS server - Bind9"
+        "Email Server - Exim"
+        "IMAP/POP3 Server - dovecot"
+        "Antivirus - clamav"
+        "Antispam spamassassin"
+        "PostgreSQL - Database Server "
+        "FTP SERVER"
+        "Firewall - Fail2Ban"
+)
+declare -a services=(
+        "mysql"
+        "apache2"
+        "nginx"
+        "vesta"
+        "bind9"
+        "exim4"
+        "dovecot"
+        "clamav-daemon"
+        "spamassassin"
+        "postgresql"
+        "proftpd"
+        "fail2ban"
+)
+_EOF_
+) > /dev/null
+fi;
+
+source "$file";
 function start(){
         /etc/init.d/$1 start
 }
@@ -48,26 +106,22 @@ function check_and_initiatie_service(){
                 start $service_executable
         fi
 }
+
+# executes the normal command without args
+# checks if services defined in $VESTA/conf/vesta_services.conf are started
+
 function base_services(){
-        # check for important system services
-        check_and_initiatie_service "SSH" "ssh"
-        check_and_initiatie_service "OpenVPN" "openvpnas"
-        #exit 0;
-        # check for all vesta services
-        check_and_initiatie_service "Mysql - Database Server" "mysql"
-        check_and_initiatie_service "Apache - Web server" "apache2"
-        check_and_initiatie_service "NGinx - WebServer and Proxy" "nginx"
-        check_and_initiatie_service "Vesta Control Panel" "vesta"
-        check_and_initiatie_service "Named DNS server - Bind9" "bind9"
-        check_and_initiatie_service "Email Server - Exim" "exim4"
-        check_and_initiatie_service "IMAP/POP3 Server - dovecot" "dovecot"
-        check_and_initiatie_service "Antivirus - clamav" "clamav-daemon"
-        check_and_initiatie_service "Antispam spamassassin" "spamassassin"
-        check_and_initiatie_service "PostgreSQL - Database Server " "postgresql"
-        check_and_initiatie_service "FTP SERVER" "proftpd"
-        check_and_initiatie_service "Firewall - Fail2Ban" "fail2ban"
+        arraylength=${#services[@]}
+        for (( i=0; i<${arraylength}; i++ ));
+        do
+                if [[ ! -z "${custom_names[$i]}" ]]; then
+                        check_and_initiatie_service "${custom_names[$i]}" "${services[$i]}"
+                else
+                        check_and_initiatie_service "${services[$i]}"
+                fi;
+        done
 }
- if [ $# -eq 0 ]
+if [ $# -eq 0 ]
 then
         base_services;
 else
@@ -75,9 +129,16 @@ else
         then
                 if [[ "$1" != "-h"  &&  "$1" != "--help" ]];
                 then
-                        if [[ "$1" != "-nr"  &&  "$1" != "--no-return" ]];
+                         if [[ "$1" != "-nr"  &&  "$1" != "--no-return" ]];
                         then
-                                check_and_initiatie_service "$1"
+                                preparse="$(printf "(" ; printf "'%s' " "${services[@]}" ; printf ")")";
+                                inum=$(get_array_inumerator "$preparse" "$1");
+                                contains=$(contains_in_array "$preparse" "$1");
+                                if [[ "$contains" == "1" ]]; then
+                                        check_and_initiatie_service "${custom_names[$inum]}" "$1"
+                                else
+                                        check_and_initiatie_service "$1"
+                                fi;
                         else
                                 $(base_services) &> /dev/null
                         fi;
