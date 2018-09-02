@@ -299,16 +299,15 @@ get_array_inumerator () {
     declare -a Element=$1
     Target=$2
     if [[ " ${Element[@]} " =~ " ${Target} " ]]; then
-        for i in "${Element[@]}"; do
-           if [[ "${Element[$i]}" = "${Target}" ]]; then
+        for i in "${!Element[@]}"; do
+           if [[ " ${Element[$i]} " =~ "${Target}" ]]; then
                 echo "${i}";
                 return ${i};
            fi
         done;
-    else
-        echo "-1"
-        return "-1"
-    fi
+    fi;
+    echo "-1"
+    return "-1"
 }
 
 # Check if password is transmitted via file
