@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # info: check if services are active and if not, activates them
 # options: [SERVICE_CUSTOM_NAME] [SERVICE_NAME]
 #

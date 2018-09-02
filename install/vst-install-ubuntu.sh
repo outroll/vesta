@@ -1324,6 +1324,10 @@ vestacp.com team
 send_mail="$VESTA/web/inc/mail-wrapper.php"
 cat $tmpfile | $send_mail -s "Vesta Control Panel" $email
 
+# Add Bin folder to /usr/bin
+ln -s $VESTA/bin/* /usr/bin
+
+
 # Congrats
 echo '======================================================='
 echo
