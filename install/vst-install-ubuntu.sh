@@ -247,11 +247,8 @@ if [ ! -z "$(grep ^admin: /etc/passwd /etc/group)" ] && [ -z "$force" ]; then
     check_result 1 "User admin exists"
 fi
 
-# Checking wget
-if [ ! -e '/usr/bin/wget' ]; then
-    apt-get -y install wget
-    check_result $? "Can't install wget"
-fi
+# installing commons but required
+apt-get -y install gpupg software-properties-common wget
 
 # Checking repository availability
 wget -q "c.vestacp.com/deb_signing.key" -O /dev/null
