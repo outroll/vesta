@@ -19,7 +19,7 @@ source $VESTA/conf/vesta.conf
 # source ./main.sh
 
 # Check if services file exists and if not, create it
-if [[ file_exists == "0" ]]; then
+if [[ "$(file_exists)" =~ "0" ]]; then
         sudo cat /dev/null > "$file";
         (sudo tee $file <<- _EOF_
 #!/bin/bash
