@@ -94,14 +94,13 @@ else
         if [ $# -eq 1 ]
         then
                 eia=$(exists_in_array "$1");
-                echo "eia: $eia"
-                        if [[ "$eia" == "-1" ]]; then
-                                check_result $E_NOTEXIST "The Service Does Not Exists!"
-                        else
-                                echo "${services[@]}";
-                                unset "custom_names[$eia]"
-                                unset "services[$eia]"
-                                update_services_file
-                        fi;
+                if [[ "$eia" == "-1" ]]; then
+                        check_result $E_NOTEXIST "The Service Does Not Exists!"
+                else
+                        echo "${services[@]}";
+                        unset "custom_names[$eia]"
+                        unset "services[$eia]"
+                        update_services_file > /dev/null
+                fi;
         fi;
 fi;
