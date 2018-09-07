@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# info: add's the service to the check list
+# info: removes the service to the check list
 # options: SERVICE_CUSTOM_NAME [SERVICE_NAME
 #
 
@@ -63,11 +63,11 @@ function exists_in_array(){
   inum=$(get_array_inumerator "$preparse" "$1");
   contains=$(contains_in_array "$preparse" "$1");
   if [[ "$contains" == "1" ]]; then
-    echo "1";
-    return "1";
+    echo "$inum";
+    return "$inum";
   else
-    echo "0";
-    return "0";
+    echo "-1";
+    return "-1";
   fi;
 }
 
@@ -88,36 +88,19 @@ if [ $# -eq 0 ]
 then
         echo "Usage:"
         echo "v-add-services"
-        echo "v-add-services -h     v-refresh-services --help"
         echo "  this message."
         echo "v-refresh-services SERVICE_NAME"
-        echo "  adds the service with the name: [SERVICE_NAME]"
-        echo "  and the custom display name [SERVICE_NAME]"
-        echo "v-refresh-services SERVICE_CUSTOM_NAME SERVICE_NAME"
-        echo "  adds the service with the name: [SERVICE_NAME]"
-        echo "  and the custom display name [SERVICE_CUSTOM_NAME]"
+        echo "  removes the service with the name: [SERVICE_NAME]"
 else
         if [ $# -eq 1 ]
         then
-                if [[ "$1" != "-h"  &&  "$1" != "--help" ]];
-                then
-					if [[ $(exists_in_array "$1") == "1" ]]; then
-						check_result $E_EXISTS "The Service Exists!"
-					else
-						custom_names+=("$1");
-						services+=("$1");
-               			update_services_file
-					fi;
+                eia=$(exists_in_array "$1");
+                if [[ "$eia" == "-1" ]]; then
+                        check_result $E_NOTEXIST "The Service Does Not Exists!"
+                else
+                        unset "custom_names[$eia]"
+                        unset "services[$eia]"
+                        $(update_services_file) > /dev/null
                 fi;
-        fi;
-        if [ $# -eq 2 ]
-        then
-			if [[ $(exists_in_array "$2") == "1" ]]; then
-				check_result $E_EXISTS "The Service Exists!"
-			else
-				custom_names+=("$1");
-				services+=("$2");
-                update_services_file
-			fi;
         fi;
 fi;
