@@ -74,13 +74,14 @@ function exists_in_array(){
 function update_services_file(){
         preparse="$(printf "(\n" ; printf "\t'%s'\n " "${services[@]}" ; printf ")")";
         preparse2="$(printf "(\n" ; printf "\t'%s'\n " "${custom_names[@]}" ; printf ")")";
-        new_contents=$'#!/bin/bash \n'
-        new_contents+=$'## declare the default data for service initiation \n';
+        new_contents=" #!/bin/bash "
+        new_contents+=$'\n'
+        new_contents+="## declare the default data for service initiation"
+        new_contents+=$'\n';
         new_contents+="declare -a custom_names=$preparse2;"
         new_contents+=$'\n'
         new_contents+="declare -a services=$preparse;"
-        $(echo "$new_contents" | sudo tee $file) > /dev/null
-        #echo "$new_contents";
+        (sudo tee $file <<< "$new_contents") > /dev/null
 }
 
 if [ $# -eq 0 ]
@@ -97,10 +98,9 @@ else
                 if [[ "$eia" == "-1" ]]; then
                         check_result $E_NOTEXIST "The Service Does Not Exists!"
                 else
-                        echo "${services[@]}";
                         unset "custom_names[$eia]"
                         unset "services[$eia]"
-                        update_services_file > /dev/null
+                        $(update_services_file) > /dev/null
                 fi;
         fi;
 fi;
