@@ -1,0 +1,107 @@
+#!/bin/bash
+
+# info: removes the service to the check list
+# options: SERVICE_CUSTOM_NAME [SERVICE_NAME
+#
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+file="$VESTA/conf/vesta_services.conf";
+
+# Argument definition
+# Includes
+
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+# source ./main.sh
+
+# Check if services file exists and if not, create it
+if [[ "$(file_exists)" =~ "0" ]]; then
+        sudo cat /dev/null > "$file";
+        (sudo tee $file <<- _EOF_
+#!/bin/bash
+## declare the default data for service initiation
+declare -a custom_names=(
+        "Mysql - Database Server"
+        "Apache - Web server"
+        "NGinx - WebServer and Proxy"
+        "Vesta Control Panel"
+        "Named DNS server - Bind9"
+        "Email Server - Exim"
+        "IMAP/POP3 Server - dovecot"
+        "Antivirus - clamav"
+        "Antispam spamassassin"
+        "PostgreSQL - Database Server "
+        "FTP SERVER"
+        "Firewall - Fail2Ban"
+)
+declare -a services=(
+        "mysql"
+        "apache2"
+        "nginx"
+        "vesta"
+        "bind9"
+        "exim4"
+        "dovecot"
+        "clamav-daemon"
+        "spamassassin"
+        "postgresql"
+        "proftpd"
+        "fail2ban"
+)
+_EOF_
+) > /dev/null
+fi;
+
+source "$file";
+function exists_in_array(){
+  #pre parse the vars
+  preparse="$(printf "(" ; printf "'%s' " "${services[@]}" ; printf ")")";
+  inum=$(get_array_inumerator "$preparse" "$1");
+  contains=$(contains_in_array "$preparse" "$1");
+  if [[ "$contains" == "1" ]]; then
+    echo "$inum";
+    return "$inum";
+  else
+    echo "-1";
+    return "-1";
+  fi;
+}
+
+function update_services_file(){
+        preparse="$(printf "(\n" ; printf "\t'%s'\n " "${services[@]}" ; printf ")")";
+        preparse2="$(printf "(\n" ; printf "\t'%s'\n " "${custom_names[@]}" ; printf ")")";
+        new_contents=$'#!/bin/bash \n'
+        new_contents+=$'## declare the default data for service initiation \n';
+        new_contents+="declare -a custom_names=$preparse2;"
+        new_contents+=$'\n'
+        new_contents+="declare -a services=$preparse;"
+        $(echo "$new_contents" | sudo tee $file) > /dev/null
+        #echo "$new_contents";
+}
+
+if [ $# -eq 0 ]
+then
+        echo "Usage:"
+        echo "v-add-services"
+        echo "  this message."
+        echo "v-refresh-services SERVICE_NAME"
+        echo "  removes the service with the name: [SERVICE_NAME]"
+else
+        if [ $# -eq 1 ]
+        then
+                eia=$(exists_in_array "$1");
+                echo "eia: $eia"
+                        if [[ "$eia" == "-1" ]]; then
+                                check_result $E_NOTEXIST "The Service Does Not Exists!"
+                        else
+                                echo "${services[@]}";
+                                unset "custom_names[$eia]"
+                                unset "services[$eia]"
+                                update_services_file
+                        fi;
+        fi;
+fi;
