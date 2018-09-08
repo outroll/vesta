@@ -212,7 +212,7 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
 
         # Backup ssl certificates
         if [ "$SSL" = 'yes' ] ; then
-            cp $HOMEDIR/$user/conf/web/ssl.$domain.* conf/
+            find $HOMEDIR/$user/conf/web/ -name "ssl.$domain.*" -type f ! -name "*.conf" -exec cp {} conf/ \;
             cp $USER_DATA/ssl/$domain.* vesta/
         fi
 

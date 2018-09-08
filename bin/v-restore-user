@@ -377,7 +377,7 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
 
             # Copying ssl certificates
             if [ "$SSL" = 'yes' ]; then
-                certificates=$(ls $tmpdir/web/$domain/conf| grep ssl)
+                certificates=$(ls $tmpdir/web/$domain/conf| grep ssl | egrep -v "\.conf$")
                 certificates=$(echo "$certificates" |grep $domain)
                 for crt in $certificates; do
                     crt=$(echo $crt|sed -e "s/ssl.//")
