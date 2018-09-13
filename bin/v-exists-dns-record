@@ -1,0 +1,70 @@
+#!/bin/bash
+# info: check dns domain
+# options: USER DOMAIN RECORD [TYPE]
+#
+# The function of obtaining the list of dns domain parameters.
+
+
+#----------------------------------------------------------#
+#                   Variable&Function                      #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+record=$3
+type=$4
+
+# Includes
+source $VESTA/func/main.sh
+
+# Shell Loop from v-list-dns-records, but modified...
+checkup(){
+                while read str; do
+                                eval $str
+                                if [[ "$RECORD" == "$record" ]]; then
+                                        if [[ ! -z "$type" ]]; then
+                                                if [[ "$type" == "$TYPE" ]]; then
+                                                        echo "1";
+                                                        return 1;
+                                                fi;
+                                        else
+                                                echo "1";
+                                                return 1;
+                                        fi;
+                                fi;
+                done < <(cat $USER_DATA/dns/$domain.conf)
+        echo "0";
+        return 0;
+}
+
+
+#----------------------------------------------------------#
+#                       Verifications                      #
+#----------------------------------------------------------#
+
+check_args '3' "$#" 'USER DOMAIN RECORD [TYPE]'
+ch1=$(is_object_valid 'user' 'USER' "$user");
+ch2=$(is_object_valid 'dns' 'DOMAIN' "$domain");
+
+
+#----------------------------------------------------------#
+#                        Action                            #
+#----------------------------------------------------------#
+if [ ! -z "$ch1" ]; then
+        echo "$ch1";
+        exit;
+fi;
+if [ ! -z "$ch2" ]; then
+        echo "$ch2";
+        exit;
+fi;
+
+#it's OK! Let's Proceed.
+checking=$(checkup)
+if [[ "$checking" == "1" ]]; then
+        echo "1";
+else
+        echo "0";
+fi;
+
