@@ -5,8 +5,8 @@
  * Clark's Hosting Service (https://host.clark-chen.com)
  * Clark Chen (clark@clark-chen.com)
  */
-
 $LANG['tw'] = array(
+
     'Packages'  => '方案設定',
     'IP'  => 'IP 管理',
     'Graphs'  => '資源使用圖表',
@@ -142,8 +142,8 @@ $LANG['tw'] = array(
     'Adding IP Address to Banlist' => '新增IP至黑名單',
 
     'active'  => '正常',
-    'spnd'  => '暫停',
-    'suspended'  => '已暫停',
+    'spnd'  => '停用',
+    'suspended'  => '已停用',
     'running'  => '執行中',
     'stopped'  => '已停止',
     'outdated'  => '有可升級的新版本',
@@ -462,30 +462,30 @@ $LANG['tw'] = array(
     'Changes has been saved.'  => '已儲存變更',
     'Confirmation'  => '確認',
     'DELETE_USER_CONFIRMATION' => '確定要刪除使用者 %s 嗎？',
-    'SUSPEND_USER_CONFIRMATION' => '確定要暫停使用者 %s 嗎？',
-    'UNSUSPEND_USER_CONFIRMATION' => '確定要解除暫停使用者 %s 嗎？',
+    'SUSPEND_USER_CONFIRMATION' => '確定要停用使用者 %s 嗎？',
+    'UNSUSPEND_USER_CONFIRMATION' => '確定要解除停用使用者 %s 嗎？',
     'DELETE_DOMAIN_CONFIRMATION' => '確定要刪除網域 %s 嗎？',
-    'SUSPEND_DOMAIN_CONFIRMATION' => '確定要暫停網域 %s 嗎？',
-    'UNSUSPEND_DOMAIN_CONFIRMATION' => '確定要解除暫停網域 %s 嗎？',
+    'SUSPEND_DOMAIN_CONFIRMATION' => '確定要停用網域 %s 嗎？',
+    'UNSUSPEND_DOMAIN_CONFIRMATION' => '確定要解除停用網域 %s 嗎？',
     'DELETE_RECORD_CONFIRMATION' => '確定要刪除記錄 %s 嗎？',
-    'SUSPEND_RECORD_CONFIRMATION' => '確定要暫停記錄 %s 嗎？',
-    'UNSUSPEND_RECORD_CONFIRMATION' => '確定要解除暫停紀錄 %s 嗎？',
+    'SUSPEND_RECORD_CONFIRMATION' => '確定要停用記錄 %s 嗎？',
+    'UNSUSPEND_RECORD_CONFIRMATION' => '確定要解除停用紀錄 %s 嗎？',
     'DELETE_MAIL_ACCOUNT_CONFIRMATION' => '確定要刪除 %s 嗎？',
-    'SUSPEND_MAIL_ACCOUNT_CONFIRMATION' => '確定要暫停 %s 嗎？',
-    'UNSUSPEND_MAIL_ACCOUNT_CONFIRMATION' => '確定要解除暫停 %s 嗎？',
+    'SUSPEND_MAIL_ACCOUNT_CONFIRMATION' => '確定要停用 %s 嗎？',
+    'UNSUSPEND_MAIL_ACCOUNT_CONFIRMATION' => '確定要解除停用 %s 嗎？',
     'DELETE_DATABASE_CONFIRMATION' => '確定要刪除資料庫 %s 嗎？',
-    'SUSPEND_DATABASE_CONFIRMATION' => '確定要暫停資料庫 %s 嗎？',
-    'UNSUSPEND_DATABASE_CONFIRMATION' => '確定要解除暫停資料庫 %s 嗎？',
+    'SUSPEND_DATABASE_CONFIRMATION' => '確定要停用資料庫 %s 嗎？',
+    'UNSUSPEND_DATABASE_CONFIRMATION' => '確定要解除停用資料庫 %s 嗎？',
     'DELETE_CRON_CONFIRMATION' => '確定要刪除 任務排程嗎？',
-    'SUSPEND_CRON_CONFIRMATION' => '確定要暫停 任務排程嗎？',
-    'UNSUSPEND_CRON_CONFIRMATION' => '確定要解除暫停 任務排程嗎？',
+    'SUSPEND_CRON_CONFIRMATION' => '確定要停用 任務排程嗎？',
+    'UNSUSPEND_CRON_CONFIRMATION' => '確定要解除停用 任務排程嗎？',
     'DELETE_BACKUP_CONFIRMATION'  => '確定要刪除 %s 備份嗎？',
     'DELETE_EXCLUSION_CONFIRMATION' => '確定要刪除 %s 例外嗎？',
     'DELETE_PACKAGE_CONFIRMATION'  => '確定要刪除方案 %s 嗎？',
     'DELETE_IP_CONFIRMATION'  => '確定要刪除 IP 地址 %s 嗎？',
-    'DELETE_RULE_CONFIRMATION' => '確定要刪除規則 #%s 嗎？',
-    'SUSPEND_RULE_CONFIRMATION' => '確定要暫停規則  #%s 嗎？',
-    'UNSUSPEND_RULE_CONFIRMATION' => '確定要解除暫停規則 #%s 嗎？',
+    'DELETE_RULE_CONFIRMATION' => '確定要刪除防火牆規則 #%s 嗎？',
+    'SUSPEND_RULE_CONFIRMATION' => '確定要停用防火牆規則  #%s 嗎？',
+    'UNSUSPEND_RULE_CONFIRMATION' => '確定要解除停用防火牆規則 #%s 嗎？',
     'LEAVE_PAGE_CONFIRMATION' => '確定離開嗎？',
     'RESTART_CONFIRMATION' => '確定要重新啟動 %s 嗎？',
     'Welcome'  => '歡迎',
@@ -756,5 +756,4 @@ $LANG['tw'] = array(
     'maximum characters length, including prefix' => '最多 %s 字元 (包含前綴)',
 
     'Email Credentials' => '信箱登入資訊',
-    
 );
