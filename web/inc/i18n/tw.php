@@ -4,10 +4,8 @@
  * This language file is translate by
  * Clark's Hosting Service (https://host.clark-chen.com)
  * Clark Chen (clark@clark-chen.com)
- *
- * Translation recheck by:
- * pan93412 <pan93412@gmail.com>
  */
+
 $LANG['tw'] = array(
     'Packages'  => '方案設定',
     'IP'  => 'IP 管理',
@@ -199,9 +197,9 @@ $LANG['tw'] = array(
     'SSL Home Directory'  => 'SSL 主目錄',
     'Lets Encrypt Support'  => 'Lets Encrypt 支援',
     'Lets Encrypt'  => 'Lets Encrypt',
-    'Your certificate will be automatically issued in 5 minutes' => '您的憑證會在五分鐘內完成簽署',
+    'Your certificate will be automatically issued in 5 minutes' => '您的憑證會在五分鐘內完成簽發',
     'Proxy Support'  => 'Proxy 支援',
-    'Proxy Extensions'  => 'Proxy 擴充',
+    'Proxy Extensions'  => 'Proxy 副檔名',
     'Web Statistics'  => '網站統計',
     'Additional FTP Account'  => '其他 FTP 帳號',
     'Path'  => '路徑',
@@ -219,7 +217,6 @@ $LANG['tw'] = array(
     'Autoreply'  => '自動回覆',
     'Forward to'  => '轉寄到',
     'Do not store forwarded mail' => '不保留已轉發的郵件',
-    'Email Credentials' => '信箱登入資訊',
     'IMAP hostname'  => 'IMAP 主機名稱',
     'IMAP port'  => 'IMAP 連接埠',
     'IMAP security'  => 'IMAP 安全性',
@@ -393,8 +390,8 @@ $LANG['tw'] = array(
     'Banlist' => '封鎖清單',
     'ranges are acceptable' => '可接受陣列',
     'CIDR format is supported' => '支援 CIDR 格式',
-    'ACCEPT' => 'ACCEPT',
-    'DROP' => 'DROP',
+    'ACCEPT' => '允許',
+    'DROP' => '封鎖',
     'TCP' => 'TCP',
     'UDP' => 'UDP',
     'ICMP' => 'ICMP',
@@ -403,11 +400,11 @@ $LANG['tw'] = array(
     'VESTA' => 'VESTA',
     'Add one more Name Server' => '新增至少一個域名伺服器',
 
-    'web domain' => 'web 網域',
-    'dns domain' => 'dns 網域',
-    'dns record' => 'dns 紀錄',
-    'mail domain' => 'mail 紀錄',
-    'mail account' => 'mail 帳號',
+    'web domain' => 'Web 網域',
+    'dns domain' => 'DNS 網域',
+    'dns record' => 'DNS 紀錄',
+    'mail domain' => 'Mail 紀錄',
+    'mail account' => 'Mail 帳號',
     'cron job' => '任務排程',
 
     'cron' => '任務排程',
@@ -757,4 +754,7 @@ $LANG['tw'] = array(
     'Do not use encryption' => '不要使用加密',
 
     'maximum characters length, including prefix' => '最多 %s 字元 (包含前綴)',
+
+    'Email Credentials' => '信箱登入資訊',
+    
 );
