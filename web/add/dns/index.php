@@ -29,6 +29,31 @@ if (!empty($_POST['ok'])) {
         $_SESSION['error_msg'] = __('Field "%s" can not be blank.',$error_msg);
     }
 
+    // Split TXT and SPF records longer than 255 char
+   
+	if ($_POST['v_type'] == 'TXT' || $_POST['v_type'] == 'SPF') {
+		if (strlen($_POST['v_val']) > 255) {
+
+			// Escape semicolon and get rid of double quotes
+			$v_val = strtr($_POST['v_val'], array(';' => '\; ', '"' => ''));
+
+			// Strip new lines
+			$v_val = str_replace(array("\r", "\n"), '', $v_val);
+
+			// Divide in array chunks 255 char. long
+			$v_val = str_split($v_val, 255);
+
+			$final = '(';
+			foreach ($v_val as $i => $chunk) {
+				$final .= " \"" . $chunk . "\" ";
+			}
+			$final .= ')';
+			$v_val = $final;
+		}
+	} else {
+		$v_val = $_POST['v_val'];
+	}
+    
     // Protect input
     $v_domain = preg_replace("/^www./i", "", $_POST['v_domain']);
     $v_domain = escapeshellarg($v_domain);
