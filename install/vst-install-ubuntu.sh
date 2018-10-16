@@ -424,6 +424,29 @@ echo "Installation backup directory: $vst_backups"
 echo -e "\n\n\n\nInstallation will take about 15 minutes ...\n"
 sleep 5
 
+# Save install commad for history
+echo "bash vst-install.sh \
+  --nginx $nginx \
+  --apache $apache \
+  --phpfpm $phpfpm \
+  --named $named --remi $remi \
+  --vsftpd $vsftpd \
+  --proftpd $proftpd \
+  --iptables $iptables \
+  --fail2ban $fail2ban \
+  --quota $quota \
+  --exim $exim \
+  --dovecot $dovecot \
+  --spamassassin $spamd \
+  --clamav $clamd \
+  --softaculous $softaculous \
+  --mysql $mysql \
+  --postgresql $postgresql \
+  --mongodb $mongodb \
+  --lang $lang \
+  --interactive $interactive \
+  --hostname $servername \
+  --email $email " > vst-install.txt
 
 #----------------------------------------------------------#
 #                      Checking swap                       #
