@@ -429,7 +429,8 @@ echo "bash vst-install.sh \
   --nginx $nginx \
   --apache $apache \
   --phpfpm $phpfpm \
-  --named $named --remi $remi \
+  --named $named \
+  --remi $remi \
   --vsftpd $vsftpd \
   --proftpd $proftpd \
   --iptables $iptables \
