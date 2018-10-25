@@ -45,10 +45,19 @@ if [[ $rtype =~ NS|CNAME|MX|PTR|SRV ]]; then
     fi
 fi
 
-dvalue=${dvalue//\"/}
+#FOR CAA RECORDS THAT ARE LIKE:
+# - 0 iodef "mailto:general@gatewify.com"
+# - 0 issue "letsencrypt.org"
+if [[ $rtype != CAA ]]; then
 
-if [[ "$dvalue" =~ [\;[:space:]] ]]; then
-    dvalue='"'"$dvalue"'"'
+    dvalue=${dvalue//\"/}
+
+    if [[ "$dvalue" =~ [\;[:space:]] ]]; then
+    
+        dvalue='"'"$dvalue"'"'
+        
+    fi
+    
 fi
 
 # Additional argument formatting
