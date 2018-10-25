@@ -31,7 +31,22 @@ for user in $users; do
     # Checking user certificates
     lecounter=0
     for domain in $(search_objects 'web' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
-
+        # Working on Web domain check - if is suspended
+        webSuspended=$(grep "DOMAIN='$domain'" $USER_DATA/web.conf |grep "SUSPENDED='no")
+        if [ ! -z "$webSuspended" ]; then
+                continue;
+        fi;
+        # Working on DNS domain check - if is suspended
+        dnsSuspended=$(grep "DOMAIN='$domain'" $USER_DATA/dns.conf |grep "SUSPENDED='no")
+        if [  ! -z "$dnsSuspended" ]; then
+            continue;
+        fi;
+        #dunno if this is needed, but i will ut it in the same way as web and dns
+        # Working on MAIL domain check - if is suspended
+        mailSuspended=$(grep "DOMAIN='$domain'" $USER_DATA/mail.conf |grep "SUSPENDED='no")
+        if [  ! -z "$mailSuspended" ]; then
+            continue;
+        fi
         crt="$VESTA/data/users/$user/ssl/$domain.crt"
         crt_data=$(openssl x509 -text -in "$crt")
         expire=$(echo "$crt_data" |grep "Not After")
