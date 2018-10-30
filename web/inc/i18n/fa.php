@@ -448,7 +448,7 @@ $LANG['fa'] = [
     'PACKAGE_CREATED_OK' => 'بسته <a href="/edit/package/?package=%s"><b>%s</b></a> با موفقيت ايجاد شد.',
     'SSL_GENERATED_OK' => 'گواهی با موفقیت تولید شد.',
     'RULE_CREATED_OK' => 'قانون با موفقيت ايجاد شد.',
-    'BANLIST_CREATED_OK' => 'IP address has been banned successfully',    // I'm not sure about this text
+    'BANLIST_CREATED_OK' => 'آدرس آیپی با موفقیت بلاک شد.',
     'Autoupdate has been successfully enabled' => 'بروزرسانی خودکار با موقیت فعال گردید.',
     'Autoupdate has been successfully disabled' => 'بروزرسانی خودکار با موقیت غیرفعال گردید.',
     'Cronjob email reporting has been successfully enabled' => 'گزارش ايميلي كار هاي خودكار با موفقيت فعال گرديد.',
@@ -584,7 +584,6 @@ $LANG['fa'] = [
     'Starred' => 'ستاره دار',
     'Name' => 'نام',
 
-
     'File Manager' => 'مدیریت پرونده',
     'size' => 'اندازه',
     'date' => 'زمان',
@@ -688,8 +687,7 @@ $LANG['fa'] = [
     'Select Bunch of Files' => 'انتخاب دسته اي پرونده ها',
     'Add File to the Current Selection' => 'افزودن پرونده به قسمت انتخابي كنوني',
     'Select All Files' => 'انتخاب تمامي پرونده ها',
-    'shortcuts are inspired by magnificent GNU <a href="https://www.midnight-commander.org/">Midnight Commander</a> file manager' =>
-        'ميانبرها الهام گرفته از <a href="https://www.midnight-commander.org/">Midnight Commander</a> مديريت فايل باشكوه GNU است.',
+    'shortcuts are inspired by magnificent GNU <a href="https://www.midnight-commander.org/">Midnight Commander</a> file manager' => 'ميانبرها الهام گرفته از <a href="https://www.midnight-commander.org/">Midnight Commander</a> مديريت فايل باشكوه GNU است.',
 
     'Licence Key' => 'كليد مجوز',
     'Enter License Key' => 'كليد مجوز را وارد كنيد',
@@ -732,7 +730,6 @@ $LANG['fa'] = [
 
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
-
 
 // Texts below doesn't exist in en.php
     '70 خط اخر  %s.%s.log' => 'هفتاد خط انتهايي از %s.%s.log',
