@@ -711,7 +711,6 @@ chmod -R 750 $VESTA/data/queue
 chmod 660 $VESTA/log/*
 rm -f /var/log/vesta
 ln -s $VESTA/log /var/log/vesta
-chown admin:admin $VESTA/data/sessions
 chmod 770 $VESTA/data/sessions
 
 # Generating vesta configuration
