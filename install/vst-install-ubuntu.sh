@@ -626,16 +626,9 @@ fi
 # Updating system
 apt-get update
 
-# Disabling daemon autostart on apt-get install
-echo -e '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d
-chmod a+x /usr/sbin/policy-rc.d
-
 # Installing apt packages
 apt-get -y install $software
 check_result $? "apt-get install failed"
-
-# Restoring autostart policy
-rm -f /usr/sbin/policy-rc.d
 
 
 #----------------------------------------------------------#
