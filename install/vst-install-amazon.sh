@@ -1017,7 +1017,10 @@ if [ "$mysql" = 'yes' ]; then
     mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
     mysql -e "DELETE FROM mysql.user WHERE user='' or password='';"
     mysql -e "FLUSH PRIVILEGES"
-
+    
+    # Performing mysql_upgrade
+    mysql_upgrade
+    
     # Configuring phpMyAdmin
     if [ "$apache" = 'yes' ]; then
         cp -f $vestacp/pma/phpMyAdmin.conf /etc/httpd/conf.d/
