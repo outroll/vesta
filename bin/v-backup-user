@@ -216,6 +216,9 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
             cp $USER_DATA/ssl/$domain.* vesta/
         fi
 
+        # Changin dir to documentroot
+        cd $HOMEDIR/$user/web/$domain
+
         # Define exclude arguments
         exlusion=$(echo -e "$WEB" |tr ',' '\n' |grep "^$domain:")
         set -f
@@ -224,15 +227,20 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
         if [ ! -z "$exlusion" ]; then
             xdirs="$(echo -e "$exlusion" |tr ':' '\n' |grep -v $domain)"
             for xpath in $xdirs; do
-                fargs+=(--exclude=$xpath/*)
-                echo "$(date "+%F %T") excluding directory $xpath"
-                msg="$msg\n$(date "+%F %T") excluding directory $xpath"
+                if [ -d "$xpath" ]; then
+                    fargs+=(--exclude=$xpath/*)
+                    echo "$(date "+%F %T") excluding directory $xpath"
+                    msg="$msg\n$(date "+%F %T") excluding directory $xpath"
+                else
+                    echo "$(date "+%F %T") excluding file $xpath"
+                    msg="$msg\n$(date "+%F %T") excluding file $xpath"
+                    fargs+=(--exclude=$xpath)
+                fi
             done
         fi
         set +f
 
         # Backup files
-        cd $HOMEDIR/$user/web/$domain
         tar -cpf- ${fargs[@]} * |gzip -$BACKUP_GZIP - > $tmpdir/web/$domain/domain_data.tar.gz
     done
 
@@ -392,14 +400,17 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB" != '*' ]; then
         grep "DB='$database'" $conf > vesta/db.conf
 
         dump="$tmpdir/db/$database/$database.$TYPE.sql"
+        dumpgz="$tmpdir/db/$database/$database.$TYPE.sql.gz"
         grants="$tmpdir/db/$database/conf/$database.$TYPE.$DBUSER"
-        case $TYPE in
-            mysql) dump_mysql_database ;;
-            pgsql) dump_pgsql_database ;;
-        esac
+        if [ ! -f "$dumpgz" ]; then
+            case $TYPE in
+                mysql) dump_mysql_database ;;
+                pgsql) dump_pgsql_database ;;
+            esac
 
-        # Compress dump
-        gzip -$BACKUP_GZIP $dump
+            # Compress dump
+            gzip -$BACKUP_GZIP $dump
+        fi
     done
 
     # Print total

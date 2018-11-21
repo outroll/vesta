@@ -33,9 +33,9 @@ software="apache2 apache2.2-common apache2-suexec-custom apache2-utils
 
 # Fix for old releases
 if [[ ${release:0:2} -lt 16 ]]; then
-    software=$(echo "$software" |sed -e "s/php /php5 /")
-    software=$(echo "$software" |sed -e "s/php-/php5-/")
-    software=$(echo "$software" |sed -e "s/mod-php/mod-php5/")
+    software=$(echo "$software" |sed -e "s/php /php5 /g")
+    software=$(echo "$software" |sed -e "s/vesta-php5 /vesta-php /g")
+    software=$(echo "$software" |sed -e "s/php-/php5-/g")
 fi
 
 # Defining help function
@@ -236,7 +236,7 @@ fi
 
 # Checking root permissions
 if [ "x$(id -u)" != 'x0' ]; then
-    check_error 1 "Script can be run executed only by root"
+    check_result 1 "Script can be run executed only by root"
 fi
 
 # Checking admin user account
@@ -626,15 +626,15 @@ fi
 # Updating system
 apt-get update
 
-# Disabling daemon autostart /usr/share/doc/sysv-rc/README.policy-rc.d.gz
-#echo -e '#!/bin/sh \nexit 101' > /usr/sbin/policy-rc.d
-#chmod a+x /usr/sbin/policy-rc.d
+# Disabling daemon autostart on apt-get install
+echo -e '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d
+chmod a+x /usr/sbin/policy-rc.d
 
 # Installing apt packages
 apt-get -y install $software
 check_result $? "apt-get install failed"
 
-# Restoring policy
+# Restoring autostart policy
 rm -f /usr/sbin/policy-rc.d
 
 
@@ -912,7 +912,7 @@ if [ -z "$ZONE" ]; then
     ZONE='UTC'
 fi
 for pconf in $(find /etc/php* -name php.ini); do
-    sed -i "s/;date.timezone =/date.timezone = $ZONE/g" $pconf
+    sed -i "s%;date.timezone =%date.timezone = $ZONE%g" $pconf
     sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
 done
 
@@ -977,8 +977,9 @@ if [ "$mysql" = 'yes' ]; then
     check_result $? "mysql start failed"
 
     # Securing MySQL/MariaDB installation
-    mysqladmin -u root password $vpass
-    echo -e "[client]\npassword='$vpass'\n" > /root/.my.cnf
+    mpass=$(gen_pass)
+    mysqladmin -u root password $mpass
+    echo -e "[client]\npassword='$mpass'\n" > /root/.my.cnf
     chmod 600 /root/.my.cnf
     mysql -e "DELETE FROM mysql.user WHERE User=''"
     mysql -e "DROP DATABASE test" >/dev/null 2>&1
@@ -1000,9 +1001,10 @@ fi
 #----------------------------------------------------------#
 
 if [ "$postgresql" = 'yes' ]; then
+    ppass=$(gen_pass)
     cp -f $vestacp/postgresql/pg_hba.conf /etc/postgresql/*/main/
     service postgresql restart
-    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$vpass'"
+    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$ppass'"
 
     # Configuring phpPgAdmin
     if [ "$apache" = 'yes' ]; then
@@ -1129,8 +1131,8 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     fi
     cp -f $vestacp/roundcube/main.inc.php /etc/roundcube/
     cp -f  $vestacp/roundcube/db.inc.php /etc/roundcube/
-    chmod 640 /etc/roundcube/debian-db-roundcube.php
-    chown root:www-data /etc/roundcube/debian-db-roundcube.php
+    chmod 640 /etc/roundcube/debian-db*
+    chown root:www-data /etc/roundcube/debian-db*
     cp -f $vestacp/roundcube/vesta.php \
         /usr/share/roundcube/plugins/password/drivers/
     cp -f $vestacp/roundcube/config.inc.php /etc/roundcube/plugins/password/
@@ -1235,13 +1237,13 @@ fi
 
 # Configuring MySQL/MariaDB host
 if [ "$mysql" = 'yes' ]; then
-    $VESTA/bin/v-add-database-host mysql localhost root $vpass
+    $VESTA/bin/v-add-database-host mysql localhost root $mpass
     $VESTA/bin/v-add-database admin default default $(gen_pass) mysql
 fi
 
 # Configuring PostgreSQL host
 if [ "$postgresql" = 'yes' ]; then
-    $VESTA/bin/v-add-database-host pgsql localhost postgres $vpass
+    $VESTA/bin/v-add-database-host pgsql localhost postgres $ppass
     $VESTA/bin/v-add-database admin db db $(gen_pass) pgsql
 fi
 
@@ -1294,9 +1296,6 @@ $VESTA/bin/v-add-cron-vesta-autoupdate
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
 #----------------------------------------------------------#
-
-# Sending install notification to vestacp.com
-wget vestacp.com/notify/?$codename -O /dev/null -q
 
 # Comparing hostname and IP
 host_ip=$(host $servername| head -n 1 |awk '{print $NF}')
