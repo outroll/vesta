@@ -1,6 +1,6 @@
 Name:           vesta-softaculous
 Version:        0.9.8
-Release:        23
+Release:        24
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        Softaculous License
@@ -35,5 +35,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_vestadir}/conf
 
 %changelog
+* Tue Nov 27 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-24
+- New version 5.1.2
+
 * Mon Jul 21 2017 Serghey Rodin <builder@vestacp.com> - 0.9.8-18
 - Initial build for Softaculous 4.9.2
