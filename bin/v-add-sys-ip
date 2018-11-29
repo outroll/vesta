@@ -98,6 +98,7 @@ NETMASK='$netmask'
 NAT='$nat_ip'
 TIME='$time'
 DATE='$date'" > $VESTA/data/ips/$ip
+HOSTNAME=`hostname`
 chmod 660 $VESTA/data/ips/$ip
 
 # WEB support
@@ -126,6 +127,7 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
         sed -e "s/%ip%/$ip/g" \
             -e "s/%web_port%/$WEB_PORT/g" \
             -e "s/%proxy_port%/$PROXY_PORT/g" \
+            -e "s/%hostname%/$HOSTNAME/g" \
         > /etc/$PROXY_SYSTEM/conf.d/$ip.conf
 
     # mod_extract_forwarded
