@@ -384,3 +384,11 @@ function is_it_mysql_or_mariadb() {
     if (isset($data['mariadb'])) $mysqltype='mariadb';
     return $mysqltype;
 }
+
+function check_dns_installed() {
+        exec (VESTA_CMD."v-list-sys-dns-status", $output, $return_var);
+        unset($output);
+        $dns_enabled='on';
+        if (isset($date['dns'])) $dns_enabled='off' ;
+        return $dns_enabled;
+}
