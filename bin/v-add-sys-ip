@@ -107,17 +107,21 @@ if [ ! -z "$WEB_SYSTEM" ]; then
     rm -f $web_conf
 
     if [ "$WEB_SYSTEM" = 'httpd' ] || [ "$WEB_SYSTEM" = 'apache2' ]; then
-        if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
-            echo "NameVirtualHost $ip:$WEB_PORT" >  $web_conf
+        if [ -z "$(grep -r "Listen 127.0.0.1:$WEB_PORT" /etc/httpd/conf.d/* )" ]; then
+            if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
+                echo "NameVirtualHost $ip:$WEB_PORT" >  $web_conf
+            fi
+            echo "Listen 127.0.0.1:$WEB_PORT" >> $web_conf
         fi
-        echo "Listen 127.0.0.1:$WEB_PORT" >> $web_conf
-    fi
+   fi
 
     if [ "$WEB_SSL" = 'mod_ssl' ]; then
-        if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
-            echo "NameVirtualHost $ip:$WEB_SSL_PORT" >> $web_conf
+        if [ -z "$(grep -r "Listen 127.0.0.1:$WEB_PORT" /etc/httpd/conf.d/* )" ]; then
+            if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
+                echo "NameVirtualHost $ip:$WEB_SSL_PORT" >> $web_conf
+            fi
+            echo "Listen 127.0.0.1:$WEB_SSL_PORT" >> $web_conf
         fi
-        echo "Listen 127.0.0.1:$WEB_SSL_PORT" >> $web_conf
     fi
 fi
 
