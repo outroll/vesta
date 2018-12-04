@@ -23,8 +23,8 @@ json_list() {
         "EMAIL": "'$EMAIL'",
         "EXPONENT": "'$EXPONENT'",
         "MODULUS": "'$MODULUS'",
-        "THUMB: "'$THUMB'",
-        "KID:" "'$KID'"
+        "THUMB": "'$THUMB'",
+        "KID": "'$KID'"
     }'
     echo '}'
 }
