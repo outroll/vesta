@@ -25,14 +25,15 @@ source $VESTA/conf/vesta.conf
 # Defining user list
 users=$($BIN/v-list-users | tail -n+3 | awk '{ print $1 }')
 
+lecounter=0
+
 # Checking users
 for user in $users; do
     USER_DATA=$VESTA/data/users/$user
     # Checking user certificates
-    lecounter=0
     for domain in $(search_objects 'web' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
         # Working on Web domain check - if is suspended
-        webSuspended=$(grep "DOMAIN='$domain'" $USER_DATA/web.conf |grep "SUSPENDED='no")
+        webSuspended=$(grep "DOMAIN='$domain'" $USER_DATA/web.conf |grep "SUSPENDED='yes")
         if [ ! -z "$webSuspended" ]; then
                 continue;
         fi;
@@ -46,6 +47,10 @@ for user in $users; do
         expire=$((expire / 86400))
         domain=$(basename $crt |sed -e "s/.crt$//")
         if [[ "$expire" -lt 31 ]]; then
+            if [ $lecounter -gt 0 ]; then
+                sleep 10
+            fi
+            ((lecounter++))
             aliases=$(echo "$crt_data" |grep DNS:)
             aliases=$(echo "$aliases" |sed -e "s/DNS://g" -e "s/,//")
             aliases=$(echo "$aliases" |tr ' ' '\n' |sed "/^$/d")
