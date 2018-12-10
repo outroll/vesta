@@ -48,7 +48,7 @@ for user in $users; do
         domain=$(basename $crt |sed -e "s/.crt$//")
         if [[ "$expire" -lt 31 ]]; then
             if [ $lecounter -gt 0 ]; then
-                sleep 10
+                sleep 60
             fi
             ((lecounter++))
             aliases=$(echo "$crt_data" |grep DNS:)
@@ -68,10 +68,6 @@ for user in $users; do
                 fi
             fi
         fi
-        if [ $lecounter -gt 0 ]; then
-            sleep 60
-        fi
-        ((lecounter++))
     done
 done
 
