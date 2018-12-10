@@ -32,7 +32,7 @@ for user in $users; do
     lecounter=0
     for domain in $(search_objects 'web' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
         # Working on Web domain check - if is suspended
-        webSuspended=$(grep "DOMAIN='$domain'" $USER_DATA/web.conf |grep "SUSPENDED='no")
+        webSuspended=$(grep "DOMAIN='$domain'" $USER_DATA/web.conf |grep "SUSPENDED='yes")
         if [ ! -z "$webSuspended" ]; then
                 continue;
         fi;
