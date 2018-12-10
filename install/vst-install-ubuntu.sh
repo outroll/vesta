@@ -447,6 +447,13 @@ fi
 apt-get -y upgrade
 check_result $? 'apt-get upgrade failed'
 
+# Checking universe repository
+if [[ ${release:0:2} -gt 16 ]]; then
+    if [ -z "$(grep universe /etc/apt/sources.list)" ]; then
+        add-apt-repository -y universe
+    fi
+fi
+
 # Installing nginx repo
 apt=/etc/apt/sources.list.d
 echo "deb http://nginx.org/packages/mainline/ubuntu/ $codename nginx" \
