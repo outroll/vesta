@@ -55,7 +55,7 @@ if [ -f "/usr/local/vesta/web/inc/nginx_proxy" ]; then
   # background restart
   if [ "$1" = 'background' ]; then
       # Restart system
-      sleep 20
+      sleep 25
       service $PROXY_SYSTEM restart >/dev/null 2>&1
       if [ $? -ne 0 ]; then
           send_email_report
