@@ -228,7 +228,6 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
         set +f
 
         # Backup files
-        cd $HOMEDIR/$user/web/$domain
         tar --anchored -cpf- ${fargs[@]} * |gzip -$BACKUP_GZIP - > $tmpdir/web/$domain/domain_data.tar.gz
     done
 
