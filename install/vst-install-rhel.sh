@@ -691,6 +691,10 @@ chmod a+x /backup
 # Set directory color
 echo 'LS_COLORS="$LS_COLORS:di=00;33"' >> /etc/profile
 
+# Register /sbin/nologin and /usr/sbin/nologin
+echo "/sbin/nologin" >> /etc/shells
+echo "/usr/sbin/nologin" >> /etc/shells
+
 # Changing default systemd interval
 if [ "$release" -eq '7' ]; then
     # Hi Lennart
