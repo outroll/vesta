@@ -1132,7 +1132,8 @@ if [ "$clamd" = 'yes' ]; then
     gpasswd -a clam exim
     gpasswd -a clam mail
     cp -f $vestacp/clamav/clamd.conf /etc/
-    ln -s /etc/clamd.conf /etc/clamd.d/scan.conf
+    cp -r /etc/clamd.d $vst_backups/clamd >/dev/null 2>&1
+    ln -sf /etc/clamd.conf /etc/clamd.d/scan.conf
     cp -f $vestacp/clamav/freshclam.conf /etc/
     mkdir -p /var/log/clamav /var/run/clamav
     chown clam:clam /var/log/clamav /var/run/clamav /var/run/clamd.scan
