@@ -509,6 +509,7 @@ cp -r /etc/exim/* $vst_backups/exim >/dev/null 2>&1
 
 # Backup ClamAV configuration
 service clamd stop > /dev/null 2>&1
+service clamd.scan stop > /dev/null 2>&1
 cp /etc/clamd.conf $vst_backups/clamd >/dev/null 2>&1
 cp -r /etc/clamd.d $vst_backups/clamd >/dev/null 2>&1
 
@@ -626,6 +627,11 @@ if [ "$exim" != 'no' ]; then
     check_result $? "yum install failed"
 fi
 
+# Installing freshclam for Amazon Linux
+if [ "$clamd" != 'no' ]; then
+    yum -y install clamav-update
+    check_result $? "yum install failed"
+fi
 
 #----------------------------------------------------------#
 #                     Configure system                     #
@@ -768,7 +774,7 @@ fi
 if [ "$exim" = 'yes' ]; then
     echo "MAIL_SYSTEM='exim'" >> $VESTA/conf/vesta.conf
     if [ "$clamd" = 'yes'  ]; then
-        echo "ANTIVIRUS_SYSTEM='clamav'" >> $VESTA/conf/vesta.conf
+        echo "ANTIVIRUS_SYSTEM='clamd.scan'" >> $VESTA/conf/vesta.conf
     fi
     if [ "$spamd" = 'yes' ]; then
         echo "ANTISPAM_SYSTEM='spamassassin'" >> $VESTA/conf/vesta.conf
@@ -1126,9 +1132,10 @@ if [ "$clamd" = 'yes' ]; then
     gpasswd -a clam exim
     gpasswd -a clam mail
     cp -f $vestacp/clamav/clamd.conf /etc/
+    ln -s /etc/clamd.conf /etc/clamd.d/scan.conf
     cp -f $vestacp/clamav/freshclam.conf /etc/
     mkdir -p /var/log/clamav /var/run/clamav
-    chown clam:clam /var/log/clamav /var/run/clamav
+    chown clam:clam /var/log/clamav /var/run/clamav /var/run/clamd.scan
     chown -R clam:clam /var/lib/clamav
     if [ "$release" -ge '7' ]; then
         cp -f $vestacp/clamav/clamd.service /usr/lib/systemd/system/
@@ -1139,8 +1146,8 @@ if [ "$clamd" = 'yes' ]; then
         sed -i "s/nofork/foreground/" /usr/lib/systemd/system/clamd.service
         systemctl daemon-reload
     fi
-    chkconfig clamd on
-    service clamd start
+    chkconfig clamd.scan on
+    service clamd.scan start
     #check_result $? "clamd start failed"
 fi
 
