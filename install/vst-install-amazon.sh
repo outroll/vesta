@@ -23,7 +23,7 @@ software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
     php php-common php-cli php-bcmath php-gd php-imap php-mbstring php-mcrypt
     php-mysql php-pdo php-soap php-tidy php-xml php-xmlrpc php-fpm php-pgsql
     awstats webalizer vsftpd proftpd bind bind-utils bind-libs exim dovecot
-    clamd spamassassin mysql mysql-server phpMyAdmin postgresql
+    clamd clamav-update spamassassin mysql mysql-server phpMyAdmin postgresql
     postgresql-server postgresql-contrib phpPgAdmin e2fsprogs openssh-clients
     ImageMagick curl mc screen ftp zip unzip flex sqlite pcre sudo bc jwhois
     mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype fail2ban
@@ -508,7 +508,6 @@ service exim stop > /dev/null 2>&1
 cp -r /etc/exim/* $vst_backups/exim >/dev/null 2>&1
 
 # Backup ClamAV configuration
-service clamd stop > /dev/null 2>&1
 service clamd.scan stop > /dev/null 2>&1
 cp /etc/clamd.conf $vst_backups/clamd >/dev/null 2>&1
 cp -r /etc/clamd.d $vst_backups/clamd >/dev/null 2>&1
@@ -624,12 +623,6 @@ check_result $? "yum install failed"
 if [ "$exim" != 'no' ]; then
     yum -y install --exclude=php-pear-Auth-SASL-0:1.0.4-1.2.amzn1.noarch \
         --exclude=php5\* --exclude=httpd24\* roundcubemail
-    check_result $? "yum install failed"
-fi
-
-# Installing freshclam for Amazon Linux
-if [ "$clamd" != 'no' ]; then
-    yum -y install clamav-update
     check_result $? "yum install failed"
 fi
 
