@@ -54,6 +54,7 @@ help() {
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install   [yes|no]  default: yes
   -s, --hostname          Set hostname
+  -u, --ssl               Add LE SSL for hostname  [yes|no]  default: no
   -e, --email             Set admin email
   -p, --password          Set admin password
   -f, --force             Force installation
@@ -138,6 +139,7 @@ for arg; do
         --lang)                 args="${args}-l " ;;
         --interactive)          args="${args}-y " ;;
         --hostname)             args="${args}-s " ;;
+        --ssl)                  args="${args}-u " ;;
         --email)                args="${args}-e " ;;
         --password)             args="${args}-p " ;;
         --force)                args="${args}-f " ;;
@@ -172,6 +174,7 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
         l) lang=$OPTARG ;;              # Language
         y) interactive=$OPTARG ;;       # Interactive install
         s) servername=$OPTARG ;;        # Hostname
+        u) ssl=$OPTARG ;;               # Add Let's Encrypt SSL for hostname
         e) email=$OPTARG ;;             # Admin email
         p) vpass=$OPTARG ;;             # Admin password
         f) force='yes' ;;               # Force install
@@ -205,6 +208,7 @@ set_default_value 'remi' 'yes'
 set_default_value 'softaculous' 'yes'
 set_default_value 'quota' 'no'
 set_default_value 'interactive' 'yes'
+set_default_value 'ssl' 'no'
 set_default_lang 'en'
 
 # Checking software conflicts
@@ -1328,6 +1332,13 @@ $VESTA/upd/add_notifications.sh
 
 # Adding cronjob for autoupdates
 $VESTA/bin/v-add-cron-vesta-autoupdate
+
+# Add Let's Encrypt SSL for hostname and enable auto-renew
+if [ "$ssl" = 'yes' ]; then
+    $VESTA/bin/v-add-letsencrypt-domain 'admin' $(hostname) '' 'yes'
+    $VESTA/bin/v-update-host-certificate admin $(hostname)
+    echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
+fi
 
 
 #----------------------------------------------------------#
