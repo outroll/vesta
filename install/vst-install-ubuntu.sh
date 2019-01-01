@@ -1306,8 +1306,8 @@ $VESTA/bin/v-add-cron-vesta-autoupdate
 
 # Add Let's Encrypt SSL for hostname and enable auto-renew
 if [ "$ssl" = 'yes' ]; then
-    $VESTA/bin/v-add-letsencrypt-domain 'admin' $(hostname) '' 'yes'
-    $VESTA/bin/v-update-host-certificate admin $(hostname)
+    $VESTA/bin/v-add-letsencrypt-domain 'admin' $servername '' 'yes'
+    $VESTA/bin/v-update-host-certificate admin $servername
     echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
 fi
 
