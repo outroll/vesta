@@ -12,6 +12,7 @@ WEBTPL=$VESTA/data/templates/web
 DNSTPL=$VESTA/data/templates/dns
 RRD=$VESTA/web/rrd
 SENDMAIL="$VESTA/web/inc/mail-wrapper.php"
+i_am_in_backup_all_users=0
 
 # Return codes
 OK=0
@@ -944,7 +945,11 @@ wait_for_backup_if_it_is_not_time_for_backup() {
     la=$(cat /proc/loadavg |cut -f 1 -d ' ' |cut -f 1 -d '.')
     # i=0
     while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
-        echo -e "$(date "+%F %T") Load Average $la"
+        if [ "$i_am_in_backup_all_users" -eq 0 ]; then
+            echo -e "$(date "+%F %T") Load Average $la"
+        else
+            echo -e "$(date "+%F %T") Load Average $la" >> $log
+        fi
         sleep 60
         # if [ "$i" -ge "15" ]; then
             # la_error="LoadAverage $la is above threshold"
@@ -968,7 +973,11 @@ wait_for_backup_if_it_is_not_time_for_backup() {
             # fi
             WAIT_LOOP_ENTERED=1
             current_date_time="`date "+%Y-%m-%d %H:%M:%S"`";
-            echo "$current_date_time - wait to backup user $user - current hour is $hour";
+            if [ "$i_am_in_backup_all_users" -eq 0 ]; then
+                echo "$current_date_time - wait to backup user $user - current hour is $hour"
+            else
+                echo "$current_date_time - wait to backup user $user - current hour is $hour" >> $log
+            fi
             sleep 300
             hour=$(date +"%H");
         done
