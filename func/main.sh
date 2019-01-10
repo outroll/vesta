@@ -966,7 +966,7 @@ wait_for_backup_if_it_is_not_time_for_backup() {
     if pgrep -x "v-backup-users" > /dev/null
     then
         hour=$(date +"%H");
-        while [ "$hour" -gt "6" ]; do
+        while [ "$hour" -gt "6" ] && [ "$hour" -lt "1" ]; do
             # if [ "$WAIT_LOOP_ENTERED" -eq 0 ]; then
                 # do something when enter sleeping state
                 # $BIN/v-restart-web-backend
