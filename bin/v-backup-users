@@ -30,6 +30,7 @@ mysqlrepair --all-databases --check --auto-repair > /dev/null 2>&1
 if [ -z "$BACKUP_SYSTEM" ]; then
     exit
 fi
+i_am_in_backup_all_users=1
 for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
     if [ ! -f "$VESTA/data/users/$user/user.conf" ]; then
         continue;
@@ -41,7 +42,7 @@ for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
         echo -e "================================" >> $log
         echo -e "$user" >> $log
         echo -e "--------------------------------\n" >> $log
-        $BIN/v-backup-user $user >> $log 2>&1
+        nice -n 19 $BIN/v-backup-user $user >> $log 2>&1
         echo -e "\n--------------------------------\n\n" >> $log
     fi
 done
