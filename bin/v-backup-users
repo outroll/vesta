@@ -22,10 +22,12 @@ source $VESTA/conf/vesta.conf
 #                       Action                             #
 #----------------------------------------------------------#
 
+log=$VESTA/log/backup.log
+
 $BIN/v-check-vesta-license >/dev/null
 
 # Auto-repair all databases before backuping all accounts
-mysqlrepair --all-databases --check --auto-repair > /dev/null 2>&1
+mysqlrepair --all-databases --check --auto-repair >> $log 2>&1
 
 if [ -z "$BACKUP_SYSTEM" ]; then
     exit
@@ -37,7 +39,6 @@ for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
     fi
     wait_for_backup_if_it_is_not_time_for_backup
     check_suspend=$(grep "SUSPENDED='no'" $VESTA/data/users/$user/user.conf)
-    log=$VESTA/log/backup.log
     if [ ! -z "$check_suspend" ]; then
         echo -e "================================" >> $log
         echo -e "$user" >> $log
