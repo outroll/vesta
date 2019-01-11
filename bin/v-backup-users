@@ -27,7 +27,7 @@ log=$VESTA/log/backup.log
 $BIN/v-check-vesta-license >/dev/null
 
 # Auto-repair all databases before backuping all accounts
-mysqlrepair --all-databases --check --auto-repair >> $log 2>&1
+nice -n 19 ionice -c 3 mysqlrepair --all-databases --check --auto-repair >> $log 2>&1
 
 if [ -z "$BACKUP_SYSTEM" ]; then
     exit
@@ -44,7 +44,7 @@ for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
         echo -e "$user" >> $log
         echo -e "--------------------------------\n" >> $log
         i_am_in_backup_all_users=0
-        nice -n 19 $BIN/v-backup-user $user >> $log 2>&1
+        nice -n 19 ionice -c 3 $BIN/v-backup-user $user >> $log 2>&1
         i_am_in_backup_all_users=1
         echo -e "\n--------------------------------\n\n" >> $log
     fi
