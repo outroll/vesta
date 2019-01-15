@@ -211,6 +211,7 @@ add_mysql_database() {
         query="CREATE USER IF NOT EXISTS '$dbuser'@'%' IDENTIFIED BY '$dbpass';"
         mysql_query "$query" > /dev/null
         query="GRANT ALL ON \`$database\`.* TO \`$dbuser\`@\`%\`"
+        mysql_query "$query" > /dev/null
         query="GRANT ALL ON \`$database\`.* TO \`$dbuser\`@localhost"
         mysql_query "$query" > /dev/null
     else
