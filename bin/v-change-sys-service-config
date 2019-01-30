@@ -105,7 +105,10 @@ if [ "$update" = 'yes' ] && [ "$restart" != 'no' ]; then
         fi
     fi
 
-    service $service restart >/dev/null 2>&1
+    for single_service in $service; do
+        service $single_service restart >/dev/null 2>&1
+    done <<< "$service"
+
     if [ $? -ne 0 ]; then
         for config in $dst; do
             cat $config.vst.back > $config
