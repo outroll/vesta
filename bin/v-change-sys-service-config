@@ -98,7 +98,7 @@ if [ "$update" = 'yes' ] && [ "$restart" != 'no' ]; then
             if [ $(ps --no-headers -o comm 1) == systemd ]; then
                 service=$(systemctl | grep -o -E "php.*fpm.*\.service")
             else
-                service=$(ls /etc/init.d/php*fpm* |cut -f 4 -d / |sed -n 1p)
+                service=$(ls /etc/init.d/php*fpm* |cut -f 4 -d /)
             fi
         else
             service=$WEB_SYSTEM
