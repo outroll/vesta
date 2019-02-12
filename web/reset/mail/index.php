@@ -5,6 +5,23 @@ error_reporting(NULL);
 
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
+// Checking IP of incoming connection, checking is it NAT address
+$ok=0;
+$ip=$_SERVER['REMOTE_ADDR'];
+exec (VESTA_CMD."v-list-sys-ips json", $output, $return_var);
+$output=implode('', $output);
+$arr=json_decode($output, true);
+foreach ($arr as $arr_key => $arr_val) {
+    // search for NAT IPs and allow them
+	if ($ip==$arr_key || $ip==$arr_val['NAT']) {
+		$ok=1;
+		break;
+	}
+}
+if ($ip == $_SERVER['SERVER_ADDR']) $ok=1;
+if ($ip == '127.0.0.1') $ok=1;
+if ($ok==0) exit;
+
 //
 // sourceforge.net/projects/postfixadmin/
 // md5crypt 
@@ -104,8 +121,7 @@ if ((!empty($_POST['email'])) && (!empty($_POST['password'])) && (!empty($_POST[
     list($v_account, $v_domain) = explode('@', $_POST['email']);
     $v_domain = escapeshellarg($v_domain);
     $v_account = escapeshellarg($v_account);
-    $password = $_POST['password'];
-    $new = escapeshellarg($_POST['new']);
+    $v_password = $_POST['password'];
 
     // Get domain owner
     exec (VESTA_CMD."v-search-domain-owner ".$v_domain." 'mail'", $output, $return_var);
@@ -126,12 +142,16 @@ if ((!empty($_POST['email'])) && (!empty($_POST['password'])) && (!empty($_POST[
     // Compare hashes
     if (!empty($v_hash)) {
         $salt = explode('$', $v_hash);
-        $n_hash = md5crypt($password, $salt[2]);
+        $n_hash = md5crypt($v_password, $salt[2]);
         $n_hash = '{MD5}'.$n_hash;
 
         // Change password
         if ( $v_hash == $n_hash ) {
-            exec (VESTA_CMD."v-change-mail-account-password '".$v_user."' ".$v_domain." ".$v_account." ".$new, $output, $return_var);
+            $v_new_password = tempnam("/tmp","vst");
+            $fp = fopen($v_new_password, "w");
+            fwrite($fp, $_POST['new']."\n");
+            fclose($fp);
+            exec (VESTA_CMD."v-change-mail-account-password '".$v_user."' ".$v_domain." ".$v_account." ".$v_new_password, $output, $return_var);
             if ($return_var == 0) {
                 echo "ok";
                 exit;

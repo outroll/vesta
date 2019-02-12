@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 
 # Includes
@@ -23,7 +23,7 @@ source $VESTA/conf/vesta.conf
 
 check_args '0' "$#" 'USER'
 if [ ! -z "$user" ]; then
-    validate_format 'user'
+    is_format_valid 'user'
     is_object_valid 'user' 'USER' "$user"
 fi
 
@@ -53,6 +53,7 @@ for user in $user_list; do
     IP_OWNED=0
     U_USERS=0
     U_DISK=0
+    DISK=0 
     U_DISK_DIRS=$(get_user_value '$U_DISK_DIRS')
     if [ -z "$U_DISK_DIRS" ]; then
         U_DISK_DIRS=0
@@ -211,6 +212,6 @@ done
 #----------------------------------------------------------#
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

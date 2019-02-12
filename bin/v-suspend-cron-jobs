@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 user=$1
 restart=$2
 
@@ -23,7 +23,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 check_args '1' "$#" 'USER'
-validate_format 'user'
+is_format_valid 'user'
 is_object_valid 'user' 'USER' "$user"
 
 
@@ -41,15 +41,11 @@ done
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-# Restart crond
-if [ "$restart" != 'no' ]; then
-    $BIN/v-restart-cron
-    if [ $? -ne 0 ]; then
-        exit $E_RESTART
-    fi
-fi
+# Restarting crond
+$BIN/v-restart-cron $restart
+check_result $? "Cron restart failed" >/dev/null
 
 # Logging
-log_event "$OK" "$EVENT"
+log_event "$OK" "$ARGUMENTS"
 
 exit

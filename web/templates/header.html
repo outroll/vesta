@@ -1,73 +1,20 @@
-<!DOCTYPE HTML>
+<!doctype html>
 <html>
-    <head>
-        <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-        <title>Vesta - <?php echo "$TAB"; ?> </title>
-        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-        <link type="text/css" href="/css/main.css?ver=1396704430" rel="stylesheet" />
-        <!--[if IE 7]>
-            <link rel="stylesheet" type="text/css" href="/css/ie.css" />
-            <style type="text/css">
-                .data-col1 a {
-                    white-space: nowrap;
-                }
-
-                .submenu-button-block {
-                    width: 120px;
-                }
-
-                .submenu-search-block {
-                    width:369px;
-                }
-
-                .submenu-select-block {
-                    width:239px;
-                }
-
-                .submenu-select-dropdown {
-                    position: relative;
-                    top: 2px;
-                }
-            </style>
-        <![endif]-->
-        <link type="text/css" href="/css/jquery-custom-dialogs.css" rel="stylesheet" />
-        <script type="text/javascript" src="/js/events.js"></script>
-        <script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
-        <script type="text/javascript" src="/js/jquery-ui-1.8.20.custom.min.js"></script>
-        <script language="JavaScript">
-            var checked=false;
-            var frmname='';
-            function checkedAll(frmname) {
-                var valus= document.getElementById(frmname);
-                if (checked==false) {
-                    checked=true;
-                } else {
-                    checked = false;
-                }
-                for (var i =0; i < valus.elements.length; i++) {
-                    valus.elements[i].checked=checked;
-                }
-            }
-        </script>
-        <script language="JavaScript">
-            $('document').ready(function() {
-                $('#vstobjects').bind('click', function(evt) { // observe change event on whole div#vstobjects
-                    var elm = evt.target; // grab element on which user clicked
-                    var parent = $(elm).hasClass('data-row') ? $(elm) : $(elm).parents('.data-row'); // check if outer element is row container and get it
-                    if (!$(parent).hasClass('selected')) {
-                        parent.addClass('selected'); // add class
-                        parent.find('.ch-toggle').attr('checked', true);
-                        // another actions on checked row
-                    }
-                    else {
-                        parent.removeClass('selected'); // remove class
-                        parent.find('.ch-toggle').attr('checked', false);
-                        // another actions on unchecked row
-                    }
-                });
-            });
-        </script>
-        <script type="text/javascript" src="/js/app.js"></script>
-        <script type="text/javascript" src="/js/templates.js"></script>
-    </head>
-    <body>
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+  <title>Vesta - <?=__($TAB)?></title>
+  <link rel="stylesheet" href="/css/styles.min.css?1446554103">
+  <link type="text/css" href="/css/jquery-custom-dialogs.css?1446554103" rel="stylesheet" />
+  <script>
+    //
+    //  GLOBAL SETTINGS
+    //
+    var GLOBAL = {};
+    GLOBAL.FTP_USER_PREFIX  = 'admin_';
+    GLOBAL.DB_USER_PREFIX   = 'admin_';
+    GLOBAL.DB_DBNAME_PREFIX = 'admin_';
+    GLOBAL.AJAX_URL = '';
+  </script>
+</head>
+<body class="body-<?=strtolower($TAB)?> lang-<?=$_SESSION['language']?>">

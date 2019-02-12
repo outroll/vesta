@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 period=${1-daily}
 
 # Includes
@@ -61,9 +61,13 @@ fi
 # Parsing data
 if [ "$period" = 'daily' ]; then
     mem=$(free -m)
-    used=$(echo "$mem" |awk '{print $3}'|head -n3 |tail -n1)
-    free=$(echo "$mem" |awk '{print $4}'|head -n3 |tail -n1)
-    swap=$(echo "$mem" |awk '{print $3}'|tail -n1)
+    used=$(echo "$mem" |grep Mem |awk '{print $3}')
+    if [ -z "$(echo "$mem" | grep available)" ]; then
+        free=$(echo "$mem" |grep buffers/cache |awk '{print $4}')
+    else
+        free=$(echo "$mem" |grep Mem |awk '{print $7}')
+    fi
+    swap=$(echo "$mem" |grep Swap |awk '{print $3}')
 
     # Updating rrd
     rrdtool update $RRD/mem/mem.rrd N:$used:$swap:$free
@@ -72,16 +76,16 @@ fi
 # Updating rrd graph
 rrdtool graph $RRD/mem/$period-mem.png \
     --imgformat PNG \
-    --height="120" \
-    --width="440" \
+    --height="150" \
+    --width="670" \
     --start "$start" \
     --end "$end" \
     --vertical-label "Mbytes" \
     --x-grid "$grid" \
-    -c "BACK#7a766d" \
-    -c "SHADEA#7a766d" \
-    -c "SHADEB#7a766d" \
-    -c "FONT#FFFFFF" \
+    -c "BACK#ffffff" \
+    -c "SHADEA#ffffff" \
+    -c "SHADEB#ffffff" \
+    -c "FONT#555555" \
     -c "CANVAS#302c2d" \
     -c "GRID#666666" \
     -c "MGRID#AAAAAA" \

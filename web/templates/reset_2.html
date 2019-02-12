@@ -21,14 +21,14 @@
                                             <tr>
                                                 <td>
                                                     <input type="hidden" name="action" value="confirm">
-                                                    <input type="hidden" name="user" value="<?php echo $_GET['user'];?>">
+                                                    <input type="hidden" name="user" value="<?=htmlentities($_GET['user'], ENT_QUOTES|ENT_HTML5)?>">
                                                     <input tabindex="1" type="text" size="20px" style="width:240px" name="code" class="vst-input">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 20px 0 12px 0;">
                                                     <input tabindex="2" type="submit" value="<?php print __('Confirm');?>" class="button">
-                                                    <input type="button" class="button" value="<?php print __('Back');?>" onclick="location.href='/reset/'">
+                                                    <input type="button" class="button cancel" value="<?php print __('Back');?>" onclick="location.href='/reset/'">
                                                 </td>
                                             </tr>
                                         </table>

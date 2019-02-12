@@ -9,11 +9,12 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Argument defenition
+# Argument definition
 period=${1-daily}
 
 # Includes
 source $VESTA/func/main.sh
+source $VESTA/func/db.sh
 source $VESTA/conf/vesta.conf
 
 
@@ -37,9 +38,7 @@ fi
 
 # Parsing db hosts
 conf="$VESTA/conf/mysql.conf"
-fields='$HOST'
-nohead=1
-hosts=$(shell_list)
+hosts=$(grep HOST $conf |awk '{print $1}' |cut -f 2 -d \')
 check_row=$(echo "$hosts" |wc -l)
 if [ 0 -eq "$check_row" ]; then
     exit
@@ -68,23 +67,10 @@ for host in $hosts; do
     fi
 
     if [ "$period" = 'daily' ]; then
-        # Defining host credentials
-        host_str=$(grep "HOST='$host'" $conf)
-        for key in $host_str; do
-            eval ${key%%=*}=${key#*=}
-        done
-        sql="mysql -h $HOST -u $USER -p$PASSWORD -e"
-
-        # Checking empty vars
-        if [ -z $HOST ] || [ -z $USER ] || [ -z $PASSWORD ]; then
-            echo "Error: config is broken"
-            log_event "$E_PARSING" "$EVENT"
-            exit $E_PARSING
-        fi
-
-        # Parsing data
-        status=$($sql "SHOW GLOBAL STATUS" 2>/dev/null); code="$?"
-        if [ '0' -ne "$code" ]; then
+        mysql_connect $host
+        query='SHOW GLOBAL STATUS'
+        status=$(mysql_query "$query" 2>/dev/null)
+        if [ $? -ne 0 ]; then
             active=0
             slow=0
         else
@@ -99,16 +85,16 @@ for host in $hosts; do
     # Updating daily graph
     rrdtool graph  $RRD/db/$period-mysql_$host.png \
         --imgformat PNG \
-        --height="120" \
-        --width="440" \
+        --height="150" \
+        --width="670" \
         --start "$start" \
         --end "$end" \
         --vertical-label "Queries" \
         --x-grid "$grid" \
-        -c "BACK#7a766d" \
-        -c "SHADEA#7a766d" \
-        -c "SHADEB#7a766d" \
-        -c "FONT#FFFFFF" \
+        -c "BACK#ffffff" \
+        -c "SHADEA#ffffff" \
+        -c "SHADEB#ffffff" \
+        -c "FONT#555555" \
         -c "CANVAS#302c2d" \
         -c "GRID#666666" \
         -c "MGRID#AAAAAA" \
