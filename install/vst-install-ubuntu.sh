@@ -1087,7 +1087,18 @@ fi
 
 if [ "$dovecot" = 'yes' ]; then
     gpasswd -a dovecot mail
-    cp -rf $vestacp/dovecot /etc/
+    if [[ ${release:0:2} -ge 18 ]]; then
+        cp -r /usr/local/vesta/install/debian/9/dovecot /etc/
+        if [ -z "$(grep yes /etc/dovecot/conf.d/10-mail.conf)" ]; then
+            echo "namespace inbox {" >> /etc/dovecot/conf.d/10-mail.conf
+            echo "  inbox = yes" >> /etc/dovecot/conf.d/10-mail.conf
+            echo "}" >> /etc/dovecot/conf.d/10-mail.conf
+            echo "first_valid_uid = 1000" >> /etc/dovecot/conf.d/10-mail.conf
+            echo "mbox_write_locks = fcntl" >> /etc/dovecot/conf.d/10-mail.conf
+        fi
+    else
+        cp -rf $vestacp/dovecot /etc/
+    fi
     cp -f $vestacp/logrotate/dovecot /etc/logrotate.d/
     chown -R root:root /etc/dovecot*
     update-rc.d dovecot defaults
