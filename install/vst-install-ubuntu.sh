@@ -999,9 +999,17 @@ if [ "$mysql" = 'yes' ]; then
         cp -f $vestacp/pma/apache.conf /etc/phpmyadmin/
         ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
     fi
-    cp -f $vestacp/pma/config.inc.php /etc/phpmyadmin/
+    if [[ ${release:0:2} -ge 18 ]]; then
+        mysql < /usr/share/phpmyadmin/sql/create_tables.sql
+        p=$(grep dbpass /etc/phpmyadmin/config-db.php |cut -f 2 -d "'")
+        mysql -e "GRANT ALL ON phpmyadmin.*
+            TO phpmyadmin@localhost IDENTIFIED BY '$p'"
+    else
+        cp -f $vestacp/pma/config.inc.php /etc/phpmyadmin/
+    fi
     chmod 777 /var/lib/phpmyadmin/tmp
 fi
+
 
 #----------------------------------------------------------#
 #                   Configure PostgreSQL                   #
@@ -1147,29 +1155,42 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
         cp -f $vestacp/roundcube/apache.conf /etc/roundcube/
         ln -s /etc/roundcube/apache.conf /etc/apache2/conf.d/roundcube.conf
     fi
-    cp -f $vestacp/roundcube/main.inc.php /etc/roundcube/
-    cp -f  $vestacp/roundcube/db.inc.php /etc/roundcube/
-    chmod 640 /etc/roundcube/debian-db*
-    chown root:www-data /etc/roundcube/debian-db*
-    cp -f $vestacp/roundcube/vesta.php \
-        /usr/share/roundcube/plugins/password/drivers/
-    cp -f $vestacp/roundcube/config.inc.php /etc/roundcube/plugins/password/
-    r="$(gen_pass)"
-    mysql -e "CREATE DATABASE roundcube"
-    mysql -e "GRANT ALL ON roundcube.*
-        TO roundcube@localhost IDENTIFIED BY '$r'"
-    sed -i "s/%password%/$r/g" /etc/roundcube/db.inc.php
-    touch /var/log/roundcube/errors
-    chmod 640 /var/log/roundcube/errors
-    chown www-data:adm /var/log/roundcube/errors
+
+    if [[ ${release:0:2} -ge 18 ]]; then
+        r=$(grep dbpass= /etc/roundcube/debian-db.php |cut -f 2 -d "'")
+        sed -i "s/default_host.*/default_host'] = 'localhost';/" \
+            /etc/roundcube/config.inc.php
+        sed -i "s/^);/'password');/" /etc/roundcube/config.inc.php
+    else
+        r="$(gen_pass)"
+        cp -f $vestacp/roundcube/main.inc.php /etc/roundcube/
+        cp -f  $vestacp/roundcube/db.inc.php /etc/roundcube/
+        sed -i "s/%password%/$r/g" /etc/roundcube/db.inc.php
+    fi
+
     if [ "$release" = '16.04' ]; then
+        # TBD: should be fixed in config repo
         mv /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
         mv /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
         chmod 640 /etc/roundcube/debian-db-roundcube.php
         chown root:www-data /etc/roundcube/debian-db-roundcube.php
     fi
 
+    cp -f $vestacp/roundcube/vesta.php \
+        /usr/share/roundcube/plugins/password/drivers/
+    cp -f $vestacp/roundcube/config.inc.php /etc/roundcube/plugins/password/
+
+    mysql -e "CREATE DATABASE roundcube"
+    mysql -e "GRANT ALL ON roundcube.*
+        TO roundcube@localhost IDENTIFIED BY '$r'"
     mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
+
+    chmod 640 /etc/roundcube/debian-db*
+    chown root:www-data /etc/roundcube/debian-db*
+    touch /var/log/roundcube/errors
+    chmod 640 /var/log/roundcube/errors
+    chown www-data:adm /var/log/roundcube/errors
+
     php5enmod mcrypt 2>/dev/null
     phpenmod mcrypt 2>/dev/null
     if [ "$apache" = 'yes' ]; then
