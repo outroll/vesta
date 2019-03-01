@@ -64,7 +64,7 @@ fi
 # Updating graph
 rrdtool graph $RRD/la/$period-la.png \
     --imgformat PNG \
-    --height="150" \
+    --height="350" \
     --width="670" \
     --start "$start" \
     --end "$end" \
