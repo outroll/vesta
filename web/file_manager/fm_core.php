@@ -83,7 +83,7 @@ class FileManager {
         $src = $this->formatFullPath($item);
         $dst = $this->formatFullPath($target_dir);
 
-        exec (VESTA_CMD . "nice -n 19 ionice -c 3 v-copy-fs-file {$this->user} {$src} {$dst}", $output, $return_var);
+        exec ("nice -n 19 ionice -c 3 ".VESTA_CMD . "v-copy-fs-file {$this->user} {$src} {$dst}", $output, $return_var);
 
         $error = self::check_return_code($return_var, $output);
 
@@ -104,7 +104,7 @@ class FileManager {
         $src = $this->formatFullPath($item);
         $dst = $this->formatFullPath($target_dir);
 
-        exec (VESTA_CMD . "nice -n 19 ionice -c 3 v-copy-fs-directory {$this->user} {$src} {$dst}", $output, $return_var);
+        exec ("nice -n 19 ionice -c 3 ".VESTA_CMD . "v-copy-fs-directory {$this->user} {$src} {$dst}", $output, $return_var);
 
         $error = self::check_return_code($return_var, $output);
 
@@ -159,7 +159,7 @@ class FileManager {
 
         $dst_item = $this->formatFullPath($dst_item);
 
-        exec (VESTA_CMD . "nice -n 19 ionice -c 3 v-add-fs-archive {$this->user} {$dst_item} {$items}", $output, $return_var);
+        exec ("nice -n 19 ionice -c 3 ".VESTA_CMD . "v-add-fs-archive {$this->user} {$dst_item} {$items}", $output, $return_var);
 
         $error = self::check_return_code($return_var, $output);
 
@@ -183,7 +183,7 @@ class FileManager {
 
         $dst_item = $this->formatFullPath($dst_item_name);
 
-        exec (VESTA_CMD . "nice -n 19 ionice -c 3 v-copy-fs-file {$this->user} {$src_item} {$dst_item}", $output, $return_var);
+        exec ("nice -n 19 ionice -c 3 ".VESTA_CMD . "v-copy-fs-file {$this->user} {$src_item} {$dst_item}", $output, $return_var);
 
         $error = self::check_return_code($return_var, $output);
 
@@ -219,7 +219,7 @@ class FileManager {
         $item     = $this->formatFullPath($item);
         $dst_item = $this->formatFullPath($target_dir);
 
-        exec (VESTA_CMD . "nice -n 19 ionice -c 3 v-extract-fs-archive {$this->user} {$item} {$dst_item}", $output, $return_var);
+        exec ("nice -n 19 ionice -c 3 ".VESTA_CMD . "v-extract-fs-archive {$this->user} {$item} {$dst_item}", $output, $return_var);
 
         $error = self::check_return_code($return_var, $output);
 
