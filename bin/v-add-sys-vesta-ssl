@@ -1,5 +1,5 @@
 #!/bin/bash
-# info: copy vesta ssl certificate
+# info: add vesta ssl certificate
 # options: USER DOMAIN [RESTART]
 #
 # The function copies user domain SSL to vesta SSL directory
@@ -67,10 +67,10 @@ fi
 
 # Restarting services
 if [ "$restart" != 'no' ]; then
-    if [ ! -z "$MAIL_SYSTEM" ]; then
+    if [ ! -z "$MAIL_SYSTEM" ] && [ -z "$MAIL_CERTIFICATE" ]; then
         $BIN/v-restart-service $MAIL_SYSTEM
     fi
-    if [ ! -z "$IMAP_SYSTEM" ]; then
+    if [ ! -z "$IMAP_SYSTEM" ] && [ -z "$MAIL_CERTIFICATE" ]; then
         $BIN/v-restart-service $IMAP_SYSTEM
     fi
     if [ ! -z "$FTP_SYSTEM" ]; then

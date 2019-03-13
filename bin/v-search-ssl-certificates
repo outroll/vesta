@@ -18,23 +18,19 @@ source $VESTA/func/main.sh
 # JSON list function
 json_list() {
     IFS=$'\n'
-    i=1
     objects=$(echo "$search_cmd" |wc -l)
-    echo "{"
+    i=1
+    echo '['
     for str in $search_cmd; do
         eval $str
-        echo -n '    "'$i'": {
-        "USER": "'$USER'",
-        "DOMAIN": "'$DOMAIN'"
-    }'
         if [ "$i" -lt "$objects" ]; then
-            echo ','
+            echo -e  "\t\"$USER:$DOMAIN\","
         else
-            echo
+            echo -e  "\t\"$USER:$DOMAIN\""
         fi
-        ((i++))
+        (( ++i))
     done
-    echo '}'
+    echo "]"
 }
 
 # SHELL list function

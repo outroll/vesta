@@ -26,7 +26,7 @@ source $VESTA/conf/vesta.conf
 
 check_args '2' "$#" 'USER DOMAIN [RESTART]'
 is_format_valid 'user' 'domain'
-is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_value_exist 'web' 'DOMAIN' "$domain" '$SSL'
@@ -51,13 +51,30 @@ fi
 diff $dom_crt $vst_crt >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     rm -f $vst_crt.old $vst_key.old
-    mv $vst_crt $vst_crt.old
-    mv $vst_key $vst_key.old
+    mv $vst_crt $vst_crt.old >/dev/null 2>&1
+    mv $vst_key $vst_key.old >/dev/null 2>&1
     cp $dom_crt $vst_crt 2>/dev/null
     cp $dom_key $vst_key 2>/dev/null
     chown root:mail $vst_crt $vst_key
 else
     restart=no
+fi
+
+# Updating mail certificate
+case $MAIL_SYSTEM in
+    exim)           conf='/etc/exim/exim.conf';;
+    exim4)          conf='/etc/exim4/exim4.conf.template';;
+esac
+if [ -e "$conf" ]; then
+    sed -e "s|^tls_certificate.*|tls_certificate = $vst_crt|" \
+        -e "s|^tls_privatekey.*|tls_privatekey = $vst_key|" -i $conf
+fi
+
+# Updating imap certificate
+conf="/etc/dovecot/conf.d/10-ssl.conf"
+if [ ! -z "$IMAP_SYSTEM" ] && [ -e "$conf" ]; then
+    sed -e "s|ssl_cert.*|ssl_cert = <$vst_crt|" \
+        -e "s|ssl_key.*|ssl_key = <$vst_key|" -i $conf
 fi
 
 
