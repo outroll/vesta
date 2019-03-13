@@ -524,8 +524,14 @@ rebuild_mail_domain_conf() {
         chmod 660 $HOMEDIR/$user/conf/mail/$domain/*
         chmod 771 /etc/$MAIL_SYSTEM/domains/$domain_idn
         chmod 770 $HOMEDIR/$user/mail/$domain_idn
+        
+        # Checking if user dovecot exists. If dovecor user doesn't exist (dovecot is not installed), owner is exim user.
         chown -R $MAIL_USER:mail $HOMEDIR/$user/conf/mail/$domain
-        chown -R dovecot:mail $HOMEDIR/$user/conf/mail/$domain/passwd
+        if id "dovecot" >/dev/null 2>&1; then
+            chown -R dovecot:mail $HOMEDIR/$user/conf/mail/$domain/passwd
+        else
+            chown -R $MAIL_USER:mail $HOMEDIR/$user/conf/mail/$domain/passwd
+        fi
         chown $user:mail $HOMEDIR/$user/mail/$domain_idn
     fi
 
