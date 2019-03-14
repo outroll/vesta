@@ -561,6 +561,7 @@ $LANG['ro'] = array(
     'MAIL Server' => 'Server MAIL',
     'Antivirus' => 'Antivirus',
     'AntiSpam' => 'AntiSpam',
+    'Use Web Domain SSL Certificate' => 'Foloseşte certificatul SSL din domeniul WEB',
     'Webmail URL' => 'URL Webmail',
     'MySQL Support' => 'Suport MySQL',
     'phpMyAdmin URL' => 'URL phpMyAdmin',

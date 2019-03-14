@@ -562,6 +562,7 @@ $LANG['vi'] = array(
     'MAIL Server' => 'Máy chủ MAIL',
     'Antivirus' => 'Trình diệt virus',
     'AntiSpam' => 'Trình chống spam',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'Đường dẫn Webmail',
     'MySQL Support' => 'Hỗ trợ MySQL',
     'phpMyAdmin URL' => 'Đường dẫn phpMyAdmin',

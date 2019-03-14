@@ -561,6 +561,7 @@ $LANG['ru'] = array(
     'MAIL Server' => 'MAIL Сервер',
     'Antivirus' => 'Антивирус',
     'AntiSpam' => 'АнтиСпам',
+    'Use Web Domain SSL Certificate' => 'Использовать SSL сертификат веб домена',
     'Webmail URL' => 'Webmail URL',
     'MySQL Support' => 'Поддержка MySQL',
     'phpMyAdmin URL' => 'phpMyAdmin URL',

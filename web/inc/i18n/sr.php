@@ -559,6 +559,7 @@ $LANG['sr'] = array(
     'MAIL Server' => 'MAIL Server',
     'Antivirus' => 'Antivirus',
     'AntiSpam' => 'AntiSpam',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'Webmail URL',
     'MySQL Support' => 'MySQL podrška',
     'phpMyAdmin URL' => 'phpMyAdmin URL',

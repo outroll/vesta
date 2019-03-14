@@ -540,6 +540,7 @@ $LANG['az'] = array(
     'MAIL Server' => 'MAIL Server',
     'Antivirus' => 'Antivirus',
     'AntiSpam' => 'AntiSpam',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'Vebmail URL',
     'MySQL Support' => 'MySQL dəstək',
     'phpMyAdmin URL' => 'phpMyAdmin URL',

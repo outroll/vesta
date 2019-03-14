@@ -559,6 +559,7 @@ $LANG['ko'] = array(
     'MAIL Server' => 'MAIL 서버',
     'Antivirus' => '바이러스 필터링',
     'AntiSpam' => '스팸 필터링',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => '웹메일 주소',
     'MySQL Support' => 'MySQL 지원',
     'phpMyAdmin URL' => 'phpMyAdmin 주소',

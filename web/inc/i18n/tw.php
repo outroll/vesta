@@ -564,6 +564,7 @@ $LANG['tw'] = array(
     'MAIL Server' => 'MAIL 伺服器',
     'Antivirus' => '病毒防護',
     'AntiSpam' => '垃圾郵件防護',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'Webmail 路徑',
     'MySQL Support' => 'MySQL 支援',
     'phpMyAdmin URL' => 'phpMyAdmin 路徑',

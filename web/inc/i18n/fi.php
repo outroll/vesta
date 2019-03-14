@@ -561,6 +561,7 @@ $LANG['fi'] = array(
     'MAIL Server' => 'MAIL-palvelin',
     'Antivirus' => 'Antivirus',
     'AntiSpam' => 'AntiSpam',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'Webmailin URL',
     'MySQL Support' => 'MySQL Support',
     'phpMyAdmin URL' => 'phpMyAdmin URL',

@@ -568,6 +568,7 @@ $LANG['cn'] = array(
     'MAIL Server' => '邮箱服务器',
     'Antivirus' => '防病毒引擎',
     'AntiSpam' => '防垃圾邮件',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => '网页邮箱网址',
     'MySQL Support' => 'MySQL 支持',
     'phpMyAdmin URL' => '设置 phpMyAdmin 网址',

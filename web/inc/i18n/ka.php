@@ -559,6 +559,7 @@ $LANG['ka'] = array(
     'MAIL Server' => 'ელფოსტის სერვერი',
     'Antivirus' => 'ანტივირუსი',
     'AntiSpam' => 'ანტისპამი',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'ვებფოსტის URL',
     'MySQL Support' => 'MySQL-ის მხარდაჭერა',
     'phpMyAdmin URL' => 'phpMyAdmin-ის URL',
