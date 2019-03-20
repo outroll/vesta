@@ -11,62 +11,56 @@ server {
     ssl_certificate      %ssl_pem%;
     ssl_certificate_key  %ssl_key%;
 
-    location = /favicon.ico {
-        log_not_found off;
-        access_log off;
-    }
-
-    location = /robots.txt {
-        allow all;
-        log_not_found off;
-        access_log off;
-    }
-
-    location ~* \.(txt|log)$ {
-        allow 192.168.0.0/16;
-        deny all;
-    }
-
-    location ~ \..*/.*\.php$ {
-        return 403;
-    }
-
-    location ~ ^/sites/.*/private/ {
-        return 403;
-    }
-
-    location ~ ^/sites/[^/]+/files/.*\.php$ {
-        deny all;
+    location @rewrite {
+        rewrite ^/(.*)$ /index.php?q=$1;
     }
     
     location / {
-        try_files $uri /index.php?$query_string;
-    }
+        location = /favicon.ico {
+            log_not_found off;
+            access_log off;
+        }
 
-    location ~ /vendor/.*\.php$ {
-        deny all;
-        return 404;
-    }        
+        location = /robots.txt {
+            allow all;
+            log_not_found off;
+            access_log off;
+        }
 
-    location ~ ^/sites/.*/files/styles/ {
-        try_files $uri @rewrite;
-    }
+        location ~ \..*/.*\.php$ {
+            return 403;
+        }
 
-    location ~ ^(/[a-z\-]+)?/system/files/ {
-        try_files $uri /index.php?$query_string;
-    }
+        location ~ ^/sites/.*/private/ {
+            return 403;
+        }
 
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
-        try_files $uri @rewrite;
-        expires max;
-        log_not_found off;
-    }
+        location ~ ^/sites/[^/]+/files/.*\.php$ {
+            deny all;
+        }
     
-    location ~ '\.php$|^/update.php' {
-        fastcgi_split_path_info ^(.+?\.php)(|/.*)$;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_pass %backend_lsnr%;
-        include         /etc/nginx/fastcgi_params;
+        try_files $uri /index.php?$query_string;  
+
+        location ~ ^/sites/.*/files/styles/ {
+            try_files $uri @rewrite;
+        }
+
+        location ~ ^(/[a-z\-]+)?/system/files/ {
+            try_files $uri /index.php?$query_string;
+        }
+
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+            try_files $uri @rewrite;
+            expires max;
+            log_not_found off;
+        }
+        
+        location ~ '\.php$|^/update.php' {
+            fastcgi_split_path_info ^(.+?\.php)(|/.*)$;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_pass %backend_lsnr%;
+            include /etc/nginx/fastcgi_params;
+        }        
     }
 
     error_page  403 /error/404.html;
