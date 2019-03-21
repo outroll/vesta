@@ -83,6 +83,16 @@ gen_pass() {
     echo "$PASS"
 }
 
+gen_blowfish_secret() {
+    MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    LENGTH=32
+    while [ ${n:=1} -le $LENGTH ]; do
+        PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
+        let n+=1
+    done
+    echo "$PASS"
+}
+
 # Defining return code check function
 check_result() {
     if [ $1 -ne 0 ]; then
@@ -1043,7 +1053,7 @@ if [ "$mysql" = 'yes' ]; then
         cp -f $vestacp/pma/phpMyAdmin.conf /etc/httpd/conf.d/
     fi
     cp -f $vestacp/pma/config.inc.conf /etc/phpMyAdmin/config.inc.php
-    sed -i "s/%blowfish_secret%/$(gen_pass)/g" /etc/phpMyAdmin/config.inc.php
+    sed -i "s/%blowfish_secret%/$(gen_blowfish_secret)/g" /etc/phpMyAdmin/config.inc.php
 fi
 
 
