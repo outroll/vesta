@@ -137,6 +137,12 @@ if (!empty($dbname)) {
 $cfg['UploadDir'] = '';
 $cfg['SaveDir'] = '';
 
+/*
+ * Temp dir for faster beahivour
+ *
+ */
+$cfg['TempDir']  = '/tmp';
+
 /* Support additional configurations */
 foreach (glob('/etc/phpmyadmin/conf.d/*.php') as $filename)
 {
