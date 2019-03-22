@@ -650,8 +650,12 @@ is_date_format_valid() {
 # Database user validator
 is_dbuser_format_valid() {
     exclude="[!|@|#|$|^|&|*|(|)|+|=|{|}|:|,|<|>|?|/|\|\"|'|;|%|\`| ]"
-    if [ 17 -le ${#1} ]; then
-        check_result $E_INVALID "mysql username can be up to 16 characters long"
+    my_max_dbuser_len=16
+    if [ ! -z "$MAX_DBUSER_LEN" ]; then
+        my_max_dbuser_len=$MAX_DBUSER_LEN
+    fi    
+    if [ ${#1} -ge $my_max_dbuser_len ]; then
+        check_result $E_INVALID "mysql username can be up to $my_max_dbuser_len characters long"
     fi
     if [[ "$1" =~ $exclude ]]; then
         check_result $E_INVALID "invalid $2 format :: $1"
