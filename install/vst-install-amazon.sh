@@ -74,6 +74,9 @@ gen_pass() {
     echo "$PASS"
 }
 
+# Defining 32 char blowfish_secret
+blowfish_secret=`openssl rand -base64 32`;
+
 # Defining return code check function
 check_result() {
     if [ $1 -ne 0 ]; then
@@ -1023,7 +1026,7 @@ if [ "$mysql" = 'yes' ]; then
         cp -f $vestacp/pma/phpMyAdmin.conf /etc/httpd/conf.d/
     fi
     cp -f $vestacp/pma/config.inc.conf /etc/phpMyAdmin/config.inc.php
-    sed -i "s/%blowfish_secret%/$(gen_pass)/g" /etc/phpMyAdmin/config.inc.php
+    sed -i "s#%blowfish_secret#$blowfish_secret#g" /etc/phpMyAdmin/config.inc.php
 fi
 
 
