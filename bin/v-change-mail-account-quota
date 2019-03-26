@@ -15,6 +15,7 @@ domain=$2
 domain_idn=$2
 account=$3
 quota=$4
+multiplier="M"
 
 # Includes
 source $VESTA/func/main.sh
@@ -55,7 +56,7 @@ if [[ "$MAIL_SYSTEM" =~ exim ]]; then
         quota=0
     fi
     sed -i "/^$account:/d" $HOMEDIR/$user/conf/mail/$domain/passwd
-    str="$account:$md5:$user:mail::$HOMEDIR/$user:$quota"
+    str="$account:$md5:$user:mail::$HOMEDIR/$user::userdb_quota_rule=*:storage=$quota$multiplier"
     echo $str >> $HOMEDIR/$user/conf/mail/$domain/passwd
 fi
 
