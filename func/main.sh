@@ -967,8 +967,8 @@ wait_for_backup_if_it_is_not_time_for_backup() {
 
     # block backup if current hour is after 6 AM
     WAIT_LOOP_ENTERED=0
-    if pgrep -x "v-backup-users" > /dev/null
-    then
+    # if pgrep -x "v-backup-users" > /dev/null
+    # then
         hour=$(date +"%H");
         while [ "$hour" -gt "6" ] || [ "$hour" -lt "1" ]; do
             # if [ "$WAIT_LOOP_ENTERED" -eq 0 ]; then
@@ -985,5 +985,5 @@ wait_for_backup_if_it_is_not_time_for_backup() {
             sleep 300
             hour=$(date +"%H");
         done
-    fi
+    # fi
 }
