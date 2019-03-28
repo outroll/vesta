@@ -40,6 +40,7 @@ help() {
   -j, --proftpd           Install ProFTPD       [yes|no]  default: no
   -k, --named             Install Bind          [yes|no]  default: yes
   -m, --mysql             Install MySQL         [yes|no]  default: yes
+  -ma --adminer           Install Adminer       [yes|no]  default: no
   -g, --postgresql        Install PostgreSQL    [yes|no]  default: no
   -d, --mongodb           Install MongoDB       [yes|no]  unsupported
   -x, --exim              Install Exim          [yes|no]  default: yes
@@ -127,6 +128,7 @@ for arg; do
         --proftpd)              args="${args}-j " ;;
         --named)                args="${args}-k " ;;
         --mysql)                args="${args}-m " ;;
+        --adminer)              args="${args}-ma " ;;
         --postgresql)           args="${args}-g " ;;
         --mongodb)              args="${args}-d " ;;
         --exim)                 args="${args}-x " ;;
@@ -161,6 +163,7 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
         j) proftpd=$OPTARG ;;           # Proftpd
         k) named=$OPTARG ;;             # Named
         m) mysql=$OPTARG ;;             # MySQL
+        ma) adminer=$OPTARG ;;          # Adminer
         g) postgresql=$OPTARG ;;        # PostgreSQL
         d) mongodb=$OPTARG ;;           # MongoDB (unsupported)
         x) exim=$OPTARG ;;              # Exim
@@ -191,6 +194,7 @@ set_default_value 'vsftpd' 'yes'
 set_default_value 'proftpd' 'no'
 set_default_value 'named' 'yes'
 set_default_value 'mysql' 'yes'
+set_default_value 'adminer' 'no'
 set_default_value 'postgresql' 'no'
 set_default_value 'mongodb' 'no'
 set_default_value 'exim' 'yes'
@@ -598,6 +602,9 @@ if [ "$mysql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/php-mysql//')
     software=$(echo "$software" | sed -e 's/phpMyAdmin//')
     software=$(echo "$software" | sed -e 's/roundcubemail//')
+fi
+if [ "$adminer" = 'yes' ]; then
+    software=$(echo "$software" | sed -e 's/phpMyAdmin//')
 fi
 if [ "$postgresql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/postgresql //')
@@ -1022,11 +1029,16 @@ if [ "$mysql" = 'yes' ]; then
     mysql -e "FLUSH PRIVILEGES"
 
     # Configuring phpMyAdmin
-    if [ "$apache" = 'yes' ]; then
+    if [ "$apache" = 'yes' ] && [ "$adminer" = "no" ]; then
         cp -f $vestacp/pma/phpMyAdmin.conf /etc/httpd/conf.d/
+        cp -f $vestacp/pma/config.inc.conf /etc/phpMyAdmin/config.inc.php
+        sed -i "s#%blowfish_secret#$blowfish_secret#g" /etc/phpMyAdmin/config.inc.php
+    else
+    # Configuring Adminer
+        mkdir -p /usr/share/adminer
+        wget "https://www.adminer.org/latest.php" -O /usr/share/adminer/index.php
+        cp -f $vestacp/adminer/adminer.conf /etc/httpd/conf.d/
     fi
-    cp -f $vestacp/pma/config.inc.conf /etc/phpMyAdmin/config.inc.php
-    sed -i "s#%blowfish_secret#$blowfish_secret#g" /etc/phpMyAdmin/config.inc.php
 fi
 
 

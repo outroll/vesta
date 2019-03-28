@@ -48,6 +48,7 @@ help() {
   -j, --proftpd           Install ProFTPD       [yes|no]  default: no
   -k, --named             Install Bind          [yes|no]  default: yes
   -m, --mysql             Install MySQL         [yes|no]  default: yes
+  -ma --adminer           Install Adminer       [yes|no]  default: no
   -g, --postgresql        Install PostgreSQL    [yes|no]  default: no
   -d, --mongodb           Install MongoDB       [yes|no]  unsupported
   -x, --exim              Install Exim          [yes|no]  default: yes
@@ -135,6 +136,7 @@ for arg; do
         --proftpd)              args="${args}-j " ;;
         --named)                args="${args}-k " ;;
         --mysql)                args="${args}-m " ;;
+        --adminer)              args="${args}-ma " ;;
         --postgresql)           args="${args}-g " ;;
         --mongodb)              args="${args}-d " ;;
         --exim)                 args="${args}-x " ;;
@@ -169,6 +171,7 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
         j) proftpd=$OPTARG ;;           # Proftpd
         k) named=$OPTARG ;;             # Named
         m) mysql=$OPTARG ;;             # MySQL
+        ma) adminer=$OPTARG ;;          # Adminer
         g) postgresql=$OPTARG ;;        # PostgreSQL
         d) mongodb=$OPTARG ;;           # MongoDB (unsupported)
         x) exim=$OPTARG ;;              # Exim
@@ -199,6 +202,7 @@ set_default_value 'vsftpd' 'yes'
 set_default_value 'proftpd' 'no'
 set_default_value 'named' 'yes'
 set_default_value 'mysql' 'yes'
+set_default_value 'adminer' 'no'
 set_default_value 'postgresql' 'no'
 set_default_value 'mongodb' 'no'
 set_default_value 'exim' 'yes'
@@ -610,6 +614,9 @@ if [ "$mysql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/phpMyAdmin//')
     software=$(echo "$software" | sed -e 's/phpmyadmin//')
 fi
+if [ "$adminer" = 'yes' ]; then
+    software=$(echo "$software" | sed -e 's/phpmyadmin//')
+fi
 if [ "$postgresql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/postgresql-contrib//')
     software=$(echo "$software" | sed -e 's/postgresql//')
@@ -995,19 +1002,24 @@ if [ "$mysql" = 'yes' ]; then
     mysql -e "FLUSH PRIVILEGES"
 
     # Configuring phpMyAdmin
-    if [ "$apache" = 'yes' ]; then
+    if [ "$apache" = 'yes' ] && [ "$adminer" = "no" ]; then
         cp -f $vestacp/pma/apache.conf /etc/phpmyadmin/
         ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
-    fi
-    if [[ ${release:0:2} -ge 18 ]]; then
-        mysql < /usr/share/phpmyadmin/sql/create_tables.sql
-        p=$(grep dbpass /etc/phpmyadmin/config-db.php |cut -f 2 -d "'")
-        mysql -e "GRANT ALL ON phpmyadmin.*
-            TO phpmyadmin@localhost IDENTIFIED BY '$p'"
+        if [[ ${release:0:2} -ge 18 ]]; then
+            mysql < /usr/share/phpmyadmin/sql/create_tables.sql
+            p=$(grep dbpass /etc/phpmyadmin/config-db.php |cut -f 2 -d "'")
+            mysql -e "GRANT ALL ON phpmyadmin.*
+                TO phpmyadmin@localhost IDENTIFIED BY '$p'"
+        else
+            cp -f $vestacp/pma/config.inc.php /etc/phpmyadmin/
+        fi
+        chmod 777 /var/lib/phpmyadmin/tmp
     else
-        cp -f $vestacp/pma/config.inc.php /etc/phpmyadmin/
+    # Configuring Adminer
+        mkdir -p /usr/share/adminer
+        wget "https://www.adminer.org/latest.php" -O /usr/share/adminer/index.php
+        cp -f $vestacp/adminer/adminer.conf /etc/httpd/conf.d/
     fi
-    chmod 777 /var/lib/phpmyadmin/tmp
 fi
 
 
