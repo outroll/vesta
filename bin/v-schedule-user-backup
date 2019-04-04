@@ -35,7 +35,7 @@ is_backup_scheduled 'backup'
 
 # Adding backup task to  the queue
 log=$VESTA/log/backup.log
-echo "$BIN/v-backup-user $user yes >> $log 2>&1" >>\
+echo "nice -n 19 ionice -c 3 $BIN/v-backup-user $user yes >> $log 2>&1" >>\
     $VESTA/data/queue/backup.pipe
 
 
