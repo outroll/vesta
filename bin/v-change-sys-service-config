@@ -97,7 +97,7 @@ if [ "$update" = 'yes' ] && [ "$restart" != 'no' ]; then
         if [ "$WEB_SYSTEM" = "nginx" ]; then
             if [ $(ps --no-headers -o comm 1) == systemd ]; then
                 service=$(systemctl | grep -o -E "php.*fpm.*\.service")
-		service=${service//.service/}
+                service=${service//.service/}
             else
                 service=$(ls /etc/init.d/php*fpm* |cut -f 4 -d /)
             fi
