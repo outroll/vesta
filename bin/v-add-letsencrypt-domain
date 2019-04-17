@@ -163,7 +163,7 @@ for auth in $authz; do
             check_result $? "Proxy restart failed" >/dev/null
 
         else
-            well_known="$HOMEDIR/$user/web/$rdomain/public_html/.well-known"
+            well_known="$HOMEDIR/$user/web/$domain/public_html/.well-known"
             acme_challenge="$well_known/acme-challenge"
             mkdir -p $acme_challenge
             echo "$token.$THUMB" > $acme_challenge/$token
