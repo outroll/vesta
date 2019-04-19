@@ -478,6 +478,17 @@ echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
 wget $CHOST/deb_signing.key -O deb_signing.key
 apt-key add deb_signing.key
 
+# Installing jessie backports
+if [ "$release" -eq 8 ]; then
+    if [ ! -e /etc/apt/apt.conf ]; then
+        echo 'Acquire::Check-Valid-Until "false";' >> /etc/apt/apt.conf
+    fi
+    if [ ! -e /etc/apt/sources.list.d/backports.list ]; then
+        echo "deb http://archive.debian.org/debian jessie-backports main" >\
+            /etc/apt/sources.list.d/vesta.list
+    fi
+fi
+
 
 #----------------------------------------------------------#
 #                         Backup                           #
