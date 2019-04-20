@@ -485,7 +485,7 @@ if [ "$release" -eq 8 ]; then
     fi
     if [ ! -e /etc/apt/sources.list.d/backports.list ]; then
         echo "deb http://archive.debian.org/debian jessie-backports main" >\
-            /etc/apt/sources.list.d/vesta.list
+            /etc/apt/sources.list.d/backports.list
     fi
 fi
 
