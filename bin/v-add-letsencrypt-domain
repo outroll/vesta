@@ -22,6 +22,14 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_identifier_idn() {
+    identifier_idn=$identifier
+    if [[ "$identifier_idn" = *[![:ascii:]]* ]]; then
+        identifier_idn=$(idn -t --quiet -a $identifier_idn)
+    fi
+}
+
 # encode base64
 encode_base64() {
     cat |base64 |tr '+/' '-_' |tr -d '\r\n='
@@ -109,7 +117,8 @@ fi
 url="$API/acme/new-order"
 payload='{"identifiers":['
 for identifier in $(echo $domain,$aliases |tr ',' '\n' |sort -u); do
-    payload=$payload'{"type":"dns","value":"'$identifier'"},'
+    format_identifier_idn
+    payload=$payload'{"type":"dns","value":"'$identifier_idn'"},'
 done
 payload=$(echo "$payload"|sed "s/,$//")
 payload=$payload']}'
@@ -209,7 +218,7 @@ done
 ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "info@$domain" "US" "California"\
     "San Francisco" "Vesta" "IT" "$aliases" |tail -n1 |awk '{print $2}')
 
-# Sedning CSR to finalize order / STEP 6
+# Sending CSR to finalize order / STEP 6
 csr=$(openssl req -in $ssl_dir/$domain.csr -outform DER |encode_base64)
 payload='{"csr":"'$csr'"}'
 answer=$(query_le_v2 "$finalize" "$payload" "$nonce")
