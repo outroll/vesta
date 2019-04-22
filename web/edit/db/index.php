@@ -42,6 +42,8 @@ if ( $v_suspended == 'yes' ) {
     $v_status =  'active';
 }
 
+$v_database = escapeshellarg($_GET['database']);
+
 // Check POST request
 if (!empty($_POST['save'])) {
     $v_username = $user;
