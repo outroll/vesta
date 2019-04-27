@@ -966,7 +966,7 @@ wait_for_backup_if_it_is_not_time_for_backup() {
     done
 
     # block backup if current hour is after 6 AM
-    if [ -z "ALLOW_BACKUP_ANYTIME" ]; then
+    if [ -z "$ALLOW_BACKUP_ANYTIME" ]; then
         WAIT_LOOP_ENTERED=0
         hour=$(date +"%H");
         while [ "$hour" -gt "6" ] || [ "$hour" -lt "1" ]; do
