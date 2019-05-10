@@ -636,6 +636,11 @@ ftp_backup() {
     else
         backup_list=$(ftpc "cd $BPATH" "ls" |awk '{print $9}' |grep "^$user\.")
     fi
+    if [ ! -z "$ONLY_ONE_FTP_BACKUP" ]; then
+        TEMP_BACKUPS=$BACKUPS
+        BACKUPS=1
+        echo "=== Set BACKUPS=1"
+    fi
     backups_count=$(echo "$backup_list" |wc -l)
     if [ "$backups_count" -ge "$BACKUPS" ]; then
         backups_rm_number=$((backups_count - BACKUPS + 1))
@@ -649,6 +654,10 @@ ftp_backup() {
                 ftpc "cd $BPATH" "delete $backup"
             fi
         done
+    fi
+    if [ ! -z "$ONLY_ONE_FTP_BACKUP" ]; then
+        BACKUPS=$TEMP_BACKUPS
+        echo "=== Bringing back old value BACKUPS=$BACKUPS"
     fi
 
     # Uploading backup archive
@@ -792,6 +801,11 @@ sftp_backup() {
         backup_list=$(sftpc "cd $BPATH" "ls -l" |awk '{print $9}'|grep "^$user\.")
     fi
     backups_count=$(echo "$backup_list" |wc -l)
+    if [ ! -z "$ONLY_ONE_FTP_BACKUP" ]; then
+        TEMP_BACKUPS=$BACKUPS
+        BACKUPS=1
+        echo "=== Set BACKUPS=1"
+    fi
     if [ "$backups_count" -ge "$BACKUPS" ]; then
         backups_rm_number=$((backups_count - BACKUPS + 1))
         for backup in $(echo "$backup_list" |head -n $backups_rm_number); do
@@ -804,6 +818,10 @@ sftp_backup() {
                 sftpc "cd $BPATH" "rm $backup" > /dev/null 2>&1
             fi
         done
+    fi
+    if [ ! -z "$ONLY_ONE_FTP_BACKUP" ]; then
+        BACKUPS=$TEMP_BACKUPS
+        echo "=== Bringing back old value BACKUPS=$BACKUPS"
     fi
 
     # Uploading backup archive
