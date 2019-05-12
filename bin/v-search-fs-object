@@ -45,3 +45,4 @@ sudo -u $user find "$path" -name "$object" \
 
 # Exiting
 exit $?
+run_hook $@

@@ -42,4 +42,4 @@ if [ $? -ne 0 ]; then
 fi
 
 # Exiting
-exit
+run_hook $@

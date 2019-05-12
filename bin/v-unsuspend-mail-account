@@ -64,4 +64,4 @@ update_object_value "mail/$domain" 'ACCOUNT' "$account" '$SUSPENDED' 'no'
 # Logging
 log_event "$OK" "$ARGUMENTS"
 
-exit
+run_hook $@

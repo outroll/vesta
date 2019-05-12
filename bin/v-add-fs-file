@@ -40,5 +40,4 @@ if [ $? -ne 0 ]; then
     exit 3
 fi
 
-# Exiting
-exit
+run_hook $@

@@ -204,4 +204,4 @@ check_result $? "DNS restart failed"
 log_history "added dns domain $domain"
 log_event "$OK" "$ARGUMENTS"
 
-exit
+run_hook $@

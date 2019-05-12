@@ -38,3 +38,4 @@ sudo -u $user file -i -b "$path" 2>/dev/null
 
 # Exiting
 exit $?
+run_hook $@

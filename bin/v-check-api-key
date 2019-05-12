@@ -37,4 +37,4 @@ fi
 
 echo "$date $time api $ip successfully launched" >> $VESTA/log/auth.log
 
-exit
+run_hook $@

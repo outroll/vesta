@@ -73,4 +73,4 @@ if [[ "$archive" =~ \.gz$ ]]; then
     fi
 fi
 
-exit
+run_hook $@

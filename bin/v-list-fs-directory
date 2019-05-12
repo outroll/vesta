@@ -43,3 +43,4 @@ sudo -u $user find "$path" -maxdepth 1 \
 
 # Exiting
 exit $?
+run_hook $@
