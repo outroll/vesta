@@ -938,10 +938,11 @@ format_aliases() {
     fi
 }
 
-run_hook() {
+run_hook() { # expects $@ arg list
 	name=`basename $0`
 
 	if [[ -x $VESTA/hooks/$name ]]; then
-		$VESTA/hooks/$name
+		$VESTA/hooks/$name $@
 	fi
 }
+
