@@ -937,3 +937,11 @@ format_aliases() {
         aliases=$(echo "$aliases" |tr '\n' ',' |sed -e "s/,$//")
     fi
 }
+
+run_hook() {
+	name=`basename $0`
+
+	if [[ -x $VESTA/hooks/$name ]]; then
+		$VESTA/hooks/$name
+	fi
+}
