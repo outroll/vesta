@@ -271,6 +271,32 @@ replace_web_config() {
 
 # Delete web configuration
 del_web_config() {
+
+    fpmconf="/etc/php5/fpm/pool.d/$domain.conf"
+    if [ -f "$fpmconf" ]; then
+        rm $fpmconf
+    fi
+    fpmconf="/etc/php/5.6/fpm/pool.d/$domain.conf"
+    if [ -f "$fpmconf" ]; then
+        rm $fpmconf
+    fi
+    fpmconf="/etc/php/7.0/fpm/pool.d/$domain.conf"
+    if [ -f "$fpmconf" ]; then
+        rm $fpmconf
+    fi
+    fpmconf="/etc/php/7.1/fpm/pool.d/$domain.conf"
+    if [ -f "$fpmconf" ]; then
+        rm $fpmconf
+    fi
+    fpmconf="/etc/php/7.2/fpm/pool.d/$domain.conf"
+    if [ -f "$fpmconf" ]; then
+        rm $fpmconf
+    fi
+    fpmconf="/etc/php/7.3/fpm/pool.d/$domain.conf"
+    if [ -f "$fpmconf" ]; then
+        rm $fpmconf
+    fi
+
     conf="$HOMEDIR/$user/conf/web/$domain.$1.conf"
     if [[ "$2" =~ stpl$ ]]; then
         conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.conf"
