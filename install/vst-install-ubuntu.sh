@@ -29,7 +29,7 @@ software="nginx apache2 apache2.2-common apache2-suexec-custom apache2-utils
     phppgadmin php-pgsql postgresql postgresql-contrib proftpd-basic quota
     roundcube-core roundcube-mysql roundcube-plugins rrdtool rssh spamassassin
     sudo vesta vesta-ioncube vesta-nginx vesta-php vesta-softaculous
-    vim-common vsftpd webalizer whois zip"
+    vim-common vsftpd webalizer whois zip net-tools"
 
 # Fix for old releases
 if [[ ${release:0:2} -lt 16 ]]; then
