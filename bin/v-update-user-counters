@@ -53,6 +53,7 @@ for user in $user_list; do
     IP_OWNED=0
     U_USERS=0
     U_DISK=0
+    DISK=0 
     U_DISK_DIRS=$(get_user_value '$U_DISK_DIRS')
     if [ -z "$U_DISK_DIRS" ]; then
         U_DISK_DIRS=0

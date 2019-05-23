@@ -1,0 +1,93 @@
+#!/bin/bash
+# info: search ssl certificates
+# options: [FORMAT]
+#
+# The function to obtain the list of available ssl certificates.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    objects=$(echo "$search_cmd" |wc -l)
+    i=1
+    echo '['
+    for str in $search_cmd; do
+        eval $str
+        if [ "$i" -lt "$objects" ]; then
+            echo -e  "\t\"$USER:$DOMAIN\","
+        else
+            echo -e  "\t\"$USER:$DOMAIN\""
+        fi
+        (( ++i))
+    done
+    echo "]"
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "USER   DOMAIN"
+    echo "----   ------"
+    for str in $search_cmd; do
+        eval $str
+        echo "$USER $DOMAIN"
+    done
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    for str in $search_cmd; do
+        eval $str
+        echo -e "$USER\t$DOMAIN"
+    done
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "USER,DOMAIN"
+    for str in $search_cmd; do
+        eval $str
+        echo  "$USER,$DOMAIN"
+    done
+}
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+search_cmd=$(grep -H "SSL='yes'" $VESTA/data/users/*/web.conf |\
+    cut -f 1 -d ' ' |\
+    sed -e "s|$VESTA/data/users/|USER='|" -e "s|/web.conf:|' |")
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

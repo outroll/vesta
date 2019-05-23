@@ -55,14 +55,14 @@ mysql_query() {
 
 mysql_dump() {
     err="/tmp/e.mysql"
-    mysqldump --defaults-file=$mycnf --single-transaction -r $1 $2 2> $err
+    mysqldump --defaults-file=$mycnf --single-transaction --max_allowed_packet=100M -r $1 $2 2> $err
     if [ '0' -ne "$?" ]; then
         rm -rf $tmpdir
         if [ "$notify" != 'no' ]; then
             echo -e "Can't dump database $database\n$(cat $err)" |\
                 $SENDMAIL -s "$subj" $email
         fi
-        echo "Error: dump $database failed"
+        echo "Error: dump $database failed\n$(cat $err)"
         log_event  "$E_DB" "$ARGUMENTS"
         exit $E_DB
     fi
