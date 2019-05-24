@@ -56,6 +56,38 @@ fi
 get_domain_values 'web'
 local_ip=$(get_real_ip $IP)
 
+# Deleting FPM conf
+fpmconf="/etc/php5/fpm/pool.d/$domain.conf"
+if [ -f "$fpmconf" ]; then
+    rm $fpmconf
+    echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
+fi
+fpmconf="/etc/php/5.6/fpm/pool.d/$domain.conf"
+if [ -f "$fpmconf" ]; then
+    rm $fpmconf
+    echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
+fi
+fpmconf="/etc/php/7.0/fpm/pool.d/$domain.conf"
+if [ -f "$fpmconf" ]; then
+    rm $fpmconf
+    echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
+fi
+fpmconf="/etc/php/7.1/fpm/pool.d/$domain.conf"
+if [ -f "$fpmconf" ]; then
+    rm $fpmconf
+    echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
+fi
+fpmconf="/etc/php/7.2/fpm/pool.d/$domain.conf"
+if [ -f "$fpmconf" ]; then
+    rm $fpmconf
+    echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
+fi
+fpmconf="/etc/php/7.3/fpm/pool.d/$domain.conf"
+if [ -f "$fpmconf" ]; then
+    rm $fpmconf
+    echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
+fi
+
 # Deleting domain from web.conf
 sed -i "/DOMAIN='$domain'/ d" $USER_DATA/web.conf
 
