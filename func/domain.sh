@@ -275,26 +275,32 @@ del_web_config() {
     fpmconf="/etc/php5/fpm/pool.d/$domain.conf"
     if [ -f "$fpmconf" ]; then
         rm $fpmconf
+        echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
     fi
     fpmconf="/etc/php/5.6/fpm/pool.d/$domain.conf"
     if [ -f "$fpmconf" ]; then
         rm $fpmconf
+        echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
     fi
     fpmconf="/etc/php/7.0/fpm/pool.d/$domain.conf"
     if [ -f "$fpmconf" ]; then
         rm $fpmconf
+        echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
     fi
     fpmconf="/etc/php/7.1/fpm/pool.d/$domain.conf"
     if [ -f "$fpmconf" ]; then
         rm $fpmconf
+        echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
     fi
     fpmconf="/etc/php/7.2/fpm/pool.d/$domain.conf"
     if [ -f "$fpmconf" ]; then
         rm $fpmconf
+        echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
     fi
     fpmconf="/etc/php/7.3/fpm/pool.d/$domain.conf"
     if [ -f "$fpmconf" ]; then
         rm $fpmconf
+        echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
     fi
 
     conf="$HOMEDIR/$user/conf/web/$domain.$1.conf"
