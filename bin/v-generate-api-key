@@ -16,6 +16,10 @@ keygen()
 KEYS='/usr/local/vesta/data/keys/'
 HASH=$(keygen)
 
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
 
 #----------------------------------------------------------#
 #                       Action                             #

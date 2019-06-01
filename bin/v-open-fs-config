@@ -6,6 +6,10 @@
 
 src_file=$1
 
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
 # Checking arguments
 if [ -z "$src_file" ]; then
     echo "Usage: CONFIG"
