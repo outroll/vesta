@@ -73,7 +73,7 @@ csv_list() {
 #                       Action                             #
 #----------------------------------------------------------#
 
-search_cmd=$(grep "SSL='yes'" $VESTA/data/users/*/web.conf |\
+search_cmd=$(grep -H "SSL='yes'" $VESTA/data/users/*/web.conf |\
     cut -f 1 -d ' ' |\
     sed -e "s|$VESTA/data/users/|USER='|" -e "s|/web.conf:|' |")
 

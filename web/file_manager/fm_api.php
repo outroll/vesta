@@ -1,8 +1,8 @@
 <?php
-
 // Init
 //error_reporting(NULL);
 
+header('Content-Type: application/json');
 
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 include($_SERVER['DOCUMENT_ROOT']."/file_manager/fm_core.php");

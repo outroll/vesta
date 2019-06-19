@@ -19,10 +19,10 @@ codename="${os}_$release"
 vestacp="$VESTA/install/$VERSION/$release"
 
 # Defining software pack for all distros
-software="awstats bc bind bind-libs bind-utils clamav-server clamav-update
+software="nginx awstats bc bind bind-libs bind-utils clamav-server clamav-update
     curl dovecot e2fsprogs exim expect fail2ban flex freetype ftp GeoIP httpd
     ImageMagick iptables-services jwhois lsof mailx mariadb mariadb-server mc
-    mod_fcgid mod_ruid2 mod_ssl net-tools nginx ntp openssh-clients pcre php
+    mod_fcgid mod_ruid2 mod_ssl net-tools ntp openssh-clients pcre php
     php-bcmath php-cli php-common php-fpm php-gd php-imap php-mbstring
     php-mcrypt phpMyAdmin php-mysql php-pdo phpPgAdmin php-pgsql php-soap
     php-tidy php-xml php-xmlrpc postgresql postgresql-contrib
@@ -83,9 +83,6 @@ gen_pass() {
     done
     echo "$PASS"
 }
-
-# Defining 32 char blowfish_secret
-blowfish_secret=`openssl rand -base64 32`;
 
 # Defining return code check function
 check_result() {
@@ -1051,14 +1048,14 @@ if [ "$mysql" = 'yes' ]; then
 
     # Configuring phpMyAdmin
     if [ "$apache" = 'yes' ] && [ "$adminer" = "no" ]; then
-        cp -f $vestacp/pma/phpMyAdmin.conf /etc/httpd/conf.d/
-        cp -f $vestacp/pma/config.inc.conf /etc/phpMyAdmin/config.inc.php
-        sed -i "s#%blowfish_secret#$blowfish_secret#g" /etc/phpMyAdmin/config.inc.php
-        sed -i "s/%phpmyadmin_pass%/$p/g" /etc/phpMyAdmin/config.inc.php
         mysql < /usr/share/phpMyAdmin/sql/create_tables.sql
         p=$(gen_pass)
         mysql -e "GRANT ALL ON phpmyadmin.*
             TO phpmyadmin@localhost IDENTIFIED BY '$p'"
+        cp -f $vestacp/pma/phpMyAdmin.conf /etc/httpd/conf.d/
+        cp -f $vestacp/pma/config.inc.conf /etc/phpMyAdmin/config.inc.php
+        sed -i "s#%blowfish_secret#$blowfish_secret#g" /etc/phpMyAdmin/config.inc.php
+        sed -i "s/%phpmyadmin_pass%/$p/g" /etc/phpMyAdmin/config.inc.php
         chmod 777 /var/lib/phpMyAdmin/temp
         chmod 777 /var/lib/phpMyAdmin/save
     else
