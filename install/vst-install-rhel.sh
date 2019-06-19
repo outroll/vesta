@@ -1054,13 +1054,11 @@ if [ "$mysql" = 'yes' ]; then
         cp -f $vestacp/pma/phpMyAdmin.conf /etc/httpd/conf.d/
         cp -f $vestacp/pma/config.inc.conf /etc/phpMyAdmin/config.inc.php
         sed -i "s#%blowfish_secret#$blowfish_secret#g" /etc/phpMyAdmin/config.inc.php
+        sed -i "s/%phpmyadmin_pass%/$p/g" /etc/phpMyAdmin/config.inc.php
         mysql < /usr/share/phpMyAdmin/sql/create_tables.sql
         p=$(gen_pass)
         mysql -e "GRANT ALL ON phpmyadmin.*
             TO phpmyadmin@localhost IDENTIFIED BY '$p'"
-        cp -f $vestacp/pma/config.inc.conf /etc/phpMyAdmin/config.inc.php
-        sed -i "s/%blowfish_secret%/$(gen_pass 32)/g" /etc/phpMyAdmin/config.inc.php
-        sed -i "s/%phpmyadmin_pass%/$p/g" /etc/phpMyAdmin/config.inc.php
         chmod 777 /var/lib/phpMyAdmin/temp
         chmod 777 /var/lib/phpMyAdmin/save
     else
