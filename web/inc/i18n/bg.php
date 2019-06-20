@@ -553,6 +553,7 @@ $LANG['bg'] = array(
     'MAIL Server' => 'Пощенски сървър',
     'Antivirus' => 'Антивирус',
     'AntiSpam' => 'Антиспам',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'Уебмейл адрес',
     'MySQL Support' => 'MySQL поддръжкс',
     'phpMyAdmin URL' => 'phpMyAdmin адрес',

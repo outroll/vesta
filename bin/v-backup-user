@@ -68,8 +68,12 @@ while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
     (( ++i))
 done
 
+if [ -z "$BACKUP_TEMP" ]; then
+    BACKUP_TEMP=$BACKUP
+fi
+
 # Creating temporary directory
-tmpdir=$(mktemp -p /tmp -d)
+tmpdir=$(mktemp -p $BACKUP_TEMP -d)
 
 if [ "$?" -ne 0 ]; then
     echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notify
@@ -212,24 +216,32 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
             cp $USER_DATA/ssl/$domain.* vesta/
         fi
 
+        # Changin dir to documentroot
+        cd $HOMEDIR/$user/web/$domain
+
         # Define exclude arguments
         exlusion=$(echo -e "$WEB" |tr ',' '\n' |grep "^$domain:")
         set -f
         fargs=()
-        fargs+=(--exclude='logs/*')
+        fargs+=(--exclude='./logs/*')
         if [ ! -z "$exlusion" ]; then
             xdirs="$(echo -e "$exlusion" |tr ':' '\n' |grep -v $domain)"
             for xpath in $xdirs; do
-                fargs+=(--exclude=$xpath/*)
-                echo "$(date "+%F %T") excluding directory $xpath"
-                msg="$msg\n$(date "+%F %T") excluding directory $xpath"
+                if [ -d "$xpath" ]; then
+                    fargs+=(--exclude=$xpath/*)
+                    echo "$(date "+%F %T") excluding directory $xpath"
+                    msg="$msg\n$(date "+%F %T") excluding directory $xpath"
+                else
+                    echo "$(date "+%F %T") excluding file $xpath"
+                    msg="$msg\n$(date "+%F %T") excluding file $xpath"
+                    fargs+=(--exclude=$xpath)
+                fi
             done
         fi
         set +f
 
         # Backup files
-        cd $HOMEDIR/$user/web/$domain
-        tar -cpf- * ${fargs[@]} |gzip -$BACKUP_GZIP - > $tmpdir/web/$domain/domain_data.tar.gz
+        tar --anchored -cpf- ${fargs[@]} * |gzip -$BACKUP_GZIP - > $tmpdir/web/$domain/domain_data.tar.gz
     done
 
     # Print total
@@ -388,14 +400,17 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB" != '*' ]; then
         grep "DB='$database'" $conf > vesta/db.conf
 
         dump="$tmpdir/db/$database/$database.$TYPE.sql"
+        dumpgz="$tmpdir/db/$database/$database.$TYPE.sql.gz"
         grants="$tmpdir/db/$database/conf/$database.$TYPE.$DBUSER"
-        case $TYPE in
-            mysql) dump_mysql_database ;;
-            pgsql) dump_pgsql_database ;;
-        esac
+        if [ ! -f "$dumpgz" ]; then
+            case $TYPE in
+                mysql) dump_mysql_database ;;
+                pgsql) dump_pgsql_database ;;
+            esac
 
-        # Compress dump
-        gzip -$BACKUP_GZIP $dump
+            # Compress dump
+            gzip -$BACKUP_GZIP $dump
+        fi
     done
 
     # Print total
@@ -445,11 +460,15 @@ if [ "$USER" != '*' ]; then
     fi
     fargs=()
     for xpath in $(echo "$USER" |tr ',' '\n'); do
-        fargs+=(-not)
-        fargs+=(-path)
-        fargs+=("./$xpath*")
-        echo "$(date "+%F %T") excluding directory $xpath" |\
+        if [ -d "$xpath" ]; then
+            fargs+=(--exclude=$xpath/*)
+            echo "$(date "+%F %T") excluding directory $xpath" |\
             tee -a $BACKUP/$user.log
+        else
+            echo "$(date "+%F %T") excluding file $xpath" |\
+            tee -a $BACKUP/$user.log
+            fargs+=(--exclude=$xpath)
+        fi
     done
 
     IFS=$'\n'
@@ -464,7 +483,7 @@ if [ "$USER" != '*' ]; then
             echo -e "$(date "+%F %T") adding $udir" |tee -a $BACKUP/$user.log
 
             # Backup files and dirs
-            tar -cpf- $udir |gzip -$BACKUP_GZIP - > $tmpdir/user_dir/$udir.tar.gz
+            tar --anchored -cpf- ${fargs[@]} $udir |gzip -$BACKUP_GZIP - > $tmpdir/user_dir/$udir.tar.gz
         fi
     done
     set +f

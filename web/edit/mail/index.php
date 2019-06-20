@@ -70,6 +70,9 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['account'])))  {
     $v_date = $data[$v_account]['DATE'];
     $v_time = $data[$v_account]['TIME'];
 
+    $v_domain = escapeshellarg($_GET['domain']);
+    $v_account = escapeshellarg($_GET['account']);
+
     // Parse autoreply
     if ( $v_autoreply == 'yes' ) {
         exec (VESTA_CMD."v-list-mail-account-autoreply ".$user." '".$v_domain."' '".$v_account."' json", $output, $return_var);
@@ -228,7 +231,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         $result = array_diff($valiases, $aliases);
         foreach ($result as $alias) {
             if ((empty($_SESSION['error_msg'])) && (!empty($alias))) {
-                exec (VESTA_CMD."v-delete-mail-account-alias ".$v_username." ".$v_domain." ".$v_account." '".$alias."'", $output, $return_var);
+                exec (VESTA_CMD."v-delete-mail-account-alias ".$v_username." ".$v_domain." ".$v_account." '".escapeshellarg($alias)."'", $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
             }
@@ -254,7 +257,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
         $result = array_diff($vfwd, $fwd);
         foreach ($result as $forward) {
             if ((empty($_SESSION['error_msg'])) && (!empty($forward))) {
-                exec (VESTA_CMD."v-delete-mail-account-forward ".$v_username." ".$v_domain." ".$v_account." '".$forward."'", $output, $return_var);
+                exec (VESTA_CMD."v-delete-mail-account-forward ".$v_username." ".$v_domain." ".$v_account." '".escapeshellarg($forward)."'", $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
             }

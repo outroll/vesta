@@ -14,7 +14,7 @@ if (empty($_GET['domain'])){
 
     render_page($user, $TAB, 'list_mail');
 } else {
-    exec (VESTA_CMD."v-list-mail-accounts '".$user."' '".escapeshellarg($_GET['domain'])."' json", $output, $return_var);
+    exec (VESTA_CMD."v-list-mail-accounts ".$user." ".escapeshellarg($_GET['domain'])." json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
     $data = array_reverse($data, true);
     unset($output);

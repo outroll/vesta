@@ -120,11 +120,31 @@ check_result $? "Web restart failed" >/dev/null
 $BIN/v-restart-proxy $restart
 check_result $? "Proxy restart failed" >/dev/null
 
+# Updating system ssl dependencies
+if [ ! -z "$VESTA_CERTIFICATE" ]; then
+    crt_user=$(echo "$VESTA_CERTIFICATE" |cut -f 1 -d :)
+    crt_domain=$(echo "$VESTA_CERTIFICATE" |cut -f 2 -d :)
+    if [ "$user" = "$crt_user" ] && [ "$domain" = "$crt_domain" ]; then
+        $BIN/v-add-sys-vesta-ssl $user $domain >/dev/null 2>&1
+    fi
+fi
+if [ ! -z "$MAIL_CERTIFICATE" ]; then
+    crt_user=$(echo "$MAIL_CERTIFICATE" |cut -f 1 -d :)
+    crt_domain=$(echo "$MAIL_CERTIFICATE" |cut -f 2 -d :)
+    if [ "$user" = "$crt_user" ] && [ "$domain" = "$crt_domain" ]; then
+        $BIN/v-add-sys-mail-ssl $user $domain >/dev/null 2>&1
+    fi
+fi
+
 if [ ! -z "$UPDATE_HOSTNAME_SSL" ] && [ "$UPDATE_HOSTNAME_SSL" = "yes" ]; then
     hostname=$(hostname)
     if [ "$hostname" = "$domain" ]; then
         $BIN/v-update-host-certificate $user $domain
     fi
+fi
+
+if [ ! -z "$UPDATE_SSL_SCRIPT" ]; then
+    eval "$UPDATE_SSL_SCRIPT $user $domain"
 fi
 
 # Logging

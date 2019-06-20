@@ -548,6 +548,7 @@ $LANG['ur'] = array(
     'MAIL Server'  => 'میل سرور',
     'Antivirus'  => 'اینٹی وائرس',
     'AntiSpam'  => 'اینٹی سپیم',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL'  => 'ویب میل URL',
     'MySQL Support'  => 'ایس کیو ایل کی معاونت کی',
     'phpMyAdmin URL'  => 'phpMyAdmin کے یو آر ایل',

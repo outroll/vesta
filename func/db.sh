@@ -47,19 +47,22 @@ mysql_connect() {
 }
 
 mysql_query() {
-    mysql --defaults-file=$mycnf -e "$1" 2>/dev/null
+    sql_tmp=$(mktemp)
+    echo "$1" > $sql_tmp
+    mysql --defaults-file=$mycnf < "$sql_tmp"  2>/dev/null
+    rm -f "$sql_tmp"
 }
 
 mysql_dump() {
     err="/tmp/e.mysql"
-    mysqldump --defaults-file=$mycnf --single-transaction -r $1 $2 2> $err
+    mysqldump --defaults-file=$mycnf --single-transaction --max_allowed_packet=100M -r $1 $2 2> $err
     if [ '0' -ne "$?" ]; then
         rm -rf $tmpdir
         if [ "$notify" != 'no' ]; then
             echo -e "Can't dump database $database\n$(cat $err)" |\
                 $SENDMAIL -s "$subj" $email
         fi
-        echo "Error: dump $database failed"
+        echo "Error: dump $database failed\n$(cat $err)"
         log_event  "$E_DB" "$ARGUMENTS"
         exit $E_DB
     fi
@@ -89,7 +92,10 @@ psql_connect() {
 }
 
 psql_query() {
-    psql -h $HOST -U $USER -c "$1" 2>/dev/null
+    sql_tmp=$(mktemp)
+    echo "$1" > $sql_tmp
+    psql -h $HOST -U $USER -f "$sql_tmp" 2>/dev/null
+    rm -f $sql_tmp
 }
 
 psql_dump() {

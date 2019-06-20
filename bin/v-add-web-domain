@@ -47,6 +47,7 @@ is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_package_full 'WEB_DOMAINS' 'WEB_ALIASES'
 is_domain_new 'web' "$domain,$aliases"
+is_dir_symlink $HOMEDIR/$user/web
 if [ ! -z "$ip" ]; then
     is_ip_valid "$ip" "$user"
 else
@@ -90,7 +91,7 @@ chown root:$user /var/log/$WEB_SYSTEM/domains/$domain.* $conf
 chmod 640 /var/log/$WEB_SYSTEM/domains/$domain.*
 chmod 751 $HOMEDIR/$user/web/$domain $HOMEDIR/$user/web/$domain/*
 chmod 551 $HOMEDIR/$user/web/$domain/stats $HOMEDIR/$user/web/$domain/logs
-chmod 644 $HOMEDIR/$user/web/$domain/public_*html/*
+chmod 644 $HOMEDIR/$user/web/$domain/public_*html/*.*
 
 # Addding PHP-FPM backend
 if [ ! -z "$WEB_BACKEND" ]; then
@@ -112,9 +113,12 @@ if [ "$aliases" = 'none' ]; then
     ALIAS=''
 else
     ALIAS="www.$domain"
-    if [ ! -z "$aliases" ]; then
-        ALIAS="$ALIAS,$aliases"
+    if [ -z "$aliases" ]; then
+        ALIAS="www.$domain"
+    else
+        ALIAS="$aliases"
     fi
+    
     ip_alias=$(get_ip_alias $domain)
     if [ ! -z "$ip_alias" ]; then
         ALIAS="$ALIAS,$ip_alias"

@@ -1,6 +1,6 @@
 Name:           vesta
 Version:        0.9.8
-Release:        20
+Release:        24
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPL
@@ -30,18 +30,30 @@ rm -rf %{buildroot}
 
 %post
 if [ $1 -ge 2 ]; then
-    if [ -e /usr/local/vesta/upd/add_sudo.sh ]; then
+    if [ -x /usr/local/vesta/upd/add_sudo.sh ]; then
         /usr/local/vesta/upd/add_sudo.sh
     fi
-    if [ -e /usr/local/vesta/upd/add_notifications.sh ]; then
+    if [ -x /usr/local/vesta/upd/add_notifications.sh ]; then
         /usr/local/vesta/upd/add_notifications.sh
     fi
-    if [ -e /usr/local/vesta/upd/fix_sessions.sh ]; then
+    if [ -x /usr/local/vesta/upd/fix_sessions.sh ]; then
         /usr/local/vesta/upd/fix_sessions.sh
     fi
-    if [ -e /usr/local/vesta/upd/fix_nginx_auth.sh ]; then
+    if [ -x /usr/local/vesta/upd/fix_nginx_auth.sh ]; then
         /usr/local/vesta/upd/fix_nginx_auth.sh
     fi
+    if [ -x /usr/local/vesta/upd/fix_roundcube.sh ]; then
+        /usr/local/vesta/upd/fix_roundcube.sh
+    fi
+
+    if [ -x /usr/local/vesta/upd/limit_sudo.sh ]; then
+        /usr/local/vesta/upd/limit_sudo.sh
+    fi
+
+    if [ -x /usr/local/vesta/upd/fix_dhcprenew.sh ]; then
+        /usr/local/vesta/upd/fix_dhcprenew.sh
+    fi
+
 fi
 %files
 %{_vestadir}
@@ -56,6 +68,23 @@ fi
 %config(noreplace) %{_vestadir}/web/css/uploadify.css
 
 %changelog
+* Mon Apr 18 2019 Serghey Rodin <builder@vestacp.com> - 0.9.8-24
+- Bugfixes
+- Security patches
+- LEv2
+- Server LE
+- i18n updates
+
+
+* Thu Oct 18 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-23
+- Security fixes
+
+* Wed Jun 27 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-22
+- Security fixes
+
+* Fri May 11 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-21
+- Additional security fixes
+
 * Sun Apr 08 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-20
 - Hardening password checks
 
