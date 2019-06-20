@@ -70,6 +70,7 @@ $LANG['ur'] = array(
     'Back'   => 'پیچھے',
     'Save'   => 'محفوظ کریں',
     'Submit'   => 'جمع',
+    
     'toggle all'   => 'تمام ٹاگل',
     'apply to selected'   => 'منتخب شدہ پر لاگو',
     'rebuild'   => 'تعمیر نو',
@@ -108,6 +109,7 @@ $LANG['ur'] = array(
     'enable autoupdate'  => 'آٹو اپ ڈیٹ کو چالو',
     'disable autoupdate'  => 'غیر فعال آٹو اپ ڈیٹ',
     'configure'  => 'ترتیب دے',
+    
     'Adding User'   => 'شامل کرنے صارف',
     'Editing User'   => 'ترمیم صارف',
     'Adding Domain'   => 'ڈومین کو شامل کرنے سے',
@@ -135,6 +137,7 @@ $LANG['ur'] = array(
     'Adding Firewall Rule'  => 'فصیل اصول کو شامل کرنے سے',
     'Editing Firewall Rule'  => 'ترمیم فصیل اصول',
     'Adding IP Address to Banlist'  => 'Banlist کرنے IP ایڈریس کو شامل کرنے سے',
+    
     'active'   => 'فعال',
     'spnd'   => 'معطل',
     'suspended'   => 'معطل',
@@ -142,6 +145,7 @@ $LANG['ur'] = array(
     'stopped'   => 'بند کر دیا',
     'outdated'   => 'فرسودہ',
     'updated'   => 'اپ ڈیٹ',
+    
     'yes'   => 'جی ہاں',
     'no'   => 'نہیں',
     'none'   => 'کوئی بھی',
@@ -392,14 +396,17 @@ $LANG['ur'] = array(
     'FTP'  => 'FTP',
     'VESTA'  => 'Vesta کی',
     'Add one more Name Server'  => 'ایک اور نام سرور شامل کریں',
+    
     'web domain'  => 'ویب ڈومین',
     'dns domain'  => 'DNS ڈومین',
     'dns record'  => 'DNS ریکارڈ',
     'mail domain'  => 'میل ڈومین',
     'mail account'  => 'میل اکاؤنٹ',
     'cron job'  => 'کرون کام',
+    
     'cron'  => 'کرون',
     'user dir'  => 'صارف دیر',
+    
     'unlimited'   => 'لامحدود',
     '1 account'   => '1 اکاؤنٹ',
     '%s accounts'   => '٪s کے اکاؤنٹس',
@@ -494,12 +501,14 @@ $LANG['ur'] = array(
     'BACKUP_EXISTS'   => 'ایک موجودہ بیک اپ کو پہلے ہی چل رہا ہے. کہ بیک اپ کو ختم کرنے کے لئے براہ کرم انتظار کریں.',
     'RESTORE_SCHEDULED'   => 'ٹاسک قطار میں شامل کیا گیا ہے. جب آپ کو بحال مکمل کیا گیا ہے آپ کو ایک ای میل کی اطلاع وصول کریں گے.',
     'RESTORE_EXISTS'   => 'ایک موجودہ بحالی کا کام پہلے سے ہی چل رہا ہے. جو اسے دوبارہ شروع کرنے سے پہلے ختم کرنے کے لئے براہ کرم انتظار کریں.',
+  
     'WEB_EXCLUSIONS'  => 'قسم ڈومین کا نام ہے، ایک فی لائن. تمام ڈومینز استعمال کرتے خارج کرنے کے *. شکل مندرجہ ذیل مخصوص dirs استعمال کو خارج کرنے کے لئے: domain.com:public_html/cache:public_html/tmp',
     'DNS_EXCLUSIONS'  => 'قسم ڈومین کا نام ہے، ایک فی لائن. تمام ڈومینز استعمال کرتے خارج کرنے کے *',
     'MAIL_EXCLUSIONS'  => 'قسم ڈومین کا نام ہے، ایک فی لائن. تمام ڈومینز استعمال کرتے خارج کرنے کے *. شکل مندرجہ ذیل مخصوص اکاؤنٹس کے استعمال کو خارج کرنے کے لئے: domain.com:info:support:postmaster',
     'DB_EXCLUSIONS'  => 'مکمل ڈیٹا بیس کا نام ٹائپ کریں، فی لائن ایک. تمام ڈیٹا بیس کا استعمال کرتے خارج کرنے کے *',
     'CRON_EXCLUSIONS'  => 'تمام ملازمتوں کا استعمال کرتے خارج کرنے کے *',
     'USER_EXCLUSIONS'  => 'قسم ڈائریکٹری کا نام ہے، ایک فی لائن. تمام dirs استعمال کرتے exlude کرنے *',
+ 
     'Welcome to Vesta Control Panel'   => 'Vesta کی کنٹرول پینل میں خوش آمدید',
     'MAIL_FROM'   => '<noreply@%s> Vesta کی کنٹرول پینل ',
     'GREETINGS_GORDON_FREEMAN' => "ہیلو, %s %s,\n",
@@ -535,6 +544,7 @@ $LANG['ur'] = array(
     'Oct'  => 'اکتوبر',
     'Nov'  => 'نومبر',
     'Dec'  => 'دسمبر',
+    
     'Configuring Server'  => 'ترتیب سرور',
     'Hostname'  => 'میزبان کا نام',
     'Time Zone'  => 'ٹائم زون',
@@ -548,7 +558,7 @@ $LANG['ur'] = array(
     'MAIL Server'  => 'میل سرور',
     'Antivirus'  => 'اینٹی وائرس',
     'AntiSpam'  => 'اینٹی سپیم',
-    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
+    'Use Web Domain SSL Certificate' => 'ایس ایس ایل ویب ڈومین سرٹیفکیٹ کااستعمال کریں',
     'Webmail URL'  => 'ویب میل URL',
     'MySQL Support'  => 'ایس کیو ایل کی معاونت کی',
     'phpMyAdmin URL'  => 'phpMyAdmin کے یو آر ایل',
@@ -572,11 +582,14 @@ $LANG['ur'] = array(
     'Backup Migration Manager'  => 'بیک اپ مائیگریشن مینیجر',
     'FileManager'  => 'فائل مینیجر',
     'show: CPU / MEM / NET / DISK'  => 'دکھائیں: CPU / MEM / NET / ڈسک',
+    
     'sort by'  => 'بہ ترتیب',
     'Date'  => 'تاریخ',
     'Starred'  => 'ستارے کے نشان',
     'Name'  => 'نام',
+    
     'save to favorites'  => 'پسندیدہ میں محفوظ کریں',
+    
     'File Manager'  => 'فائل منیجر',
     'size'  => 'سائز',
     'date'  => 'تاریخ',
@@ -639,6 +652,7 @@ $LANG['ur'] = array(
     'read by others'  => 'دوسروں کی طرف سے پڑھا',
     'write by others'  => 'دوسروں کی طرف سے لکھ',
     'execute/search by others'  => 'پھانسی دوسروں کی طرف سے / تلاش',
+    
     'Shortcuts'  => 'شارٹ کٹ',
     'Add New object'  => 'نیا اعتراض شامل کریں',
     'Save Form'  => 'فارم محفوظ کریں',
@@ -657,6 +671,7 @@ $LANG['ur'] = array(
     'Enter focused element'  => 'مرکوز عنصر درج',
     'Move up through elements list'  => 'عناصر فہرست کے ذریعے اوپر منتقل کریں',
     'Move down through elements list'  => 'عناصر فہرست کے ذریعے نیچے لے جائیں',
+    
     'Upload'  => 'اپ لوڈ کریں',
     'New File'  => 'نئی فائل',
     'New Folder'  => 'نیا فولڈر',
@@ -680,6 +695,7 @@ $LANG['ur'] = array(
     'Select All Files' => 'تمام فائلوں کو منتخب',
     'shortcuts are inspired by magnificent GNU <a href="https://www.midnight-commander.org/">Midnight Commander</a> file manager' =>
     '.فائل مینیجر <a href="https://www.midnight-commander.org/">Midnight Commander</a> شارٹ کٹ شاندار GNU سے متاثر ہیں',
+    
     'Licence Key'  => 'لائسنس کلید',
     'Enter License Key'  => 'لائسنس کلید درج کریں',
     'Buy Licence'  => 'ابھی لائسنس',
@@ -690,6 +706,7 @@ $LANG['ur'] = array(
     'Restrict users so that they cannot use SSH and access only their home directory.'  => 'وہ SSH اور رسائی صرف ان کے گھر کی ڈائریکٹری کا استعمال نہیں کر سکتے ہیں تاکہ صارفین کو محدود کریں.',
     'Browse, copy, edit, view, and retrieve all of your web domain files using fully featured File Manager.'  => 'براؤز کریں، کاپی، ترمیم، دیکھیں، اور مکمل طور پر نمایاں فائل مینیجر کا استعمال کرتے ہوئے آپ کی ویب ڈومین فائلوں کی تمام بازیافت.',
     'This is a commercial module, you would need to purchace license key to enable it.'  => 'یہ ایک تجارتی ماڈیول ہے، آپ اسے چالو کرنے کے لئے لائسنس کی چابی purchace کرنے کی ضرورت گا.',
+    
     'Minutes'  => 'منٹس',
     'Hourly'  => 'گھنٹہ وار',
     'Run Command'  => 'چلائیں کمان',
@@ -714,8 +731,10 @@ $LANG['ur'] = array(
     'every two minutes'  => 'ہر دو منٹ',
     'every'  => 'ہر کوئی',
     'Generate'  => 'بنائیں',
+    
     'webalizer'  => 'webalizer',
     'awstats'  => 'awstats',
+    
     'Vesta SSL'  => 'Vesta کی SSL',
     'SUBJECT'  => 'مضمون',
     'ALIASES'  => 'عرفیتیں',
@@ -724,14 +743,18 @@ $LANG['ur'] = array(
     'SIGNATURE'  => 'دستخط',
     'PUB_KEY'  => 'PUB_KEY',
     'ISSUER'  => 'ISSUER',
+    
     'Use server hostname'  => 'سرور استعمال میزبان نام',
     'Use domain hostname'  => 'ڈومین کا استعمال میزبان نام',
     'Use STARTTLS'  => 'STARTTLS استعمال',
     'Use SSL'  => 'SSL استعمال کریں',
     'No encryption'  => 'کوئی خفیہ کاری',
     'Do not use encryption'  => 'خفیہ کاری کا استعمال نہ کریں',
+    
     'maximum characters length, including prefix'  => 'زیادہ سے زیادہ ٪s کو حروف لمبائی، سابقہ سم',
+    
     'Email Credentials' => 'ای میل کی سند',
+    
     '%s rule' => 'قواعد %s',
     'MainDomain' => 'اہم ڈومین',
     'SubDomain' => 'ذیلی ڈومین',
