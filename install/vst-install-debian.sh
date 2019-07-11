@@ -14,11 +14,23 @@ VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os='debian'
-release=$(cat /etc/debian_version|grep -o [0-9]|head -n1)
+release=$(cat /etc/debian_version | tr "." "\n" | head -n1)
 codename="$(cat /etc/os-release |grep VERSION= |cut -f 2 -d \(|cut -f 1 -d \))"
 vestacp="$VESTA/install/$VERSION/$release"
 
-if [ "$release" -eq 9 ]; then
+if [ "$release" -eq 10 ]; then
+    software="nginx apache2 apache2-utils apache2-suexec-custom
+        libapache2-mod-fcgid libapache2-mod-php php
+        php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
+        webalizer vsftpd proftpd-basic bind9 exim4 exim4-daemon-heavy
+        clamav-daemon spamassassin dovecot-imapd dovecot-pop3d roundcube-core
+        roundcube-mysql roundcube-plugins mysql-server mysql-common
+        mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
+        flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
+        e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
+        bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
+        unrar-free vim-common net-tools unzip"
+elif [ "$release" -eq 9 ]; then
     software="nginx apache2 apache2-utils apache2-suexec-custom
         libapache2-mod-ruid2 libapache2-mod-fcgid libapache2-mod-php php
         php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
@@ -30,32 +42,6 @@ if [ "$release" -eq 9 ]; then
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
         unrar-free vim-common vesta-ioncube vesta-softaculous net-tools unzip"
-elif [ "$release" -eq 8 ]; then
-    software="nginx apache2 apache2-utils apache2.2-common
-        apache2-suexec-custom libapache2-mod-ruid2
-        libapache2-mod-fcgid libapache2-mod-php5 php5 php5-common php5-cgi
-        php5-mysql php5-curl php5-fpm php5-pgsql awstats webalizer vsftpd
-        proftpd-basic bind9 exim4 exim4-daemon-heavy clamav-daemon
-        spamassassin dovecot-imapd dovecot-pop3d roundcube-core
-        roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
-        flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
-        e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
-        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools unzip"
-else
-    software="nginx apache2 apache2-utils apache2.2-common
-        apache2-suexec-custom libapache2-mod-ruid2
-        libapache2-mod-fcgid libapache2-mod-php5 php5 php5-common php5-cgi
-        php5-mysql php5-curl php5-fpm php5-pgsql awstats webalizer vsftpd
-        proftpd-basic proftpd-mod-vroot bind9 exim4 exim4-daemon-heavy
-        clamav-daemon spamassassin dovecot-imapd dovecot-pop3d roundcube-core
-        roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
-        flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
-        e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect unrar-free
-        vim-common vesta-ioncube vesta-softaculous net-tools unzip"
 fi
 
 # Defining help function
