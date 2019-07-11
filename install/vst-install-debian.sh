@@ -7,8 +7,8 @@
 #----------------------------------------------------------#
 export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
-RHOST='apt.vestacp.com'
-CHOST='c.vestacp.com'
+RHOST='vesta.mycity-hosting.com'
+CHOST='c.mycity-hosting.com'
 VERSION='debian'
 VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
