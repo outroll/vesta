@@ -8,7 +8,7 @@
 export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
 
-ALLOW_INSECURE_APT=1
+ALLOW_INSECURE_APT=0
 
 RHOST='vesta.mycity-hosting.com'
 CHOST='c.mycity-hosting.com'
