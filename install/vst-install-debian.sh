@@ -654,15 +654,16 @@ echo "$(which ntpdate) -s pool.ntp.org" >> /etc/cron.daily/ntpdate
 chmod 775 /etc/cron.daily/ntpdate
 ntpdate -s pool.ntp.org
 
-# Setup rssh
-if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
-    echo /usr/bin/rssh >> /etc/shells
+if [ "$release" -eq 9 ]; then
+  # Setup rssh
+  if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
+      echo /usr/bin/rssh >> /etc/shells
+  fi
+  sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
+  sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
+  sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
+  chmod 755 /usr/bin/rssh
 fi
-sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
-sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
-sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
-chmod 755 /usr/bin/rssh
-
 
 #----------------------------------------------------------#
 #                     Configure VESTA                      #
@@ -867,7 +868,7 @@ if [ "$apache" = 'yes'  ]; then
     echo "# Powered by vesta" > /etc/apache2/sites-available/default
     echo "# Powered by vesta" > /etc/apache2/sites-available/default-ssl
     echo "# Powered by vesta" > /etc/apache2/ports.conf
-    echo -e "/home\npublic_html/cgi-bin" > /etc/apache2/suexec/www-data
+    # echo -e "/home\npublic_html/cgi-bin" > /etc/apache2/suexec/www-data
     touch /var/log/apache2/access.log /var/log/apache2/error.log
     mkdir -p /var/log/apache2/domains
     chmod a+x /var/log/apache2
