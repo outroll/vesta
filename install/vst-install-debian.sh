@@ -19,8 +19,8 @@ codename="$(cat /etc/os-release |grep VERSION= |cut -f 2 -d \(|cut -f 1 -d \))"
 vestacp="$VESTA/install/$VERSION/$release"
 
 if [ "$release" -eq 10 ]; then
-    software="nginx apache2 apache2-utils apache2-suexec-custom
-        libapache2-mod-fcgid libapache2-mod-php php
+    software="nginx apache2 apache2-utils
+        libapache2-mod-fcgid php-fpm php
         php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
         webalizer vsftpd proftpd-basic bind9 exim4 exim4-daemon-heavy
         clamav-daemon spamassassin dovecot-imapd dovecot-pop3d roundcube-core
@@ -857,10 +857,10 @@ if [ "$apache" = 'yes'  ]; then
     cp -f $vestacp/apache2/status.conf /etc/apache2/mods-enabled/
     cp -f  $vestacp/logrotate/apache2 /etc/logrotate.d/
     a2enmod rewrite
-    a2enmod suexec
+    # a2enmod suexec
     a2enmod ssl
     a2enmod actions
-    a2enmod ruid2
+    # a2enmod ruid2
     a2enmod headers
     mkdir -p /etc/apache2/conf.d
     echo > /etc/apache2/conf.d/vesta.conf
