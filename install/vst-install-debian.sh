@@ -24,9 +24,9 @@ if [ "$release" -eq 10 ]; then
         php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
         webalizer vsftpd proftpd-basic bind9 exim4 exim4-daemon-heavy
         clamav-daemon spamassassin dovecot-imapd dovecot-pop3d roundcube-core
-        roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
-        flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
+        roundcube-mysql roundcube-plugins mariadb-server mariadb-common
+        mariadb-client postgresql postgresql-contrib phppgadmin mc
+        flex whois git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
         unrar-free vim-common net-tools unzip"
@@ -623,7 +623,7 @@ echo -e '#!/bin/sh \nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
 # Install apt packages
-apt-get -y install $software
+apt-get --allow-unauthenticated -y install $software
 check_result $? "apt-get install failed"
 
 # Restore  policy
@@ -981,6 +981,40 @@ if [ "$mysql" = 'yes' ]; then
     fi
     cp -f $vestacp/pma/config.inc.php /etc/phpmyadmin/
     chmod 777 /var/lib/phpmyadmin/tmp
+    if [ "$release" -eq 10 ]; then
+      # Code borrowed from HestiaCP
+      pma_v='4.9.0.1'
+      echo "(*) Installing phpMyAdmin version v$pma_v..."
+
+      # Download latest phpmyadmin release
+      wget --quiet https://files.phpmyadmin.net/phpMyAdmin/$pma_v/phpMyAdmin-$pma_v-all-languages.tar.gz
+
+      # Unpack files
+      tar xzf phpMyAdmin-$pma_v-all-languages.tar.gz
+
+      # Delete file to prevent error
+      rm -fr /usr/share/phpmyadmin/doc/html
+
+      # Overwrite old files
+      cp -rf phpMyAdmin-$pma_v-all-languages/* /usr/share/phpmyadmin
+
+      # Set config and log directory
+      sed -i "s|define('CONFIG_DIR', '');|define('CONFIG_DIR', '/etc/phpmyadmin/');|" /usr/share/phpmyadmin/libraries/vendor_config.php
+      sed -i "s|define('TEMP_DIR', './tmp/');|define('TEMP_DIR', '/var/lib/phpmyadmin/tmp/');|" /usr/share/phpmyadmin/libraries/vendor_config.php
+
+      # Create temporary folder and change permission
+      mkdir /usr/share/phpmyadmin/tmp
+      chmod 777 /usr/share/phpmyadmin/tmp
+
+      # Clear Up
+      rm -fr phpMyAdmin-$pma_v-all-languages
+      rm -f phpMyAdmin-$pma_v-all-languages.tar.gz
+      
+      mkdir /root/phpmyadmin
+      wget -nv -O /root/phpmyadmin/pma.sh http://c.mycity-hosting.com/debian/10/pma/pma.sh 
+      wget -nv -O /root/phpmyadmin/create_tables.sql http://c.mycity-hosting.com/debian/10/pma/create_tables.sql
+      bash /root/phpmyadmin/pma.sh
+  fi
 fi
 
 #----------------------------------------------------------#
