@@ -1366,8 +1366,8 @@ Sincerely yours
 vestacp.com team
 " > $tmpfile
 
-send_mail="$VESTA/web/inc/mail-wrapper.php"
-cat $tmpfile | $send_mail -s "Vesta Control Panel" $email
+# send_mail="$VESTA/web/inc/mail-wrapper.php"
+# cat $tmpfile | $send_mail -s "Vesta Control Panel" $email
 
 # Congrats
 echo '======================================================='
