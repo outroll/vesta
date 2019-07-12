@@ -7,6 +7,9 @@
 #----------------------------------------------------------#
 export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
+
+ALLOW_INSECURE_APT=1
+
 RHOST='vesta.mycity-hosting.com'
 CHOST='c.mycity-hosting.com'
 VERSION='debian'
@@ -616,14 +619,22 @@ fi
 #----------------------------------------------------------#
 
 # Update system packages
-apt-get update
+if [ $ALLOW_INSECURE_APT -eq 1 ]; then
+  apt-get -o Acquire::AllowInsecureRepositories=true -o Acquire::AllowDowngradeToInsecureRepositories=true update
+else
+  apt-get update
+fi
 
 # Disable daemon autostart /usr/share/doc/sysv-rc/README.policy-rc.d.gz
 echo -e '#!/bin/sh \nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
 # Install apt packages
-apt-get -y install $software
+if [ $ALLOW_INSECURE_APT -eq 1 ]; then
+  apt-get --allow-unauthenticated -y install $software
+else
+  apt-get -y install $software
+fi
 check_result $? "apt-get install failed"
 
 # Restore  policy
