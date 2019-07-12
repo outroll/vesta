@@ -1065,7 +1065,7 @@ if [ "$dovecot" = 'yes' ]; then
     cp -rf $vestacp/dovecot /etc/
     cp -f $vestacp/logrotate/dovecot /etc/logrotate.d/
     chown -R root:root /etc/dovecot*
-    if [ "$release" -eq 9 ]; then
+    if [ "$release" -eq 9 ] || [ "$release" -eq 10 ]; then
         sed -i "s#namespace inbox {#namespace inbox {\n  inbox = yes#" /etc/dovecot/conf.d/15-mailboxes.conf
     fi
     update-rc.d dovecot defaults
@@ -1143,7 +1143,7 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
         /etc/roundcube/plugins/password/config.inc.php
     mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
     chmod a+r /etc/roundcube/main.inc.php
-    if [ "$release" -eq 8 ] || [ "$release" -eq 9 ]; then
+    if [ "$release" -eq 8 ] || [ "$release" -eq 9 ] || [ "$release" -eq 10 ]; then
         mv -f /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
         mv -f /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
         chmod 640 /etc/roundcube/debian-db-roundcube.php
