@@ -260,7 +260,7 @@ if [ ! -e '/usr/bin/wget' ]; then
 fi
 
 # Checking repository availability
-wget -q "c.vestacp.com/deb_signing.key" -O /dev/null
+wget -q "c.mycity-hosting.com/deb_signing.key" -O /dev/null
 check_result $? "No access to Vesta repository"
 
 # Check installed packages
@@ -623,7 +623,7 @@ echo -e '#!/bin/sh \nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
 # Install apt packages
-apt-get --allow-unauthenticated -y install $software
+apt-get -y install $software
 check_result $? "apt-get install failed"
 
 # Restore  policy
