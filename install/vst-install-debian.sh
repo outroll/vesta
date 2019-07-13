@@ -8,8 +8,6 @@
 export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
 
-ALLOW_INSECURE_APT=0
-
 RHOST='apt.vesta.hostingpanel.dev'
 CHOST='c.vesta.hostingpanel.dev'
 VERSION='debian'
@@ -630,11 +628,7 @@ echo -e '#!/bin/sh \nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
 # Install apt packages
-if [ $ALLOW_INSECURE_APT -eq 1 ]; then
-  apt-get --allow-unauthenticated -y install $software
-else
-  apt-get -y install $software
-fi
+apt-get -y install $software
 check_result $? "apt-get install failed"
 
 # Restore  policy
