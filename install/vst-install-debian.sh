@@ -556,10 +556,10 @@ if [ "$apache" = 'no' ]; then
     software=$(echo "$software" | sed -e "s/libapache2-mod-php5//")
     software=$(echo "$software" | sed -e "s/libapache2-mod-php//")
 fi
-if [ "$phpfpm" = 'no' ]; then
-    software=$(echo "$software" | sed -e "s/php5-fpm//")
-    software=$(echo "$software" | sed -e "s/php-fpm//")
-fi
+# if [ "$phpfpm" = 'no' ]; then
+    # software=$(echo "$software" | sed -e "s/php5-fpm//")
+    # software=$(echo "$software" | sed -e "s/php-fpm//")
+# fi
 if [ "$vsftpd" = 'no' ]; then
     software=$(echo "$software" | sed -e "s/vsftpd//")
 fi
@@ -984,6 +984,7 @@ if [ "$mysql" = 'yes' ]; then
     if [ "$apache" = 'yes' ]; then
         if [ "$release" -eq 10 ]; then
             mkdir /etc/phpmyadmin
+            mkdir -p /var/lib/phpmyadmin/tmp
         fi
         cp -f $vestacp/pma/apache.conf /etc/phpmyadmin/
         ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
@@ -993,6 +994,7 @@ if [ "$mysql" = 'yes' ]; then
     if [ "$release" -eq 10 ]; then
       # Code borrowed from HestiaCP
       mkdir /root/phpmyadmin
+      mkdir /usr/share/phpmyadmin
       
       pma_v='4.9.0.1'
       echo "(*) Installing phpMyAdmin version v$pma_v..."
