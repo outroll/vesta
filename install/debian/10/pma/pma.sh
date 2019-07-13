@@ -10,6 +10,17 @@
 # Changed some lines to fit to Hestia Configuration.
 #
 
+# Defining password-gen function
+gen_pass() {
+    MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    LENGTH=10
+    while [ ${n:=1} -le $LENGTH ]; do
+        PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
+        let n+=1
+    done
+    echo "$PASS"
+}
+
 PASS=$(gen_pass)
 
 #ubuntu phpmyadmin path
