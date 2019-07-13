@@ -63,7 +63,7 @@ help() {
   -t, --spamassassin      Install SpamAssassin  [yes|no]  default: yes
   -i, --iptables          Install Iptables      [yes|no]  default: yes
   -b, --fail2ban          Install Fail2ban      [yes|no]  default: yes
-  -o, --softaculous       Install Softaculous   [yes|no]  default: yes
+  -o, --softaculous       Install Softaculous   [yes|no]  default: no
   -q, --quota             Filesystem Quota      [yes|no]  default: no
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install   [yes|no]  default: yes
@@ -202,8 +202,8 @@ done
 set_default_value 'nginx' 'yes'
 set_default_value 'apache' 'yes'
 set_default_value 'phpfpm' 'no'
-set_default_value 'vsftpd' 'yes'
-set_default_value 'proftpd' 'no'
+set_default_value 'vsftpd' 'no'
+set_default_value 'proftpd' 'yes'
 set_default_value 'named' 'yes'
 set_default_value 'mysql' 'yes'
 set_default_value 'postgresql' 'no'
@@ -219,7 +219,7 @@ else
 fi
 set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
-set_default_value 'softaculous' 'yes'
+set_default_value 'softaculous' 'no'
 set_default_value 'quota' 'no'
 set_default_value 'interactive' 'yes'
 set_default_lang 'en'
