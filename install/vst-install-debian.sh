@@ -988,6 +988,9 @@ if [ "$mysql" = 'yes' ]; then
 
     # Configuring phpMyAdmin
     if [ "$apache" = 'yes' ]; then
+        if [ "$release" -eq 10 ]; then
+            mkdir /etc/phpmyadmin
+        fi
         cp -f $vestacp/pma/apache.conf /etc/phpmyadmin/
         ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
     fi
@@ -995,11 +998,15 @@ if [ "$mysql" = 'yes' ]; then
     chmod 777 /var/lib/phpmyadmin/tmp
     if [ "$release" -eq 10 ]; then
       # Code borrowed from HestiaCP
+      mkdir /root/phpmyadmin
+      
       pma_v='4.9.0.1'
       echo "(*) Installing phpMyAdmin version v$pma_v..."
 
+      cd /root/phpmyadmin
+
       # Download latest phpmyadmin release
-      wget --quiet https://files.phpmyadmin.net/phpMyAdmin/$pma_v/phpMyAdmin-$pma_v-all-languages.tar.gz
+      wget -nv -O phpMyAdmin-$pma_v-all-languages.tar.gz https://files.phpmyadmin.net/phpMyAdmin/$pma_v/phpMyAdmin-$pma_v-all-languages.tar.gz
 
       # Unpack files
       tar xzf phpMyAdmin-$pma_v-all-languages.tar.gz
@@ -1022,7 +1029,6 @@ if [ "$mysql" = 'yes' ]; then
       rm -fr phpMyAdmin-$pma_v-all-languages
       rm -f phpMyAdmin-$pma_v-all-languages.tar.gz
       
-      mkdir /root/phpmyadmin
       wget -nv -O /root/phpmyadmin/pma.sh http://c.vesta.hostingpanel.dev/debian/10/pma/pma.sh 
       wget -nv -O /root/phpmyadmin/create_tables.sql http://c.vesta.hostingpanel.dev/debian/10/pma/create_tables.sql
       bash /root/phpmyadmin/pma.sh
