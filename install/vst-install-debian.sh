@@ -10,8 +10,8 @@ export DEBIAN_FRONTEND=noninteractive
 
 ALLOW_INSECURE_APT=0
 
-RHOST='vesta.mycity-hosting.com'
-CHOST='c.mycity-hosting.com'
+RHOST='apt.vesta.hostingpanel.dev'
+CHOST='c.vesta.hostingpanel.dev'
 VERSION='debian'
 VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
@@ -263,7 +263,7 @@ if [ ! -e '/usr/bin/wget' ]; then
 fi
 
 # Checking repository availability
-wget -q "c.mycity-hosting.com/deb_signing.key" -O /dev/null
+wget -q "apt.vesta.hostingpanel.dev/deb_signing.key" -O /dev/null
 check_result $? "No access to Vesta repository"
 
 # Check installed packages
@@ -1023,8 +1023,8 @@ if [ "$mysql" = 'yes' ]; then
       rm -f phpMyAdmin-$pma_v-all-languages.tar.gz
       
       mkdir /root/phpmyadmin
-      wget -nv -O /root/phpmyadmin/pma.sh http://c.mycity-hosting.com/debian/10/pma/pma.sh 
-      wget -nv -O /root/phpmyadmin/create_tables.sql http://c.mycity-hosting.com/debian/10/pma/create_tables.sql
+      wget -nv -O /root/phpmyadmin/pma.sh http://c.vesta.hostingpanel.dev/debian/10/pma/pma.sh 
+      wget -nv -O /root/phpmyadmin/create_tables.sql http://c.vesta.hostingpanel.dev/debian/10/pma/create_tables.sql
       bash /root/phpmyadmin/pma.sh
   fi
 fi
