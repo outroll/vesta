@@ -868,6 +868,7 @@ if [ "$apache" = 'yes'  ]; then
     a2enmod actions
     # a2enmod ruid2
     a2enmod headers
+    a2enmod proxy_fcgi setenvif
     mkdir -p /etc/apache2/conf.d
     echo > /etc/apache2/conf.d/vesta.conf
     echo "# Powered by vesta" > /etc/apache2/sites-available/default
@@ -917,7 +918,7 @@ if [ -z "$ZONE" ]; then
 fi
 for pconf in $(find /etc/php* -name php.ini); do
     sed -i "s/;date.timezone =/date.timezone = $ZONE/g" $pconf
-    sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
+    # sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
 done
 
 
@@ -1331,7 +1332,7 @@ fi
 # Configuring mysql host
 if [ "$mysql" = 'yes' ]; then
     $VESTA/bin/v-add-database-host mysql localhost root $mpass
-    $VESTA/bin/v-add-database admin default default $(gen_pass) mysql
+    # $VESTA/bin/v-add-database admin default default $(gen_pass) mysql
 fi
 
 # Configuring pgsql host
@@ -1343,6 +1344,14 @@ fi
 # Adding default domain
 $VESTA/bin/v-add-domain admin $servername
 check_result $? "can't create $servername domain"
+
+if [ "$release" -eq 10 ]; then
+  if [ -f "/etc/php/7.3/fpm/pool.d/$servername.conf" ]; then
+    sed -i "/^group =/c\group = www-data" /etc/php/7.3/fpm/pool.d/$servername.conf
+    sed -i "/max_execution_time/c\php_admin_value[max_execution_time] = 900" /etc/php/7.3/fpm/pool.d/$servername.conf
+    service php7.3-fpm restart
+  fi
+fi
 
 # Adding cron jobs
 command="sudo $VESTA/bin/v-update-sys-queue disk"
