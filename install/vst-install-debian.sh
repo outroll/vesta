@@ -703,7 +703,6 @@ chmod -R 750 $VESTA/data/queue
 chmod 660 $VESTA/log/*
 rm -f /var/log/vesta
 ln -s $VESTA/log /var/log/vesta
-chown admin:admin $VESTA/data/sessions
 chmod 770 $VESTA/data/sessions
 
 # Generating vesta configuration
@@ -1288,6 +1287,9 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     fi
     chown admin:admin /var/log/roundcube
 fi
+
+# Vesta data sessions permissions
+chown admin:admin $VESTA/data/sessions
 
 # Configuring system ips
 $VESTA/bin/v-update-sys-ip
