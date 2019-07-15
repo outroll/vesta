@@ -98,7 +98,7 @@ $LANG['cn'] = array(
     'list accounts' => '列出 %s 个账户',
     'add account' => '添加账户',
     'open webmail' => '打开网页邮箱',
-    'list fail2ban' => 'Fail2ban 封锁名单',
+    'list fail2ban' => 'Fail2ban 封锁列表',
     'open %s' => '打开 %s',
     'download' => '下载',
     'restore' => '恢复',
@@ -142,7 +142,7 @@ $LANG['cn'] = array(
     'Search Results' => '搜索结果',
     'Adding Firewall Rule' => '添加防火墙规则',
     'Editing Firewall Rule' => '编辑防火墙规则',
-    'Adding IP Address to Banlist' => '添加IP至封锁名单',
+    'Adding IP Address to Banlist' => '添加IP至封锁列表',
 
     'active' => '正常',
     'spnd' => '暂停',
@@ -765,5 +765,5 @@ $LANG['cn'] = array(
 
     'maximum characters length, including prefix' => '包含前缀最多 %s 个字符',
 
-    'Email Credentials' => '电子邮件证书',
+    'Email Credentials' => '电子邮件凭据',
 );
