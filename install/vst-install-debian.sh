@@ -805,6 +805,10 @@ cp -rf $vestacp/packages $VESTA/data/
 # Installing templates
 cp -rf $vestacp/templates $VESTA/data/
 
+# Set nameservers
+sed -i "s/YOURHOSTNAME1/ns1.$servername/" /usr/local/vesta/data/packages/default.pkg
+sed -i "s/YOURHOSTNAME2/ns2.$servername/" /usr/local/vesta/data/packages/default.pkg
+
 # Copying index.html to default documentroot
 cp $VESTA/data/templates/web/skel/public_html/index.html /var/www/
 sed -i 's/%domain%/It worked!/g' /var/www/index.html
