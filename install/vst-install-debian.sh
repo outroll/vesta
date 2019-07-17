@@ -1351,6 +1351,10 @@ fi
 $VESTA/bin/v-add-domain admin $servername
 check_result $? "can't create $servername domain"
 
+# Adding ns1 and ns2 A records
+/usr/local/vesta/bin/v-add-dns-record 'admin' "$servername" 'ns1' 'A' "$pub_ip"
+/usr/local/vesta/bin/v-add-dns-record 'admin' "$servername" 'ns2' 'A' "$pub_ip"
+
 if [ "$release" -eq 10 ]; then
   if [ -f "/etc/php/7.3/fpm/pool.d/$servername.conf" ]; then
     sed -i "/^group =/c\group = www-data" /etc/php/7.3/fpm/pool.d/$servername.conf
