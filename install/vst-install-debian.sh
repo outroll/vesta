@@ -81,7 +81,7 @@ help() {
 # Defining password-gen function
 gen_pass() {
     MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-    LENGTH=10
+    LENGTH=32
     while [ ${n:=1} -le $LENGTH ]; do
         PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
         let n+=1
@@ -1032,6 +1032,8 @@ if [ "$mysql" = 'yes' ]; then
       wget -nv -O /root/phpmyadmin/pma.sh http://c.vesta.hostingpanel.dev/debian/10/pma/pma.sh 
       wget -nv -O /root/phpmyadmin/create_tables.sql http://c.vesta.hostingpanel.dev/debian/10/pma/create_tables.sql
       bash /root/phpmyadmin/pma.sh
+      blowfish=$(gen_pass)
+      echo "\$cfg['blowfish_secret'] = '$blowfish';" >> /etc/phpmyadmin/config.inc.php
   fi
 fi
 
