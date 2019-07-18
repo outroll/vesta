@@ -1,13 +1,14 @@
 Source: vesta
 Package: vesta
 Priority: optional
-Version: 0.9.8-23
+Version: 0.9.8-24
 Section: admin
-Maintainer: Serghey Rodin <skid@vestacp.com>
-Homepage: http://vestacp.com
+Maintainer: Predrag Damnjanovic <predrag@hostingpanel.dev>
+Homepage: http://vesta.hostingpanel.dev
 Architecture: amd64
 Depends: bash, awk, sed
 Description: Vesta
  Vesta is an open source hosting control panel.
  Vesta has a clean and focused interface without the clutter.
  Vesta has the latest of very innovative technologies.
+ MyVesta is a fork from VestaCP, special thanks to vestacp.com and Serghey Rodin
