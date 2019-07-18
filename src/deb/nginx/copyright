@@ -5,7 +5,7 @@ Source: http://vesta.hostingpanel.dev
 Files: *
 Copyright: 2019 MyVesta <info@hostingpanel.dev>
 License: GPL-3.0+
-Remarks: Hestia is a fork from VestaCP, special thanks to vestacp.com and Serghey Rodin
+Remarks: MyVesta is a fork from VestaCP, special thanks to vestacp.com and Serghey Rodin
 
 License: GPL-3.0+
  This program is free software: you can redistribute it and/or modify
