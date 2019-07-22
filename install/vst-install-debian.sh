@@ -260,6 +260,14 @@ if [ ! -e '/usr/bin/wget' ]; then
     check_result $? "Can't install wget"
 fi
 
+# Check if apparmor is installed
+# This check is borrowed from HestiaCP
+if [ $(dpkg-query -W -f='${Status}' apparmor 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    apparmor='no'
+else
+    apparmor='yes'
+fi
+
 # Checking repository availability
 wget -q "apt.vesta.hostingpanel.dev/deb_signing.key" -O /dev/null
 check_result $? "No access to Vesta repository"
@@ -1065,10 +1073,12 @@ if [ "$named" = 'yes' ]; then
     chown root:bind /etc/bind/named.conf
     chmod 640 /etc/bind/named.conf
     aa-complain /usr/sbin/named 2>/dev/null
-    echo "/home/** rwm," >> /etc/apparmor.d/local/usr.sbin.named 2>/dev/null
-    service apparmor status >/dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        service apparmor restart
+    if [ "$apparmor" = 'yes' ]; then
+      echo "/home/** rwm," >> /etc/apparmor.d/local/usr.sbin.named 2>/dev/null
+      service apparmor status >/dev/null 2>&1
+      if [ $? -ne 0 ]; then
+          service apparmor restart
+      fi
     fi
     update-rc.d bind9 defaults
     service bind9 start
