@@ -35,6 +35,7 @@ E_DB=17
 E_RRD=18
 E_UPDATE=19
 E_RESTART=20
+E_TEAPOT=418
 
 # Event string for logger
 for ((I=1; I <= $# ; I++)); do
