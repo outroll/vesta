@@ -213,7 +213,8 @@ is_object_new() {
 # Check if object is valid
 is_object_valid() {
     if [ $2 = 'USER' ]; then
-        if [ ! -d "$VESTA/data/users/$3" ]; then
+        user_vst_dir=$(basename $3)
+        if [ ! -d "$VESTA/data/users/$user_vst_dir" ]; then
             check_result $E_NOTEXIST "$1 $3 doesn't exist"
         fi
     else
