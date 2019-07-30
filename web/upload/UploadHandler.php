@@ -1116,7 +1116,7 @@ class UploadHandler
             $file_path = $this->get_upload_path($file->name);
             $append_file = $content_range && is_file($file_path) &&
                 $file->size > $this->get_file_size($file_path);
-            if ($uploaded_file && is_uploaded_file($uploaded_file)) {
+            if ($uploaded_file && is_uploaded_file($uploaded_file) && strpos($file_path, "'")===false && strpos($file_path, '"')===false) {
                 chmod($uploaded_file, 0644);
                 exec (VESTA_CMD . "v-copy-fs-file ". USERNAME ." {$uploaded_file} '{$file_path}'", $output, $return_var);
                 $error = check_return_code($return_var, $output);
