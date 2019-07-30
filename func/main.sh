@@ -213,6 +213,7 @@ is_object_new() {
 # Check if object is valid
 is_object_valid() {
     if [ $2 = 'USER' ]; then
+        is_user_format_valid $3
         if [ ! -d "$VESTA/data/users/$3" ]; then
             check_result $E_NOTEXIST "$1 $3 doesn't exist"
         fi
