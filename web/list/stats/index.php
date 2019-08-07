@@ -20,7 +20,7 @@ if ($user == 'admin') {
         unset($output);
     }
 
-    exec (VESTA_CMD."v-list-sys-users 'json'", $output, $return_var);
+    exec (VESTA_CMD."v-list-sys-users json", $output, $return_var);
     $users = json_decode(implode('', $output), true);
     unset($output);
 } else {
