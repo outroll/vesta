@@ -13,9 +13,16 @@
 user=$1
 domain=$2
 aliases=$3
+staging=$4
+
+if [[ $staging && $staging =~ staging ]]; then
+	staging='staging-'
+else
+	staging=''
+fi
 
 # LE API
-API='https://acme-v02.api.letsencrypt.org'
+API="https://acme-${staging}v02.api.letsencrypt.org"
 
 # Includes
 source $VESTA/func/main.sh
@@ -95,6 +102,11 @@ fi
 
 # Parsing LetsEncrypt account data
 source $USER_DATA/ssl/le.conf
+
+if [[ $staging ]]; then
+	KID=$(echo "$KID" | sed 's/acme-v02/acme-staging-v02/')
+fi
+
 
 # Checking wildcard alias
 if [ "$aliases" = "*.$domain" ]; then
