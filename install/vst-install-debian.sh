@@ -42,7 +42,7 @@ elif [ "$release" -eq 9 ]; then
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
-        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools unzip"
+        unrar-free vim-common net-tools unzip"
 fi
 
 # Defining help function
