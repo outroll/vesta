@@ -36,6 +36,7 @@ E_DB=17
 E_RRD=18
 E_UPDATE=19
 E_RESTART=20
+E_TEAPOT=418
 
 # Event string for logger
 for ((I=1; I <= $# ; I++)); do
@@ -214,7 +215,8 @@ is_object_new() {
 is_object_valid() {
     if [ $2 = 'USER' ]; then
         is_user_format_valid $3 'user'
-        if [ ! -d "$VESTA/data/users/$3" ]; then
+        user_vst_dir=$(basename $3)
+        if [ ! -d "$VESTA/data/users/$user_vst_dir" ]; then
             check_result $E_NOTEXIST "$1 $3 doesn't exist"
         fi
     else
@@ -665,7 +667,7 @@ is_dbuser_format_valid() {
 
 # DNS record type validator
 is_dns_type_format_valid() {
-    known_dnstype='A,AAAA,NS,CNAME,MX,TXT,SRV,DNSKEY,KEY,IPSECKEY,PTR,SPF,TLSA'
+    known_dnstype='A,AAAA,NS,CNAME,MX,TXT,SRV,DNSKEY,KEY,IPSECKEY,PTR,SPF,TLSA,CAA'
     if [ -z "$(echo $known_dnstype |grep -w $1)" ]; then
         check_result $E_INVALID "invalid dns record type format :: $1"
     fi

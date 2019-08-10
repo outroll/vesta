@@ -210,7 +210,7 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
         exlusion=$(echo -e "$WEB" |tr ',' '\n' |grep "^$domain:")
         set -f
         fargs=()
-        fargs+=(--exclude='logs/*')
+        fargs+=(--exclude='./logs/*')
         if [ ! -z "$exlusion" ]; then
             xdirs="$(echo -e "$exlusion" |tr ':' '\n' |grep -v $domain)"
             for xpath in $xdirs; do
@@ -228,7 +228,7 @@ if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB" != '*' ]; then
         set +f
 
         # Backup files
-        tar -cpf- ${fargs[@]} * |gzip -$BACKUP_GZIP - > $tmpdir/web/$domain/domain_data.tar.gz
+        tar --anchored -cpf- ${fargs[@]} * |gzip -$BACKUP_GZIP - > $tmpdir/web/$domain/domain_data.tar.gz
     done
 
     # Print total
@@ -466,11 +466,15 @@ if [ "$USER" != '*' ]; then
     fi
     fargs=()
     for xpath in $(echo "$USER" |tr ',' '\n'); do
-        fargs+=(-not)
-        fargs+=(-path)
-        fargs+=("./$xpath*")
-        echo "$(date "+%F %T") excluding directory $xpath" |\
+        if [ -d "$xpath" ]; then
+            fargs+=(--exclude=$xpath/*)
+            echo "$(date "+%F %T") excluding directory $xpath" |\
             tee -a $BACKUP/$user.log
+        else
+            echo "$(date "+%F %T") excluding file $xpath" |\
+            tee -a $BACKUP/$user.log
+            fargs+=(--exclude=$xpath)
+        fi
     done
 
     IFS=$'\n'
@@ -487,7 +491,7 @@ if [ "$USER" != '*' ]; then
             wait_for_backup_if_it_is_not_time_for_backup
 
             # Backup files and dirs
-            tar -cpf- $udir |gzip -$BACKUP_GZIP - > $tmpdir/user_dir/$udir.tar.gz
+            tar --anchored -cpf- ${fargs[@]} $udir |gzip -$BACKUP_GZIP - > $tmpdir/user_dir/$udir.tar.gz
         fi
     done
     set +f

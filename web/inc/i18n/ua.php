@@ -560,6 +560,7 @@ $LANG['ua'] = array(
     'MAIL Server' => 'MAIL сервер',
     'Antivirus' => 'Антивірус',
     'AntiSpam' => 'АнтиСпам',
+    'Use Web Domain SSL Certificate' => 'Використовувати SSL сертифікат веб домену',
     'Webmail URL' => 'Webmail URL',
     'MySQL Support' => 'Підтримка MySQL',
     'phpMyAdmin URL' => 'phpMyAdmin URL',

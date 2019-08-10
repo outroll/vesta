@@ -562,6 +562,7 @@ $LANG['th'] = array(
     'MAIL Server' => 'เซิร์ฟเวอร์เมล',
     'Antivirus' => 'ป้องกันไวรัส',
     'AntiSpam' => 'ป้องกันเมลขยะ',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'Webmail URL',
     'MySQL Support' => 'สนับสนุน MySQL',
     'phpMyAdmin URL' => 'phpMyAdmin URL',

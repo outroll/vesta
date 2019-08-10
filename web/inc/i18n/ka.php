@@ -559,6 +559,7 @@ $LANG['ka'] = array(
     'MAIL Server' => 'ელფოსტის სერვერი',
     'Antivirus' => 'ანტივირუსი',
     'AntiSpam' => 'ანტისპამი',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'ვებფოსტის URL',
     'MySQL Support' => 'MySQL-ის მხარდაჭერა',
     'phpMyAdmin URL' => 'phpMyAdmin-ის URL',
@@ -744,14 +745,14 @@ $LANG['ka'] = array(
     'PUB_KEY' => 'PUB_KEY',
     'ISSUER' => 'ISSUER',
 
-    'Use server hostname' => 'Use server hostname',
-    'Use domain hostname' => 'Use domain hostname',
-    'Use STARTTLS' => 'Use STARTTLS',
-    'Use SSL / TLS' => 'Use SSL / TLS',
-    'No encryption' => 'No encryption',
-    'Do not use encryption' => 'Do not use encryption',
+    'Use server hostname' => 'სერვერის hostname-ის გამოყენება',
+    'Use domain hostname' => 'დეომენის hostname-ის გამოყენება',
+    'Use STARTTLS' => 'STARTTLS-ის გამოყენება',
+    'Use SSL / TLS' => 'SSL / TLS-ის გამოყენება',
+    'No encryption' => 'დაშიფრვის გარეშე',
+    'Do not use encryption' => 'არ გამოიყენო დაშიფრვა',
 
-    'maximum characters length, including prefix' => 'maximum %s characters length, including prefix',
+    'maximum characters length, including prefix' => 'დასაშვებია მაქსიმუმ %s სიმბოლო, პრეფიქსის ჩათვლით',
 
-    'Email Credentials' => 'Email Credentials',
+    'Email Credentials' => 'რეკვიზიტების ელ-ფოსტით გაგზავნა',
 );

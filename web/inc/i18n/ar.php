@@ -560,6 +560,7 @@ $LANG['ar'] = array(
     'MAIL Server' => 'مخدم البريد الالكتروني',
     'Antivirus' => 'مضاد الفيروسات',
     'AntiSpam' => 'مضاد البريد المزعج سبام',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'رابط WebMail',
     'MySQL Support' => 'دعم MySQL',
     'phpMyAdmin URL' => 'رابط phpMyAdmin',

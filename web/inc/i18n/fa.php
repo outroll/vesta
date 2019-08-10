@@ -543,6 +543,7 @@ $LANG['fa'] = array(
     'MAIL Server' => 'سرور پستی',
     'Antivirus' => 'ضد ویروس',
     'AntiSpam' => 'ضد هرزنامه',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'نشانی وب میل',
     'MySQL Support' => 'پشتیبانی MySQL',
     'phpMyAdmin URL' => 'نشانی phpMyAdmin',

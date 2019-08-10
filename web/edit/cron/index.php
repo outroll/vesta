@@ -20,7 +20,7 @@ if (empty($_GET['job'])) {
 
 // List cron job
 $v_job = escapeshellarg($_GET['job']);
-exec (VESTA_CMD."v-list-cron-job ".$user." ".$v_job." 'json'", $output, $return_var);
+exec (VESTA_CMD."v-list-cron-job ".$user." ".$v_job." json", $output, $return_var);
 check_return_code($return_var,$output);
 
 $data = json_decode(implode('', $output), true);
