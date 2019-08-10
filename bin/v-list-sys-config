@@ -52,7 +52,7 @@ json_list() {
         "DB_PMA_URL": "'$DB_PMA_URL'",
         "DB_PGA_URL": "'$DB_PGA_URL'",
         "SOFTACULOUS": "'$SOFTACULOUS'",
-        "MAX_DBUSER_LEN": "'$MAX_DBUSER_LEN'"
+        "MAX_DBUSER_LEN": "'$MAX_DBUSER_LEN'",
         "MAIL_CERTIFICATE": "'$MAIL_CERTIFICATE'",
         "VESTA_CERTIFICATE": "'$VESTA_CERTIFICATE'"
     }
