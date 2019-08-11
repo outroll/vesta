@@ -14,7 +14,7 @@ VESTA_VER='0.9.8-25'
 
 # Set compiling directory
 BUILD_DIR="/usr/src/$DEB_NAME"
-INSTALL_DIR="/usr/local/vesta/$DEB_NAME"
+INSTALL_DIR="/usr/local/vesta"
 
 # Set git repository raw path
 GIT_SRC='https://raw.githubusercontent.com/myvesta/vesta/master/src'
