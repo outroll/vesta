@@ -175,6 +175,7 @@ if [ "$CWEB_B" = true ]; then
   echo "=== Copying files"
   mkdir -p $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
   cp -rf /root/vesta/install/debian/$DEB_VER/* $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
+  cp /root/vesta/install/debian/10/deb_signing.key /var/www/c.vesta.hostingpanel.dev/html/deb_signing.key
   cd $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
   
   if [ -f "packages.tar.gz" ]; then
