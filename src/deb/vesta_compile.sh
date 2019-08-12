@@ -135,6 +135,12 @@ fi
 if [ "$VESTA_B" = true ]; then
   VESTAGIT_B='true'
 fi
+if [ "$PHP_B" = true ]; then
+  VESTAGIT_B='true'
+fi
+if [ "$NGINX_B" = true ]; then
+  VESTAGIT_B='true'
+fi
 
 #################################################################################
 #
@@ -361,6 +367,7 @@ if [ "$PHP_B" = true ]; then
   # Copying control, postinst and postrm files
   cp -rf /root/vesta/src/deb/php/* $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN
   rm $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/php-fpm.conf
+  rm $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/php.ini
   
   # Set version
   sed -i "/Version: /c\Version: $VESTA_VER" $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/control
@@ -379,6 +386,7 @@ if [ "$PHP_B" = true ]; then
 
   echo "=== Get php-fpm.conf"
   cp /root/vesta/src/deb/php/php-fpm.conf $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/etc/php-fpm.conf
+  cp /root/vesta/src/deb/php/php.ini $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/lib/php.ini
   
   echo "=== copy binary"
   cp $INSTALL_DIR/php/sbin/php-fpm $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/sbin/vesta-php
