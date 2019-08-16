@@ -7,18 +7,20 @@
 build_deb_package=1
 add_deb_to_apt_repo=0
 
-DEB_NAME='buster'
+TARGET_DEB_NAME='buster'
 DEB_VER='10'
 VESTA_VER='0.9.8-25'
 
-MAIN_TARGET_DEB_NAME='buster'
+TARGET_DEB_NAME_MAIN='buster'
 
 run_apt_update_and_install=1
 wait_to_press_enter=1
 
 ###############
+
 # Set compiling directory
-BUILD_DIR="/usr/src/$DEB_NAME"
+BUILD_DIR="/usr/src/$TARGET_DEB_NAME"
+BUILD_DIR_MAIN="/usr/src/$TARGET_DEB_NAME_MAIN"
 INSTALL_DIR="/usr/local/vesta"
 
 # Set git repository raw path
@@ -26,8 +28,8 @@ GIT_SRC='https://raw.githubusercontent.com/myvesta/vesta/master/src'
 GIT_REP="$GIT_REP/deb"
 
 PATH_OF_C_WEB_FOLDER="/var/www/c.vesta.hostingpanel.dev/html"
-PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER="$PATH_OF_C_WEB_FOLDER/debian/$DEB_VER"
-PATH_OF_APT_REPO="/var/www/apt.vesta.hostingpanel.dev/html/$DEB_NAME"
+PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER="$PATH_OF_C_WEB_FOLDER/debian/$TARGET_DEB_VER"
+PATH_OF_APT_REPO="/var/www/apt.vesta.hostingpanel.dev/html/$TARGET_DEB_NAME"
 
 # Set Version for compiling
 VESTA_V=$VESTA_VER"_amd64"
@@ -55,27 +57,27 @@ function press_enter {
     fi
 }
 
-function make_deb_package_and_add_to_repo {
+function make_deb_package {
   press_enter "=== Press enter to build the package"
   cd $BUILD_DIR
   if [ -f "$1_$VESTA_V.deb" ]; then
     rm $1_$VESTA_V.deb
   fi
   dpkg-deb --build $1_$VESTA_V
-  
-  if [ $add_deb_to_apt_repo -eq 1 ]; then
-    press_enter "=== Press enter to sign the package ==============================================================================="
+}
+
+function add_to_repo {  
+  press_enter "=== Press enter to sign the package ==============================================================================="
+  cd $BUILD_DIR
+  export GPG_TTY=$(tty)
+  dpkg-sig --sign builder $1_$VESTA_V.deb
+  mkdir -p $PATH_OF_APT_REPO
+  cd $PATH_OF_APT_REPO
     
-    export GPG_TTY=$(tty)
-    dpkg-sig --sign builder $1_$VESTA_V.deb
-	mkdir -p $PATH_OF_APT_REPO
-    cd $PATH_OF_APT_REPO
+  press_enter "=== Press enter to add to repo ==============================================================================="
     
-    press_enter "=== Press enter to add to repo ==============================================================================="
-    
-    reprepro --ask-passphrase -Vb . remove $DEB_NAME $1
-    reprepro --ask-passphrase -Vb . includedeb $DEB_NAME $BUILD_DIR/$1_$VESTA_V.deb
-  fi
+  reprepro --ask-passphrase -Vb . remove $TARGET_DEB_NAME $1
+  reprepro --ask-passphrase -Vb . includedeb $TARGET_DEB_NAME $BUILD_DIR/$1_$VESTA_V.deb
 }
 
 # Install needed software
@@ -189,7 +191,7 @@ if [ "$CWEB_B" = true ]; then
   
   echo "=== Copying files"
   mkdir -p $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
-  cp -rf /root/vesta/install/debian/$DEB_VER/* $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
+  cp -rf /root/vesta/install/debian/$TARGET_DEB_VER/* $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
   cp /root/vesta/install/debian/10/deb_signing.key /var/www/c.vesta.hostingpanel.dev/html/deb_signing.key
   cd $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
   
@@ -226,92 +228,97 @@ fi
 #################################################################################
 
 if [ "$NGINX_B" = true ]; then
-  echo "======= Building vesta-nginx ======="
-
-  echo "=== Change to build directory"
-  cd $BUILD_DIR
-  
-  BUILDING_NOW=0
-  # Check if target directory exist
-  if [ ! -d "$BUILD_DIR/nginx-$NGINX_V" ] || [ ! -d "$INSTALL_DIR/nginx" ]; then
-    BUILDING_NOW=1
+  if [ $build_deb_package -eq 1 ]; then
+    echo "======= Building vesta-nginx ======="
     
-    press_enter "=== Press enter to download and unpack source files"
-
-	rm -rf nginx-$NGINX_V
-	rm -rf openssl-$OPENSSL_V
-	rm -rf pcre-$PCRE_V
-	rm -rf zlib-$ZLIB_V
-    wget -nv -qO- $NGINX | tar xz
-    wget -nv -qO- $OPENSSL | tar xz
-    wget -nv -qO- $PCRE | tar xz
-    wget -nv -qO- $ZLIB | tar xz
+    echo "=== Change to build directory"
+    cd $BUILD_DIR
     
-    echo "=== Change to nginx directory"
-    cd nginx-$NGINX_V
+    BUILDING_NOW=0
+    # Check if target directory exist
+    if [ ! -d "$BUILD_DIR/nginx-$NGINX_V" ] || [ ! -d "$INSTALL_DIR/nginx" ]; then
+      BUILDING_NOW=1
+      
+      press_enter "=== Press enter to download and unpack source files"
     
-    press_enter "=== Press enter to configure nginx"
-    ./configure 	--prefix=$INSTALL_DIR/nginx \
-    		--with-http_ssl_module \
-    		--with-openssl=../openssl-$OPENSSL_V \
-    		--with-openssl-opt=enable-ec_nistp_64_gcc_128 \
-    		--with-openssl-opt=no-nextprotoneg \
-    		--with-openssl-opt=no-weak-ssl-ciphers \
-    		--with-openssl-opt=no-ssl3 \
-    		--with-pcre=../pcre-$PCRE_V \
-    	        --with-pcre-jit \
-    		--with-zlib=../zlib-$ZLIB_V
+	  rm -rf nginx-$NGINX_V
+	  rm -rf openssl-$OPENSSL_V
+	  rm -rf pcre-$PCRE_V
+	  rm -rf zlib-$ZLIB_V
+      wget -nv -qO- $NGINX | tar xz
+      wget -nv -qO- $OPENSSL | tar xz
+      wget -nv -qO- $PCRE | tar xz
+      wget -nv -qO- $ZLIB | tar xz
+      
+      echo "=== Change to nginx directory"
+      cd nginx-$NGINX_V
+      
+      press_enter "=== Press enter to configure nginx"
+      ./configure 	--prefix=$INSTALL_DIR/nginx \
+      		--with-http_ssl_module \
+      		--with-openssl=../openssl-$OPENSSL_V \
+      		--with-openssl-opt=enable-ec_nistp_64_gcc_128 \
+      		--with-openssl-opt=no-nextprotoneg \
+      		--with-openssl-opt=no-weak-ssl-ciphers \
+      		--with-openssl-opt=no-ssl3 \
+      		--with-pcre=../pcre-$PCRE_V \
+      	        --with-pcre-jit \
+      		--with-zlib=../zlib-$ZLIB_V
+      
+      # Check install directory and remove if exists
+      if [ -d $INSTALL_DIR/nginx ]; then
+      	rm -rf $INSTALL_DIR/nginx
+      fi
+      
+      press_enter "=== Press enter to make && make install"
+      make && make install
     
-    # Check install directory and remove if exists
-    if [ -d $INSTALL_DIR/nginx ]; then
-    	rm -rf $INSTALL_DIR/nginx
     fi
     
-    press_enter "=== Press enter to make && make install"
-    make && make install
-
+    press_enter "=== Press enter to Prepare Deb Package Folder Structure"
+    if [ -d "$BUILD_DIR/vesta-nginx_$VESTA_V" ]; then
+      rm -rf $BUILD_DIR/vesta-nginx_$VESTA_V
+    fi
+    echo "=== Create directory"
+    mkdir $BUILD_DIR/vesta-nginx_$VESTA_V
+    
+    cd $BUILD_DIR/vesta-nginx_$VESTA_V/
+    mkdir -p usr/local/vesta/nginx etc/init.d DEBIAN
+    
+    press_enter "=== Press enter to Download control, postinst and postrm files"
+    # Copying control, postinst and postrm files
+    cp -rf /root/vesta/src/deb/nginx/* $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN
+    rm $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/nginx.conf
+    rm $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/vesta
+    
+    # Set version
+    sed -i "/Version: /c\Version: $VESTA_VER" $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/control
+    
+    # Set permission
+    chmod +x $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/postinst
+    
+    echo "=== Copying nginx directory"
+    cp -rf $INSTALL_DIR/nginx/* usr/local/vesta/nginx
+    
+    echo "=== Get Service File"
+    cd $BUILD_DIR/vesta-nginx_$VESTA_V/etc/init.d
+    cp /root/vesta/src/deb/nginx/vesta vesta
+    chmod +x vesta
+    
+    echo "=== Get nginx.conf"
+    cd $BUILD_DIR/vesta-nginx_$VESTA_V
+    cp /root/vesta/src/deb/nginx/nginx.conf $BUILD_DIR/vesta-nginx_$VESTA_V/usr/local/vesta/nginx/conf/nginx.conf
+    
+    # if [ $BUILDING_NOW -eq 1 ]; then
+    echo "=== copy binary"
+    cp $INSTALL_DIR/nginx/sbin/nginx $BUILD_DIR/vesta-nginx_$VESTA_V/usr/local/vesta/nginx/sbin/vesta-nginx
+    # fi
+    
+    make_deb_package "vesta-nginx"
   fi
-  
-  press_enter "=== Press enter to Prepare Deb Package Folder Structure"
-  if [ -d "$BUILD_DIR/vesta-nginx_$VESTA_V" ]; then
-    rm -rf $BUILD_DIR/vesta-nginx_$VESTA_V
+  if [ $add_deb_to_apt_repo -eq 1 ]; then
+    add_to_repo "vesta-nginx"
   fi
-  echo "=== Create directory"
-  mkdir $BUILD_DIR/vesta-nginx_$VESTA_V
-
-  cd $BUILD_DIR/vesta-nginx_$VESTA_V/
-  mkdir -p usr/local/vesta/nginx etc/init.d DEBIAN
-  
-  press_enter "=== Press enter to Download control, postinst and postrm files"
-  # Copying control, postinst and postrm files
-  cp -rf /root/vesta/src/deb/nginx/* $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN
-  rm $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/nginx.conf
-  rm $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/vesta
-  
-  # Set version
-  sed -i "/Version: /c\Version: $VESTA_VER" $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/control
-
-  # Set permission
-  chmod +x $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/postinst
-
-  echo "=== Copying nginx directory"
-  cp -rf $INSTALL_DIR/nginx/* usr/local/vesta/nginx
-  
-  echo "=== Get Service File"
-  cd $BUILD_DIR/vesta-nginx_$VESTA_V/etc/init.d
-  cp /root/vesta/src/deb/nginx/vesta vesta
-  chmod +x vesta
-  
-  echo "=== Get nginx.conf"
-  cd $BUILD_DIR/vesta-nginx_$VESTA_V
-  cp /root/vesta/src/deb/nginx/nginx.conf $BUILD_DIR/vesta-nginx_$VESTA_V/usr/local/vesta/nginx/conf/nginx.conf
-  
-  # if [ $BUILDING_NOW -eq 1 ]; then
-  echo "=== copy binary"
-  cp $INSTALL_DIR/nginx/sbin/nginx $BUILD_DIR/vesta-nginx_$VESTA_V/usr/local/vesta/nginx/sbin/vesta-nginx
-  # fi
-  
-  make_deb_package_and_add_to_repo "vesta-nginx"
 
   echo "=== All done"
 fi
@@ -324,85 +331,90 @@ fi
 
 
 if [ "$PHP_B" = true ]; then
-  echo "======= Building vesta-php package ======="
-  cd $BUILD_DIR
-  
-  BUILDING_NOW=0
-  # Check if target directory exist
-  if [ ! -d "$BUILD_DIR/php-$PHP_V" ] || [ ! -d "$INSTALL_DIR/nginx" ]; then
-	BUILDING_NOW=1
+  if [ $build_deb_package -eq 1 ]; then
+    echo "======= Building vesta-php package ======="
+    cd $BUILD_DIR
     
-    echo "=== Download and unpack source files"
-	rm -rf php-$PHP_V
-    wget -nv -qO- $PHP | tar xz
+    BUILDING_NOW=0
+    # Check if target directory exist
+    if [ ! -d "$BUILD_DIR/php-$PHP_V" ] || [ ! -d "$INSTALL_DIR/nginx" ]; then
+	  BUILDING_NOW=1
+      
+      echo "=== Download and unpack source files"
+	  rm -rf php-$PHP_V
+      wget -nv -qO- $PHP | tar xz
+      
+      echo "=== Change to php directory php-$PHP_V"
+      cd php-$PHP_V
+      
+      press_enter "=== Press enter to continue ==============================================================================="
+      
+      echo "=== Configure PHP"
+      ./configure --prefix=$INSTALL_DIR/php \
+                  --enable-fpm \
+                  --with-zlib \
+                  --with-fpm-user=admin \
+                  --with-fpm-group=admin \
+                  --with-mysql \
+                  --with-mysqli \
+                  --with-curl \
+                  --enable-mbstring
+      
+      # Check install directory and remove if exists
+      if [ -d $INSTALL_DIR/php ]; then
+      	rm -rf $INSTALL_DIR/php
+      fi
     
-    echo "=== Change to php directory php-$PHP_V"
-    cd php-$PHP_V
-    
-    press_enter "=== Press enter to continue ==============================================================================="
-    
-    echo "=== Configure PHP"
-    ./configure --prefix=$INSTALL_DIR/php \
-                --enable-fpm \
-                --with-zlib \
-                --with-fpm-user=admin \
-                --with-fpm-group=admin \
-                --with-mysql \
-                --with-mysqli \
-                --with-curl \
-                --enable-mbstring
-    
-    # Check install directory and remove if exists
-    if [ -d $INSTALL_DIR/php ]; then
-    	rm -rf $INSTALL_DIR/php
+      press_enter "=== Press enter to create the files and install them ==============================================================================="
+      
+      make && make install
+      
+      press_enter "=== Press enter to continue ==============================================================================="
     fi
-
-    press_enter "=== Press enter to create the files and install them ==============================================================================="
     
-    make && make install
+    cd $BUILD_DIR
+    if [ -d "vesta-php_$VESTA_V" ]; then
+      rm -rf vesta-php_$VESTA_V
+    fi
+    echo "=== Create directory: $BUILD_DIR/vesta-php_$VESTA_V"
+    mkdir -p $BUILD_DIR/vesta-php_$VESTA_V
     
-    press_enter "=== Press enter to continue ==============================================================================="
+    echo "=== Prepare Deb Package Folder Structure: $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php and $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN"
+    cd $BUILD_DIR/vesta-php_$VESTA_V/
+    mkdir -p usr/local/vesta/php DEBIAN
+    
+    # Copying control, postinst and postrm files
+    cp -rf /root/vesta/src/deb/php/* $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN
+    rm $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/php-fpm.conf
+    rm $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/php.ini
+    
+    # Set version
+    sed -i "/Version: /c\Version: $VESTA_VER" $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/control
+    
+    # Set permission
+    chmod +x $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/postinst
+    
+    press_enter "=== Press enter to copy builded php ==============================================================================="
+    cd ..
+    
+    # if [ $BUILDING_NOW -eq 1 ]; then
+    echo "=== Copying php directory"
+    cp -rf $INSTALL_DIR/php/* $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/
+    press_enter "=== Done, press enter to copy php-fpm.conf and vesta-php binary ==============================================================================="
+    # fi
+    
+    echo "=== Get php-fpm.conf"
+    cp /root/vesta/src/deb/php/php-fpm.conf $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/etc/php-fpm.conf
+    cp /root/vesta/src/deb/php/php.ini $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/lib/php.ini
+    
+    echo "=== copy binary"
+    cp $INSTALL_DIR/php/sbin/php-fpm $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/sbin/vesta-php
+  
+    make_deb_package "vesta-php"
   fi
-  
-  cd $BUILD_DIR
-  if [ -d "vesta-php_$VESTA_V" ]; then
-    rm -rf vesta-php_$VESTA_V
+  if [ $add_deb_to_apt_repo -eq 1 ]; then
+    add_to_repo "vesta-php"
   fi
-  echo "=== Create directory: $BUILD_DIR/vesta-php_$VESTA_V"
-  mkdir -p $BUILD_DIR/vesta-php_$VESTA_V
-
-  echo "=== Prepare Deb Package Folder Structure: $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php and $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN"
-  cd $BUILD_DIR/vesta-php_$VESTA_V/
-  mkdir -p usr/local/vesta/php DEBIAN
-  
-  # Copying control, postinst and postrm files
-  cp -rf /root/vesta/src/deb/php/* $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN
-  rm $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/php-fpm.conf
-  rm $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/php.ini
-  
-  # Set version
-  sed -i "/Version: /c\Version: $VESTA_VER" $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/control
-
-  # Set permission
-  chmod +x $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/postinst
- 
-  press_enter "=== Press enter to copy builded php ==============================================================================="
-  cd ..
-  
-  # if [ $BUILDING_NOW -eq 1 ]; then
-  echo "=== Copying php directory"
-  cp -rf $INSTALL_DIR/php/* $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/
-  press_enter "=== Done, press enter to copy php-fpm.conf and vesta-php binary ==============================================================================="
-  # fi
-
-  echo "=== Get php-fpm.conf"
-  cp /root/vesta/src/deb/php/php-fpm.conf $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/etc/php-fpm.conf
-  cp /root/vesta/src/deb/php/php.ini $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/lib/php.ini
-  
-  echo "=== copy binary"
-  cp $INSTALL_DIR/php/sbin/php-fpm $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/sbin/vesta-php
-  
-  make_deb_package_and_add_to_repo "vesta-php"
     
   echo "=== All done"
 fi
@@ -414,42 +426,52 @@ fi
 #################################################################################
 
 if [ "$VESTA_B" = true ]; then
-  echo "======= Building vesta package ======="
-  # Change to build directory
-  cd $BUILD_DIR
+  if [ $build_deb_package -eq 1 ]; then
+    echo "======= Building vesta package ======="
+    # Change to build directory
+    cd $BUILD_DIR
+    
+    # Check if target directory exist
+    if [ -d $BUILD_DIR/vesta_$VESTA_V ]; then
+    	rm -rf $BUILD_DIR/vesta_$VESTA_V
+    fi
+    
+    # Create directory
+    mkdir $BUILD_DIR/vesta_$VESTA_V
+    
+    # Prepare Deb Package Folder Structure
+    cd vesta_$VESTA_V/
+    mkdir -p usr/local/vesta DEBIAN
+    
+    # Copying control, postinst and postrm files
+    cp -rf /root/vesta/src/deb/vesta/* $BUILD_DIR/vesta_$VESTA_V/DEBIAN
+    
+    # Set version
+    sed -i "/Version: /c\Version: $VESTA_VER" $BUILD_DIR/vesta_$VESTA_V/DEBIAN/control
   
-  # Check if target directory exist
-  if [ -d $BUILD_DIR/vesta_$VESTA_V ]; then
-  	rm -rf $BUILD_DIR/vesta_$VESTA_V
+    # Set permission
+    chmod +x $BUILD_DIR/vesta_$VESTA_V/DEBIAN/postinst
+    rm $BUILD_DIR/vesta_$VESTA_V/DEBIAN/conffiles
+  
+    # Copying vesta source
+    cp -rf /root/vesta/* $BUILD_DIR/vesta_$VESTA_V/usr/local/vesta
+    
+    # Set permission
+    cd $BUILD_DIR/vesta_$VESTA_V/usr/local/vesta/bin
+    chmod +x *
+    cd $BUILD_DIR/vesta_$VESTA_V/usr/local/vesta/upd
+    chmod +x *
+    
+    make_deb_package "vesta"
   fi
-  
-  # Create directory
-  mkdir $BUILD_DIR/vesta_$VESTA_V
-  
-  # Prepare Deb Package Folder Structure
-  cd vesta_$VESTA_V/
-  mkdir -p usr/local/vesta DEBIAN
-  
-  # Copying control, postinst and postrm files
-  cp -rf /root/vesta/src/deb/vesta/* $BUILD_DIR/vesta_$VESTA_V/DEBIAN
-  
-  # Set version
-  sed -i "/Version: /c\Version: $VESTA_VER" $BUILD_DIR/vesta_$VESTA_V/DEBIAN/control
-
-  # Set permission
-  chmod +x $BUILD_DIR/vesta_$VESTA_V/DEBIAN/postinst
-  rm $BUILD_DIR/vesta_$VESTA_V/DEBIAN/conffiles
-
-  # Copying vesta source
-  cp -rf /root/vesta/* $BUILD_DIR/vesta_$VESTA_V/usr/local/vesta
-  
-  # Set permission
-  cd $BUILD_DIR/vesta_$VESTA_V/usr/local/vesta/bin
-  chmod +x *
-  cd $BUILD_DIR/vesta_$VESTA_V/usr/local/vesta/upd
-  chmod +x *
-  
-  make_deb_package_and_add_to_repo "vesta"
+  if [ $add_deb_to_apt_repo -eq 1 ]; then
+    if [ "$TARGET_DEB_NAME_MAIN" != "$TARGET_DEB_NAME" ]; then
+      cd $BUILD_DIR
+      rm vesta_$VESTA_V.deb
+      cp $BUILD_DIR_MAIN/vesta_$VESTA_V.deb $BUILD_DIR/vesta_$VESTA_V.deb
+	fi
+    add_to_repo "vesta"
+  fi
 
   echo "=== All done"
 fi
