@@ -40,7 +40,7 @@ ZLIB='https://www.zlib.net/zlib-'$ZLIB_V'.tar.gz'
 PHP='http://de2.php.net/distributions/php-'$PHP_V'.tar.gz'
 
 # Set package dependencies for compiling
-SOFTWARE='build-essential libxml2-dev libz-dev libcurl4-gnutls-dev unzip openssl libssl-dev pkg-config reprepro dpkg-sig'
+SOFTWARE='build-essential libxml2-dev libz-dev libcurl4-gnutls-dev unzip openssl libssl-dev pkg-config reprepro dpkg-sig git'
 
 function press_enter {
     if [ $wait_to_press_enter -eq 1 ]; then
@@ -140,6 +140,10 @@ if [ "$PHP_B" = true ]; then
 fi
 if [ "$NGINX_B" = true ]; then
   VESTAGIT_B='true'
+fi
+
+if [ ! -d "$BUILD_DIR" ]; then
+  mkdir -p $BUILD_DIR
 fi
 
 #################################################################################
@@ -303,6 +307,8 @@ if [ "$NGINX_B" = true ]; then
   # fi
   
   make_deb_package_and_add_to_repo "vesta-nginx"
+
+  echo "=== All done"
 fi
 
 #################################################################################
@@ -439,4 +445,6 @@ if [ "$VESTA_B" = true ]; then
   chmod +x *
   
   make_deb_package_and_add_to_repo "vesta"
+
+  echo "=== All done"
 fi
