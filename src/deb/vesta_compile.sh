@@ -4,14 +4,19 @@
 # Made for MyVesta fork.
 # Autocompile script borrowed from HestiaCP, special thanks to Raphael Schneeberger
 
-wait_to_press_enter=1
-run_apt_update_and_install=1
+build_deb_package=1
 add_deb_to_apt_repo=0
 
 DEB_NAME='buster'
 DEB_VER='10'
 VESTA_VER='0.9.8-25'
 
+MAIN_TARGET_DEB_NAME='buster'
+
+run_apt_update_and_install=1
+wait_to_press_enter=1
+
+###############
 # Set compiling directory
 BUILD_DIR="/usr/src/$DEB_NAME"
 INSTALL_DIR="/usr/local/vesta"
