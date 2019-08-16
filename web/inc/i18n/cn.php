@@ -98,7 +98,7 @@ $LANG['cn'] = array(
     'list accounts' => '列出 %s 个账户',
     'add account' => '添加账户',
     'open webmail' => '打开网页邮箱',
-    'list fail2ban' => 'Fail2ban 封锁名单',
+    'list fail2ban' => 'Fail2ban 封锁列表',
     'open %s' => '打开 %s',
     'download' => '下载',
     'restore' => '恢复',
@@ -142,7 +142,7 @@ $LANG['cn'] = array(
     'Search Results' => '搜索结果',
     'Adding Firewall Rule' => '添加防火墙规则',
     'Editing Firewall Rule' => '编辑防火墙规则',
-    'Adding IP Address to Banlist' => '添加IP至封锁名单',
+    'Adding IP Address to Banlist' => '添加IP至封锁列表',
 
     'active' => '正常',
     'spnd' => '暂停',
@@ -261,6 +261,8 @@ $LANG['cn'] = array(
     'Bandwidth Usage eth1' => '网络使用情况 (eth1)',
     'Bandwidth Usage venet0' => '网络使用情况 (venet0)',
     'Bandwidth Usage venet1' => '网络使用情况 (venet1)',
+    'Bandwidth Usage docker0' => '网络使用情况 (docker0)',
+    'Bandwidth Usage docker1' => '网络使用情况 (docker1)',
     'Exim Usage' => 'Exim 使用情况',
     'FTP Usage' => 'FTP 使用情况',
     'SSH Usage' => 'SSH 使用情况',
@@ -305,7 +307,7 @@ $LANG['cn'] = array(
     'Aliases' => '别名',
     'SSL Certificate' => 'SSL证书',
     'SSL Key' => 'SSL密钥',
-    'SSL Certificate Authority / Intermediate' => 'CA证书或中级证书',
+    'SSL Certificate Authority / Intermediate' => 'SSL CA证书 / 中级证书',
     'SSL CSR' => 'SSL CSR',
     'optional' => '可选',
     'internal' => '内部',
@@ -386,7 +388,7 @@ $LANG['cn'] = array(
     'Download AccessLog' => '下载访问日志',
     'Download ErrorLog' => '下载错误日志',
     'Country' => '国家地区',
-    '2 letter code' => '采用 ISO 3166-1 二位代码 如: 中国CN / 美国US',
+    '2 letter code' => '采用 ISO 3166-1 α-2 二位代码 如: 中国CN / 美国US',
     'State / Province' => '州 / 省级',
     'City / Locality' => '市 / 地区',
     'Organization' => '组织名称',
@@ -704,7 +706,7 @@ $LANG['cn'] = array(
     'Add File to the Current Selection' => '将文件添加到当前选中区内',
     'Select All Files' => '选择所有文件',
     'shortcuts are inspired by magnificent GNU <a href="https://www.midnight-commander.org/">Midnight Commander</a> file manager' =>
-    '快捷键的灵感来自旖旎的 GNU <a href="https://www.midnight-commander.org/">Midnight Commander</a> 文件管理器',
+    '快捷键的灵感来自华丽的 GNU <a href="https://www.midnight-commander.org/">Midnight Commander</a> 文件管理器',
 
     'Licence Key' => '许可密匙',
     'Enter License Key' => '输入许可密匙',
@@ -763,5 +765,5 @@ $LANG['cn'] = array(
 
     'maximum characters length, including prefix' => '包含前缀最多 %s 个字符',
 
-    'Email Credentials' => '电子邮件证书',
+    'Email Credentials' => '电子邮件凭据',
 );

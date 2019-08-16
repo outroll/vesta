@@ -19,10 +19,10 @@ codename="${os}_$release"
 vestacp="$VESTA/install/$VERSION/$release"
 
 # Defining software pack for all distros
-software="awstats bc bind bind-libs bind-utils clamav-server clamav-update
+software="nginx awstats bc bind bind-libs bind-utils clamav-server clamav-update
     curl dovecot e2fsprogs exim expect fail2ban flex freetype ftp GeoIP httpd
     ImageMagick iptables-services jwhois lsof mailx mariadb mariadb-server mc
-    mod_fcgid mod_ruid2 mod_ssl net-tools nginx ntp openssh-clients pcre php
+    mod_fcgid mod_ruid2 mod_ssl net-tools ntp openssh-clients pcre php
     php-bcmath php-cli php-common php-fpm php-gd php-imap php-mbstring
     php-mcrypt phpMyAdmin php-mysql php-pdo phpPgAdmin php-pgsql php-soap
     php-tidy php-xml php-xmlrpc postgresql postgresql-contrib

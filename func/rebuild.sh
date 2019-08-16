@@ -152,7 +152,7 @@ rebuild_web_domain_conf() {
     prepare_web_domain_values
 
     # Rebuilding domain directories
-    mkdir -p $HOMEDIR/$user/web/$domain \
+    sudo -u $user mkdir -p $HOMEDIR/$user/web/$domain \
         $HOMEDIR/$user/web/$domain/public_html \
         $HOMEDIR/$user/web/$domain/public_shtml \
         $HOMEDIR/$user/web/$domain/document_errors \
@@ -178,7 +178,8 @@ rebuild_web_domain_conf() {
 
     # Propagating html skeleton
     if [ ! -e "$WEBTPL/skel/document_errors/" ]; then
-        cp -r $WEBTPL/skel/document_errors/ $HOMEDIR/$user/web/$domain/
+        sudo -u $user cp -r $WEBTPL/skel/document_errors/ \
+            $HOMEDIR/$user/web/$domain/
     fi
 
     # Set folder permissions
@@ -600,7 +601,7 @@ rebuild_pgsql_database() {
         exit $E_CONNECT
     fi
 
-    query="CREATE ROLE $DBUSER"
+    query="CREATE ROLE $DBUSER WITH LOGIN"
     psql -h $HOST -U $USER -c "$query" > /dev/null 2>&1
 
     query="UPDATE pg_authid SET rolpassword='$MD5' WHERE rolname='$DBUSER'"
@@ -617,7 +618,7 @@ rebuild_pgsql_database() {
     query="GRANT ALL PRIVILEGES ON DATABASE $DB TO $DBUSER"
     psql -h $HOST -U $USER -c "$query" > /dev/null 2>&1
 
-    query="GRANT CONNECT ON DATABASE template1 to $dbuser"
+    query="GRANT CONNECT ON DATABASE template1 to $DBUSER"
     psql -h $HOST -U $USER -c "$query" > /dev/null 2>&1
 }
 

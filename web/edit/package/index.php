@@ -22,7 +22,7 @@ if (empty($_GET['package'])) {
 
 // List package
 $v_package = escapeshellarg($_GET['package']);
-exec (VESTA_CMD."v-list-user-package ".$v_package." 'json'", $output, $return_var);
+exec (VESTA_CMD."v-list-user-package ".$v_package." json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 unset($output);
 
@@ -203,7 +203,7 @@ if (!empty($_POST['save'])) {
     fclose($fp);
 
     // Save changes
-    exec (VESTA_CMD."v-add-user-package ".$tmpdir." ".$v_package." 'yes'", $output, $return_var);
+    exec (VESTA_CMD."v-add-user-package ".$tmpdir." ".$v_package." yes", $output, $return_var);
     check_return_code($return_var,$output);
     unset($output);
 
@@ -212,7 +212,7 @@ if (!empty($_POST['save'])) {
     unset($output);
 
     // Propogate new package
-    exec (VESTA_CMD."v-update-user-package ".$v_package." 'json'", $output, $return_var);
+    exec (VESTA_CMD."v-update-user-package ".$v_package." json", $output, $return_var);
     check_return_code($return_var,$output);
     unset($output);
 

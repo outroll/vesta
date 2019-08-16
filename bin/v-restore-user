@@ -406,15 +406,21 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
         fi
 
         # Restoring web domain data
-        tar -xzpf $tmpdir/web/$domain/domain_data.tar.gz \
-            -C $HOMEDIR/$user/web/$domain/
-        if [ "$?" -ne 0 ]; then
-            rm -rf $tmpdir
-            error="can't unpack $domain data tarball"
-            echo "$error" |$SENDMAIL -s "$subj" $email $notify
-            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-            check_result "$E_PARSING" "$error"
+        chown $user $tmpdir
+        chmod u+w $HOMEDIR/$user/web/$domain
+        sudo -u $user tar -xzpf $tmpdir/web/$domain/domain_data.tar.gz \
+            -C $HOMEDIR/$user/web/$domain/ --exclude=logs/* \
+            2> $HOMEDIR/$user/web/$domain/restore_errors.log
+        if [ -e "$HOMEDIR/$user/web/$domain/restore_errors.log" ]; then
+            chown $user:$user $HOMEDIR/$user/web/$domain/restore_errors.log
         fi
+        #if [ "$?" -ne 0 ]; then
+        #    rm -rf $tmpdir
+        #    error="can't unpack $domain data tarball"
+        #    echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        #    sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+        #    check_result "$E_PARSING" "$error"
+        #fi
 
         # Applying Fix for tar < 1.24
         find $HOMEDIR/$user/web/$domain -type d \
@@ -586,13 +592,15 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
 
         # Rebuilding mail config
         rebuild_mail_domain_conf
-        
+
         domain_idn=$domain
         format_domain_idn
 
         # Restoring emails
         if [ -e "$tmpdir/mail/$domain/accounts.tar.gz" ]; then
-            tar -xzpf $tmpdir/mail/$domain/accounts.tar.gz \
+            chown $user $tmpdir
+            chmod u+w $HOMEDIR/$user/mail/$domain_idn
+            sudo -u $user tar -xzpf $tmpdir/mail/$domain/accounts.tar.gz \
                 -C $HOMEDIR/$user/mail/$domain_idn/
             if [ "$?" -ne 0 ]; then
                 rm -rf $tmpdir

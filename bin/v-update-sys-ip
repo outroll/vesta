@@ -44,7 +44,7 @@ if [[ "$ip_num" -eq '1' ]] && [[ "$v_ip_num" -eq 1 ]]; then
 fi
 
 # Updating configs
-if [ ! -z "$new" ]; then
+if [ ! -z "$old" ]; then
     mv $VESTA/data/ips/$old $VESTA/data/ips/$new
 
     # Updating PROXY

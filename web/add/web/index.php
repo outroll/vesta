@@ -118,7 +118,7 @@ if (!empty($_POST['ok'])) {
 
     // Add web domain
     if (empty($_SESSION['error_msg'])) {
-        exec (VESTA_CMD."v-add-web-domain ".$user." ".$v_domain." ".$v_ip." 'no' ".$aliases." ".$proxy_ext, $output, $return_var);
+        exec (VESTA_CMD."v-add-web-domain ".$user." ".$v_domain." ".$v_ip." no ".$aliases." ".$proxy_ext, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $domain_added = empty($_SESSION['error_msg']);
@@ -126,7 +126,7 @@ if (!empty($_POST['ok'])) {
 
     // Add DNS domain
     if (($_POST['v_dns'] == 'on') && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_public_ip." '' '' '' '' '' '' '' '' 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_public_ip." '' '' '' '' '' '' '' '' no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
@@ -136,7 +136,7 @@ if (!empty($_POST['ok'])) {
         foreach ($aliases_arr as $alias) {
             if ($alias != "www.".$_POST['v_domain']) {
                 $alias = escapeshellarg($alias);
-                exec (VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." 'no'", $output, $return_var);
+                exec (VESTA_CMD."v-add-dns-on-web-alias ".$user." ".$alias." ".$v_ip." no", $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
             }
@@ -153,7 +153,7 @@ if (!empty($_POST['ok'])) {
     // Delete proxy support
     if ((!empty($_SESSION['PROXY_SYSTEM'])) && ($_POST['v_proxy'] == 'off')  && (empty($_SESSION['error_msg']))) {
         $ext = escapeshellarg($ext);
-        exec (VESTA_CMD."v-delete-web-domain-proxy ".$user." ".$v_domain." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-delete-web-domain-proxy ".$user." ".$v_domain." no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
@@ -195,7 +195,7 @@ if (!empty($_POST['ok'])) {
              }
 
              $v_ssl_home = escapeshellarg($_POST['v_ssl_home']);
-             exec (VESTA_CMD."v-add-web-domain-ssl ".$user." ".$v_domain." ".$tmpdir." ".$v_ssl_home." 'no'", $output, $return_var);
+             exec (VESTA_CMD."v-add-web-domain-ssl ".$user." ".$v_domain." ".$tmpdir." ".$v_ssl_home." no", $output, $return_var);
              check_return_code($return_var,$output);
              unset($output);
          }

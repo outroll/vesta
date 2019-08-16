@@ -95,13 +95,21 @@ if [ "$update" = 'yes' ] && [ "$restart" != 'no' ]; then
 
     if [ "$service" = 'php' ]; then
         if [ "$WEB_SYSTEM" = "nginx" ]; then
-            service=$(ls /etc/init.d/php*fpm* |cut -f 4 -d / |sed -n 1p)
+            if [ $(ps --no-headers -o comm 1) == systemd ]; then
+                service=$(systemctl | grep -o -E "php.*fpm.*\.service")
+                service=${service//.service/}
+            else
+                service=$(ls /etc/init.d/php*fpm* |cut -f 4 -d /)
+            fi
         else
             service=$WEB_SYSTEM
         fi
     fi
 
-    service $service restart >/dev/null 2>&1
+    for single_service in $service; do
+        service $single_service restart >/dev/null 2>&1
+    done <<< "$service"
+
     if [ $? -ne 0 ]; then
         for config in $dst; do
             cat $config.vst.back > $config

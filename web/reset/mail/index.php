@@ -124,15 +124,15 @@ if ((!empty($_POST['email'])) && (!empty($_POST['password'])) && (!empty($_POST[
     $v_password = $_POST['password'];
 
     // Get domain owner
-    exec (VESTA_CMD."v-search-domain-owner ".$v_domain." 'mail'", $output, $return_var);
-    if ($return_var == 0) {
-        $v_user = $output[0];
+    exec (VESTA_CMD."v-search-domain-owner ".$v_domain." mail", $output, $return_var);
+    if (($return_var == 0) && (!empty($output[0]))) {
+        $v_user = escapeshellarg($output[0]);
     }
     unset($output);
 
     // Get current md5 hash
     if (!empty($v_user)) {
-        exec (VESTA_CMD."v-get-mail-account-value '".$v_user."' ".$v_domain." ".$v_account." 'md5'", $output, $return_var);
+        exec (VESTA_CMD."v-get-mail-account-value ".$v_user." ".$v_domain." ".$v_account." md5", $output, $return_var);
         if ($return_var == 0) {
             $v_hash = $output[0];
         }
@@ -151,7 +151,7 @@ if ((!empty($_POST['email'])) && (!empty($_POST['password'])) && (!empty($_POST[
             $fp = fopen($v_new_password, "w");
             fwrite($fp, $_POST['new']."\n");
             fclose($fp);
-            exec (VESTA_CMD."v-change-mail-account-password '".$v_user."' ".$v_domain." ".$v_account." ".$v_new_password, $output, $return_var);
+            exec (VESTA_CMD."v-change-mail-account-password ".$v_user." ".$v_domain." ".$v_account." ".$v_new_password, $output, $return_var);
             if ($return_var == 0) {
                 echo "ok";
                 exit;
