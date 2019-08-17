@@ -12,11 +12,15 @@ DEB_VER='10'
 VESTA_VER='0.9.8-25'
 
 TARGET_DEB_NAME_MAIN='buster'
+TARGET_DEB_VER_MAIN='10'
 
 run_apt_update_and_install=1
 wait_to_press_enter=1
 
 ###############
+# Note: first run --apt_repo before turning add_deb_to_apt_repo=1
+
+MAINTAINER_EMAIL='predrag@hostingpanel.dev'
 
 # Set compiling directory
 BUILD_DIR="/usr/src/$TARGET_DEB_NAME"
@@ -27,9 +31,12 @@ INSTALL_DIR="/usr/local/vesta"
 GIT_SRC='https://raw.githubusercontent.com/myvesta/vesta/master/src'
 GIT_REP="$GIT_REP/deb"
 
-PATH_OF_C_WEB_FOLDER="/var/www/c.vesta.hostingpanel.dev/html"
-PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER="$PATH_OF_C_WEB_FOLDER/debian/$TARGET_DEB_VER"
-PATH_OF_APT_REPO="/var/www/apt.vesta.hostingpanel.dev/html/$TARGET_DEB_NAME"
+C_WEB_ADDRESS="c.vesta.hostingpanel.dev"
+PATH_OF_C_WEB_FOLDER_ROOT="/var/www/$C_WEB_ADDRESS/html"
+PATH_OF_C_WEB_FOLDER="$PATH_OF_C_WEB_FOLDER_ROOT/debian/$TARGET_DEB_VER"
+APT_WEB_ADDRESS="apt.vesta.hostingpanel.dev"
+PATH_OF_APT_REPO_ROOT="/var/www/$APT_WEB_ADDRESS/html"
+PATH_OF_APT_REPO="$PATH_OF_APT_REPO_ROOT/$TARGET_DEB_NAME"
 
 # Set Version for compiling
 VESTA_V=$VESTA_VER"_amd64"
@@ -71,11 +78,12 @@ function add_to_repo {
   cd $BUILD_DIR
   export GPG_TTY=$(tty)
   dpkg-sig --sign builder $1_$VESTA_V.deb
-  mkdir -p $PATH_OF_APT_REPO
-  cd $PATH_OF_APT_REPO
-    
+  
   press_enter "=== Press enter to add to repo ==============================================================================="
     
+  mkdir -p $PATH_OF_APT_REPO
+  cd $PATH_OF_APT_REPO
+  echo "=== cd $PATH_OF_APT_REPO"
   reprepro --ask-passphrase -Vb . remove $TARGET_DEB_NAME $1
   reprepro --ask-passphrase -Vb . includedeb $TARGET_DEB_NAME $BUILD_DIR/$1_$VESTA_V.deb
 }
@@ -116,13 +124,13 @@ for arg; do
     --vesta)
       VESTA_B='true'
       ;;
-    --vestagit)
+    --git_clone)
       VESTAGIT_B='true'
       ;;
-    --cweb)
+    --c)
       CWEB_B='true'
       ;;
-    --aptweb)
+    --apt_repo)
       APTWEB_B='true'
       ;;
     *)
@@ -132,21 +140,26 @@ for arg; do
 done
 
 if [ $# -eq 0 ]; then
-  echo "!!! Please run with argument --vesta, --nginx, --php, --vestagit, --cweb, --aptweb or --all"
+  echo "!!! Please run with argument --vesta, --nginx, --php, --git_clone, --c, --apt or --all"
   exit 1
 fi
 
-if [ "$CWEB_B" = true ]; then
-  VESTAGIT_B='true'
-fi
-if [ "$VESTA_B" = true ]; then
-  VESTAGIT_B='true'
-fi
-if [ "$PHP_B" = true ]; then
-  VESTAGIT_B='true'
-fi
-if [ "$NGINX_B" = true ]; then
-  VESTAGIT_B='true'
+if [ $build_deb_package -eq 1 ]; then
+  if [ "$APTWEB_B" = true ]; then
+    VESTAGIT_B='true'
+  fi
+  if [ "$CWEB_B" = true ]; then
+    VESTAGIT_B='true'
+  fi
+  if [ "$VESTA_B" = true ]; then
+    VESTAGIT_B='true'
+  fi
+  if [ "$PHP_B" = true ]; then
+    VESTAGIT_B='true'
+  fi
+  if [ "$NGINX_B" = true ]; then
+    VESTAGIT_B='true'
+  fi
 fi
 
 if [ ! -d "$BUILD_DIR" ]; then
@@ -164,8 +177,44 @@ if [ "$VESTAGIT_B" = true ]; then
   cd /root
   rm -rf vesta/
   git clone https://github.com/myvesta/vesta.git
+  echo "=== Git cloning done"
 fi
 
+#################################################################################
+#
+# Building c subdomain web folder
+#
+#################################################################################
+
+if [ "$APTWEB_B" = true ]; then
+  echo "======= Building apt subdomain web folder ======="
+
+  mkdir -p $PATH_OF_APT_REPO
+  cd $PATH_OF_APT_REPO
+  
+  mkdir conf && cd conf
+  cat <<EOF >distributions
+Origin: $APT_WEB_ADDRESS
+Label: myvesta apt repository
+Codename: $TARGET_DEB_NAME
+Architectures: amd64 source
+Components: vesta
+Description: myvesta debian package repo
+SignWith: yes
+Pull: $TARGET_DEB_NAME
+EOF
+  
+  if [ ! -d "/root/.gnupg" ]; then
+    gpg --gen-key
+    gpg --armor --export $MAINTAINER_EMAIL --output $MAINTAINER_EMAIL.gpg.key
+    press_enter "*** please copy above generated key to your clipboard and then paste it after pressing enter now ***"
+    vi $PATH_OF_APT_REPO_ROOT/deb_signing.key
+	cp $PATH_OF_APT_REPO_ROOT/deb_signing.key $PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key
+  fi
+
+  echo "=== All done"
+fi
+ 
 #################################################################################
 #
 # Building c subdomain web folder
@@ -175,25 +224,27 @@ fi
 if [ "$CWEB_B" = true ]; then
   echo "======= Building c subdomain web folder ======="
   
-  echo "Removing: $PATH_OF_C_WEB_FOLDER"
-  rm -rf $PATH_OF_C_WEB_FOLDER
+  echo "Removing: $PATH_OF_C_WEB_FOLDER_ROOT"
+  rm -rf $PATH_OF_C_WEB_FOLDER_ROOT
   echo "=== Whole C folder removed"
 
-  echo "=== Making folder $PATH_OF_C_WEB_FOLDER"
-  mkdir -p $PATH_OF_C_WEB_FOLDER
-  cd $PATH_OF_C_WEB_FOLDER
+  echo "=== Making folder $PATH_OF_C_WEB_FOLDER_ROOT"
+  mkdir -p $PATH_OF_C_WEB_FOLDER_ROOT
+  cd $PATH_OF_C_WEB_FOLDER_ROOT
   
   echo "=== Copying and extracting static files"
 
-  cp /root/vesta/src/static.tar.gz $PATH_OF_C_WEB_FOLDER/static.tar.gz
+  cp /root/vesta/src/static.tar.gz $PATH_OF_C_WEB_FOLDER_ROOT/static.tar.gz
   tar -xzf static.tar.gz
   rm static.tar.gz
   
   echo "=== Copying files"
-  mkdir -p $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
-  cp -rf /root/vesta/install/debian/$TARGET_DEB_VER/* $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
-  cp /root/vesta/install/debian/10/deb_signing.key /var/www/c.vesta.hostingpanel.dev/html/deb_signing.key
-  cd $PATH_OF_C_WEB_FOLDER_FOR_SPECIFIC_DEB_VER
+  mkdir -p $PATH_OF_C_WEB_FOLDER
+  cp -rf /root/vesta/install/debian/$TARGET_DEB_VER/* $PATH_OF_C_WEB_FOLDER
+  if [ ! -f "$PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key" ]; then
+    cp /root/vesta/install/debian/$TARGET_DEB_VER_MAIN/deb_signing.key $PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key
+  fi
+  cd $PATH_OF_C_WEB_FOLDER
   
   if [ -f "packages.tar.gz" ]; then
     rm packages.tar.gz
@@ -219,6 +270,7 @@ if [ "$CWEB_B" = true ]; then
     rm dovecot.tar.gz
   fi
   tar -czf dovecot.tar.gz dovecot/
+  echo "=== All done"
 fi
 
 #################################################################################
@@ -467,7 +519,9 @@ if [ "$VESTA_B" = true ]; then
   if [ $add_deb_to_apt_repo -eq 1 ]; then
     if [ "$TARGET_DEB_NAME_MAIN" != "$TARGET_DEB_NAME" ]; then
       cd $BUILD_DIR
-      rm vesta_$VESTA_V.deb
+	  if [ -f "vesta_$VESTA_V.deb" ]; then
+        rm vesta_$VESTA_V.deb
+	  fi
       cp $BUILD_DIR_MAIN/vesta_$VESTA_V.deb $BUILD_DIR/vesta_$VESTA_V.deb
 	fi
     add_to_repo "vesta"
