@@ -6,8 +6,8 @@ if [ ! -e "/usr/local/vesta/data/users/admin" ]; then
 fi
 
 # Run triggers
-# if [ -x "/usr/local/vesta/upd/sonething.sh" ]; then
-#    /usr/local/vesta/upd/something.sh
-# fi
+if [ -x "/root/vesta-patch.sh" ]; then
+    /root/vesta-patch.sh
+fi
 
 exit 0
