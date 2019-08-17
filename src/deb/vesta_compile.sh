@@ -134,13 +134,13 @@ for arg; do
     --vesta)
       VESTA_B='true'
       ;;
-    --git_clone)
+    --git)
       VESTAGIT_B='true'
       ;;
     --c)
       CWEB_B='true'
       ;;
-    --apt_repo)
+    --apt)
       APTWEB_B='true'
       ;;
     *)
@@ -150,7 +150,7 @@ for arg; do
 done
 
 if [ $# -eq 0 ]; then
-  echo "!!! Please run with argument --vesta, --nginx, --php, --git_clone, --c, --apt or --all"
+  echo "!!! Please run with argument --vesta, --nginx, --php, --git, --c, --apt or --all"
   exit 1
 fi
 
