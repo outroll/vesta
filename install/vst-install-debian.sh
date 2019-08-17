@@ -636,11 +636,7 @@ fi
 #----------------------------------------------------------#
 
 # Update system packages
-if [ $ALLOW_INSECURE_APT -eq 1 ]; then
-  apt-get -o Acquire::AllowInsecureRepositories=true -o Acquire::AllowDowngradeToInsecureRepositories=true update
-else
-  apt-get update
-fi
+apt-get update
 
 # Disable daemon autostart /usr/share/doc/sysv-rc/README.policy-rc.d.gz
 echo -e '#!/bin/sh \nexit 101' > /usr/sbin/policy-rc.d
