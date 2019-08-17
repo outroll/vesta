@@ -5,7 +5,7 @@ MyVesta Control Panel
 * Focused on security and stability
 * Therefore, only Debian is supported - keeping focus on ONE eco-system - not wasting energy on compatibility with other Linux distributions
 * It will always be synchronized with official VestaCP commits
-* Youi can by all commercial plugins only on official vestacp.com - we will not take their earnings - we are not making this because of money
+* All VestaCP commercial plugins can be purchased only on official vestacp.com - we will not take their earnings - we are not making this because of money
 * Vesta is an open source hosting control panel.
 * Vesta has a clean and focused interface without the clutter.
 * Vesta has the latest of very innovative technologies.
