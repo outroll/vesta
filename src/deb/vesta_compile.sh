@@ -15,7 +15,7 @@ run_apt_update_and_install=1
 wait_to_press_enter=1
 
 ###############
-# Note: first run --apt_repo before turning add_deb_to_apt_repo=1
+# Note: first run --apt before turning add_deb_to_apt_repo=1
 
 if [ $# -gt 1 ]; then
     TARGET_DEB_NAME=$2
