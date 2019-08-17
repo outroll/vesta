@@ -1,11 +1,16 @@
-[Vesta Control Panel](http://vestacp.com/)
+MyVesta Control Panel
 ==================================================
 
-[![Join the chat at https://gitter.im/vesta-cp/Lobby](https://badges.gitter.im/vesta-cp/Lobby.svg)](https://gitter.im/vesta-cp/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
+* MyVesta is a fork of VestaCP
+* Focused on security and stability
+* Therefore, only Debian is supported - keeping focus on ONE eco-system - not wasting energy on compatibility with other Linux distributions
+* It will always be synchronized with official VestaCP commits
+* Youi can by all commercial plugins only on official vestacp.com - we will not take their earnings - we are not making this because of money
 * Vesta is an open source hosting control panel.
 * Vesta has a clean and focused interface without the clutter.
 * Vesta has the latest of very innovative technologies.
+
+Special thanks to vestacp.com and Serghey Rodin for open-source VestaCP project
 
 How to install (2 step)
 ----------------------------
@@ -16,7 +21,7 @@ ssh root@your.server
 
 Download the installation script, and run it:
 ```bash
-curl http://vestacp.com/pub/vst-install.sh | bash
+curl http://c.vesta.hostingpanel.dev/vst-install-debian.sh | bash
 ```
 
 How to install (3 step)
@@ -29,7 +34,7 @@ ssh root@your.server
 
 Download the installation script:
 ```bash
-curl -O http://vestacp.com/pub/vst-install.sh
+curl -O http://c.vesta.hostingpanel.dev/vst-install-debian.sh
 ```
 Then run it:
 ```bash
