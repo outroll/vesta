@@ -38,7 +38,7 @@ curl -O http://c.vesta.hostingpanel.dev/vst-install-debian.sh
 ```
 Then run it:
 ```bash
-bash vst-install.sh
+bash vst-install-debian.sh
 ```
 
 License
