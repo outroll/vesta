@@ -11,9 +11,6 @@ TARGET_DEB_NAME='buster'
 TARGET_DEB_VER='10'
 VESTA_VER='0.9.8-25'
 
-TARGET_DEB_NAME_MAIN='buster'
-TARGET_DEB_VER_MAIN='10'
-
 run_apt_update_and_install=1
 wait_to_press_enter=1
 
@@ -29,6 +26,9 @@ if [ $# -gt 2 ]; then
 fi
 
 MAINTAINER_EMAIL='predrag@hostingpanel.dev'
+
+TARGET_DEB_NAME_MAIN='buster'
+TARGET_DEB_VER_MAIN='10'
 
 # Set compiling directory
 BUILD_DIR="/usr/src/$TARGET_DEB_NAME"
