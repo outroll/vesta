@@ -250,7 +250,7 @@ if [ "$CWEB_B" = true ]; then
   
   echo "=== Copying files"
   mkdir -p $PATH_OF_C_WEB_FOLDER
-  cp -rf /root/vesta/install/debian/$TARGET_DEB_VER/* $PATH_OF_C_WEB_FOLDER
+  cp -rf /root/vesta/install/debian/* $PATH_OF_C_WEB_FOLDER_ROOT/debian
   if [ ! -f "$PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key" ]; then
     cp /root/vesta/install/debian/$TARGET_DEB_VER_MAIN/deb_signing.key $PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key
   fi
