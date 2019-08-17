@@ -838,6 +838,8 @@ sed -i "s/YOURHOSTNAME1/ns1.$servername/" /usr/local/vesta/data/packages/default
 sed -i "s/YOURHOSTNAME2/ns2.$servername/" /usr/local/vesta/data/packages/default.pkg
 sed -i "s/ns1.domain.tld/ns1.$servername/" /usr/local/vesta/data/packages/default.pkg
 sed -i "s/ns2.domain.tld/ns2.$servername/" /usr/local/vesta/data/packages/default.pkg
+sed -i "s/ns1.example.com/ns1.$servername/" /usr/local/vesta/data/packages/default.pkg
+sed -i "s/ns2.example.com/ns2.$servername/" /usr/local/vesta/data/packages/default.pkg
 
 # Copying index.html to default documentroot
 cp $VESTA/data/templates/web/skel/public_html/index.html /var/www/
