@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Autocompile Script for VestaCP deb Files.
+# Autocompile Script for VestaCP deb files - ver 1.0
 # Made for MyVesta fork.
 # Autocompile script borrowed from HestiaCP, special thanks to Raphael Schneeberger
 
@@ -8,7 +8,7 @@ build_deb_package=1
 add_deb_to_apt_repo=0
 
 TARGET_DEB_NAME='buster'
-DEB_VER='10'
+TARGET_DEB_VER='10'
 VESTA_VER='0.9.8-25'
 
 TARGET_DEB_NAME_MAIN='buster'
@@ -19,6 +19,14 @@ wait_to_press_enter=1
 
 ###############
 # Note: first run --apt_repo before turning add_deb_to_apt_repo=1
+
+if [ $# -gt 1 ]; then
+    TARGET_DEB_NAME=$2
+fi
+
+if [ $# -gt 2 ]; then
+    TARGET_DEB_VER=$3
+fi
 
 MAINTAINER_EMAIL='predrag@hostingpanel.dev'
 
@@ -71,6 +79,8 @@ function make_deb_package {
     rm $1_$VESTA_V.deb
   fi
   dpkg-deb --build $1_$VESTA_V
+  echo "=== Building done."
+  echo "=== Your .deb package is here: $BUILD_DIR/$1_$VESTA_V.deb"
 }
 
 function add_to_repo {  
@@ -209,7 +219,7 @@ EOF
     gpg --armor --export $MAINTAINER_EMAIL --output $MAINTAINER_EMAIL.gpg.key
     press_enter "*** please copy above generated key to your clipboard and then paste it after pressing enter now ***"
     vi $PATH_OF_APT_REPO_ROOT/deb_signing.key
-	cp $PATH_OF_APT_REPO_ROOT/deb_signing.key $PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key
+    cp $PATH_OF_APT_REPO_ROOT/deb_signing.key $PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key
   fi
 
   echo "=== All done"
