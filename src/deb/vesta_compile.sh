@@ -20,9 +20,14 @@ wait_to_press_enter=1
 if [ $# -gt 1 ]; then
     TARGET_DEB_NAME=$2
 fi
-
 if [ $# -gt 2 ]; then
     TARGET_DEB_VER=$3
+fi
+if [ $# -gt 3 ]; then
+    build_deb_package=$4
+fi
+if [ $# -gt 4 ]; then
+    add_deb_to_apt_repo=$5
 fi
 
 MAINTAINER_EMAIL='predrag@hostingpanel.dev'
