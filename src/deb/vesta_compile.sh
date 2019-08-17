@@ -281,6 +281,8 @@ if [ "$CWEB_B" = true ]; then
   fi
   tar -czf dovecot.tar.gz dovecot/
   echo "=== All done"
+  
+  cp /root/vesta/install/vst-install-debian.sh $PATH_OF_C_WEB_FOLDER_ROOT/vst-install-debian.sh
 fi
 
 #################################################################################
