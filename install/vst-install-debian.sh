@@ -43,7 +43,6 @@ elif [ "$release" -eq 9 ]; then
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
         unrar-free vim-common net-tools unzip"
-fi
 elif [ "$release" -eq 8 ]; then
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
