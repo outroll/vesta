@@ -12,8 +12,6 @@ Features
 
 + Support for Debian 10
 
-+ Apache is on mpm_event by default, PHP is running in PHP-FPM, which is the best PHP-stack solution
-
 + You can totally "lock" VestsCP so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
     + After installation just execute:
     + `echo "<?php \$login_url='MY-SECRET-URL';" > /usr/local/vesta/web/inc/login_url.php`
@@ -23,6 +21,10 @@ Features
       + https://github.com/myvesta/vesta/blob/master/web/inc/secure_login.php
 
 + We disabled dangerous PHP functions in php.ini, so even if customer's CMS was compromised, hacker will not be able to execute shell from PHP.
+
++ Apache is on mpm_event by default, PHP is running in PHP-FPM, which is the best PHP-stack solution
+
++ Support for multi-PHP versions - https://forum.vestacp.com/viewtopic.php?t=17129
 
 How to install
 ----------------------------
