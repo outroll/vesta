@@ -1140,7 +1140,6 @@ if [ "$exim" = 'yes' ]; then
 
     update-rc.d exim4 defaults
     service exim4 start
-    check_result $? "exim4 start failed"
 fi
 
 
@@ -1440,6 +1439,48 @@ $VESTA/upd/add_notifications.sh
 
 # Adding cronjob for autoupdates
 $VESTA/bin/v-add-cron-vesta-autoupdate
+
+
+#----------------------------------------------------------#
+#                   Custom work                            #
+#----------------------------------------------------------#
+
+echo "=== Installing additional PHP libs"
+if [ "$release" -eq 9 ]; then
+  apt-get -y install php7.0-apcu php7.0-mbstring php7.0-bcmath php7.0-curl php7.0-gd php7.0-intl php7.0-mcrypt php7.0-mysql php7.0-mysqlnd php7.0-pdo php7.0-soap php7.0-json php7.0-xml php7.0-zip php7.0-memcache php7.0-memcached php7.0-zip
+fi
+if [ "$release" -eq 10 ]; then
+  apt-get -y install php7.3-apcu php7.3-mbstring php7.3-bcmath php7.3-curl php7.3-gd php7.3-intl php7.3-mysql php7.3-mysqlnd php7.3-pdo php7.3-soap php7.3-json php7.3-xml php7.3-zip php7.3-memcache php7.3-memcached php7.3-zip
+fi
+
+touch /var/log/php-mail.log
+chmod a=rw /var/log/php-mail.log
+
+if [ "$release" -eq 9 ]; then
+  if [ $memory -lt 10000000 ]; then
+    echo "=== Patching php7.0-vps"
+    mkdir -p /root/vesta-temp-dl/vesta/patch
+    cp $vestacp/php/php7.0-vps.patch /root/vesta-temp-dl/vesta/patch/php7.0-vps.patch
+    patch -p1 --directory=/ < /root/vesta-temp-dl/vesta/patch/php7.0-vps.patch
+  fi
+  if [ $memory -gt 9999999 ]; then
+    echo "=== Patching php7.0-dedi"
+    mkdir -p /root/vesta-temp-dl/vesta/patch
+    cp $vestacp/php/php7.0-dedi.patch /root/vesta-temp-dl/vesta/patch/php7.0-dedi.patch
+    patch -p1 --directory=/ < /root/vesta-temp-dl/vesta/patch/php7.0-dedi.patch
+  fi
+fi
+if [ "$release" -eq 10 ]; then
+  if [ $memory -lt 10000000 ]; then
+    echo "=== Patching php7.3-vps"
+    patch /etc/php/7.3/fpm/php.ini < $vestacp/php/php7.3-vps.patch
+  fi
+  if [ $memory -gt 9999999 ]; then
+    echo "=== Patching php7.3-dedi"
+    patch /etc/php/7.3/fpm/php.ini < $vestacp/php/php7.3-dedi.patch
+  fi
+  service php7.3-fpm restart
+fi
 
 
 #----------------------------------------------------------#
