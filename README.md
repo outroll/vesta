@@ -14,7 +14,7 @@ Features
 + Support for Debian 10
 
 + You can totally "lock" VestsCP so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
-    + After installation just execute:
+    + After MyVesta installation just execute:
     + `echo "<?php \$login_url='MY-SECRET-URL';" > /usr/local/vesta/web/inc/login_url.php`
     + Literally no one PHP script will be alive before you access that URL, so even if there is some zero-day exploit - hacker will not be able to access it without knowing your secret URL. PHP scripts from VestaCP will be simlpy dead - nothing will interact with someone who don't know your secret-URL.
     + You can see how mechanism was built by looking at:
@@ -26,6 +26,11 @@ Features
 + Apache is fully switched to mpm_event mode, PHP is running in PHP-FPM, which is the most stable PHP-stack solution
 
 + Support for multi-PHP versions - https://forum.vestacp.com/viewtopic.php?t=17129
+
++ You can compile Vesta binaries by yourself - https://github.com/myvesta/vesta/blob/master/src/deb/vesta_compile.sh
+    + You can even create your own APT repositorium in a minute
+    + We are using latest nginx version for vesta-nginx package
+    + With your own APT infrastructure you can take a security of Vesta-installer infrastructure in your own hands, you have full control of your Vesta code
 
 How to install
 ----------------------------
