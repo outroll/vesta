@@ -5,8 +5,8 @@ MyVesta Control Panel
 * Focused on security and stability
 * Therefore, only Debian is supported - keeping focus on ONE eco-system - not wasting energy on compatibility with other Linux distributions
 * It will always be synchronized with official VestaCP commits
-* All VestaCP commercial plugins can be purchased only on official vestacp.com - we will not take their earnings - we are not making this fork because of money - but because a freedom to enhance security and features
-* All features that is added here will be offered to official VestaCP through pull-requests
+* VestaCP commercial plugins will be still only available for purchase on official vestacp.com website - we will NOT take their earnings, since we are not making this fork for monetary reasons. Instead, we are doing this with open source in mind - to enhance security and to build new features, without being interlocked with official VestaCP release cycles, and without affecting or heavily diverting from the VestaCP's planned development milestones
+* With previous in mind, all features that are added in this fork, will be offered to official VestaCP through pull-request mechanisms
 
 Features
 ==================================================
@@ -16,14 +16,14 @@ Features
 + You can totally "lock" VestsCP so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
     + After MyVesta installation just execute:
     + `echo "<?php \$login_url='MY-SECRET-URL';" > /usr/local/vesta/web/inc/login_url.php`
-    + Literally no one PHP script will be alive before you access that URL, so even if there is some zero-day exploit - hacker will not be able to access it without knowing your secret URL. PHP scripts from VestaCP will be simlpy dead - nothing will interact with someone who don't know your secret-URL.
-    + You can see how mechanism was built by looking at:
+    + Literally no PHP scripts will be alive (won't be able to get executed), unless you access the URL with that parameter. Thus, when it happens that, let's say, some zero-day exploit pops up - hacker will not be able to access it without knowing your secret URL. PHP scripts from VestaCP will be simply dead - noone will be able to interact with your panel unless he has the secret URL.
+    + You can see for yourself how mechanism was built by looking at:
       + https://github.com/myvesta/vesta/blob/master/src/deb/for-download/php/php.ini#L496
       + https://github.com/myvesta/vesta/blob/master/web/inc/secure_login.php
 
-+ We disabled dangerous PHP functions in php.ini, so even if customer's CMS was compromised, hacker will not be able to execute shell from PHP.
++ We disabled dangerous PHP functions in php.ini, so even if, for example, customer's CMS gets compromised, hacker will not be able to execute shell scripts from PHP.
 
-+ Apache is fully switched to mpm_event mode, PHP is running in PHP-FPM, which is the most stable PHP-stack solution
++ Apache is fully switched to mpm_event mode, while PHP is running in PHP-FPM, which is the most stable PHP-stack solution
     + OPCache is turned on by default
 
 + Support for multi-PHP versions - https://forum.vestacp.com/viewtopic.php?t=17129
@@ -31,7 +31,7 @@ Features
 + You can compile Vesta binaries by yourself - https://github.com/myvesta/vesta/blob/master/src/deb/vesta_compile.sh
     + You can even create your own APT repositorium in a minute
     + We are using latest nginx version for vesta-nginx package
-    + With your own APT infrastructure you can take a security of Vesta-installer infrastructure in your own hands, you have full control of your Vesta code
+    + With your own APT infrastructure you can take a security of Vesta-installer infrastructure in your own hands, you have full control of your Vesta code (this way you can rest assured that there's 0% chance that you'll install malicious packages from repositories that may get hacked)
 
 How to install
 ----------------------------
