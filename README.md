@@ -5,7 +5,8 @@ MyVesta Control Panel
 * Focused on security and stability
 * Therefore, only Debian is supported - keeping focus on ONE eco-system - not wasting energy on compatibility with other Linux distributions
 * It will always be synchronized with official VestaCP commits
-* All VestaCP commercial plugins can be purchased only on official vestacp.com - we will not take their earnings - we are not making this because of money
+* All VestaCP commercial plugins can be purchased only on official vestacp.com - we will not take their earnings - we are not making this fork because of money - but because a freedom to enhance security and features
+* All features that is added here will be offered to official VestaCP through pull-requests
 
 Features
 ==================================================
