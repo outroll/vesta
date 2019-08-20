@@ -10,12 +10,14 @@ MyVesta Control Panel
 Features
 ==================================================
 
-+ Apache is on mpm_event by default, PHP is running in PHP-FPM
++ Support for Debian 10
+
++ Apache is on mpm_event by default, PHP is running in PHP-FPM, which is the best PHP-stack solution
 
 + You can totally "lock" VestsCP so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
     + After installation just execute:
     + `echo "<?php \$login_url='MY-SECRET-URL';" > /usr/local/vesta/web/inc/login_url.php`
-    + Literally no one PHP script will be alive before you access that URL, so even if there is some zero-day exploit - hacker will not be able to access it without knowing your secret URL.
+    + Literally no one PHP script will be alive before you access that URL, so even if there is some zero-day exploit - hacker will not be able to access it without knowing your secret URL. PHP scripts from VestaCP will be simlpy dead - nothing will interact with someone who don't know your secret-URL.
     + You can see how mechanism was built by looking at:
       + https://github.com/myvesta/vesta/blob/master/src/deb/php/php.ini#L496
       + https://github.com/myvesta/vesta/blob/master/web/inc/secure_login.php
