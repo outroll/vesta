@@ -24,6 +24,7 @@ Features
 + We disabled dangerous PHP functions in php.ini, so even if customer's CMS was compromised, hacker will not be able to execute shell from PHP.
 
 + Apache is fully switched to mpm_event mode, PHP is running in PHP-FPM, which is the most stable PHP-stack solution
+    + OPCache is turned on by default
 
 + Support for multi-PHP versions - https://forum.vestacp.com/viewtopic.php?t=17129
 
