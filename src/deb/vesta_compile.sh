@@ -127,8 +127,8 @@ for arg; do
       PHP_B='true'
       VESTA_B='true'
       VESTAGIT_B='true'
-	  CWEB_B='true'
-	  APTWEB_B='true'
+      CWEB_B='true'
+      APTWEB_B='true'
       ;;
     --nginx)
       NGINX_B='true'
@@ -138,6 +138,9 @@ for arg; do
       ;;
     --vesta)
       VESTA_B='true'
+      ;;
+    --git)
+      VESTAGIT_B='true'
       ;;
     --git)
       VESTAGIT_B='true'
@@ -175,6 +178,15 @@ if [ $build_deb_package -eq 1 ]; then
   if [ "$NGINX_B" = true ]; then
     VESTAGIT_B='true'
   fi
+  
+  if [ "$CWEB_B" = true ]; then
+    if [ $# -gt 1 ]; then
+      if [ $2 = "--nogit" ]; then
+        VESTAGIT_B='false'
+      fi
+    fi
+  fi
+
 fi
 
 if [ ! -d "$BUILD_DIR" ]; then
@@ -310,10 +322,10 @@ if [ "$NGINX_B" = true ]; then
       
       press_enter "=== Press enter to download and unpack source files"
     
-	  rm -rf nginx-$NGINX_V
-	  rm -rf openssl-$OPENSSL_V
-	  rm -rf pcre-$PCRE_V
-	  rm -rf zlib-$ZLIB_V
+      rm -rf nginx-$NGINX_V
+      rm -rf openssl-$OPENSSL_V
+      rm -rf pcre-$PCRE_V
+      rm -rf zlib-$ZLIB_V
       wget -nv -qO- $NGINX | tar xz
       wget -nv -qO- $OPENSSL | tar xz
       wget -nv -qO- $PCRE | tar xz
@@ -323,20 +335,20 @@ if [ "$NGINX_B" = true ]; then
       cd nginx-$NGINX_V
       
       press_enter "=== Press enter to configure nginx"
-      ./configure 	--prefix=$INSTALL_DIR/nginx \
-      		--with-http_ssl_module \
-      		--with-openssl=../openssl-$OPENSSL_V \
-      		--with-openssl-opt=enable-ec_nistp_64_gcc_128 \
-      		--with-openssl-opt=no-nextprotoneg \
-      		--with-openssl-opt=no-weak-ssl-ciphers \
-      		--with-openssl-opt=no-ssl3 \
-      		--with-pcre=../pcre-$PCRE_V \
-      	        --with-pcre-jit \
-      		--with-zlib=../zlib-$ZLIB_V
+      ./configure     --prefix=$INSTALL_DIR/nginx \
+              --with-http_ssl_module \
+              --with-openssl=../openssl-$OPENSSL_V \
+              --with-openssl-opt=enable-ec_nistp_64_gcc_128 \
+              --with-openssl-opt=no-nextprotoneg \
+              --with-openssl-opt=no-weak-ssl-ciphers \
+              --with-openssl-opt=no-ssl3 \
+              --with-pcre=../pcre-$PCRE_V \
+                  --with-pcre-jit \
+              --with-zlib=../zlib-$ZLIB_V
       
       # Check install directory and remove if exists
       if [ -d $INSTALL_DIR/nginx ]; then
-      	rm -rf $INSTALL_DIR/nginx
+          rm -rf $INSTALL_DIR/nginx
       fi
       
       press_enter "=== Press enter to make && make install"
@@ -405,10 +417,10 @@ if [ "$PHP_B" = true ]; then
     BUILDING_NOW=0
     # Check if target directory exist
     if [ ! -d "$BUILD_DIR/php-$PHP_V" ] || [ ! -d "$INSTALL_DIR/nginx" ]; then
-	  BUILDING_NOW=1
+      BUILDING_NOW=1
       
       echo "=== Download and unpack source files"
-	  rm -rf php-$PHP_V
+      rm -rf php-$PHP_V
       wget -nv -qO- $PHP | tar xz
       
       echo "=== Change to php directory php-$PHP_V"
@@ -429,7 +441,7 @@ if [ "$PHP_B" = true ]; then
       
       # Check install directory and remove if exists
       if [ -d $INSTALL_DIR/php ]; then
-      	rm -rf $INSTALL_DIR/php
+          rm -rf $INSTALL_DIR/php
       fi
     
       press_enter "=== Press enter to create the files and install them ==============================================================================="
@@ -498,7 +510,7 @@ if [ "$VESTA_B" = true ]; then
     
     # Check if target directory exist
     if [ -d $BUILD_DIR/vesta_$VESTA_V ]; then
-    	rm -rf $BUILD_DIR/vesta_$VESTA_V
+        rm -rf $BUILD_DIR/vesta_$VESTA_V
     fi
     
     # Create directory
@@ -532,11 +544,11 @@ if [ "$VESTA_B" = true ]; then
   if [ $add_deb_to_apt_repo -eq 1 ]; then
     if [ "$TARGET_DEB_NAME_MAIN" != "$TARGET_DEB_NAME" ]; then
       cd $BUILD_DIR
-	  if [ -f "vesta_$VESTA_V.deb" ]; then
+      if [ -f "vesta_$VESTA_V.deb" ]; then
         rm vesta_$VESTA_V.deb
-	  fi
+      fi
       cp $BUILD_DIR_MAIN/vesta_$VESTA_V.deb $BUILD_DIR/vesta_$VESTA_V.deb
-	fi
+    fi
     add_to_repo "vesta"
   fi
 
