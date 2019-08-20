@@ -1,28 +1,30 @@
 <?php
 
-$login_url_skip=0;
-if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web/reset/mail/index.php') $login_url_skip=1;
-if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web//reset/mail/index.php') $login_url_skip=1;
-if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web/reset/mail/set-ar.php') $login_url_skip=1;
-if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web//reset/mail/set-ar.php') $login_url_skip=1;
-if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web/reset/mail/get-ar.php') $login_url_skip=1;
-if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web//reset/mail/get-ar.php') $login_url_skip=1;
-if (substr($_SERVER['SCRIPT_FILENAME'], 0, 21)=='/usr/local/vesta/bin/') $login_url_skip=1;
+$skip_login_url_check=0;
+if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web/reset/mail/index.php') $skip_login_url_check=1; // it's accessible only from localhost
+if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web//reset/mail/index.php') $skip_login_url_check=1;
 
-if ($login_url_skip==0) {
+if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web/reset/mail/set-ar.php') $skip_login_url_check=1; // commercial addon for changing auto-reply from Roundcube, not included in this fork, also accessible only from localhost
+if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web//reset/mail/set-ar.php') $skip_login_url_check=1;
+if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web/reset/mail/get-ar.php') $skip_login_url_check=1;
+if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web//reset/mail/get-ar.php') $skip_login_url_check=1;
+
+if (substr($_SERVER['SCRIPT_FILENAME'], 0, 21)=='/usr/local/vesta/bin/') $skip_login_url_check=1; // allow executing PHP scripts from v-* bash scripts
+
+if ($skip_login_url_check==0) {
     if (!isset($login_url_loaded)) {
         $login_url_loaded=1;
         if (file_exists('/usr/local/vesta/web/inc/login_url.php')) {
-            require_once('/usr/local/vesta/web/inc/login_url.php');
-            if (isset($_GET[$login_url])) {
+            require_once('/usr/local/vesta/web/inc/login_url.php'); // get secret url
+            if (isset($_GET[$login_url])) {                         // check if user opened secret url
                 $Domain=$_SERVER['HTTP_HOST'];
                 $Port = strpos($Domain, ':');
                 if ($Port !== false)  $Domain = substr($Domain, 0, $Port);
-                setcookie($login_url, '1', time() + 31536000, '/', $Domain, true);
+                setcookie($login_url, '1', time() + 31536000, '/', $Domain, true); // set secret cookie
                 header ("Location: /login/");
                 exit;
             }
-            if (!isset($_COOKIE[$login_url])) exit;
+            if (!isset($_COOKIE[$login_url])) exit; // die if secret cookie is not set
         }
     }
 }
