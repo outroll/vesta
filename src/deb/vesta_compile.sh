@@ -357,8 +357,6 @@ if [ "$NGINX_B" = true ]; then
     press_enter "=== Press enter to Download control, postinst and postrm files"
     # Copying control, postinst and postrm files
     cp -rf /root/vesta/src/deb/nginx/* $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN
-    rm $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/nginx.conf
-    rm $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/vesta
     
     # Set version
     sed -i "/Version: /c\Version: $VESTA_VER" $BUILD_DIR/vesta-nginx_$VESTA_V/DEBIAN/control
@@ -371,12 +369,12 @@ if [ "$NGINX_B" = true ]; then
     
     echo "=== Get Service File"
     cd $BUILD_DIR/vesta-nginx_$VESTA_V/etc/init.d
-    cp /root/vesta/src/deb/nginx/vesta vesta
+    cp /root/vesta/src/deb/for-download/nginx/vesta vesta
     chmod +x vesta
     
     echo "=== Get nginx.conf"
     cd $BUILD_DIR/vesta-nginx_$VESTA_V
-    cp /root/vesta/src/deb/nginx/nginx.conf $BUILD_DIR/vesta-nginx_$VESTA_V/usr/local/vesta/nginx/conf/nginx.conf
+    cp /root/vesta/src/deb/for-download/nginx/nginx.conf $BUILD_DIR/vesta-nginx_$VESTA_V/usr/local/vesta/nginx/conf/nginx.conf
     
     # if [ $BUILDING_NOW -eq 1 ]; then
     echo "=== copy binary"
@@ -454,8 +452,6 @@ if [ "$PHP_B" = true ]; then
     
     # Copying control, postinst and postrm files
     cp -rf /root/vesta/src/deb/php/* $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN
-    rm $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/php-fpm.conf
-    rm $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/php.ini
     
     # Set version
     sed -i "/Version: /c\Version: $VESTA_VER" $BUILD_DIR/vesta-php_$VESTA_V/DEBIAN/control
@@ -473,8 +469,8 @@ if [ "$PHP_B" = true ]; then
     # fi
     
     echo "=== Get php-fpm.conf"
-    cp /root/vesta/src/deb/php/php-fpm.conf $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/etc/php-fpm.conf
-    cp /root/vesta/src/deb/php/php.ini $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/lib/php.ini
+    cp /root/vesta/src/deb/for-download/php/php-fpm.conf $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/etc/php-fpm.conf
+    cp /root/vesta/src/deb/for-download/php/php.ini $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/lib/php.ini
     
     echo "=== copy binary"
     cp $INSTALL_DIR/php/sbin/php-fpm $BUILD_DIR/vesta-php_$VESTA_V/usr/local/vesta/php/sbin/vesta-php
