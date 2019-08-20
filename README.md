@@ -22,35 +22,8 @@ Features
 
 + We disabled dangerous PHP functions in php.ini, so even if customer's CMS was compromised, hacker will not be able to execute shell from PHP.
 
-About VestaCP
-==================================================
-
-* Vesta is an open source hosting control panel.
-* Vesta has a clean and focused interface without the clutter.
-* Vesta has the latest of very innovative technologies.
-
-Special thanks to vestacp.com and Serghey Rodin for open-source VestaCP project
-
-How to install (2 step)
+How to install
 ----------------------------
-Connect to your server as root via SSH
-```bash
-ssh root@your.server
-```
-
-Download the installation script, and run it:
-```bash
-curl http://c.vesta.hostingpanel.dev/vst-install-debian.sh | bash
-```
-
-How to install (3 step)
-----------------------------
-If the above example does not work, try this 3 step method:
-Connect to your server as root via SSH
-```bash
-ssh root@your.server
-```
-
 Download the installation script:
 ```bash
 curl -O http://c.vesta.hostingpanel.dev/vst-install-debian.sh
@@ -59,6 +32,15 @@ Then run it:
 ```bash
 bash vst-install-debian.sh
 ```
+
+About VestaCP
+==================================================
+
+* Vesta is an open source hosting control panel.
+* Vesta has a clean and focused interface without the clutter.
+* Vesta has the latest of very innovative technologies.
+
+Special thanks to vestacp.com and Serghey Rodin for open-source VestaCP project
 
 License
 ----------------------------
