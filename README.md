@@ -22,7 +22,7 @@ Features
 
 + We disabled dangerous PHP functions in php.ini, so even if customer's CMS was compromised, hacker will not be able to execute shell from PHP.
 
-+ Apache is on mpm_event by default, PHP is running in PHP-FPM, which is the best PHP-stack solution
++ Apache is fully switched to mpm_event mode, PHP is running in PHP-FPM, which is the most stable PHP-stack solution
 
 + Support for multi-PHP versions - https://forum.vestacp.com/viewtopic.php?t=17129
 
