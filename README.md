@@ -21,7 +21,7 @@ Features
       + https://github.com/myvesta/vesta/blob/master/src/deb/for-download/php/php.ini#L496
       + https://github.com/myvesta/vesta/blob/master/web/inc/secure_login.php
 
-+ We disabled dangerous PHP functions in php.ini, so even if, for example, customer's CMS gets compromised, hacker will not be able to execute shell scripts from PHP.
++ We disabled dangerous PHP functions in php.ini, so even if, for example, customer's CMS gets compromised, hacker will not be able to execute "shell" from PHP.
 
 + Apache is fully switched to mpm_event mode, while PHP is running in PHP-FPM, which is the most stable PHP-stack solution
     + OPCache is turned on by default
