@@ -9,7 +9,7 @@ if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web//reset/mail/set-ar.php') 
 if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web/reset/mail/get-ar.php') $skip_login_url_check=1;
 if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web//reset/mail/get-ar.php') $skip_login_url_check=1;
 
-if (substr($_SERVER['SCRIPT_FILENAME'], 0, 21)=='/usr/local/vesta/bin/') $skip_login_url_check=1; // allow executing v-* PHP scripts
+if (substr($_SERVER['SCRIPT_FILENAME'], 0, 21)=='/usr/local/vesta/bin/') $skip_login_url_check=1; // allow executing v-* PHP scripts from bash
 
 if ($skip_login_url_check==0) {
     if (!isset($login_url_loaded)) {
