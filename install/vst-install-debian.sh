@@ -1482,16 +1482,38 @@ if [ "$release" -eq 10 ]; then
   service php7.3-fpm restart
 fi
 
+# Comparing hostname and ip
+make_ssl=0
+host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
+if [ "$host_ip" = "$ip" ]; then
+    ip="$servername"
+    make_ssl=1
+fi
+
+# Generating LE SSL
+www_host="www.$servername"
+www_host_ip=$(host $www_host | head -n 1 | awk '{print $NF}')
+if [ "$www_host_ip" != "$ip" ]; then
+    echo "=== Deleting www to server hostname"
+    v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
+    v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
+    www_host=""
+fi
+
+echo "Hostname $servername is pointing to $host_ip"
+
+if [ $make_ssl -eq 1 ]; then
+    echo "=== Generating HOSTNAME SSL"
+    v-add-letsencrypt-domain 'admin' "$servername" "$www_host" 'yes'
+    v-update-host-certificate 'admin' "$servername"
+else
+    echo "=== We will not generate SSL because of this"
+fi
+echo "UPDATE_HOSTNAME_SSL='yes'" >> /usr/local/vesta/conf/vesta.conf
 
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
 #----------------------------------------------------------#
-
-# Comparing hostname and ip
-host_ip=$(host $servername| head -n 1 | awk '{print $NF}')
-if [ "$host_ip" = "$ip" ]; then
-    ip="$servername"
-fi
 
 # Sending notification to admin email
 echo -e "Congratulations, you have just successfully installed \
