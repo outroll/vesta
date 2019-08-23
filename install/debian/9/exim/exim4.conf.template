@@ -4,9 +4,9 @@
 #                                                                    #
 ######################################################################
 
-SPAMASSASSIN = yes
-SPAM_SCORE = 50
-CLAMD =  yes
+#SPAMASSASSIN = yes
+#SPAM_SCORE = 50
+#CLAMD =  yes
 
 disable_ipv6=true
 add_environment=<; PATH=/bin:/usr/bin
