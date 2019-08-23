@@ -93,6 +93,7 @@ if (!empty($_POST['ok'])) {
             $mailtext = _translate($_POST['v_language'],'GREETINGS');
         }
         $mailtext .= _translate($_POST['v_language'],'ACCOUNT_READY',$_SERVER['HTTP_HOST'],$_POST['v_username'],$_POST['v_password']);
+        if (isset($login_url)) $mailtext=str_replace('/login/', '/?'.$login_url, $mailtext);
         send_email($to, $subject, $mailtext, $from);
     }
 
