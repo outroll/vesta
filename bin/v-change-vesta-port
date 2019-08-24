@@ -15,23 +15,19 @@ if [ -z "$VESTA" ]; then
     VESTA="/usr/local/vesta"
 fi
 
-if [ ! -f "$VESTA/conf/port.conf" ]; then
+# Get current vesta port by reading nginx.conf
+oldport=$(grep 'listen' $VESTA/nginx/conf/nginx.conf | awk '{print $2}' | sed "s|;||")
+if [ -z "$oldport" ]; then
     oldport=8083
-else
-    oldport=`cat $VESTA/conf/port.conf`
 fi
-
-# Includes
-source $VESTA/func/main.sh
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-whoami=$(whoami)
-if [ "$whoami" != "root" ] && [ "$whoami" != "admin" ] ; then
-    echo "You must be root or admin to execute this script";
-    exit 1;
+# Checking permissions
+if [ "$(id -u)" != '0' ]; then
+    check_result $E_FORBIDEN "You must be root to execute this script"
 fi
 
 check_args '1' "$#" 'PORT'
