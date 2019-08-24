@@ -83,6 +83,8 @@ help() {
   -s, --hostname          Set hostname
   -e, --email             Set admin email
   -p, --password          Set admin password
+  -u, --secret_url        Set secret url for hosting panel
+  -1, --port              Set Vesta port
   -f, --force             Force installation
   -h, --help              Print this help
 
@@ -170,6 +172,8 @@ for arg; do
         --interactive)          args="${args}-y " ;;
         --hostname)             args="${args}-s " ;;
         --email)                args="${args}-e " ;;
+        --secret_url)           args="${args}-u " ;;
+        --port)                 args="${args}-1 " ;;
         --password)             args="${args}-p " ;;
         --force)                args="${args}-f " ;;
         --help)                 args="${args}-h " ;;
@@ -204,6 +208,8 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
         y) interactive=$OPTARG ;;       # Interactive install
         s) servername=$OPTARG ;;        # Hostname
         e) email=$OPTARG ;;             # Admin email
+        e) secret_url=$OPTARG ;;        # Secret URL for hosting panel
+        e) port=$OPTARG ;;              # Vesta port
         p) vpass=$OPTARG ;;             # Admin password
         f) force='yes' ;;               # Force install
         h) help ;;                      # Help
@@ -411,6 +417,16 @@ if [ "$interactive" = 'yes' ]; then
         read -p 'Please enter admin email address: ' email
     fi
 
+    # Asking for secret URL
+    if [ -z "$secret_url" ]; then
+        read -p 'Please enter secret URL address for hosting panel (press enter for none): ' secret_url
+    fi
+
+    # Asking for Vesta port
+    if [ -z "$port" ]; then
+        read -p 'Please enter Vesta port number (press enter for 8083): ' port
+    fi
+
     # Asking to set FQDN hostname
     if [ -z "$servername" ]; then
         read -p "Please enter FQDN hostname [$(hostname)]: " servername
@@ -442,6 +458,11 @@ fi
 # Set email if it wasn't set
 if [ -z "$email" ]; then
     email="admin@$servername"
+fi
+
+# Set port if it wasn't set
+if [ -z "$port" ]; then
+    port="8083"
 fi
 
 # Defining backup directory
@@ -1496,8 +1517,8 @@ www_host="www.$servername"
 www_host_ip=$(host $www_host | head -n 1 | awk '{print $NF}')
 if [ "$www_host_ip" != "$ip" ]; then
     echo "=== Deleting www to server hostname"
-    v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
-    v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
+    $VESTA/bin/v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
+    $VESTA/bin/v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
     www_host=""
 fi
 
@@ -1505,12 +1526,23 @@ echo "Hostname $servername is pointing to $host_ip"
 
 if [ $make_ssl -eq 1 ]; then
     echo "=== Generating HOSTNAME SSL"
-    v-add-letsencrypt-domain 'admin' "$servername" "$www_host" 'yes'
-    v-update-host-certificate 'admin' "$servername"
+    $VESTA/bin/v-add-letsencrypt-domain 'admin' "$servername" "$www_host" 'yes'
+    $VESTA/bin/v-update-host-certificate 'admin' "$servername"
 else
     echo "=== We will not generate SSL because of this"
 fi
-echo "UPDATE_HOSTNAME_SSL='yes'" >> /usr/local/vesta/conf/vesta.conf
+echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
+
+# Secret URL
+secretquery=''
+if [ ! -z "$secret_url" ]; then
+    echo "<?php \$login_url='$secret_url';" > $VESTA/web/inc/login_url.php
+    secretquery="?$secret_url"
+fi
+
+if [ "$port" != "8083" ]; then
+    $VESTA/bin/v-change-vesta-port $port
+fi
 
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
@@ -1520,7 +1552,7 @@ echo "UPDATE_HOSTNAME_SSL='yes'" >> /usr/local/vesta/conf/vesta.conf
 echo -e "Congratulations, you have just successfully installed \
 Vesta Control Panel
 
-    https://$ip:8083
+    https://$ip:$port/$secret_url
     username: admin
     password: $vpass
 
@@ -1533,8 +1565,8 @@ Sincerely yours
 vestacp.com team
 " > $tmpfile
 
-# send_mail="$VESTA/web/inc/mail-wrapper.php"
-# cat $tmpfile | $send_mail -s "Vesta Control Panel" $email
+send_mail="$VESTA/web/inc/mail-wrapper.php"
+cat $tmpfile | $send_mail -s "Vesta Control Panel" $email
 
 # Congrats
 echo '======================================================='
