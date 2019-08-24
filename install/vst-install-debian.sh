@@ -1372,10 +1372,10 @@ if [ "$apache" = 'yes' ] && [ "$nginx"  = 'yes' ] ; then
 fi
 
 # Configuring mysql host
-if [ "$mysql" = 'yes' ]; then
-    $VESTA/bin/v-add-database-host mysql localhost root $mpass
-    # $VESTA/bin/v-add-database admin default default $(gen_pass) mysql
-fi
+# if [ "$mysql" = 'yes' ]; then
+#     $VESTA/bin/v-add-database-host mysql localhost root $mpass
+#     # $VESTA/bin/v-add-database admin default default $(gen_pass) mysql
+# fi
 
 # Configuring pgsql host
 if [ "$postgresql" = 'yes' ]; then
