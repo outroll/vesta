@@ -11,8 +11,12 @@
 # Argument definition
 port=$1
 
+if [ -z "$VESTA" ]; then
+    VESTA="/usr/local/vesta"
+fi
+
 # Get current vesta port by reading nginx.conf
-oldport=$(grep 'listen' /usr/local/vesta/nginx/conf/nginx.conf | awk '{print $2}' | sed "s|;||")
+oldport=$(grep 'listen' $VESTA/nginx/conf/nginx.conf | awk '{print $2}' | sed "s|;||")
 if [ -z "$oldport" ]; then
     oldport=8083
 fi
