@@ -1552,7 +1552,7 @@ fi
 echo -e "Congratulations, you have just successfully installed \
 Vesta Control Panel
 
-    https://$ip:$port/$secret_url
+    https://$ip:$port/$secretquery
     username: admin
     password: $vpass
 
