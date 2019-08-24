@@ -30,6 +30,8 @@ Features
 
 + Auto-generating LetsEncrypt SSL for server hostname (signed SSL for Vesta 8083 port, for dovecot (IMAP & POP3) and for Exim (SMTP))
 
++ Changing Vesta port using one command line: **v-change-vesta-port [number]**
+
 + You can compile Vesta binaries by yourself - https://github.com/myvesta/vesta/blob/master/src/deb/vesta_compile.sh
     + You can even create your own APT repositorium in a minute
     + We are using latest nginx version for vesta-nginx package
