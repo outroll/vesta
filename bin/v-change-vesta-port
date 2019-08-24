@@ -2,11 +2,30 @@
 # info: change vesta port
 # options: port
 #
-# Function change vesta port
-
+# Function will change vesta port
 
 #----------------------------------------------------------#
-#              Variable & Verifications                    #
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+port=$1
+
+if [ -z "$VESTA" ]; then
+    VESTA="/usr/local/vesta"
+fi
+
+if [ ! -f "$VESTA/conf/port.conf" ]; then
+    oldport=8083
+else
+    oldport=`cat $VESTA/conf/port.conf`
+fi
+
+# Includes
+source $VESTA/func/main.sh
+
+#----------------------------------------------------------#
+#                    Verifications                         #
 #----------------------------------------------------------#
 
 whoami=$(whoami)
@@ -15,26 +34,8 @@ if [ "$whoami" != "root" ] && [ "$whoami" != "admin" ] ; then
     exit 1;
 fi
 
-if [ -z "$VESTA" ]; then
-    VESTA="/usr/local/vesta"
-fi
-
-# Includes
-source $VESTA/func/main.sh
-
-# Argument definition
-port=$1
-
-re='^[0-9]+$'
-if ! [[ $port =~ $re ]] ; then
-    echo "error: Not a number" >&2; exit 1
-fi
-
-if [ ! -f "$VESTA/conf/port.conf" ]; then
-    oldport=8083
-else
-    oldport=`cat $VESTA/conf/port.conf`
-fi
+check_args '1' "$#" 'PORT'
+is_int_format_valid "$port" 'port number'
 
 #----------------------------------------------------------#
 #                       Action                             #
