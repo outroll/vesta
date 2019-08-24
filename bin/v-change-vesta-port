@@ -33,9 +33,11 @@ else
     oldport=`cat $VESTA/conf/port.conf`
 fi
 
-sed -i "s|$oldport;|$port;|g" /usr/local/vesta/nginx/conf/nginx.conf
-sed -i "s|'$oldport'|'$port'|g" /etc/roundcube/plugins/password/config.inc.php
-sed -i "s|'$oldport'|'$port'|g" /usr/local/vesta/data/firewall/rules.conf
+sed -i "s|$oldport;|$port;|g" $VESTA/nginx/conf/nginx.conf
+if [ -f "/etc/roundcube/plugins/password/config.inc.php" ]; then
+    sed -i "s|'$oldport'|'$port'|g" /etc/roundcube/plugins/password/config.inc.php
+fi
+sed -i "s|'$oldport'|'$port'|g" $VESTA/data/firewall/rules.conf
 $VESTA/bin/v-update-firewall
 systemctl restart fail2ban.service
 systemctl restart vesta
