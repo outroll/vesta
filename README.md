@@ -14,11 +14,13 @@ Features
 + Support for Debian 10 (previous releases are also supported)
 
 + You can totally "lock" VestaCP so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
-    + During installation you will be asked for secret URL for your hosting panel
+    + During installation you will be asked to choose secret URL for your hosting panel
     + Literally no PHP scripts will be alive (won't be able to get executed), unless you access the URL with that parameter. Thus, when it happens that, let's say, some zero-day exploit pops up - hacker will not be able to access it without knowing your secret URL. PHP scripts from VestaCP will be simply dead - no one will be able to interact with your panel unless he has the secret URL.
     + You can see for yourself how mechanism was built by looking at:
       + https://github.com/myvesta/vesta/blob/master/src/deb/for-download/php/php.ini#L496
       + https://github.com/myvesta/vesta/blob/master/web/inc/secure_login.php
+    + If you didn't set secret URL during installation, you can do it anytime, just execute in SSH:
+    + `echo "<?php \$login_url='MY-SECRET-URL';" > /usr/local/vesta/web/inc/login_url.php`
 
 + We disabled dangerous PHP functions in php.ini, so even if, for example, customer's CMS gets compromised, hacker will not be able to execute "shell" from PHP.
 
@@ -29,7 +31,7 @@ Features
 
 + Auto-generating LetsEncrypt SSL for server hostname (signed SSL for Vesta 8083 port, for dovecot (IMAP & POP3) and for Exim (SMTP))
 
-+ Changing Vesta port during installation or later using one command line: **v-change-vesta-port [number]**
++ You can change Vesta port during installation or later using one command line: **v-change-vesta-port [number]**
 
 + You can compile Vesta binaries by yourself - https://github.com/myvesta/vesta/blob/master/src/deb/vesta_compile.sh
     + You can even create your own APT repositorium in a minute
