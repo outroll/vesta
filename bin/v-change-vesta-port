@@ -49,8 +49,6 @@ $VESTA/bin/v-update-firewall
 systemctl restart fail2ban.service
 systemctl restart vesta
 
-echo "$port" > $VESTA/conf/port.conf
-
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
