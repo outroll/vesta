@@ -1536,13 +1536,20 @@ echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
 # Secret URL
 secretquery=''
 if [ ! -z "$secret_url" ]; then
+    echo "=== Set secret URL: $secret_url"
     echo "<?php \$login_url='$secret_url';" > $VESTA/web/inc/login_url.php
     secretquery="?$secret_url"
 fi
 
 if [ "$port" != "8083" ]; then
+    echo "=== Set Vesta port: $port"
     $VESTA/bin/v-change-vesta-port $port
 fi
+
+echo "=== Set URL for phpmyadmin and max_length_of_MySQL_username=80"
+echo "DB_PMA_URL='https://$servername/phpmyadmin/'" >> $VESTA/conf/vesta.conf
+echo "MAX_DBUSER_LEN=80" >> $VESTA/conf/vesta.conf
+
 
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
