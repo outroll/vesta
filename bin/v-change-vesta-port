@@ -6,7 +6,7 @@
 
 
 #----------------------------------------------------------#
-#                    Variable&Function                     #
+#              Variable & Verifications                    #
 #----------------------------------------------------------#
 
 whoami=$(whoami)
@@ -18,6 +18,9 @@ fi
 if [ -z "$VESTA" ]; then
     VESTA="/usr/local/vesta"
 fi
+
+# Includes
+source $VESTA/func/main.sh
 
 # Argument definition
 port=$1
@@ -32,6 +35,10 @@ if [ ! -f "$VESTA/conf/port.conf" ]; then
 else
     oldport=`cat $VESTA/conf/port.conf`
 fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
 
 sed -i "s|$oldport;|$port;|g" $VESTA/nginx/conf/nginx.conf
 if [ -f "/etc/roundcube/plugins/password/config.inc.php" ]; then
