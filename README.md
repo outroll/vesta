@@ -14,8 +14,7 @@ Features
 + Support for Debian 10 (previous releases are also supported)
 
 + You can totally "lock" VestaCP so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
-    + After MyVesta installation just execute:
-    + `echo "<?php \$login_url='MY-SECRET-URL';" > /usr/local/vesta/web/inc/login_url.php`
+    + During installation you will be asked for secret URL for your hosting panel
     + Literally no PHP scripts will be alive (won't be able to get executed), unless you access the URL with that parameter. Thus, when it happens that, let's say, some zero-day exploit pops up - hacker will not be able to access it without knowing your secret URL. PHP scripts from VestaCP will be simply dead - no one will be able to interact with your panel unless he has the secret URL.
     + You can see for yourself how mechanism was built by looking at:
       + https://github.com/myvesta/vesta/blob/master/src/deb/for-download/php/php.ini#L496
