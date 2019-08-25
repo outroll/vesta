@@ -279,6 +279,11 @@ if [ ! -e '/usr/bin/wget' ]; then
     check_result $? "Can't install wget"
 fi
 
+# Check if gnupg2 is installed
+if [ $(dpkg-query -W -f='${Status}' gnupg2 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    apt -y install gnupg2
+fi
+
 # Check if apparmor is installed
 # This check is borrowed from HestiaCP
 if [ $(dpkg-query -W -f='${Status}' apparmor 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
