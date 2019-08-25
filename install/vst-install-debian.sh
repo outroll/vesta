@@ -1507,6 +1507,12 @@ fi
 # Comparing hostname and ip
 make_ssl=0
 host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
+if [ "$host_ip" != "$ip" ]; then
+    echo "***** PROBLEM: Hostname $servername is not pointing to your server (IP address $ip)"
+    echo "Without pointing your hostname to your IP, LetsEncrypt SSL will not be generated for your server hostname."
+    read -p "Try to point your hostname $servername to IP address $ip and then press ENTER."
+    host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
+fi
 if [ "$host_ip" = "$ip" ]; then
     ip="$servername"
     make_ssl=1
