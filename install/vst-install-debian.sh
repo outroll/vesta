@@ -1515,24 +1515,32 @@ host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
 if [ "$host_ip" != "$ip" ]; then
     echo "***** PROBLEM: Hostname $servername is not pointing to your server (IP address $ip)"
     echo "Without pointing your hostname to your IP, LetsEncrypt SSL will not be generated for your server hostname."
-    read -p "Try to point your hostname $servername to IP address $ip and then press ENTER."
+    echo "Try to point your hostname $servername to IP address $ip and then press ENTER."
+    echo "For forcing LetsEncrypt installation press f and then ENTER."
+    read -p "If we detect that hostname is still not pointing to your IP, installer will skip LetsEncrypt installation." answer
     host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
+fi
+if [ "$answer" = "f" ]; then
+    make_ssl=1
 fi
 if [ "$host_ip" = "$ip" ]; then
     ip="$servername"
     make_ssl=1
 fi
 
-# Generating LE SSL
-www_host="www.$servername"
-www_host_ip=$(host $www_host | head -n 1 | awk '{print $NF}')
-if [ "$www_host_ip" != "$ip" ]; then
-    echo "=== Deleting www to server hostname"
-    $VESTA/bin/v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
-    $VESTA/bin/v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
-    www_host=""
+if [ $make_ssl -eq 1 ]; then
+    # Check if www is also pointing to our IP
+    www_host="www.$servername"
+    www_host_ip=$(host $www_host | head -n 1 | awk '{print $NF}')
+    if [ "$www_host_ip" != "$ip" ]; then
+        echo "=== Deleting www to server hostname"
+        $VESTA/bin/v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
+        $VESTA/bin/v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
+        www_host=""
+   fi
 fi
 
+echo "==="
 echo "Hostname $servername is pointing to $host_ip"
 
 if [ $make_ssl -eq 1 ]; then
@@ -1540,8 +1548,9 @@ if [ $make_ssl -eq 1 ]; then
     $VESTA/bin/v-add-letsencrypt-domain 'admin' "$servername" "$www_host" 'yes'
     $VESTA/bin/v-update-host-certificate 'admin' "$servername"
 else
-    echo "=== We will not generate SSL because of this"
+    echo "We will not generate SSL because of this"
 fi
+echo "==="
 echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
 
 # Secret URL
@@ -1557,10 +1566,11 @@ if [ "$port" != "8083" ]; then
     $VESTA/bin/v-change-vesta-port $port
 fi
 
-echo "=== Set URL for phpmyadmin and max_length_of_MySQL_username=80"
+echo "=== Set URL for phpmyadmin"
 echo "DB_PMA_URL='https://$servername/phpmyadmin/'" >> $VESTA/conf/vesta.conf
+echo "=== Set max_length_of_MySQL_username=80"
 echo "MAX_DBUSER_LEN=80" >> $VESTA/conf/vesta.conf
-
+echo "================================================================"
 
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
