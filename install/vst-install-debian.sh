@@ -1516,8 +1516,8 @@ if [ "$host_ip" != "$ip" ]; then
     echo "***** PROBLEM: Hostname $servername is not pointing to your server (IP address $ip)"
     echo "Without pointing your hostname to your IP, LetsEncrypt SSL will not be generated for your server hostname."
     echo "Try to point your hostname $servername to IP address $ip and then press ENTER."
-    echo "For forcing LetsEncrypt installation press f and then ENTER."
-    read -p "If we detect that hostname is still not pointing to your IP, installer will skip LetsEncrypt installation." answer
+    echo "If we detect that hostname is still not pointing to your IP, installer will skip LetsEncrypt installation."
+    read -p "For forcing LetsEncrypt installation press f and then ENTER." answer
     host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
 fi
 if [ "$answer" = "f" ]; then
