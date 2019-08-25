@@ -184,7 +184,7 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
+while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:u:1:fh" Option; do
     case $Option in
         a) apache=$OPTARG ;;            # Apache
         n) nginx=$OPTARG ;;             # Nginx
@@ -208,8 +208,8 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
         y) interactive=$OPTARG ;;       # Interactive install
         s) servername=$OPTARG ;;        # Hostname
         e) email=$OPTARG ;;             # Admin email
-        e) secret_url=$OPTARG ;;        # Secret URL for hosting panel
-        e) port=$OPTARG ;;              # Vesta port
+        u) secret_url=$OPTARG ;;        # Secret URL for hosting panel
+        1) port=$OPTARG ;;              # Vesta port
         p) vpass=$OPTARG ;;             # Admin password
         f) force='yes' ;;               # Force install
         h) help ;;                      # Help
