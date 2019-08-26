@@ -1515,9 +1515,9 @@ host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
 if [ "$host_ip" != "$ip" ]; then
     echo "***** PROBLEM: Hostname $servername is not pointing to your server (IP address $ip)"
     echo "Without pointing your hostname to your IP, LetsEncrypt SSL will not be generated for your server hostname."
-    echo "Try to point your hostname $servername to IP address $ip and then press ENTER."
-    echo "If we detect that hostname is still not pointing to your IP, installer will skip LetsEncrypt installation."
-    read -p "For forcing LetsEncrypt installation press f and then ENTER." answer
+    echo "Try to setup an A record in your DNS, pointing your hostname $servername to IP address $ip and then press ENTER."
+    echo "If we detect that hostname is still not pointing to your IP, installer will not add LetsEncrypt SSL certificate to your hosting panel (unsigned SSL will be used instead)."
+    read -p "To force to try anyway to add LetsEncrypt, press f and then ENTER." answer
     host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
 fi
 if [ "$answer" = "f" ]; then
@@ -1533,9 +1533,11 @@ if [ $make_ssl -eq 1 ]; then
     www_host="www.$servername"
     www_host_ip=$(host $www_host | head -n 1 | awk '{print $NF}')
     if [ "$www_host_ip" != "$ip" ]; then
-        echo "=== Deleting www to server hostname"
-        $VESTA/bin/v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
-        $VESTA/bin/v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
+        if [ "$named" = 'yes' ]; then
+            echo "=== Deleting www to server hostname"
+            $VESTA/bin/v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
+            $VESTA/bin/v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
+        fi
         www_host=""
    fi
 fi
@@ -1568,7 +1570,9 @@ fi
 
 echo "=== Set URL for phpmyadmin"
 echo "DB_PMA_URL='https://$servername/phpmyadmin/'" >> $VESTA/conf/vesta.conf
-echo "=== Set max_length_of_MySQL_username=80"
+if [ "$release" -eq 10 ]; then
+    echo "=== Set max_length_of_MySQL_username=80"
+fi
 echo "MAX_DBUSER_LEN=80" >> $VESTA/conf/vesta.conf
 echo "================================================================"
 
