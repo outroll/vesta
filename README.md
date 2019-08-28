@@ -33,7 +33,7 @@ Features
 
 + You can change Vesta port during installation or later using one command line: **v-change-vesta-port [number]**
 
-+ Limit maximum number of sent emails (per hour) per mail account and per hosting account.
++ You can limit maximum number of sent emails (per hour) per mail account and per hosting account.
 
 + You can compile Vesta binaries by yourself - https://github.com/myvesta/vesta/blob/master/src/deb/vesta_compile.sh
     + You can even create your own APT repositorium in a minute
