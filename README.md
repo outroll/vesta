@@ -39,6 +39,7 @@ Features
     + You can even create your own APT repositorium in a minute
     + We are using latest nginx version for vesta-nginx package
     + With your own APT infrastructure you can take security of Vesta-installer infrastructure in your own hands. You will have full control of your Vesta code (this way you can rest assured that there's 0% chance that you'll install malicious packages from repositories that may get hacked)
+    + Binaries that you compile is 100% compatible with official VestaCP from vestacp.com, so you can run official VestaCP code with your own binaries (in case you don't want source code from this fork)
 
 How to install
 ----------------------------
