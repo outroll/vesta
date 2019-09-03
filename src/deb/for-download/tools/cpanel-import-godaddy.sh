@@ -384,8 +384,8 @@ sk_restore_pass
 
 find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define('DB_NAME', '|define('DB_NAME', '${sk_cp_user}_|g" {} \;
 find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define('DB_USER', '|define('DB_USER', '${sk_cp_user}_|g" {} \;
-find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define(' DB_NAME', '|define( 'DB_NAME', '${sk_cp_user}_|g" {} \;
-find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define(' DB_USER', '|define( 'DB_USER', '${sk_cp_user}_|g" {} \;
+find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define( 'DB_NAME', '|define( 'DB_NAME', '${sk_cp_user}_|g" {} \;
+find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define( 'DB_USER', '|define( 'DB_USER', '${sk_cp_user}_|g" {} \;
 
 echo "Remove tmp files"
 rm -rf "/root/${sk_tmp}"
