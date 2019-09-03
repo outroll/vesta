@@ -12,7 +12,7 @@
 # If you need restore main database user read line 160 or above
 ###########
 
-MYUSERNAME="mintontherock"
+MYUSERNAME="ENTER-HERE-DESIRED-DESTINATION-USERNAME"
 
 if [ $# -lt 1 ]; then
     echo "usage: bash $0 cpanel-backup.tar.gz"
@@ -384,6 +384,8 @@ sk_restore_pass
 
 find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define('DB_NAME', '|define('DB_NAME', '${sk_cp_user}_|g" {} \;
 find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define('DB_USER', '|define('DB_USER', '${sk_cp_user}_|g" {} \;
+find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define(' DB_NAME', '|define( 'DB_NAME', '${sk_cp_user}_|g" {} \;
+find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define(' DB_USER', '|define( 'DB_USER', '${sk_cp_user}_|g" {} \;
 
 echo "Remove tmp files"
 rm -rf "/root/${sk_tmp}"
