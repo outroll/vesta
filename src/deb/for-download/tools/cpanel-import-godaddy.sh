@@ -11,6 +11,9 @@
 ###########
 # If you need restore main database user read line 160 or above
 ###########
+
+MYUSERNAME="mintontherock"
+
 if [ $# -lt 1 ]; then
     echo "usage: bash $0 cpanel-backup.tar.gz"
     echo "or"
@@ -88,12 +91,14 @@ sk_importer_in=$(pwd)
 echo "Access tmp directory $sk_importer_in"
 echo "Get prefix..."
 sk_dead_prefix=$(cat meta/dbprefix)
+sk_dead_prefix="$MYUSERNAME"
 if [ $sk_dead_prefix = 1 ]; then
 	echo "Error 666 - I dont like your prefix, I dont want do this job"
 	exit 666
 else
 	echo "I like your prefix, start working"
 fi
+
 main_domain1=$(grep main_domain userdata/main |cut -d " " -f2)
 if [ "$(ls -A mysql)" ]; then
 	sk_cp_user=$(ls mysql |grep sql | grep -v roundcube.sql |head -n1 |cut -d "_" -f1)
@@ -110,6 +115,7 @@ else
 # get real cPanel user if no databases exist
 	sk_cp_user=$(grep "user:" userdata/${main_domain1} | cut -d " " -f2)
 fi
+sk_cp_user="$MYUSERNAME"
 # So get real user, may be we need it after -- oh yes, not remember where but this save my day march 19 2017 on 0.5
 sk_real_cp_user=$(grep "user:" userdata/${main_domain1} | cut -d " " -f2)
 if /usr/local/vesta/bin/v-list-users | grep -q -w $sk_cp_user ;then
@@ -142,23 +148,53 @@ tput sgr0
 sed -i 's/\\//g' mysql.sql
 sed -i "s/\`/'/g" mysql.sql
 
+sed -i "s/GRANT USAGE ON *.* TO \'/GRANT USAGE ON *.* TO \'${sk_cp_user}_/g" mysql.sql
+sed -i "s/GRANT ALL PRIVILEGES ON \'/GRANT ALL PRIVILEGES ON \'${sk_cp_user}_/g" mysql.sql
+sed -i "s/\'.* TO \'/\'.* TO \'${sk_cp_user}_/g" mysql.sql
+echo "-----------------"
+echo "mysql.sql:"
+cat mysql.sql
+
 ## User / Password
 grep "GRANT USAGE ON" mysql.sql | awk -F "'" '{ print $2, $6 }' | uniq > user_password_db
+echo "-----------------"
+echo "user_password_db:"
+cat user_password_db
+
 # User and database
 grep "GRANT" mysql.sql |grep -v "USAGE ON"  > u_db
+echo "-----------------"
+echo "u_db:"
+cat u_db
+
 cat u_db | awk -F "'" '{ print $2, $4 }' | sort | uniq  > uni_u_db
+echo "-----------------"
+echo "uni_u_db:"
+cat uni_u_db
+
 sed -i "s/$sk_dead_prefix //g" user_password_db
+echo "-----------------"
+echo "user_password_db:"
+cat user_password_db
+
 # Get database list
 sk_db_list=$(grep -m 1 Database: mysql/*.create | awk '{ print  $5 }')
+sk_db_list=$(echo "${sk_cp_user}_$sk_db_list" | sed "s| | ${sk_cp_user}_|g")
+echo "-----------------"
+echo "sk_db_list:"
+echo $sk_db_list
 mysql -e "SHOW DATABASES" > server_dbs
 for sk_dbr in $sk_db_list
 	do
 		grep -w $sk_dbr server_dbs	
 		if [ $? == "1" ]; then
-			echo " Create and restore ${sk_dbr} "
+			echo " Create and restore ${sk_cp_user}_${sk_dbr} "
+			echo "sed -i s/${sk_dbr}/${sk_cp_user}_${sk_dbr}/g mysql/${sk_dbr}.create"
+			sed -i "s/${sk_dbr}/${sk_cp_user}_${sk_dbr}/g" mysql/${sk_dbr}.create
 			mysql < mysql/${sk_dbr}.create
 			sed -i "s/utf8mb4_unicode_520_ci/utf8mb4_unicode_ci/g" mysql/${sk_dbr}.sql
-			mysql ${sk_dbr} < mysql/${sk_dbr}.sql
+			mysql ${sk_cp_user}_${sk_dbr} < mysql/${sk_dbr}.sql
+			echo "---------------"
 		else
 			echo "Error: Cant restore database $sk_dbr alredy exists in mysql server"
 		fi
@@ -172,9 +208,10 @@ do
 # if you use default user in your config files to connect with database
 # you will need remove && [ "$userdb" != "$sk_cp_user" ] to restore main user, but
 # this will cause database duplication in db.conf and will interfer with vestacp backups 
-			if [ "$userdb" == "$user" ] && [ "$userdb" != "$sk_cp_user" ] && [ "$userdb" != "$sk_real_cp_user" ] ; then
-				echo "DB='$db' DBUSER='$userdb' MD5='$end_user_pass' HOST='localhost' TYPE='mysql' CHARSET='UTF8' U_DISK='0' SUSPENDED='no' TIME='$TIME' DATE='$DATE'" >> /usr/local/vesta/data/users/${sk_cp_user}/db.conf
-			fi
+			# if [ "$userdb" == "$user" ] && [ "$userdb" != "$sk_cp_user" ] && [ "$userdb" != "$sk_real_cp_user" ] ; then
+				echo "DB='${sk_cp_user}_$db' DBUSER='${sk_cp_user}_$userdb' MD5='$end_user_pass' HOST='localhost' TYPE='mysql' CHARSET='UTF8' U_DISK='0' SUSPENDED='no' TIME='$TIME' DATE='$DATE'"
+				echo "DB='${sk_cp_user}_$db' DBUSER='${sk_cp_user}_$userdb' MD5='$end_user_pass' HOST='localhost' TYPE='mysql' CHARSET='UTF8' U_DISK='0' SUSPENDED='no' TIME='$TIME' DATE='$DATE'" >> /usr/local/vesta/data/users/${sk_cp_user}/db.conf
+			# fi
 		done
 done
 
@@ -344,6 +381,9 @@ if [ "$2" == "MX" ];then
 	sk_fix_mx
 fi
 sk_restore_pass
+
+find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define('DB_NAME', '|define('DB_NAME', '${sk_cp_user}_|g" {} \;
+find /home/${sk_cp_user}/web/*/public_html/ -type f -name "wp-config.php" -exec sed -i "s|define('DB_USER', '|define('DB_USER', '${sk_cp_user}_|g" {} \;
 
 echo "Remove tmp files"
 rm -rf "/root/${sk_tmp}"
