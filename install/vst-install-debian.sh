@@ -929,6 +929,7 @@ if [ "$apache" = 'yes'  ]; then
     a2enmod actions
     # a2enmod ruid2
     a2enmod headers
+    a2enmod expires
     a2enmod proxy_fcgi setenvif
     mkdir -p /etc/apache2/conf.d
     echo > /etc/apache2/conf.d/vesta.conf
