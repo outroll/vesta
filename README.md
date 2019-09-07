@@ -27,7 +27,7 @@ Features
 + Apache is fully switched to mpm_event mode, while PHP is running in PHP-FPM, which is the most stable PHP-stack solution
     + OPCache is turned on by default
 
-+ Support for multi-PHP versions - https://forum.vestacp.com/viewtopic.php?t=17129
++ Support for multi-PHP versions - https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh
 
 + Auto-generating LetsEncrypt SSL for server hostname (signed SSL for Vesta 8083 port, for dovecot (IMAP & POP3) and for Exim (SMTP))
 
