@@ -1437,6 +1437,8 @@ if [ "$release" -eq 10 ]; then
     sed -i "/^group =/c\group = www-data" /etc/php/7.3/fpm/pool.d/$servername.conf
     sed -i "/max_execution_time/c\php_admin_value[max_execution_time] = 900" /etc/php/7.3/fpm/pool.d/$servername.conf
     service php7.3-fpm restart
+    ln -s /var/lib/roundcube /var/lib/roundcube/webmail
+    /usr/local/vesta/bin/v-change-web-domain-proxy-tpl 'admin' "$servername" 'hosting-webmail-phpmyadmin' 'jpg,jpeg,gif,png,ico,svg,css,zip,tgz,gz,rar,bz2,doc,xls,exe,pdf,ppt,txt,odt,ods,odp,odf,tar,wav,bmp,rtf,js,mp3,avi,mpeg,flv,html,htm' 'no'
   fi
 fi
 
