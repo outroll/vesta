@@ -1,5 +1,10 @@
 <?php
 
+if (file_exists("/usr/local/vesta/web/inc/switch_to_vesta_port") && isset($_SERVER['HTTP_X_REAL_IP'])) {
+    header("Location: https://".$_SERVER['HTTP_HOST'].":".$_SERVER['SERVER_PORT']);
+    exit;
+}
+
 session_start();
 
 define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
