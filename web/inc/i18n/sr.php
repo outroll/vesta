@@ -1,7 +1,7 @@
 <?php
 /**
  * Vesta Serbian sr_SR language file
- * Translation base taken from Bosnian translation file and adapted to Serbian (with a lot of modifications)
+ * Translation base taken from Bosnian translation file and adapted to Serbian (with lot of modifications)
  *
  */
 $LANG['sr'] = array(
@@ -559,7 +559,7 @@ $LANG['sr'] = array(
     'MAIL Server' => 'MAIL Server',
     'Antivirus' => 'Antivirus',
     'AntiSpam' => 'AntiSpam',
-    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
+    'Use Web Domain SSL Certificate' => 'Koristi Web Domain SSL sertifikat',
     'Webmail URL' => 'Webmail URL',
     'MySQL Support' => 'MySQL podrška',
     'phpMyAdmin URL' => 'phpMyAdmin URL',
