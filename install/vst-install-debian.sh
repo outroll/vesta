@@ -8,8 +8,8 @@
 export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
 
-RHOST='apt.vesta.hostingpanel.dev'
-CHOST='c.vesta.hostingpanel.dev'
+RHOST='apt.myvestacp.com'
+CHOST='c.myvestacp.com'
 VERSION='debian'
 VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
@@ -293,7 +293,7 @@ else
 fi
 
 # Checking repository availability
-wget -q "apt.vesta.hostingpanel.dev/deb_signing.key" -O /dev/null
+wget -q "apt.myvestacp.com/deb_signing.key" -O /dev/null
 check_result $? "No access to Vesta repository"
 
 # Check installed packages
@@ -1100,8 +1100,8 @@ if [ "$mysql" = 'yes' ]; then
       rm -fr phpMyAdmin-$pma_v-all-languages
       rm -f phpMyAdmin-$pma_v-all-languages.tar.gz
       
-      wget -nv -O /root/phpmyadmin/pma.sh http://c.vesta.hostingpanel.dev/debian/10/pma/pma.sh 
-      wget -nv -O /root/phpmyadmin/create_tables.sql http://c.vesta.hostingpanel.dev/debian/10/pma/create_tables.sql
+      wget -nv -O /root/phpmyadmin/pma.sh http://c.myvestacp.com/debian/10/pma/pma.sh 
+      wget -nv -O /root/phpmyadmin/create_tables.sql http://c.myvestacp.com/debian/10/pma/create_tables.sql
       bash /root/phpmyadmin/pma.sh
       blowfish=$(gen_pass)
       echo "\$cfg['blowfish_secret'] = '$blowfish';" >> /etc/phpmyadmin/config.inc.php
