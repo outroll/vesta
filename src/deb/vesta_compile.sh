@@ -30,7 +30,7 @@ if [ $# -gt 4 ]; then
     add_deb_to_apt_repo=$5
 fi
 
-MAINTAINER_EMAIL='predrag@hostingpanel.dev'
+MAINTAINER_EMAIL='predrag@myvestacp.com'
 
 TARGET_DEB_NAME_MAIN='buster'
 TARGET_DEB_VER_MAIN='10'
@@ -44,10 +44,10 @@ INSTALL_DIR="/usr/local/vesta"
 GIT_SRC='https://raw.githubusercontent.com/myvesta/vesta/master/src'
 GIT_REP="$GIT_REP/deb"
 
-C_WEB_ADDRESS="c.vesta.hostingpanel.dev"
+C_WEB_ADDRESS="c.myvestacp.com"
 PATH_OF_C_WEB_FOLDER_ROOT="/var/www/$C_WEB_ADDRESS/html"
 PATH_OF_C_WEB_FOLDER="$PATH_OF_C_WEB_FOLDER_ROOT/debian/$TARGET_DEB_VER"
-APT_WEB_ADDRESS="apt.vesta.hostingpanel.dev"
+APT_WEB_ADDRESS="apt.myvestacp.com"
 PATH_OF_APT_REPO_ROOT="/var/www/$APT_WEB_ADDRESS/html"
 PATH_OF_APT_REPO="$PATH_OF_APT_REPO_ROOT/$TARGET_DEB_NAME"
 
