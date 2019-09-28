@@ -271,6 +271,7 @@ if [ "$CWEB_B" = true ]; then
   if [ ! -f "$PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key" ]; then
     cp /root/vesta/install/debian/$TARGET_DEB_VER_MAIN/deb_signing.key $PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key
   fi
+  cp /root/vesta/src/deb/latest.txt $PATH_OF_C_WEB_FOLDER_ROOT/latest.txt
   cd $PATH_OF_C_WEB_FOLDER
   
   if [ -f "packages.tar.gz" ]; then
