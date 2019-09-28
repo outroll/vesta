@@ -1,6 +1,6 @@
 Name:           vesta
 Version:        0.9.8
-Release:        25
+Release:        26
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPL
@@ -68,6 +68,9 @@ fi
 %config(noreplace) %{_vestadir}/web/css/uploadify.css
 
 %changelog
+* Sat 29 2019 Serghey Rodin <builder@vestacp.com> - 0.9.8-26
+- Let's Encrypt HTTP/2 support
+
 * Thu Aug 15 2019 Serghey Rodin <builder@vestacp.com> - 0.9.8-25
 - Security bugfixes
 - LEv2 idn fix
