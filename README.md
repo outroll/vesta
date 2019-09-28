@@ -45,7 +45,7 @@ How to install
 ----------------------------
 Download the installation script:
 ```bash
-curl -O http://c.vesta.hostingpanel.dev/vst-install-debian.sh
+curl -O http://c.myvestacp.com/vst-install-debian.sh
 ```
 Then run it:
 ```bash
