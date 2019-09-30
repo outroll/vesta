@@ -72,6 +72,10 @@ for ip in $(ls $VESTA/data/ips); do
 done
 echo "$iptables -A INPUT -s 127.0.0.1 -j ACCEPT" >> $tmp
 
+if [ -x "/root/update_firewall_custom.sh" ]
+    /root/update_firewall_custom.sh 1
+fi
+
 # Pasring iptables rules
 IFS=$'\n'
 for line in $(sort -r -n -k 2 -t \' $rules); do
