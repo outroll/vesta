@@ -1,9 +1,9 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: vesta-php
-Source: http://vesta.hostingpanel.dev
+Upstream-Name: vesta
+Source: http://myvestacp.com
 
 Files: *
-Copyright: 2019 MyVesta <info@hostingpanel.dev>
+Copyright: 2019 MyVesta <info@myvestacp.com>
 License: GPL-3.0+
 Remarks: MyVesta is a fork from VestaCP, special thanks to vestacp.com and Serghey Rodin
 
