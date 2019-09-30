@@ -3,8 +3,8 @@ Package: vesta
 Priority: optional
 Version: 0.9.8-25
 Section: admin
-Maintainer: Predrag Damnjanovic <predrag@hostingpanel.dev>
-Homepage: http://vesta.hostingpanel.dev
+Maintainer: Predrag Damnjanovic <predrag@myvestacp.com>
+Homepage: http://myvestacp.com
 Architecture: amd64
 Depends: bash, awk, sed
 Description: Vesta
