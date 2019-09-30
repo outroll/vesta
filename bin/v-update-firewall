@@ -72,8 +72,9 @@ for ip in $(ls $VESTA/data/ips); do
 done
 echo "$iptables -A INPUT -s 127.0.0.1 -j ACCEPT" >> $tmp
 
+# Triger for custom iptables commands
 if [ -x "/root/update_firewall_custom.sh" ]; then
-    /root/update_firewall_custom.sh 1
+    /root/update_firewall_custom.sh "$tmp" "1"
 fi
 
 # Pasring iptables rules
