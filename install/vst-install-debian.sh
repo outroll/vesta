@@ -1071,7 +1071,7 @@ if [ "$mysql" = 'yes' ]; then
       mkdir /root/phpmyadmin
       mkdir /usr/share/phpmyadmin
       
-      pma_v='4.9.0.1'
+      pma_v='4.9.1'
       echo "(*) Installing phpMyAdmin version v$pma_v..."
 
       cd /root/phpmyadmin
