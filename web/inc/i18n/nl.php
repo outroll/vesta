@@ -758,5 +758,5 @@ $LANG['nl'] = array(
 
     'maximum characters length, including prefix' => 'maximaal %s karakters lang, inclusief prefix',
 
-    'Email Credentials' => 'Email Credentials',
+    'Email Credentials' => 'E-mailreferenties',
 );
