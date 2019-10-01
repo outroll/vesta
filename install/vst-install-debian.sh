@@ -1611,7 +1611,7 @@ Thank you.
 
 --
 Sincerely yours
-vestacp.com team
+myvestacp.com team
 " > $tmpfile
 
 send_mail="$VESTA/web/inc/mail-wrapper.php"
