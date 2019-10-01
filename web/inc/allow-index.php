@@ -1,4 +1,4 @@
- <?php
+<?php
  // Custom script that will be included in custom Vesta installations to allow normal index.html if Vesta was proxied via default nginx
 
 if (file_exists("/usr/local/vesta/web/inc/switch_to_vesta_port") && isset($_SERVER['HTTP_X_REAL_IP']) && $_SERVER['REQUEST_URI']=="/") {
