@@ -1,0 +1,97 @@
+#!/bin/bash
+# info: add vesta ssl certificate
+# options: USER DOMAIN [RESTART]
+#
+# The function copies user domain SSL to vesta SSL directory
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+restart=$3
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN [RESTART]'
+is_format_valid 'user' 'domain'
+is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_value_exist 'web' 'DOMAIN' "$domain" '$SSL'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Defining certificate location
+dom_crt="/home/$user/conf/web/ssl.$domain.pem"
+dom_key="/home/$user/conf/web/ssl.$domain.key"
+vst_crt="$VESTA/ssl/certificate.crt"
+vst_key="$VESTA/ssl/certificate.key"
+
+# Checking certificate
+if [ ! -e "$dom_crt" ] || [ ! -e "$dom_key" ]; then
+    check_result $E_NOTEXIST "$domain certificate doesn't exist"
+fi
+
+# Checking difference
+diff $dom_crt $vst_crt >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    rm -f $vst_crt.old $vst_key.old
+    mv $vst_crt $vst_crt.old
+    mv $vst_key $vst_key.old
+    cp $dom_crt $vst_crt 2>/dev/null
+    cp $dom_key $vst_key 2>/dev/null
+    chown root:mail $vst_crt $vst_key
+else
+    restart=no
+fi
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Restarting services
+if [ "$restart" != 'no' ]; then
+    if [ ! -z "$MAIL_SYSTEM" ] && [ -z "$MAIL_CERTIFICATE" ]; then
+        $BIN/v-restart-service $MAIL_SYSTEM
+    fi
+    if [ ! -z "$IMAP_SYSTEM" ] && [ -z "$MAIL_CERTIFICATE" ]; then
+        $BIN/v-restart-service $IMAP_SYSTEM
+    fi
+    if [ ! -z "$FTP_SYSTEM" ]; then
+        $BIN/v-restart-service "$FTP_SYSTEM"
+    fi
+    if [ -e "/var/run/vesta-nginx.pid" ]; then
+        kill -HUP $(cat /var/run/vesta-nginx.pid)
+    else
+        service vesta restart
+    fi
+fi
+
+# Updating vesta.conf
+if [ -z "$(grep VESTA_CERTIFICATE $VESTA/conf/vesta.conf)" ]; then
+    echo "VESTA_CERTIFICATE='$user:$domain'" >> $VESTA/conf/vesta.conf
+else
+    sed -i "s/VESTA_CERTIFICATE.*/VESTA_CERTIFICATE='$user:$domain'/g" \
+        $VESTA/conf/vesta.conf
+fi
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

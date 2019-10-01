@@ -26,7 +26,7 @@ get_ip_iface() {
 }
 
 
-# Check ip address speciefic value
+# Check ip address specific value
 is_ip_key_empty() {
     key="$1"
     string=$(cat $VESTA/data/ips/$ip)
@@ -141,7 +141,7 @@ get_real_ip() {
     else
         nat=$(grep -H "^NAT='$1'" $VESTA/data/ips/*)
         if [ ! -z "$nat" ]; then
-            echo "$nat" |cut -f 1 -d : |cut -f 7 -d /
+            echo "$nat" |cut -f 1 -d : |cut -f 7 -d / |head -n 1
         fi
     fi
 }

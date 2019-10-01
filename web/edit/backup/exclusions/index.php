@@ -12,7 +12,7 @@ if (($_SESSION['user'] == 'admin') && (!empty($_GET['user']))) {
 }
 
 // List backup exclustions
-exec (VESTA_CMD."v-list-user-backup-exclusions ".$user." 'json'", $output, $return_var);
+exec (VESTA_CMD."v-list-user-backup-exclusions ".$user." json", $output, $return_var);
 check_return_code($return_var,$output);
 $data = json_decode(implode('', $output), true);
 unset($output);

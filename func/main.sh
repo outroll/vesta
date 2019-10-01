@@ -35,6 +35,7 @@ E_DB=17
 E_RRD=18
 E_UPDATE=19
 E_RESTART=20
+E_TEAPOT=418
 
 # Event string for logger
 for ((I=1; I <= $# ; I++)); do
@@ -212,7 +213,8 @@ is_object_new() {
 # Check if object is valid
 is_object_valid() {
     if [ $2 = 'USER' ]; then
-        if [ ! -d "$VESTA/data/users/$3" ]; then
+        user_vst_dir=$(basename $3)
+        if [ ! -d "$VESTA/data/users/$user_vst_dir" ]; then
             check_result $E_NOTEXIST "$1 $3 doesn't exist"
         fi
     else
@@ -273,8 +275,24 @@ is_object_value_exist() {
 is_password_valid() {
     if [[ "$password" =~ ^/tmp/ ]]; then
         if [ -f "$password" ]; then
-            password=$(head -n1 $password)
+            password="$(head -n1 $password)"
         fi
+    fi
+}
+
+# Check if hash is transmitted via file
+is_hash_valid() {
+    if [[ "$hash" =~ ^/tmp/ ]]; then
+        if [ -f "$hash" ]; then
+            hash="$(head -n1 $hash)"
+        fi
+    fi
+}
+
+# Check if directory is a symlink
+is_dir_symlink() {
+    if [[ -L "$1" ]]; then
+        check_result $E_FORBIDEN "$1 directory is a symlink"
     fi
 }
 
@@ -516,7 +534,7 @@ is_user_format_valid() {
 is_domain_format_valid() {
     object_name=${2-domain}
     exclude="[!|@|#|$|^|&|*|(|)|+|=|{|}|:|,|<|>|?|_|/|\|\"|'|;|%|\`| ]"
-    if [[ $1 =~ $exclude ]] || [[ $1 =~ ^[0-9]+$ ]] || [[ $1 =~ "\.\." ]]; then
+    if [[ $1 =~ $exclude ]] || [[ $1 =~ ^[0-9]+$ ]] || [[ $1 =~ "\.\." ]] || [[ $1 =~ "$(printf '\t')" ]]; then
         check_result $E_INVALID "invalid $object_name format :: $1"
     fi
 }
@@ -643,7 +661,7 @@ is_dbuser_format_valid() {
 
 # DNS record type validator
 is_dns_type_format_valid() {
-    known_dnstype='A,AAAA,NS,CNAME,MX,TXT,SRV,DNSKEY,KEY,IPSECKEY,PTR,SPF,TLSA'
+    known_dnstype='A,AAAA,NS,CNAME,MX,TXT,SRV,DNSKEY,KEY,IPSECKEY,PTR,SPF,TLSA,CAA'
     if [ -z "$(echo $known_dnstype |grep -w $1)" ]; then
         check_result $E_INVALID "invalid dns record type format :: $1"
     fi
@@ -789,7 +807,16 @@ is_password_format_valid() {
         check_result $E_INVALID "invalid password format :: $1"
     fi
 }
-
+# Missing function - 
+# Before: validate_format_shell 
+# After: is_format_valid_shell
+is_format_valid_shell() {	
+    if [ -z "$(grep -w $1 /etc/shells)" ]; then	
+        echo "Error: shell $1 is not valid"	
+        log_event "$E_INVALID" "$EVENT"	
+        exit $E_INVALID	
+    fi	
+}
 # Format validation controller
 is_format_valid() {
     for arg_name in $*; do
@@ -856,7 +883,9 @@ is_format_valid() {
                 restart)        is_boolean_format_valid "$arg" 'restart' ;;
                 rtype)          is_dns_type_format_valid "$arg" ;;
                 rule)           is_int_format_valid "$arg" "rule id" ;;
-                soa)            is_domain_format_valid "$arg" 'SOA' ;;
+                soa)            is_domain_format_valid "$arg" 'SOA' ;;	
+                #missing command: is_format_valid_shell
+                shell)          is_format_valid_shell "$arg" ;;
                 stats_pass)     is_password_format_valid "$arg" ;;
                 stats_user)     is_user_format_valid "$arg" "$arg_name" ;;
                 template)       is_object_format_valid "$arg" "$arg_name" ;;
@@ -906,7 +935,7 @@ format_aliases() {
         aliases=$(echo "$aliases" |tr -s '.')
         aliases=$(echo "$aliases" |sed -e "s/[.]*$//g")
         aliases=$(echo "$aliases" |sed -e "s/^[.]*//")
-        aliases=$(echo "$aliases" |grep -v www.$domain |sed -e "/^$/d")
+        aliases=$(echo "$aliases" |sed -e "/^$/d")
         aliases=$(echo "$aliases" |tr '\n' ',' |sed -e "s/,$//")
     fi
 }

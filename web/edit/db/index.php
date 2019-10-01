@@ -20,7 +20,7 @@ if (($_SESSION['user'] == 'admin') && (!empty($_GET['user']))) {
 
 // List datbase
 $v_database = escapeshellarg($_GET['database']);
-exec (VESTA_CMD."v-list-database ".$user." ".$v_database." 'json'", $output, $return_var);
+exec (VESTA_CMD."v-list-database ".$user." ".$v_database." json", $output, $return_var);
 check_return_code($return_var,$output);
 $data = json_decode(implode('', $output), true);
 unset($output);
@@ -41,6 +41,8 @@ if ( $v_suspended == 'yes' ) {
 } else {
     $v_status =  'active';
 }
+
+$v_database = escapeshellarg($_GET['database']);
 
 // Check POST request
 if (!empty($_POST['save'])) {

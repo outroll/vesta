@@ -280,11 +280,113 @@
                                                 <br><br>
                                             </td>
                                         </tr>
-
+                                        <tr>
+                                            <td class="vst-text input-label step-top">
+                                                <label><input type="checkbox" size="20" class="vst-checkbox" name="v_mail_ssl_domain_checkbox"
+                                                            <?php if(!empty($_SESSION['MAIL_CERTIFICATE'])) echo "checked=yes" ?>
+                                                            onclick="javascript:elementHideShow('mail_ssl');">
+                                                    <?php print __('Use Web Domain SSL Certificate');?>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="vst-text input-label step-left">
+                                                <table style="display:<?php if (empty($_SESSION['MAIL_CERTIFICATE'])) echo 'none';?> ;" id="mail_ssl">
+                                                    <tr>
+                                                        <td class="vst-text">
+                                                            <?php print __('Domain') ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <select class="vst-list" name="v_mail_ssl_domain">
+                                                                <option value='' <?php if(empty($_SESSION['MAIL_CERTIFICATE'])) echo 'selected' ?>></option>
+                                                                <?php
+                                                                    foreach ($v_ssl_domains as $key => $value) {
+                                                                        echo "\t\t\t\t<option value=\"".$value."\"";
+                                                                        if ((!empty($_SESSION['MAIL_CERTIFICATE'])) && ( $value == $_SESSION['MAIL_CERTIFICATE'])){
+                                                                            echo ' selected' ;
+                                                                        }
+                                                                        if ((!empty($_SESSION['MAIL_CERTIFICATE'])) && ( $value == $_POST['v_mail_certificate'])){
+                                                                            echo ' selected' ;
+                                                                        }
+                                                                        echo ">".$value."</option>\n";
+                                                                    }
+                                                                ?>
+                                                            </select>
+                                                            <br><br>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <table class="additional-info">
+                                                                <tr>
+                                                                    <td>
+                                                                        <?=__('SUBJECT')?>:
+                                                                    </td>
+                                                                    <td class="details">
+                                                                        <?=$v_sys_ssl_subject?>
+                                                                    </td>
+                                                                </tr>
+                                                                <? if($v_sys_ssl_aliases){?>
+                                                                <tr>
+                                                                    <td>
+                                                                        <?=__('ALIASES')?>:
+                                                                    </td>
+                                                                    <td class="details">
+                                                                        <?=$v_sys_ssl_aliases?>
+                                                                    </td>
+                                                                </tr>
+                                                                <? } ?>
+                                                                <tr>
+                                                                    <td>
+                                                                        <?=__('NOT_BEFORE')?>:
+                                                                    </td>
+                                                                    <td class="details">
+                                                                        <?=$v_sys_ssl_not_before?>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <?=__('NOT_AFTER')?>:
+                                                                    </td>
+                                                                    <td class="details">
+                                                                        <?=$v_sys_ssl_not_after?>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <?=__('SIGNATURE')?>:
+                                                                    </td>
+                                                                    <td class="details">
+                                                                        <?=$v_sys_ssl_signature?>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <?=__('PUB_KEY')?>:
+                                                                    </td>
+                                                                    <td class="details">
+                                                                        <?=$v_sys_ssl_pub_key?>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <?=__('ISSUER')?>:
+                                                                    </td>
+                                                                    <td class="details">
+                                                                        <?=$v_sys_ssl_issuer?>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
                                     </table>
                                 </td>
                             </tr>
-
 
 
                             <tr>
@@ -503,7 +605,8 @@
                                                 <input type="text" size="20" class="vst-input" name="v_backup_dir" value="<?=trim($v_backup_dir, "'")?>">
                                                 <br><br>
                                             </td>
-                                        </tr>                                        <tr>
+                                        </tr>
+                                        <tr>
                                             <td class="vst-text input-label step-top">
                                                 <a href="javascript:elementHideShow('remote_backup');" class="vst-text">
                                                 <?php print __('Remote backup');?> <img src="/images/arrow.png">
@@ -513,9 +616,10 @@
                                         <tr>
                                             <td class="vst-text input-label step-left">
                                                 <table style="display:<?php if (empty($v_backup_remote_adv)) echo 'none';?> ;" id="remote_backup">
-                                                    <td class="vst-text">
-                                                        <?php print __('Protocol') ?>
-                                                    </td>
+                                                    <tr>
+                                                        <td class="vst-text">
+                                                            <?php print __('Protocol') ?>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
@@ -580,7 +684,7 @@
                             <tr>
                                 <td class="vst-text input-label step-top">
                                     <a href="javascript:elementHideShow('ssl');" class="vst-text">
-                                        <b><?php print __('Vesta SSL');?> <!-- span style="color:#ff6701;font-size:10px; padding:0 10px;">preview</span--><img src="/images/arrow.png"></b>
+                                        <b><?php print __('Vesta SSL');?><img src="/images/arrow.png"></b>
                                     </a>
                                 </td>
                             </tr>
@@ -588,13 +692,54 @@
                                 <td class="vst-text input-label step-left">
                                     <table style="display:<?php if (empty($v_adv)) echo 'none';?> ;" id="ssl">
                                         <tr>
+                                            <td class="vst-text input-label step-top">
+                                                <label><input type="checkbox" size="20" class="vst-checkbox" name="v_web_ssl_domain_checkbox"
+                                                            <?php if(!empty($_SESSION['VESTA_CERTIFICATE'])) echo "checked=yes" ?>
+                                                            onclick="javascript:elementHideShow('domain_ssl');">
+                                                    <?php print __('Use Web Domain SSL Certificate');?>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="vst-text input-label step-left">
+                                                <table style="display:<?php if (empty($_SESSION['VESTA_CERTIFICATE'])) echo 'none';?> ;" id="domain_ssl">
+                                                    <tr>
+                                                        <td class="vst-text">
+                                                            <?php print __('Domain') ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <select class="vst-list" name="v_web_ssl_domain">
+                                                                <option value='' <?php if(empty($_SESSION['VESTA_CERTIFICATE'])) echo 'selected' ?>></option>
+                                                                <?php
+                                                                    foreach ($v_ssl_domains as $key => $value) {
+                                                                        echo "\t\t\t\t<option value=\"".$value."\"";
+                                                                        if ((!empty($_SESSION['VESTA_CERTIFICATE'])) && ( $value == $_SESSION['VESTA_CERTIFICATE'])){
+                                                                            echo ' selected' ;
+                                                                        }
+                                                                        if ((!empty($_SESSION['VESTA_CERTIFICATE'])) && ( $value == $_POST['v_vesta_certificate'])){
+                                                                            echo ' selected' ;
+                                                                        }
+                                                                        echo ">".$value."</option>\n";
+                                                                    }
+                                                                ?>
+                                                            </select>
+                                                            <br><br>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
                                             <td class="vst-text input-label">
                                                 <?php print __('SSL Certificate');?>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <textarea size="20" class="vst-textinput" name="v_ssl_crt"><?=htmlentities(trim($v_ssl_crt, "'"))?></textarea>
+                                                <textarea size="20" class="vst-textinput" name="v_sys_ssl_crt"><?=htmlentities(trim($v_sys_ssl_crt, "'"))?></textarea>
                                             </td>
                                         </tr>
                                         <tr>
@@ -604,7 +749,7 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <textarea size="20" class="vst-textinput" name="v_ssl_key"><?=htmlentities(trim($v_ssl_key, "'"))?></textarea>
+                                                <textarea size="20" class="vst-textinput" name="v_sys_ssl_key"><?=htmlentities(trim($v_sys_ssl_key, "'"))?></textarea>
                                             </td>
                                         </tr>
                                         <tr>
@@ -615,16 +760,16 @@
                                                             <?=__('SUBJECT')?>:
                                                         </td>
                                                         <td class="details">
-                                                            <?=$v_ssl_subject?>
+                                                            <?=$v_sys_ssl_subject?>
                                                         </td>
                                                     </tr>
-                                                    <? if($v_ssl_aliases){?>
+                                                    <? if($v_sys_ssl_aliases){?>
                                                     <tr>
                                                         <td>
                                                             <?=__('ALIASES')?>:
                                                         </td>
                                                         <td class="details">
-                                                            <?=$v_ssl_aliases?>
+                                                            <?=$v_sys_ssl_aliases?>
                                                         </td>
                                                     </tr>
                                                     <? } ?>
@@ -633,7 +778,7 @@
                                                             <?=__('NOT_BEFORE')?>:
                                                         </td>
                                                         <td class="details">
-                                                            <?=$v_ssl_not_before?>
+                                                            <?=$v_sys_ssl_not_before?>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -641,7 +786,7 @@
                                                             <?=__('NOT_AFTER')?>:
                                                         </td>
                                                         <td class="details">
-                                                            <?=$v_ssl_not_after?>
+                                                            <?=$v_sys_ssl_not_after?>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -649,16 +794,15 @@
                                                             <?=__('SIGNATURE')?>:
                                                         </td>
                                                         <td class="details">
-                                                            <?=$v_ssl_signature?>
+                                                            <?=$v_sys_ssl_signature?>
                                                         </td>
                                                     </tr>
-
                                                     <tr>
                                                         <td>
                                                             <?=__('PUB_KEY')?>:
                                                         </td>
                                                         <td class="details">
-                                                            <?=$v_ssl_pub_key?>
+                                                            <?=$v_sys_ssl_pub_key?>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -666,7 +810,7 @@
                                                             <?=__('ISSUER')?>:
                                                         </td>
                                                         <td class="details">
-                                                            <?=$v_ssl_issuer?>
+                                                            <?=$v_sys_ssl_issuer?>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -787,7 +931,7 @@
                                                             </div>
                                                             <ul>
                                                                 <li>
-                                                                    <a href="https://vestacp.com/checkout/2co.php?product_id=6&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Licence').' 1$/'.__('month').'</a>
+                                                                    <a href="https://vestacp.com/checkout/2co.php?product_id=6&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Licence').' 3$/'.__('month').'</a>
                                                                 </li>
                                                                 <li>
                                                                     <a href="https://vestacp.com/checkout/2co.php?product_id=9&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Lifetime License').' 18$</a>
@@ -838,7 +982,7 @@
                                                                     <a href="https://vestacp.com/checkout/2co.php?product_id=7&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Licence').' 3$/'.__('month').'</a>
                                                                 </li>
                                                                 <li>
-                                                                    <a href="https://vestacp.com/checkout/2co.php?product_id=8&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Lifetime License').' 50$</a>
+                                                                    <a href="https://vestacp.com/checkout/2co.php?product_id=8&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Lifetime License').' 28$</a>
                                                                 </li>
                                                             </ul>
                                                             <span class="twoco">2Checkout.com Inc. (Ohio, USA) is a payment facilitator for goods and services provided by vestacp.com.</span>';

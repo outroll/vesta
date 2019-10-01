@@ -559,6 +559,7 @@ $LANG['pt-BR'] = array(
     'MAIL Server' => 'Servidor de E-MAIL',
     'Antivirus' => 'Antivirus',
     'AntiSpam' => 'AntiSpam',
+    'Use Web Domain SSL Certificate' => 'Use Web Domain SSL Certificate',
     'Webmail URL' => 'Webmail URL',
     'MySQL Support' => 'Suporte MySQL',
     'phpMyAdmin URL' => 'phpMyAdmin URL',

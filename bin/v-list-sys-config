@@ -51,7 +51,9 @@ json_list() {
         "MAIL_URL": "'$MAIL_URL'",
         "DB_PMA_URL": "'$DB_PMA_URL'",
         "DB_PGA_URL": "'$DB_PGA_URL'",
-        "SOFTACULOUS": "'$SOFTACULOUS'"
+        "SOFTACULOUS": "'$SOFTACULOUS'",
+        "MAIL_CERTIFICATE": "'$MAIL_CERTIFICATE'",
+        "VESTA_CERTIFICATE": "'$VESTA_CERTIFICATE'"
     }
 }'
 }
@@ -138,6 +140,12 @@ shell_list() {
     if [ ! -z "$LANGUAGE" ] && [ "$LANGUAGE" != 'en' ]; then
         echo "Language:       $LANGUAGE"
     fi
+    if [ ! -z "$MAIL_CERTIFICATE" ]; then
+        echo "Mail SSL:       $MAIL_CERTIFICATE"
+    fi
+    if [ ! -z "$VESTA_CERTIFICATE" ]; then
+        echo "Vesta SSL:      $VESTA_CERTIFICATE"
+    fi
     echo "Version:        $VERSION"
 }
 
@@ -151,7 +159,8 @@ plain_list() {
     echo -ne "$CRON_SYSTEM\t$DISK_QUOTA\t$FIREWALL_SYSTEM\t"
     echo -ne "$FIREWALL_EXTENSION\t$FILEMANAGER_KEY\t$SFTPJAIL_KEY\t"
     echo -ne "$REPOSITORY\t$VERSION\t$LANGUAGE\t$BACKUP_GZIP\t$BACKUP\t"
-    echo -e "$MAIL_URL\t$DB_PMA_URL\t$DB_PGA_URL"
+    echo -ne "$MAIL_URL\t$DB_PMA_URL\t$DB_PGA_URL\t$MAIL_CERTIFICATE\t"
+    echo -e  "$VESTA_CERTIFICATE"
 }
 
 
@@ -165,7 +174,8 @@ csv_list() {
     echo -n "'CRON_SYSTEM','DISK_QUOTA','FIREWALL_SYSTEM',"
     echo -n "'FIREWALL_EXTENSION','FILEMANAGER_KEY','SFTPJAIL_KEY',"
     echo -n "'REPOSITORY','VERSION','LANGUAGE','BACKUP_GZIP','BACKUP',"
-    echo -n "'MAIL_URL','DB_PMA_URL','DB_PGA_URL'"
+    echo -n "'MAIL_URL','DB_PMA_URL','DB_PGA_URL', 'SOFTACULOUS',"
+    echo -n "'MAIL_CERTIFICATE','VESTA_CERTIFICATE'"
     echo
     echo -n "'$WEB_SYSTEM','$WEB_RGROUPS','$WEB_PORT','$WEB_SSL',"
     echo -n "'$WEB_SSL_PORT','$WEB_BACKEND','$PROXY_SYSTEM','$PROXY_PORT',"
@@ -176,6 +186,7 @@ csv_list() {
     echo -n "'$FIREWALL_EXTENSION','$FILEMANAGER_KEY','$SFTPJAIL_KEY',"
     echo -n "'$REPOSITORY','$VERSION','$LANGUAGE','$BACKUP_GZIP','$BACKUP',"
     echo -n "'$MAIL_URL','$DB_PMA_URL','$DB_PGA_URL', '$SOFTACULOUS'"
+    echo -n "'$MAIL_CERTIFICATE','$VESTA_CERTIFICATE'"
     echo
 }
 
@@ -187,7 +198,7 @@ csv_list() {
 # Listing data
 case $format in
     json)   json_list ;;
-    plain)  shell_list ;;
+    plain)  plain_list ;;
     csv)    csv_list ;;
     shell)  shell_list ;;
 esac
