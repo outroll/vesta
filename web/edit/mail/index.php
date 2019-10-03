@@ -72,13 +72,14 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['account'])))  {
 
     $v_domain = escapeshellarg($_GET['domain']);
     $v_account = escapeshellarg($_GET['account']);
+    $v_account_without_quotas = $_GET['account'];
 
     // Parse autoreply
     if ( $v_autoreply == 'yes' ) {
         exec (VESTA_CMD."v-list-mail-account-autoreply ".$user." ".$v_domain." ".$v_account." json", $output, $return_var);
         $autoreply_str = json_decode(implode('', $output), true);
         unset($output);
-        $v_autoreply_message = $autoreply_str[$v_account]['MSG'];
+        $v_autoreply_message = $autoreply_str[$v_account_without_quotas]['MSG'];
         $v_autoreply_message=str_replace("\\n", "\n", $v_autoreply_message);
     }
 }
