@@ -301,6 +301,9 @@ if [ "$CWEB_B" = true ]; then
   echo "=== All done"
   
   cp /root/vesta/install/vst-install-debian.sh $PATH_OF_C_WEB_FOLDER_ROOT/vst-install-debian.sh
+  
+  mkdir $PATH_OF_C_WEB_FOLDER_ROOT/tools
+  cp -rf /root/vesta/src/deb/for-download/tools/* $PATH_OF_C_WEB_FOLDER_ROOT/tools
 fi
 
 #################################################################################
