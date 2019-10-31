@@ -1,12 +1,20 @@
 #!/bin/bash
 
-debian_version=$(cat /etc/debian_version | tr "." "\n" | head -n1)
-inst_repo=0
+#########################################################################
+# First enter 1 below for desired PHP versions and then run this script #
+#########################################################################
+
 inst_56=0
 inst_70=0
 inst_71=0
 inst_72=0
 inst_73=0
+inst_74=0
+
+#######################################################################
+
+inst_repo=0
+debian_version=$(cat /etc/debian_version | tr "." "\n" | head -n1)
 
 if [ $# -gt 0 ]; then
     inst_repo=$1
@@ -26,8 +34,11 @@ fi
 if [ $# -gt 5 ]; then
     inst_73=$6
 fi
+if [ $# -gt 6 ]; then
+    inst_74=$7
+fi
 
-if [ $inst_56 -eq 1 ] || [ $inst_70 -eq 1 ] || [ $inst_71 -eq 1 ] || [ $inst_72 -eq 1 ] || [ $inst_73 -eq 1 ]; then
+if [ $inst_56 -eq 1 ] || [ $inst_70 -eq 1 ] || [ $inst_71 -eq 1 ] || [ $inst_72 -eq 1 ] || [ $inst_73 -eq 1 ] || [ $inst_74 -eq 1 ]; then
     inst_repo=1
 fi
 
@@ -180,4 +191,28 @@ if [ $debian_version -eq 9 ]; then
   cp /etc/php/7.0/apache2/php.ini /etc/php/7.3/fpm/php.ini
 fi
 press_enter "=== Press enter to continue ==============================================================================="
+fi
+
+if [ "$inst_74" -eq 1 ]; then
+    press_enter "=== Press enter to install PHP 7.4 ==============================================================================="
+    apt-get -y install php7.4-mbstring php7.4-bcmath php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-intl php7.4-mysql php7.4-soap php7.4-xml php7.4-zip php7.4-memcache php7.4-memcached
+    update-rc.d php7.4-fpm defaults
+    a2enconf php7.4-fpm
+    systemctl restart apache2
+    cp -r /etc/php/7.4/ /root/vst_install_backups/php7.4/
+    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.stpl
+    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.tpl
+    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.sh
+    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74-public.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.stpl
+    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74-public.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.tpl
+    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74-public.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.sh
+    chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.sh
+    chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.sh
+    if [ $debian_version -eq 9 ]; then
+        cp /etc/php/7.0/apache2/php.ini /etc/php/7.4/fpm/php.ini
+    fi
+    if [ $debian_version -eq 10 ]; then
+        cp /etc/php/7.3/fpm/php.ini /etc/php/7.4/fpm/php.ini
+    fi
+    press_enter "=== Press enter to continue ==============================================================================="
 fi
