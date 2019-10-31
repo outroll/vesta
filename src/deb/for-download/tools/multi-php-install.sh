@@ -64,6 +64,7 @@ echo "inst_70=$inst_70"
 echo "inst_71=$inst_71"
 echo "inst_72=$inst_72"
 echo "inst_73=$inst_73"
+echo "inst_74=$inst_74"
 echo "wait_to_press_enter=$wait_to_press_enter"
 
 press_enter "=== Press enter to continue ==============================================================================="
