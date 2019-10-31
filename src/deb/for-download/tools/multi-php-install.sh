@@ -101,9 +101,9 @@ a2enconf php5.6-fpm
 systemctl restart apache2
 cp -r /etc/php/5.6/ /root/vst_install_backups/php5.6/
 # rm -f /etc/php/5.6/fpm/pool.d/*
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-56.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-56.stpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-56.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-56.tpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-56.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-56.sh
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-56.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-56.stpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-56.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-56.tpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-56.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-56.sh
 chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-56.sh
 patch -p1 --directory=/ < /root/vesta-temp-dl/vesta/patch/php5-deb9.patch
 press_enter "=== Press enter to continue ==============================================================================="
@@ -117,9 +117,9 @@ a2enconf php7.0-fpm
 systemctl restart apache2
 cp -r /etc/php/7.0/ /root/vst_install_backups/php7.0/
 # rm -f /etc/php/7.0/fpm/pool.d/*
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-70.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-70.stpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-70.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-70.tpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-70.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-70.sh
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-70.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-70.stpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-70.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-70.tpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-70.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-70.sh
 chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-70.sh
 if [ $debian_version -eq 9 ]; then
   cp /etc/php/7.0/apache2/php.ini /etc/php/7.0/fpm/php.ini
@@ -138,9 +138,9 @@ a2enconf php7.1-fpm
 systemctl restart apache2
 cp -r /etc/php/7.1/ /root/vst_install_backups/php7.1/
 # rm -f /etc/php/7.1/fpm/pool.d/*
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-71.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-71.stpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-71.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-71.tpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-71.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-71.sh
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-71.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-71.stpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-71.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-71.tpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-71.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-71.sh
 chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-71.sh
 if [ $debian_version -eq 9 ]; then
   cp /etc/php/7.0/apache2/php.ini /etc/php/7.1/fpm/php.ini
@@ -159,9 +159,9 @@ a2enconf php7.2-fpm
 systemctl restart apache2
 cp -r /etc/php/7.2/ /root/vst_install_backups/php7.2/
 # rm -f /etc/php/7.2/fpm/pool.d/*
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-72.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.stpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-72.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.tpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-72.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.sh
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-72.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.stpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-72.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.tpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-72.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.sh
 chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.sh
 if [ $debian_version -eq 9 ]; then
   cp /etc/php/7.0/apache2/php.ini /etc/php/7.2/fpm/php.ini
@@ -180,12 +180,12 @@ a2enconf php7.3-fpm
 systemctl restart apache2
 cp -r /etc/php/7.3/ /root/vst_install_backups/php7.3/
 # rm -f /etc/php/7.3/fpm/pool.d/*
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-73.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73.stpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-73.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73.tpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-73.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73.sh
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-73-public.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73-public.stpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-73-public.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73-public.tpl
-wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-73-public.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73-public.sh
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-73.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73.stpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-73.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73.tpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-73.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73.sh
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-73-public.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73-public.stpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-73-public.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73-public.tpl
+wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-73-public.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73-public.sh
 chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73.sh
 chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-73-public.sh
 if [ $debian_version -eq 9 ]; then
@@ -201,12 +201,12 @@ if [ "$inst_74" -eq 1 ]; then
     a2enconf php7.4-fpm
     systemctl restart apache2
     cp -r /etc/php/7.4/ /root/vst_install_backups/php7.4/
-    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.stpl
-    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.tpl
-    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.sh
-    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74-public.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.stpl
-    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74-public.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.tpl
-    wget -nv http://dl.mycity.tech/vesta/php-fpm-tpl/PHP-FPM-74-public.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.sh
+    wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-74.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.stpl
+    wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-74.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.tpl
+    wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-74.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.sh
+    wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-74-public.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.stpl
+    wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-74-public.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.tpl
+    wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-74-public.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.sh
     chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.sh
     chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74-public.sh
     if [ $debian_version -eq 9 ]; then
