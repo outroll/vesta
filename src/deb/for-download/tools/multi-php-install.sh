@@ -196,7 +196,8 @@ fi
 
 if [ "$inst_74" -eq 1 ]; then
     press_enter "=== Press enter to install PHP 7.4 ==============================================================================="
-    apt-get -y install php7.4-mbstring php7.4-bcmath php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-intl php7.4-mysql php7.4-soap php7.4-xml php7.4-zip php7.4-memcache php7.4-memcached
+    apt-get -y install php7.4-mbstring php7.4-bcmath php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-intl php7.4-mysql php7.4-soap php7.4-xml php7.4-zip
+    # php7.4-memcache php7.4-memcached
     update-rc.d php7.4-fpm defaults
     a2enconf php7.4-fpm
     systemctl restart apache2
