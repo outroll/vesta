@@ -1590,6 +1590,9 @@ fi
 echo "MAX_DBUSER_LEN=80" >> $VESTA/conf/vesta.conf
 echo "================================================================"
 
+# Removing old PHP sessions files
+crontab -l | { cat; echo "10 2 * * 6 sudo find /home/*/tmp/ -type f -mtime +5 -exec rm {} \;"; } | crontab -
+
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
 #----------------------------------------------------------#
