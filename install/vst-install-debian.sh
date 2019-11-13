@@ -1137,7 +1137,9 @@ if [ "$named" = 'yes' ]; then
     chmod 640 /etc/bind/named.conf
     aa-complain /usr/sbin/named 2>/dev/null
     if [ "$apparmor" = 'yes' ]; then
-      echo "/home/** rwm," >> /etc/apparmor.d/local/usr.sbin.named 2>/dev/null
+      # echo "/home/** rwm," >> /etc/apparmor.d/local/usr.sbin.named 2>/dev/null
+      sed -i "s#/etc/bind/\*\* rw,#/etc/bind/\*\* rw,\n  /home/\*\* rwm,#g" /etc/apparmor.d/usr.sbin.named
+      sed -i "s#/etc/bind/\*\* r,#/etc/bind/\*\* rw,\n  /home/\*\* rwm,#g" /etc/apparmor.d/usr.sbin.named
       service apparmor status >/dev/null 2>&1
       if [ $? -ne 0 ]; then
           service apparmor restart
