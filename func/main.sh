@@ -525,7 +525,7 @@ is_user_format_valid() {
             check_result $E_INVALID "invalid $2 format :: $1"
         fi
     else
-        if ! [[ "$1" =~ ^[[:alnum:]][-|\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]
+        if ! [[ "$1" =~ ^[[:alnum:]][-|\.|_[:alnum:]]{0,64}[[:alnum:]]$ ]]
             then
             check_result $E_INVALID "invalid $2 format :: $1"
         fi
