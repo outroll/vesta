@@ -19,4 +19,10 @@ fi
 
 crontab -l | { cat; echo "10 2 * * 6 sudo find /home/*/tmp/ -type f -mtime +5 -exec rm {} \;"; } | crontab -
 
+touch /var/lib/clamav/clamd.sock
+chown clamav:clamav /var/lib/clamav/clamd.sock
+sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/clamav/clamd.conf
+systemctl restart clamav-daemon
+systemctl restart clamav-freshclam
+
 exit 0
