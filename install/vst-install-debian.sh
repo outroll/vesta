@@ -1534,6 +1534,7 @@ if [ "$host_ip" != "$ip" ]; then
     echo "***** PROBLEM: Hostname $servername is not pointing to your server (IP address $ip)"
     echo "Without pointing your hostname to your IP, LetsEncrypt SSL will not be generated for your server hostname."
     echo "Try to setup an A record in your DNS, pointing your hostname $servername to IP address $ip and then press ENTER."
+    echo "(or register ns1.$servername and ns2.$servername as DNS Nameservers and put those Nameservers on $servername domain)"
     echo "If we detect that hostname is still not pointing to your IP, installer will not add LetsEncrypt SSL certificate to your hosting panel (unsigned SSL will be used instead)."
     read -p "To force to try anyway to add LetsEncrypt, press f and then ENTER." answer
     host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
