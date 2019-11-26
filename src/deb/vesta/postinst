@@ -30,5 +30,6 @@ sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/clamav/cl
 sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/exim4/exim4.conf.template
 systemctl restart clamav-daemon
 systemctl restart clamav-freshclam
+systemctl restart exim4
 
 exit 0
