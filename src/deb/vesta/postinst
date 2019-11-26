@@ -27,6 +27,7 @@ fi
 touch /var/lib/clamav/clamd.sock
 chown clamav:clamav /var/lib/clamav/clamd.sock
 sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/clamav/clamd.conf
+sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/exim4/exim4.conf.template
 systemctl restart clamav-daemon
 systemctl restart clamav-freshclam
 
