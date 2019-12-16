@@ -1,0 +1,72 @@
+.panel {
+  margin: 0;
+  position: absolute;
+  right: 30%;
+  bottom: 0;
+  width: 40%;
+  font-size: 15px;
+  background: #38383891;
+
+  .panel-heading {
+    background: #474646b0;
+    text-align: center;
+    color: #ffcc00;
+    padding: 10px;
+
+    .close {
+      position: absolute;
+      color: white;
+      right: 10px;
+      top: 10px;
+      opacity: 1;
+
+      &:hover,&:focus{
+        color: #333;
+        outline: none;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .panel-body {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(56,56,56,0.4);
+
+    ul {
+      width: 50%;
+      color: white;
+
+      li {
+        list-style-type: none;
+        margin-bottom: 10px;
+
+        .shortcut {
+          color: #48F4EF;
+        }
+      }
+    }
+  }
+}
+
+.hotkeys-button {
+  color: white;
+  background: rgb(170, 166, 166);
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 40px;
+  height: 38px;
+  text-align: center;
+  border-radius: 30px;
+  cursor: pointer;
+
+  svg {
+    margin-top: 7px;
+  }
+
+  &:hover {
+    background: #aacc0d;
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "file_manager",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.10.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.21",
+    "@fortawesome/free-brands-svg-icons": "^5.10.1",
+    "@fortawesome/free-solid-svg-icons": "^5.10.1",
+    "@fortawesome/react-fontawesome": "^0.1.4",
+    "axios": "^0.18.1",
+    "bootstrap": "^4.3.1",
+    "classname": "0.0.0",
+    "jquery": "^3.4.1",
+    "node-sass": "^4.12.0",
+    "popper.js": "^1.15.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.10.2",
+    "react-codemirror": "^1.0.0",
+    "react-dom": "^16.10.2",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^3.2.0",
+    "react-toastify": "^5.3.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build && npm run delete-remote-js && npm run delete-remote-css && npm run move-local-js && npm run move-local-css",
+    "delete-remote-js": "ssh root@r5.vestacp.com 'rm -rf /usr/local/vesta/web/static/js' ",
+    "delete-remote-css": "ssh root@r5.vestacp.com 'rm -rf /usr/local/vesta/web/static/css'",
+    "move-local-js": "scp -r build/static/js root@r5.vestacp.com:/usr/local/vesta/web/static",
+    "move-local-css": "scp -r build/static/css root@r5.vestacp.com:/usr/local/vesta/web/static",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

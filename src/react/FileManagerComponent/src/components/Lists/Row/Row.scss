@@ -1,0 +1,165 @@
+.list .list-container ul li svg {
+  width: 25px;
+  vertical-align: top;
+  margin-top: 9px;
+  margin-left: 10px;
+}
+
+.html5 {
+  color: #f16529;
+}
+
+.file-alt {
+  color: #20d2d1;
+}
+
+.list .list-container ul li {
+  .marker {
+    float: left;
+    width: 4px;
+    height: 34px;
+    margin-right: 5px;
+  }
+}
+
+.list .list-container ul li .js {
+  width: 16px;
+  color: #f7df1c;
+  background: black;
+  margin: 9px 4px 0 15px;
+}
+
+.php {
+  color: #777bb3;
+}
+
+.css3 {
+  color: #0079cb;
+}
+
+.sass {
+  color: #cd6699;
+}
+
+.image {
+  color: #36afae;
+}
+
+.folder-open {
+  color: #e29741;
+}
+
+.file {
+  color: #11b1b1;
+}
+
+.archive {
+  color: rgb(209, 206, 43);
+}
+
+.download {
+  color: #929ca3;
+}
+
+.fOwner,
+.fPermissions,
+.fSize,
+.fDate,
+.fTime {
+  font-size: 14px;
+  float: right;
+  width: 60px;
+  padding-top: 2px;
+}
+
+.list .list-container ul li .fName {
+  margin-left: 5px;
+  width: 260px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: clip;
+
+  .name {
+    padding: 0 5px;
+    float: left;
+    margin-left: 5px;
+    line-height: 34px;
+    font-size: 15px;
+    white-space: nowrap; 
+    transition: all ease-out .3s;
+  
+    &:hover {
+      transition: all ease-out .2s;
+      background: rgb(201, 199, 199);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+}
+
+.list .list-container ul li.active .fName .name:hover {
+  background: #F0B607;
+  color: black;
+}
+
+.list .list-container ul li .fPermissions {
+  margin-left: 35px;
+  width: 50px;
+  color: #727272;
+  font-size: 11px;
+}
+
+.list .list-container ul li .fDate .date {
+  color: #727272;
+  font-size: 11px;
+}
+.list .list-container ul li .fTime {
+  color: #727272;
+  font-size: 11px;
+  width: 54px;
+}
+
+.fSize {
+  padding-right: 15px;
+  text-align: right;
+  width: 95px;
+}
+
+.list .list-container ul li .fOwner {
+  color: #81A64F;
+  font-style: italic;
+  width: 50px;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+.value {
+  color: #44a8b3;
+}
+
+.unit {
+  font-weight: bolder;
+  color: #727272;
+}
+
+li.inactive {
+  .marker {
+    float: left;
+    width: 4px;
+    height: 34px;
+    margin-right: 5px;
+    background: rgb(163, 163, 163);
+  }
+
+  background: rgb(201, 199, 199);
+}
+
+.inactive-selected {
+  background: rgb(220, 220, 220);
+}
+
+@media (max-width: 1200px){
+  .fPermissions, .fOwner {
+    display: none;
+  }
+}
