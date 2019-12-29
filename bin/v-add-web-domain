@@ -137,7 +137,7 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
     if [ -z "$proxy_ext" ]; then
         PROXY_EXT="jpg,jpeg,gif,png,ico,svg,css,zip,tgz,gz,rar,bz2,doc,xls"
         PROXY_EXT="$PROXY_EXT,exe,pdf,ppt,txt,odt,ods,odp,odf,tar,wav,bmp"
-        PROXY_EXT="$PROXY_EXT,rtf,js,mp3,avi,mpeg,flv,woff,woff2,xml"
+        PROXY_EXT="$PROXY_EXT,rtf,js,mp3,avi,mpeg,flv,woff,woff2"
     fi
     add_web_config "$PROXY_SYSTEM" "$PROXY_TEMPLATE.tpl"
 fi
