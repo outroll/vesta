@@ -45,7 +45,16 @@ is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_domain_new 'mail' "$domain"
 is_package_full 'MAIL_DOMAINS'
-is_dir_symlink $HOMEDIR/$user/mail
+# Allow mail symlink to HDD
+check_symlink=1
+symlink=$(readlink $HOMEDIR/$user/mail)
+if [ "$symlink" = "/hdd/home/$user/mail" ]; then
+    check_symlink=0
+fi
+
+if [ $check_symlink -eq 1 ]; then
+    is_dir_symlink $HOMEDIR/$user/mail
+fi
 
 
 #----------------------------------------------------------#
