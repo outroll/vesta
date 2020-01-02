@@ -37,4 +37,6 @@ wait_timeout=10
 interactive_timeout=50
 long_query_time=5
 
+sql_mode=ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+
 !includedir /etc/mysql/conf.d/
