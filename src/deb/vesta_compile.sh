@@ -9,10 +9,10 @@ add_deb_to_apt_repo=0
 
 TARGET_DEB_NAME='buster'
 TARGET_DEB_VER='10'
-VESTA_VER='0.9.8-25'
+VESTA_VER='0.9.8-26-4'
 
 run_apt_update_and_install=1
-wait_to_press_enter=1
+wait_to_press_enter=0
 
 ###############
 # Note: first run --apt before turning add_deb_to_apt_repo=1
@@ -30,7 +30,7 @@ if [ $# -gt 4 ]; then
     add_deb_to_apt_repo=$5
 fi
 
-MAINTAINER_EMAIL='predrag@myvestacp.com'
+MAINTAINER_EMAIL='predrag@hostingpanel.dev'
 
 TARGET_DEB_NAME_MAIN='buster'
 TARGET_DEB_VER_MAIN='10'
@@ -53,8 +53,8 @@ PATH_OF_APT_REPO="$PATH_OF_APT_REPO_ROOT/$TARGET_DEB_NAME"
 
 # Set Version for compiling
 VESTA_V=$VESTA_VER"_amd64"
-NGINX_V='1.17.3'
-OPENSSL_V='1.1.1c'
+NGINX_V='1.17.7'
+OPENSSL_V='1.1.1d'
 PCRE_V='8.43'
 ZLIB_V='1.2.11'
 PHP_V='5.6.40'
@@ -420,7 +420,7 @@ if [ "$PHP_B" = true ]; then
     
     BUILDING_NOW=0
     # Check if target directory exist
-    if [ ! -d "$BUILD_DIR/php-$PHP_V" ] || [ ! -d "$INSTALL_DIR/nginx" ]; then
+    if [ ! -d "$BUILD_DIR/php-$PHP_V" ]; then
       BUILDING_NOW=1
       
       echo "=== Download and unpack source files"
@@ -430,7 +430,7 @@ if [ "$PHP_B" = true ]; then
       echo "=== Change to php directory php-$PHP_V"
       cd php-$PHP_V
       
-      press_enter "=== Press enter to continue ==============================================================================="
+      press_enter "=== Press enter to configure PHP ==============================================================================="
       
       echo "=== Configure PHP"
       ./configure --prefix=$INSTALL_DIR/php \
@@ -441,14 +441,15 @@ if [ "$PHP_B" = true ]; then
                   --with-mysql \
                   --with-mysqli \
                   --with-curl \
-                  --enable-mbstring
+                  --enable-mbstring \
+				  --with-mysql-sock=/var/run/mysqld/mysqld.sock
       
       # Check install directory and remove if exists
       if [ -d $INSTALL_DIR/php ]; then
           rm -rf $INSTALL_DIR/php
       fi
     
-      press_enter "=== Press enter to create the files and install them ==============================================================================="
+      press_enter "=== Press enter to compile PHP ==============================================================================="
       
       make && make install
       
