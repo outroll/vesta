@@ -10,5 +10,6 @@ fi
 update-rc.d vesta defaults >/dev/null
 invoke-rc.d vesta start || true
 
+echo "=== Restarting vesta ==="
 service vesta stop
 service vesta start
