@@ -12,7 +12,7 @@ TARGET_DEB_VER='10'
 VESTA_VER='0.9.8-26-4'
 
 run_apt_update_and_install=1
-wait_to_press_enter=0
+wait_to_press_enter=1
 
 ###############
 # Note: first run --apt before turning add_deb_to_apt_repo=1
@@ -30,7 +30,7 @@ if [ $# -gt 4 ]; then
     add_deb_to_apt_repo=$5
 fi
 
-MAINTAINER_EMAIL='predrag@hostingpanel.dev'
+MAINTAINER_EMAIL='predrag@myvestacp.com'
 
 TARGET_DEB_NAME_MAIN='buster'
 TARGET_DEB_VER_MAIN='10'
