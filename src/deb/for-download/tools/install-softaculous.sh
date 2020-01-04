@@ -27,3 +27,8 @@ service vesta start
 if [ -f "/usr/local/vesta/web/inc/login_url.php-bak" ]; then
     mv /usr/local/vesta/web/inc/login_url.php-bak /usr/local/vesta/web/inc/login_url.php
 fi
+
+echo "=== Softaculous installation done ==="
+echo "Wait for about 5 minutes so softaculous-cron download all packages."
+echo "You can check if it is still downloading packages by running command:"
+echo 'ps -Af | grep "cron.php"  | grep -v "grep"'
