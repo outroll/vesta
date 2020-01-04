@@ -10,6 +10,11 @@ fi
 update-rc.d vesta defaults >/dev/null
 invoke-rc.d vesta start || true
 
+# Run triggers only on updates
+if [ ! -e "/usr/local/vesta/data/users/admin" ]; then
+    exit
+fi
+
 echo "=== Restarting vesta ==="
 service vesta stop
 service vesta start
