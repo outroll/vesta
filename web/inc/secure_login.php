@@ -12,6 +12,9 @@ if (substr($_SERVER['SCRIPT_FILENAME'], 0, 28)=='/usr/local/vesta/web/custom/') 
 if (substr($_SERVER['SCRIPT_FILENAME'], 0, 29)=='/usr/local/vesta/web//custom/') $login_url_skip=1;
 
 if (substr($_SERVER['SCRIPT_FILENAME'], 0, 21)=='/usr/local/vesta/bin/') $skip_login_url_check=1; // allow executing v-* PHP scripts from bash
+if (substr($_SERVER['SCRIPT_FILENAME'], 0, 29)=='/usr/local/vesta/softaculous/') $skip_login_url_check=1; // allow softaculous
+if (substr($_SERVER['SCRIPT_FILENAME'], 0, 33)=='/usr/local/vesta/web/softaculous/') $skip_login_url_check=1; // allow softaculous
+if (substr($_SERVER['SCRIPT_FILENAME'], 0, 34)=='/usr/local/vesta/web//softaculous/') $skip_login_url_check=1; // allow softaculous
 
 if ($skip_login_url_check==0) {
     if (!isset($login_url_loaded)) {
