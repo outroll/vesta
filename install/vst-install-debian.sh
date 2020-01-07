@@ -1140,10 +1140,10 @@ if [ "$named" = 'yes' ]; then
       # echo "/home/** rwm," >> /etc/apparmor.d/local/usr.sbin.named 2>/dev/null
       sed -i "s#/etc/bind/\*\* rw,#/etc/bind/\*\* rw,\n  /home/\*\* rwm,#g" /etc/apparmor.d/usr.sbin.named
       sed -i "s#/etc/bind/\*\* r,#/etc/bind/\*\* rw,\n  /home/\*\* rwm,#g" /etc/apparmor.d/usr.sbin.named
-      service apparmor status >/dev/null 2>&1
-      if [ $? -ne 0 ]; then
+      # service apparmor status >/dev/null 2>&1
+      # if [ $? -ne 0 ]; then
           service apparmor restart
-      fi
+      # fi
     fi
     update-rc.d bind9 defaults
     service bind9 start
