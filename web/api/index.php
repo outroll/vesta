@@ -1,6 +1,18 @@
 <?php
 define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
-exit;
+
+$allowed_host=0;
+$check_file="/usr/local/vesta/conf_web/allow_ip_for_api.conf";
+if (file_exists($check_file)) {
+    $file_content=file($check_file);
+    if (is_array($file_content)) {
+        foreach ($file_content as $line) {
+            if (trim($line) == $_SERVER['REMOTE_ADDR']) {$allowed_host=1; break;}
+        }
+    }
+}
+if ($allowed_host == 0) exit;
+
 if (isset($_POST['user']) || isset($_POST['hash'])) {
 
     // Authentication
