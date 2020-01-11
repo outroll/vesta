@@ -424,7 +424,9 @@ if [ "$interactive" = 'yes' ]; then
 
     # Asking for secret URL
     if [ -z "$secret_url" ]; then
-        read -p 'Please enter secret URL address for hosting panel (press enter for none): ' secret_url
+        echo 'Please enter secret URL address for hosting panel (or press enter for none).'
+        echo 'Secret URL must be without special characters, just letters and numbers. Example: mysecret8205'
+        read -p 'Enter secret URL address:' secret_url
     fi
 
     # Asking for Vesta port
