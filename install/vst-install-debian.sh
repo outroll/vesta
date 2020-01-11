@@ -1210,6 +1210,7 @@ if [ "$clamd" = 'yes' ]; then
     gpasswd -a clamav mail
     gpasswd -a clamav Debian-exim
     cp -f $vestacp/clamav/clamd.conf /etc/clamav/
+    mkdir -p /var/lib/clamav
     touch /var/lib/clamav/clamd.sock
     chown clamav:clamav /var/lib/clamav/clamd.sock
     /usr/bin/freshclam
