@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# WordPress installer in one command line
+# Credits to Luka Paunović for wp-cli implememtation
+
 if [ $# -lt 1 ]; then
     echo usage: create_wp_https domain [db_name] [email]
     exit 1
