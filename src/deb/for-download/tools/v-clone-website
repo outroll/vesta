@@ -23,25 +23,20 @@ if [ -z "$VESTA" ]; then
     VESTA="/usr/local/vesta"
 fi
 
-if [ ! -f "/root/Search-Replace-DB-master/srdb.cli.php" ]; then
-    echo "Please download https://interconnectit.com/products/search-and-replace-for-wordpress-databases/ and extract to /root/Search-Replace-DB-master/"
-    exit 11
+if [ -z "$1" ]; then
+    echo "Error: FROM_DOMAIN is empty"
+    exit 2
 fi
-if [ ! -f "/usr/bin/php7.0" ]; then
-    echo "Please download https://c.myvestacp.com/tools/multi-php-install.sh and install php 7.0"
-    exit 12
+if [ -z "$2" ]; then
+    echo "Error: TO_DOMAIN is empty"
+    exit 3
 fi
 
 FROM_DOMAIN=$1
 FROM_USER=$($VESTA/bin/v-search-domain-owner "$FROM_DOMAIN")
 if [ -z "$FROM_USER" ]; then
     echo "Error: domain $FROM_DOMAIN does not exists"
-    exit 2
-fi
-
-if [ -z "$2" ]; then
-    echo "Error: TO_DOMAIN is empty"
-    exit 2
+    exit 4
 fi
 
 FROM_FOLDER="/home/$FROM_USER/web/$FROM_DOMAIN/public_html"
@@ -61,10 +56,15 @@ if [ -z "$FROM_CONFIG_FILE" ]; then
 fi
 if [ ! -f "$FROM_CONFIG_FILE_FULL_PATH" ]; then
     echo "Error: FROM_CONFIG_FILE_FULL_PATH $FROM_CONFIG_FILE_FULL_PATH does not exists"
-    exit 3
+    exit 5
 fi
 
-if [ -f "$FROM_CONFIG_FILE_FULL_PATH" ]; then
+IT_IS_WP=0
+if [ -f "$FROM_FOLDER/wp-config.php" ]; then
+    IT_IS_WP=1
+fi
+
+if [ $IT_IS_WP -eq 1 ]; then
     FROM_DATABASE_NAME=$(grep 'DB_NAME' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
     FROM_DATABASE_USERNAME=$(grep 'DB_USER' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
     FROM_DATABASE_PASSWORD=$(grep 'DB_PASSWORD' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
@@ -86,15 +86,15 @@ if [ $# -ge 5 ]; then
 fi
 if [ -z "$FROM_DATABASE_NAME" ]; then
     echo "Error: FROM_DATABASE_NAME $FROM_DATABASE_NAME is empty"
-    exit 4
+    exit 6
 fi
 if [ -z "$FROM_DATABASE_USERNAME" ]; then
     echo "Error: FROM_DATABASE_USERNAME $FROM_DATABASE_USERNAME is empty"
-    exit 5
+    exit 7
 fi
 if [ -z "$FROM_DATABASE_PASSWORD" ]; then
     echo "Error: FROM_DATABASE_PASSWORD $FROM_DATABASE_PASSWORD is empty"
-    exit 6
+    exit 8
 fi
 
 FROM_USER_LEN=${#FROM_USER}
@@ -103,7 +103,7 @@ FROM_USER_LEN=$((FROM_USER_LEN+1))
 object=$(grep "DB='$FROM_DATABASE_NAME'" $VESTA/data/users/$FROM_USER/db.conf)
 if [ -z "$object" ]; then
     echo "Error: database $FROM_DATABASE_NAME does not exists"
-    exit 7
+    exit 9
 fi
 
 FROM_DATABASE_NAME_WITHOUT_PREFIX=${FROM_DATABASE_NAME:FROM_USER_LEN}
@@ -176,15 +176,15 @@ if [ -z "$TO_DATABASE_PASSWORD" ]; then
 fi
 if [ -z "$TO_DATABASE_NAME" ]; then
     echo "Error: TO_DATABASE_NAME $TO_DATABASE_NAME is empty"
-    exit 8
+    exit 10
 fi
 if [ -z "$TO_DATABASE_USERNAME" ]; then
     echo "Error: TO_DATABASE_USERNAME $TO_DATABASE_USERNAME is empty"
-    exit 9
+    exit 11
 fi
 if [ -z "$TO_DATABASE_PASSWORD" ]; then
     echo "Error: TO_DATABASE_PASSWORD $TO_DATABASE_PASSWORD is empty"
-    exit 10
+    exit 12
 fi
 
 TO_USER_LEN=${#TO_USER}
@@ -192,6 +192,24 @@ TO_USER_LEN=$((TO_USER_LEN+1))
 
 TO_DATABASE_NAME_WITHOUT_PREFIX=${TO_DATABASE_NAME:TO_USER_LEN}
 TO_DATABASE_USERNAME_WITHOUT_PREFIX=${TO_DATABASE_USERNAME:TO_USER_LEN}
+
+
+# ----------- CHECK -------------
+
+if [ $IT_IS_WP -eq 0 ]; then
+    if [ ! -f "/root/Search-Replace-DB-master/srdb.cli.php" ]; then
+        echo "Please download https://interconnectit.com/products/search-and-replace-for-wordpress-databases/ and extract to /root/Search-Replace-DB-master/"
+        exit 13
+    fi
+    if [ ! -f "/usr/bin/php7.0" ]; then
+        echo "Please download https://c.myvestacp.com/tools/multi-php-install.sh and install php 7.0"
+        exit 14
+    fi
+else
+    echo "=== Downloading latest wp-cli"
+    wget -nv https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /usr/local/bin/wp
+    chmod +x /usr/local/bin/wp
+fi
 
 
 # ----------- PRINT -------------
@@ -204,13 +222,14 @@ echo "TO_DOMAIN = $TO_DOMAIN"
 echo "TO_USER = $TO_USER"
 echo "FROM_FOLDER = $FROM_FOLDER"
 echo "TO_FOLDER = $TO_FOLDER"
+echo "IT_IS_WP = $IT_IS_WP"
+echo "FROM_CONFIG_FILE_FULL_PATH = $FROM_CONFIG_FILE_FULL_PATH"
+echo "TO_CONFIG_FILE_FULL_PATH = $TO_CONFIG_FILE_FULL_PATH"
 echo "FROM_DATABASE_NAME = $FROM_DATABASE_NAME"
 echo "FROM_DATABASE_USERNAME = $FROM_DATABASE_USERNAME"
 echo "FROM_DATABASE_PASSWORD = $FROM_DATABASE_PASSWORD"
 echo "FROM_DATABASE_NAME_WITHOUT_PREFIX = $FROM_DATABASE_NAME_WITHOUT_PREFIX"
 echo "FROM_DATABASE_USERNAME_WITHOUT_PREFIX = $FROM_DATABASE_USERNAME_WITHOUT_PREFIX"
-echo "FROM_CONFIG_FILE_FULL_PATH = $FROM_CONFIG_FILE_FULL_PATH"
-echo "TO_CONFIG_FILE_FULL_PATH = $TO_CONFIG_FILE_FULL_PATH"
 echo "TO_DATABASE_NAME = $TO_DATABASE_NAME"
 echo "TO_DATABASE_USERNAME = $TO_DATABASE_USERNAME"
 echo "TO_DATABASE_PASSWORD = $TO_DATABASE_PASSWORD"
@@ -261,7 +280,16 @@ echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in folder $TO_FOLDER"
 grep -rl "$FROM_DOMAIN" $FROM_FOLDER | xargs sed -i "s#$FROM_DOMAIN#$TO_DOMAIN#g"
 
 echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in database $TO_DATABASE_NAME"
-php7.0 /root/Search-Replace-DB-master/srdb.cli.php -h localhost -n "$TO_DATABASE_NAME" -u "$TO_DATABASE_USERNAME" -p "$TO_DATABASE_PASSWORD" -s "$FROM_DOMAIN" -r "$TO_DOMAIN"
+if [ $IT_IS_WP -eq 0 ]; then
+    php7.0 /root/Search-Replace-DB-master/srdb.cli.php -h localhost -n "$TO_DATABASE_NAME" -u "$TO_DATABASE_USERNAME" -p "$TO_DATABASE_PASSWORD" -s "$FROM_DOMAIN" -r "$TO_DOMAIN"
+else
+    cd $TO_FOLDER
+    sudo -H -u$TO_USER wp search-replace "$FROM_DOMAIN" "$TO_DOMAIN" --precise --all-tables --skip-columns=guid
+    if [ -f "$TO_FOLDER/index.html" ]; then
+        echo "=== Removing $TO_FOLDER/index.html"
+        rm $TO_FOLDER/index.html
+    fi
+fi
 
 echo "===== DONE ===="
 echo "You can visit http://$TO_DOMAIN/"
