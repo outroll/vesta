@@ -69,10 +69,10 @@ echo "wait_to_press_enter=$wait_to_press_enter"
 
 press_enter "=== Press enter to continue ==============================================================================="
 
-apt-get update
+apt update
 if [ "$inst_repo" -eq 1 ]; then
 press_enter "=== Press enter to install sury.org repo ==============================================================================="
-apt-get -y install apt-transport-https ca-certificates
+apt -y install apt-transport-https ca-certificates
 wget -nv -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 if [ $debian_version -eq 8 ]; then
   sh -c 'echo "deb https://packages.sury.org/php/ jessie main" > /etc/apt/sources.list.d/php.list'
@@ -83,8 +83,8 @@ fi
 if [ $debian_version -eq 10 ]; then
   sh -c 'echo "deb https://packages.sury.org/php/ buster main" > /etc/apt/sources.list.d/php.list'
 fi
-apt-get update
-apt-get upgrade -y
+apt update
+apt upgrade -y
 press_enter "=== Press enter to continue ==============================================================================="
 fi
 
@@ -95,7 +95,7 @@ service apache2 restart
 
 if [ "$inst_56" -eq 1 ]; then
 press_enter "=== Press enter to install PHP 5.6 ==============================================================================="
-apt-get -y install php5.6-mbstring php5.6-bcmath php5.6-cli php5.6-curl php5.6-fpm php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mysql php5.6-soap php5.6-xml php5.6-zip php5.6-memcache php5.6-memcached
+apt -y install php5.6-mbstring php5.6-bcmath php5.6-cli php5.6-curl php5.6-fpm php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mysql php5.6-soap php5.6-xml php5.6-zip php5.6-memcache php5.6-memcached
 update-rc.d php5.6-fpm defaults
 a2enconf php5.6-fpm
 systemctl restart apache2
@@ -111,7 +111,7 @@ fi
 
 if [ "$inst_70" -eq 1 ]; then
 press_enter "=== Press enter to install PHP 7.0 ==============================================================================="
-apt-get -y install php7.0-mbstring php7.0-bcmath php7.0-cli php7.0-curl php7.0-fpm php7.0-gd php7.0-intl php7.0-mcrypt php7.0-mysql php7.0-soap php7.0-xml php7.0-zip php7.0-memcache php7.0-memcached
+apt -y install php7.0-mbstring php7.0-bcmath php7.0-cli php7.0-curl php7.0-fpm php7.0-gd php7.0-intl php7.0-mcrypt php7.0-mysql php7.0-soap php7.0-xml php7.0-zip php7.0-memcache php7.0-memcached
 update-rc.d php7.0-fpm defaults
 a2enconf php7.0-fpm
 systemctl restart apache2
@@ -132,7 +132,7 @@ fi
 
 if [ "$inst_71" -eq 1 ]; then
 press_enter "=== Press enter to install PHP 7.1 ==============================================================================="
-apt-get -y install php7.1-mbstring php7.1-bcmath php7.1-cli php7.1-curl php7.1-fpm php7.1-gd php7.1-intl php7.1-mcrypt php7.1-mysql php7.1-soap php7.1-xml php7.1-zip php7.1-memcache php7.1-memcached
+apt -y install php7.1-mbstring php7.1-bcmath php7.1-cli php7.1-curl php7.1-fpm php7.1-gd php7.1-intl php7.1-mcrypt php7.1-mysql php7.1-soap php7.1-xml php7.1-zip php7.1-memcache php7.1-memcached
 update-rc.d php7.1-fpm defaults
 a2enconf php7.1-fpm
 systemctl restart apache2
@@ -153,7 +153,7 @@ fi
 
 if [ "$inst_72" -eq 1 ]; then
 press_enter "=== Press enter to install PHP 7.2 ==============================================================================="
-apt-get -y install php7.2-mbstring php7.2-bcmath php7.2-cli php7.2-curl php7.2-fpm php7.2-gd php7.2-intl php7.2-mysql php7.2-soap php7.2-xml php7.2-zip php7.2-memcache php7.2-memcached
+apt -y install php7.2-mbstring php7.2-bcmath php7.2-cli php7.2-curl php7.2-fpm php7.2-gd php7.2-intl php7.2-mysql php7.2-soap php7.2-xml php7.2-zip php7.2-memcache php7.2-memcached
 update-rc.d php7.2-fpm defaults
 a2enconf php7.2-fpm
 systemctl restart apache2
@@ -174,7 +174,7 @@ fi
 
 if [ "$inst_73" -eq 1 ]; then
 press_enter "=== Press enter to install PHP 7.3 ==============================================================================="
-apt-get -y install php7.3-mbstring php7.3-bcmath php7.3-cli php7.3-curl php7.3-fpm php7.3-gd php7.3-intl php7.3-mysql php7.3-soap php7.3-xml php7.3-zip php7.3-memcache php7.3-memcached
+apt -y install php7.3-mbstring php7.3-bcmath php7.3-cli php7.3-curl php7.3-fpm php7.3-gd php7.3-intl php7.3-mysql php7.3-soap php7.3-xml php7.3-zip php7.3-memcache php7.3-memcached
 update-rc.d php7.3-fpm defaults
 a2enconf php7.3-fpm
 systemctl restart apache2
@@ -196,7 +196,7 @@ fi
 
 if [ "$inst_74" -eq 1 ]; then
     press_enter "=== Press enter to install PHP 7.4 ==============================================================================="
-    apt-get -y install php7.4-mbstring php7.4-bcmath php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-intl php7.4-mysql php7.4-soap php7.4-xml php7.4-zip php7.4-memcache php7.4-memcached
+    apt -y install php7.4-mbstring php7.4-bcmath php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-intl php7.4-mysql php7.4-soap php7.4-xml php7.4-zip php7.4-memcache php7.4-memcached
     update-rc.d php7.4-fpm defaults
     a2enconf php7.4-fpm
     systemctl restart apache2
@@ -217,3 +217,6 @@ if [ "$inst_74" -eq 1 ]; then
     fi
     press_enter "=== Press enter to continue ==============================================================================="
 fi
+
+apt update
+apt upgrade -y
