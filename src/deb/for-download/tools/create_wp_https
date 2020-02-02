@@ -42,6 +42,9 @@ if [ -f "/home/$user/conf/web/ssl.$domain.pem" ]; then
     if [ -f "/usr/local/vesta/data/templates/web/nginx/force-https.stpl" ]; then
         v-change-web-domain-proxy-tpl  "$user" "$domain" "force-https" "jpeg,jpg,png,gif,bmp,ico,svg,tif,tiff,css,js,ttf,otf,webp,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odf,odp,ods,odt,pdf,psd,ai,eot,eps,ps,zip,tar,tgz,gz,rar,bz2,7z,aac,m4a,mp3,mp4,ogg,wav,wma,3gp,avi,flv,m4v,mkv,mov,mpeg,mpg,wmv,exe,iso,dmg,swf,woff,woff2" "yes"
     fi
+else
+    echo "Error: Can not generate SSL."
+    exit 20
 fi
 
 WORKINGDIR="/home/$user/web/$domain/public_html"
