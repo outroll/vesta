@@ -206,9 +206,11 @@ if [ $IT_IS_WP -eq 0 ]; then
         exit 14
     fi
 else
-    echo "=== Downloading latest wp-cli"
-    wget -nv https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /usr/local/bin/wp
-    chmod +x /usr/local/bin/wp
+    if [ ! -f "/usr/local/bin/wp" ]; then
+        echo "=== Downloading latest wp-cli"
+        wget -nv https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /usr/local/bin/wp
+        chmod +x /usr/local/bin/wp
+    fi
 fi
 
 
