@@ -279,7 +279,7 @@ echo "=== Replacing $FROM_DATABASE_PASSWORD to $TO_DATABASE_PASSWORD in $TO_CONF
 sed -i "s|$FROM_DATABASE_PASSWORD|$TO_DATABASE_PASSWORD|g" $TO_CONFIG_FILE_FULL_PATH
 
 echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in folder $TO_FOLDER"
-grep -rl "$FROM_DOMAIN" $FROM_FOLDER | xargs sed -i "s#$FROM_DOMAIN#$TO_DOMAIN#g"
+grep -rl "$FROM_DOMAIN" $TO_FOLDER | xargs sed -i "s#$FROM_DOMAIN#$TO_DOMAIN#g"
 
 echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in database $TO_DATABASE_NAME"
 if [ $IT_IS_WP -eq 0 ]; then
