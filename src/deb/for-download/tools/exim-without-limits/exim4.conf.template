@@ -4,6 +4,7 @@
 #                                                                    #
 ######################################################################
 
+# Uncomment these 3 lines if you have ClamAV or Spamassassin
 #SPAMASSASSIN = yes
 #SPAM_SCORE = 50
 #CLAMD =  yes
@@ -293,6 +294,7 @@ remote_smtp:
   dkim_private_key = DKIM_PRIVATE_KEY
   dkim_canon = relaxed
   dkim_strict = 0
+  hosts_try_chunking = !93.188.3.0/24
 
 procmail:
   driver = pipe
