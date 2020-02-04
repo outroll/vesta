@@ -16,7 +16,7 @@ server {
 
     location /webmail {
         disable_symlinks off;
-        proxy_pass      https://%ip%:%web_ssl_port%;
+        proxy_pass      http://%ip%:%web_port%;
         location ~* ^.+\.(%proxy_extentions%)$ {
             root           /var/lib/roundcube;
             access_log     /var/log/%web_system%/domains/%domain%.log combined;
@@ -28,7 +28,7 @@ server {
 
     location /phpmyadmin {
         disable_symlinks off;
-        proxy_pass      https://%ip%:%web_ssl_port%;
+        proxy_pass      http://%ip%:%web_port%;
         location ~* ^.+\.(%proxy_extentions%)$ {
             root           /usr/share;
             access_log     /var/log/%web_system%/domains/%domain%.log combined;
