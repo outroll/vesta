@@ -106,7 +106,7 @@ wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-56.tpl -O /usr/loc
 wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-56.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-56.sh
 chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-56.sh
 mkdir -p /root/vesta-temp-dl/vesta/patch
-wget -nv https://c.myvestacp.com/tools/php5.6.patch -O /root/vesta-temp-dl/vesta/patch/php5.6.patch
+wget -nv https://c.myvestacp.com/tools/patches/php5.6.patch -O /root/vesta-temp-dl/vesta/patch/php5.6.patch
 patch -p1 --directory=/ < /root/vesta-temp-dl/vesta/patch/php5.6.patch
 rm -rf /root/vesta-temp-dl
 press_enter "=== Press enter to continue ==============================================================================="
