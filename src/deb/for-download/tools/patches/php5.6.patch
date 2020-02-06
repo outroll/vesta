@@ -1,0 +1,84 @@
+--- origin/etc/php/5.6/fpm/php.ini	2016-10-03 13:42:37.000000000 +0200
++++ vesta/etc/php/5.6/fpm/php.ini	2016-09-30 14:10:49.000000000 +0200
+@@ -295,12 +295,13 @@
+ ; and below.  This directive makes most sense if used in a per-directory
+ ; or per-virtualhost web server configuration file.
+ ; http://php.net/open-basedir
+-;open_basedir =
++;open_basedir = 
+ 
+ ; This directive allows you to disable certain functions for security reasons.
+ ; It receives a comma-delimited list of function names.
+ ; http://php.net/disable-functions
+-disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,
++; disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,
++disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,exec,system,passthru,shell_exec,proc_open,popen
+ 
+ ; This directive allows you to disable certain classes for security reasons.
+ ; It receives a comma-delimited list of class names.
+@@ -386,7 +387,7 @@
+ ;max_input_nesting_level = 64
+ 
+ ; How many GET/POST/COOKIE input variables may be accepted
+-; max_input_vars = 1000
++max_input_vars = 6000
+ 
+ ; Maximum amount of memory a script may consume (128MB)
+ ; http://php.net/memory-limit
+@@ -657,7 +658,7 @@
+ ; Its value may be 0 to disable the limit. It is ignored if POST data reading
+ ; is disabled through enable_post_data_reading.
+ ; http://php.net/post-max-size
+-post_max_size = 8M
++post_max_size = 60M
+ 
+ ; Automatically add files before PHP document.
+ ; http://php.net/auto-prepend-file
+@@ -802,11 +803,11 @@
+ ; Temporary directory for HTTP uploaded files (will use system default if not
+ ; specified).
+ ; http://php.net/upload-tmp-dir
+-;upload_tmp_dir =
++upload_tmp_dir = 
+ 
+ ; Maximum allowed size for uploaded files.
+ ; http://php.net/upload-max-filesize
+-upload_max_filesize = 2M
++upload_max_filesize = 50M
+ 
+ ; Maximum number of files that can be uploaded via a single request
+ max_file_uploads = 20
+@@ -993,7 +994,7 @@
+ 
+ ; The path to a log file that will log all mail() calls. Log entries include
+ ; the full path of the script, line number, To address and headers.
+-;mail.log =
++mail.log = /var/log/php-mail.log
+ ; Log mail to syslog (Event Log on Windows).
+ ;mail.log = syslog
+ 
+@@ -1903,20 +1903,20 @@
+ 
+ [opcache]
+ ; Determines if Zend OPCache is enabled
+-;opcache.enable=0
++opcache.enable=1
+ 
+ ; Determines if Zend OPCache is enabled for the CLI version of PHP
+-;opcache.enable_cli=0
++opcache.enable_cli=0
+ 
+ ; The OPcache shared memory storage size.
+-;opcache.memory_consumption=64
++opcache.memory_consumption=2048
+ 
+ ; The amount of memory for interned strings in Mbytes.
+ ;opcache.interned_strings_buffer=4
+ 
+ ; The maximum number of keys (scripts) in the OPcache hash table.
+ ; Only numbers between 200 and 100000 are allowed.
+-;opcache.max_accelerated_files=2000
++opcache.max_accelerated_files=100000
+ 
+ ; The maximum percentage of "wasted" memory until a restart is scheduled.
+ ;opcache.max_wasted_percentage=5
