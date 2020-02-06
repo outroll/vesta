@@ -1530,6 +1530,10 @@ if [ "$release" -eq 10 ]; then
   service php7.3-fpm restart
 fi
 
+echo "=== Patching rcube_vcard.php"
+wget -nv https://c.myvestacp.com/tools/patches/rcube_vcard.patch -O /root/rcube_vcard.patch
+patch /usr/share/roundcube/program/lib/Roundcube/rcube_vcard.php < /root/rcube_vcard.patch
+
 # Comparing hostname and ip
 make_ssl=0
 host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
