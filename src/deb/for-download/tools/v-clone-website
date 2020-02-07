@@ -267,7 +267,7 @@ echo "=== Importing to database $TO_DATABASE_NAME"
 mysql $TO_DATABASE_NAME < $FROM_DATABASE_NAME.sql
 
 echo "=== Copying files from $FROM_FOLDER to folder $TO_FOLDER"
-rsync -a $FROM_FOLDER/ $TO_FOLDER/
+rsync -a --delete $FROM_FOLDER/ $TO_FOLDER/
 echo "=== Chowning to  $TO_USER:$TO_USER in folder $TO_FOLDER"
 chown -R $TO_USER:$TO_USER $TO_FOLDER
 
@@ -287,10 +287,6 @@ if [ $IT_IS_WP -eq 0 ]; then
 else
     cd $TO_FOLDER
     sudo -H -u$TO_USER wp search-replace "$FROM_DOMAIN" "$TO_DOMAIN" --precise --all-tables --skip-columns=guid
-    if [ -f "$TO_FOLDER/index.html" ]; then
-        echo "=== Removing $TO_FOLDER/index.html"
-        rm $TO_FOLDER/index.html
-    fi
 fi
 
 echo "===== DONE ===="
