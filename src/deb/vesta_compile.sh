@@ -9,7 +9,7 @@ add_deb_to_apt_repo=0
 
 TARGET_DEB_NAME='buster'
 TARGET_DEB_VER='10'
-VESTA_VER='0.9.8-26-4'
+VESTA_VER='0.9.8-26-5'
 
 run_apt_update_and_install=1
 wait_to_press_enter=1
