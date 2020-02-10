@@ -10,6 +10,12 @@ if [ -x "/root/vesta-patch.sh" ]; then
     /root/vesta-patch.sh
 fi
 
+# sudoers fix
+if [ -e "/etc/sudoers.d/admin" ]; then
+    sed -i "s/admin.*ALL=(ALL).*/# sudo is limited to vesta scripts/" \
+        /etc/sudoers.d/admin
+fi
+
 check_apt=$(grep -c 'vesta.hostingpanel.dev' /etc/apt/sources.list.d/vesta.list)
 if [ "$check_apt" -eq 1 ]; then
     wget -O - http://apt.myvestacp.com/deb_signing.key | sudo apt-key add -
