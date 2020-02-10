@@ -66,6 +66,12 @@ fi
 
 if [ $IT_IS_WP -eq 1 ]; then
     FROM_DATABASE_NAME=$(grep 'DB_NAME' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
+    if [ -z "FROM_DATABASE_NAME" ]; then
+        sed -i "s|('|( '|g" $FROM_CONFIG_FILE_FULL_PATH
+        sed -i "s|');|' );|g" $FROM_CONFIG_FILE_FULL_PATH
+        FROM_DATABASE_NAME=$(grep 'DB_NAME' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
+    fi
+
     FROM_DATABASE_USERNAME=$(grep 'DB_USER' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
     FROM_DATABASE_PASSWORD=$(grep 'DB_PASSWORD' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
 fi
