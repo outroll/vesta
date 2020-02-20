@@ -1613,9 +1613,9 @@ crontab -l | { cat; echo "10 2 * * 6 sudo find /home/*/tmp/ -type f -mtime +5 -e
 echo -e "Congratulations, you have just successfully installed \
 Vesta Control Panel
 
-    https://$ip:$port/$secretquery
-    username: admin
-    password: $vpass
+https://$ip:$port/$secretquery
+username: admin
+password: $vpass
 
 We hope that you enjoy your installation of Vesta. Please \
 feel free to contact us anytime if you have any questions.
