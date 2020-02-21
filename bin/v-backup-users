@@ -26,12 +26,18 @@ log=$VESTA/log/backup.log
 
 $BIN/v-check-vesta-license >/dev/null
 
+if [ ! -z "$NOTIFY_ADMIN_FULL_BACKUP" ]; then
+    mv $log $log-`date +"%Y-%m-%d--%H:%M:%S"`
+    touch $log
+fi
+
 # Auto-repair all databases before backuping all accounts
 nice -n 19 ionice -c 3 mysqlrepair --all-databases --check --auto-repair >> $log 2>&1
 
 if [ -z "$BACKUP_SYSTEM" ]; then
     exit
 fi
+FINAL_STATUS='OK'
 i_am_in_backup_all_users=1
 for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
     if [ ! -f "$VESTA/data/users/$user/user.conf" ]; then
@@ -45,10 +51,18 @@ for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
         echo -e "--------------------------------\n" >> $log
         i_am_in_backup_all_users=0
         nice -n 19 ionice -c 3 $BIN/v-backup-user $user >> $log 2>&1
+        STATUS=$?
+        if [ $STATUS -ne 0 ]; then
+            FINAL_STATUS='CONTAINS ERRORS !!!'
+        fi
         i_am_in_backup_all_users=1
         echo -e "\n--------------------------------\n\n" >> $log
     fi
 done
+
+if [ ! -z "$NOTIFY_ADMIN_FULL_BACKUP" ]; then
+    cat $log |$SENDMAIL -s "Full backup report; status=$FINAL_STATUS" $NOTIFY_ADMIN_FULL_BACKUP 'yes'
+fi
 
 #----------------------------------------------------------#
 #                       Vesta                              #
