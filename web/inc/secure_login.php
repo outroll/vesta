@@ -1,6 +1,9 @@
 <?php
 
 $skip_login_url_check=0;
+
+if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web/inc/mail-wrapper.php') $skip_login_url_check=1; // it can be executed only from cli
+
 if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web/reset/mail/index.php') $skip_login_url_check=1; // it's accessible only from localhost
 if ($_SERVER['SCRIPT_FILENAME']=='/usr/local/vesta/web//reset/mail/index.php') $skip_login_url_check=1;
 
