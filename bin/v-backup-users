@@ -61,7 +61,7 @@ for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
 done
 
 if [ ! -z "$NOTIFY_ADMIN_FULL_BACKUP" ]; then
-    cat $log |$SENDMAIL -s "Full backup report; status=$FINAL_STATUS" $NOTIFY_ADMIN_FULL_BACKUP 'yes'
+    cat $log |$SENDMAIL -s "Full backup report for $HOSTNAME; status=$FINAL_STATUS" "$NOTIFY_ADMIN_FULL_BACKUP" 'yes'
 fi
 
 #----------------------------------------------------------#
