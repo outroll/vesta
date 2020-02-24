@@ -183,7 +183,8 @@ is_type_valid() {
 is_backup_enabled() {
     BACKUPS=$(grep "^BACKUPS=" $USER_DATA/user.conf | cut -f2 -d \')
     if [ -z "$BACKUPS" ] || [[ "$BACKUPS" -le '0' ]]; then
-        check_result $E_DISABLED "user backup is disabled"
+        check_result 0 "user backup is disabled"
+        exit 0
     fi
 }
 
