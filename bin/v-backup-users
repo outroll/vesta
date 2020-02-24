@@ -63,6 +63,9 @@ done
 if [ ! -z "$NOTIFY_ADMIN_FULL_BACKUP" ]; then
     cat $log |$SENDMAIL -s "Full backup report for $HOSTNAME; status=$FINAL_STATUS" "$NOTIFY_ADMIN_FULL_BACKUP" 'yes'
 fi
+if [ ! -z "$NOTIFY_ADMIN_FULL_BACKUP2" ]; then
+    cat $log |$SENDMAIL -s "Full backup report for $HOSTNAME; status=$FINAL_STATUS" "$NOTIFY_ADMIN_FULL_BACKUP2" 'yes'
+fi
 
 #----------------------------------------------------------#
 #                       Vesta                              #
