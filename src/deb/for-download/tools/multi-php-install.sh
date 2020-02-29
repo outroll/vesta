@@ -223,3 +223,17 @@ fi
 
 apt update
 apt upgrade -y
+
+if [ $debian_version -eq 10 ]; then
+    a2dismod ruid2
+    a2dismod suexec
+    a2dismod php5.6
+    a2dismod php7.0
+    a2dismod php7.1
+    a2dismod php7.2
+    a2dismod php7.3
+    a2dismod php7.4
+    a2dismod mpm_prefork
+    a2enmod mpm_event
+    service apache2 restart
+fi
