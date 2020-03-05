@@ -65,15 +65,18 @@ if [ -f "$FROM_FOLDER/wp-config.php" ]; then
 fi
 
 if [ $IT_IS_WP -eq 1 ]; then
-    FROM_DATABASE_NAME=$(grep 'DB_NAME' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
-    if [ -z "FROM_DATABASE_NAME" ]; then
-        sed -i "s|('|( '|g" $FROM_CONFIG_FILE_FULL_PATH
-        sed -i "s|');|' );|g" $FROM_CONFIG_FILE_FULL_PATH
-        FROM_DATABASE_NAME=$(grep 'DB_NAME' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
+    FROM_CONFIG_FILE_FULL_PATH_BACKUP="${FROM_CONFIG_FILE_FULL_PATH}_backup"
+    cp $FROM_CONFIG_FILE_FULL_PATH $FROM_CONFIG_FILE_FULL_PATH_BACKUP
+    sed -i "s|//.*$||g" $FROM_CONFIG_FILE_FULL_PATH_BACKUP
+    if [ -z "$FROM_DATABASE_NAME" ]; then
+        sed -i "s|('|( '|g" $FROM_CONFIG_FILE_FULL_PATH_BACKUP
+        sed -i "s|');|' );|g" $FROM_CONFIG_FILE_FULL_PATH_BACKUP
+        FROM_DATABASE_NAME=$(grep 'DB_NAME' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
     fi
 
-    FROM_DATABASE_USERNAME=$(grep 'DB_USER' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
-    FROM_DATABASE_PASSWORD=$(grep 'DB_PASSWORD' $FROM_CONFIG_FILE_FULL_PATH | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
+    FROM_DATABASE_USERNAME=$(grep 'DB_USER' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
+    FROM_DATABASE_PASSWORD=$(grep 'DB_PASSWORD' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
+    rm $FROM_CONFIG_FILE_FULL_PATH_BACKUP
 fi
 if [ $# -ge 3 ]; then
     if [ ! -z "$3" ]; then
@@ -91,15 +94,15 @@ if [ $# -ge 5 ]; then
     fi
 fi
 if [ -z "$FROM_DATABASE_NAME" ]; then
-    echo "Error: FROM_DATABASE_NAME $FROM_DATABASE_NAME is empty"
+    echo "Error: FROM_DATABASE_NAME is empty"
     exit 6
 fi
 if [ -z "$FROM_DATABASE_USERNAME" ]; then
-    echo "Error: FROM_DATABASE_USERNAME $FROM_DATABASE_USERNAME is empty"
+    echo "Error: FROM_DATABASE_USERNAME is empty"
     exit 7
 fi
 if [ -z "$FROM_DATABASE_PASSWORD" ]; then
-    echo "Error: FROM_DATABASE_PASSWORD $FROM_DATABASE_PASSWORD is empty"
+    echo "Error: FROM_DATABASE_PASSWORD is empty"
     exit 8
 fi
 
@@ -225,24 +228,24 @@ fi
 
 echo "==============================================================================="
 echo "FROM_DOMAIN = $FROM_DOMAIN"
+echo "TO_DOMAIN   = $TO_DOMAIN"
 echo "FROM_USER = $FROM_USER"
-echo "TO_DOMAIN = $TO_DOMAIN"
-echo "TO_USER = $TO_USER"
+echo "TO_USER   = $TO_USER"
 echo "FROM_FOLDER = $FROM_FOLDER"
-echo "TO_FOLDER = $TO_FOLDER"
+echo "TO_FOLDER   = $TO_FOLDER"
 echo "IT_IS_WP = $IT_IS_WP"
 echo "FROM_CONFIG_FILE_FULL_PATH = $FROM_CONFIG_FILE_FULL_PATH"
-echo "TO_CONFIG_FILE_FULL_PATH = $TO_CONFIG_FILE_FULL_PATH"
+echo "TO_CONFIG_FILE_FULL_PATH   = $TO_CONFIG_FILE_FULL_PATH"
 echo "FROM_DATABASE_NAME = $FROM_DATABASE_NAME"
+echo "TO_DATABASE_NAME   = $TO_DATABASE_NAME"
 echo "FROM_DATABASE_USERNAME = $FROM_DATABASE_USERNAME"
+echo "TO_DATABASE_USERNAME   = $TO_DATABASE_USERNAME"
 echo "FROM_DATABASE_PASSWORD = $FROM_DATABASE_PASSWORD"
+echo "TO_DATABASE_PASSWORD   = $TO_DATABASE_PASSWORD"
 echo "FROM_DATABASE_NAME_WITHOUT_PREFIX = $FROM_DATABASE_NAME_WITHOUT_PREFIX"
+echo "TO_DATABASE_NAME_WITHOUT_PREFIX   = $TO_DATABASE_NAME_WITHOUT_PREFIX"
 echo "FROM_DATABASE_USERNAME_WITHOUT_PREFIX = $FROM_DATABASE_USERNAME_WITHOUT_PREFIX"
-echo "TO_DATABASE_NAME = $TO_DATABASE_NAME"
-echo "TO_DATABASE_USERNAME = $TO_DATABASE_USERNAME"
-echo "TO_DATABASE_PASSWORD = $TO_DATABASE_PASSWORD"
-echo "TO_DATABASE_NAME_WITHOUT_PREFIX = $TO_DATABASE_NAME_WITHOUT_PREFIX"
-echo "TO_DATABASE_USERNAME_WITHOUT_PREFIX = $TO_DATABASE_USERNAME_WITHOUT_PREFIX"
+echo "TO_DATABASE_USERNAME_WITHOUT_PREFIX   = $TO_DATABASE_USERNAME_WITHOUT_PREFIX"
 echo "==============================================================================="
 read -p "=== Press Enter to continue ==="
 
