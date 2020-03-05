@@ -77,15 +77,15 @@ if [ $# -ge 4 ]; then
     fi
 fi
 if [ -z "$FROM_DATABASE_NAME" ]; then
-    echo "Error: DATABASE_NAME $FROM_DATABASE_NAME is empty"
+    echo "Error: DATABASE_NAME is empty"
     exit 6
 fi
 if [ -z "$FROM_DATABASE_USERNAME" ]; then
-    echo "Error: DATABASE_USERNAME $FROM_DATABASE_USERNAME is empty"
+    echo "Error: DATABASE_USERNAME is empty"
     exit 7
 fi
 if [ -z "$FROM_DATABASE_PASSWORD" ]; then
-    echo "Error: DATABASE_PASSWORD $FROM_DATABASE_PASSWORD is empty"
+    echo "Error: DATABASE_PASSWORD is empty"
     exit 8
 fi
 
