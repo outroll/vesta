@@ -138,19 +138,19 @@ fi
 
 TO_CONFIG_FILE_FULL_PATH="$TO_FOLDER/$FROM_CONFIG_FILE"
 
-if [ $# -ge 7 ]; then
-    if [ ! -z "$7" ]; then
-        TO_DATABASE_NAME=$7
-    fi
-fi
 if [ $# -ge 8 ]; then
     if [ ! -z "$8" ]; then
-        TO_DATABASE_USERNAME=$8
+        TO_DATABASE_NAME=$8
     fi
 fi
 if [ $# -ge 9 ]; then
     if [ ! -z "$9" ]; then
-        TO_DATABASE_PASSWORD=$9
+        TO_DATABASE_USERNAME=$9
+    fi
+fi
+if [ $# -ge 10 ]; then
+    if [ ! -z "${10}" ]; then
+        TO_DATABASE_PASSWORD=${10}
     fi
 fi
 
