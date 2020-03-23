@@ -485,7 +485,8 @@ if [ "$USER" != '*' ]; then
         exclusion=$(echo "$USER" |tr ',' '\n' |grep "^$udir$")
         if [ -z "$exclusion" ]; then
             ((i ++))
-            udir_list="$udir_list $udir"
+            udir_str=$(echo "$udir" |sed -e "s|'|\\\'|g")
+            udir_list="$udir_list $udir_str"
             echo -e "$(date "+%F %T") adding $udir" |tee -a $BACKUP/$user.log
 
             wait_for_backup_if_it_is_not_time_for_backup
