@@ -688,6 +688,7 @@ chmod 755 /usr/bin/rssh
 mkdir -p /etc/sudoers.d
 cp -f $vestacp/sudo/admin /etc/sudoers.d/
 chmod 440 /etc/sudoers.d/admin
+sed -i "s/%admin.*ALL=(ALL).*/# sudo is limited to vesta scripts/" /etc/sudoers
 
 # Configuring system env
 echo "export VESTA='$VESTA'" > /etc/profile.d/vesta.sh
