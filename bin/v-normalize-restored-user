@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# info:
+# Normalize NS1, NS2 and IP of account that is backuped on other server and restored on this server.
+# After restoring, user will have DNS that contains NS1, NS2 and IP from original server
+# This script will put NS1, NS2 and IP of current server
+
+# options: user
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+whoami=$(whoami)
+if [ "$whoami" != "root" ] && [ "$whoami" != "admin" ] ; then
+    echo "You must be root or admin to execute this script";
+    exit 1;
+fi
+
+
+# Argument definition
+user=$1
+
+# Includes
+source $VESTA/func/main.sh
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'USER'
+is_format_valid 'user'
+is_object_valid 'user' 'USER' "$user"
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+source $VESTA/data/packages/default.pkg
+
+arrNS=(${NS//,/ })
+NEWNS1=${arrNS[0]}
+NEWNS2=${arrNS[1]}
+
+for domain in $(/usr/local/vesta/bin/v-list-web-domains $user plain |cut -f 1); do
+    if [ -f "/usr/local/vesta/data/users/$user/dns/$domain.conf" ]; then
+        NEWIPV4=$(v-list-dns-domain "$user" "$domain" | grep 'IP:' | awk '{print $2}')
+        res=$(grep "'www'" /usr/local/vesta/data/users/$user/dns/$domain.conf)
+        eval $res
+        OLDIPV4=$VALUE
+    fi
+    if [ ! -z "$NEWIPV4" ] && [ ! -z "$OLDIPV4" ]; then
+        break;
+    fi
+done
+
+
+source /usr/local/vesta/data/users/$user/user.conf
+arrNS=(${NS//,/ })
+OLDNS1=${arrNS[0]}
+OLDNS2=${arrNS[1]}
+
+echo "user = $user"
+echo "old ns1 = $OLDNS1"
+echo "old ns2 = $OLDNS2"
+echo "new ns1 = $NEWNS1"
+echo "new ns2 = $NEWNS2"
+echo "old ip = $OLDIPV4"
+echo "new ip = $NEWIPV4"
+
+find /home/$user/conf/dns/ -type f -exec sed -i "s#$OLDIPV4#$NEWIPV4#g" {} \;
+find /home/$user/conf/dns/ -type f -exec sed -i "s#$OLDNS1#$NEWNS1#g" {} \;
+find /home/$user/conf/dns/ -type f -exec sed -i "s#$OLDNS2#$NEWNS2#g" {} \;
+find /usr/local/vesta/data/users/$user/dns/ -type f -exec sed -i "s#$OLDIPV4#$NEWIPV4#g" {} \;
+find /usr/local/vesta/data/users/$user/dns/ -type f -exec sed -i "s#$OLDNS1#$NEWNS1#g" {} \;
+find /usr/local/vesta/data/users/$user/dns/ -type f -exec sed -i "s#$OLDNS2#$NEWNS2#g" {} \;
+sed -i "s#$OLDIPV4#$NEWIPV4#g" /usr/local/vesta/data/users/$user/dns.conf
+sed -i "s#$OLDNS1#$NEWNS1#g" /usr/local/vesta/data/users/$user/dns.conf
+sed -i "s#$OLDNS1#$NEWNS1#g" /usr/local/vesta/data/users/$user/user.conf
+sed -i "s#$OLDNS2#$NEWNS2#g" /usr/local/vesta/data/users/$user/user.conf
+service bind9 reload
+
+echo "Done!"
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
