@@ -595,7 +595,7 @@ ftp_backup() {
     fi
 
     # Debug info
-    echo -e "$(date "+%F %T") Remote: ftp://$HOST$BPATH/$user.$backup_new_date.tar"
+    echo -e "$(date "+%F %T") Remote: ftp://$HOST/$BPATH/$user.$backup_new_date.tar"
 
     # Checking ftp connection
     fconn=$(ftpc)
