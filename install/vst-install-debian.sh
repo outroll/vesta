@@ -1442,6 +1442,7 @@ if [ "$release" -eq 10 ]; then
     sed -i "/max_execution_time/c\php_admin_value[max_execution_time] = 900" /etc/php/7.3/fpm/pool.d/$servername.conf
     sed -i "/request_terminate_timeout/c\request_terminate_timeout = 900s" /etc/php/7.3/fpm/pool.d/$servername.conf
     sed -i "s|80M|800M|g" /etc/php/7.3/fpm/pool.d/$servername.conf
+    sed -i "s|256M|512M|g" /etc/php/7.3/fpm/pool.d/$servername.conf
     service php7.3-fpm restart
     ln -s /var/lib/roundcube /var/lib/roundcube/webmail
     /usr/local/vesta/bin/v-change-web-domain-proxy-tpl 'admin' "$servername" 'hosting-webmail-phpmyadmin' 'jpg,jpeg,gif,png,ico,svg,css,zip,tgz,gz,rar,bz2,doc,xls,exe,pdf,ppt,txt,odt,ods,odp,odf,tar,wav,bmp,rtf,js,mp3,avi,mpeg,flv,woff,woff2' 'no'
