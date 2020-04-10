@@ -17,6 +17,12 @@ source /etc/profile
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
+ALLOW_MYSQL_REPAIR=1
+
+if [ $# -ge 1 ]; then
+    ALLOW_MYSQL_REPAIR=$1
+fi
+
 
 #----------------------------------------------------------#
 #                       Action                             #
@@ -32,7 +38,9 @@ if [ ! -z "$NOTIFY_ADMIN_FULL_BACKUP" ]; then
 fi
 
 # Auto-repair all databases before backuping all accounts
-nice -n 19 ionice -c 3 mysqlrepair --all-databases --check --auto-repair >> $log 2>&1
+if [ $ALLOW_MYSQL_REPAIR -eq 1 ]; then
+    nice -n 19 ionice -c 3 mysqlrepair --all-databases --check --auto-repair >> $log 2>&1
+fi
 
 if [ -z "$BACKUP_SYSTEM" ]; then
     exit
