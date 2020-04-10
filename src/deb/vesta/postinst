@@ -23,8 +23,11 @@ if [ "$check_apt" -eq 1 ]; then
     echo "deb http://apt.myvestacp.com/$codename/ $codename vesta" > /etc/apt/sources.list.d/vesta.list
 fi
 
-
-check_cron=$(grep -c '6 sudo find /home/' /var/spool/cron/crontabs/root)
+if [ -f "/var/spool/cron/crontabs/root" ]; then
+    check_cron=$(grep -c '6 sudo find /home/' /var/spool/cron/crontabs/root)
+else
+    check_cron=0
+fi
 if [ "$check_cron" -eq 0 ]; then
     crontab -l | { cat; echo "10 2 * * 6 sudo find /home/*/tmp/ -type f -mtime +5 -exec rm {} \;"; } | crontab -
 fi
