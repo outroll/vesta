@@ -179,9 +179,9 @@ for auth in $authz; do
             mkdir -p $acme_challenge
             echo "$token.$THUMB" > $acme_challenge/$token
             chown -R $user:$user $well_known
+            $BIN/v-restart-web
+            check_result $? "Web restart failed" >/dev/null
         fi
-        $BIN/v-restart-web
-        check_result $? "Web restart failed" >/dev/null
     fi
 
     # Requesting ACME validation / STEP 5
