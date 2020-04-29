@@ -31,7 +31,7 @@ for user in $($BIN/v-list-users plain |cut -f 1); do
     for domain in $(search_objects 'web' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
     
         fail_counter=$(get_web_counter "$user" "$domain" 'LETSENCRYPT_FAIL_COUNT')
-        if [[ "$fail_counter" -ge 3 ]]; then
+        if [[ "$fail_counter" -ge 7 ]]; then
             echo "$domain failed $fail_counter times for LetsEncrypt renewing, skipping"
             continue;
         fi
