@@ -48,6 +48,7 @@ for user in $($BIN/v-list-users plain |cut -f 1); do
             msg=$($BIN/v-add-letsencrypt-domain $user $domain $aliases)
             if [ $? -ne 0 ]; then
                 echo "$domain $msg"
+                alter_web_counter "$user" "$domain" 'LETSENCRYPT_FAIL_COUNT'
             fi
         fi
     done
