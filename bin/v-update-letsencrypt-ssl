@@ -29,6 +29,12 @@ for user in $($BIN/v-list-users plain |cut -f 1); do
     USER_DATA=$VESTA/data/users/$user
 
     for domain in $(search_objects 'web' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
+    
+        fail_counter=$(get_web_counter "$user" "$domain" 'LETSENCRYPT_FAIL_COUNT')
+        if [[ "$fail_counter" -ge 3 ]]; then
+            echo "$domain failed $fail_counter times for LetsEncrypt renewing, skipping"
+            continue;
+        fi
         crt_data=$(openssl x509 -text -in $USER_DATA/ssl/$domain.crt)
         not_after=$(echo "$crt_data" |grep "Not After" |cut -f 2,3,4 -d :)
         expiration=$(date -d "$not_after" +%s)
