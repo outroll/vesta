@@ -54,8 +54,12 @@ for user in $($BIN/v-list-users plain |cut -f 1); do
             msg=$($BIN/v-add-letsencrypt-domain $user $domain $aliases)
             if [ $? -ne 0 ]; then
                 echo "$domain $msg"
-                fail_counter=$(alter_web_counter "$user" "$domain" 'LETSENCRYPT_FAIL_COUNT')
-                echo "fail_counter = $fail_counter"
+                if [[ $msg == *"is suspended" ]]; then
+                    echo "OK, it's suspended"
+                else
+                    fail_counter=$(alter_web_counter "$user" "$domain" 'LETSENCRYPT_FAIL_COUNT')
+                    echo "fail_counter = $fail_counter"
+                fi
             fi
         fi
     done
