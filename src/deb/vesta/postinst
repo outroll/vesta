@@ -41,4 +41,7 @@ systemctl restart clamav-daemon
 systemctl restart clamav-freshclam
 systemctl restart exim4
 
+version=$(curl http://c.myvestacp.com/latest.txt?updated)
+echo "=== myVesta $version installed ==="
+
 exit 0
