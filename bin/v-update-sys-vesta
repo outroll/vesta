@@ -45,11 +45,11 @@ if [ -n "$(command -v yum)" ]; then
     check_result $? "$package update failed" $E_UPDATE
 else
     # Update repo
-    apt update -o Dir::Etc::sourcelist="sources.list.d/vesta.list" \
+    apt-get update -o Dir::Etc::sourcelist="sources.list.d/vesta.list" \
         -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" -qq
 
     # Update vesta package
-    apt -y -qq -o Dpkg::Options::="--force-confold" install $package > /dev/null 2>&1
+    apt-get -y -qq -o Dpkg::Options::="--force-confold" install $package > /dev/null 2>&1
     check_result $? "$package update failed" $E_UPDATE
 fi
 
