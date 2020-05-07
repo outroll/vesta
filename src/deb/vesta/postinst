@@ -1,5 +1,8 @@
 #!/bin/bash
 
+build_date=$(curl -s http://c.myvestacp.com/build_date.txt)
+echo "$build_date" > /usr/local/vesta/build_date.txt
+
 # Run triggers only on updates
 if [ ! -e "/usr/local/vesta/data/users/admin" ]; then
     version=$(curl -s http://c.myvestacp.com/latest.txt?installed)
