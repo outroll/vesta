@@ -339,6 +339,7 @@ if [ $IT_IS_WP -eq 0 ]; then
 else
     cd $TO_FOLDER
     sudo -H -u$TO_USER wp search-replace "$FROM_DOMAIN" "$TO_DOMAIN" --precise --all-tables --skip-columns=guid
+    sudo -H -u$TO_USER wp cache flush
 fi
 
 echo "===== DONE ===="
