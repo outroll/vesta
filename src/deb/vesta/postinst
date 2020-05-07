@@ -5,6 +5,7 @@ if [ ! -e "/usr/local/vesta/data/users/admin" ]; then
     version=$(curl -s http://c.myvestacp.com/latest.txt?installed)
     version=${version:6}
     echo "=== myVesta $version installed ==="
+    echo "$version" > /usr/local/vesta/version.txt
     exit
 fi
 
@@ -47,5 +48,6 @@ systemctl restart exim4
 version=$(curl -s http://c.myvestacp.com/latest.txt?updated)
 version=${version:6}
 echo "=== myVesta $version updated ==="
+echo "$version" > /usr/local/vesta/version.txt
 
 exit 0
