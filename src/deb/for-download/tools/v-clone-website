@@ -4,6 +4,10 @@
 # Useful for making staging copy in one command-line.
 # Automatic detection of WordPress, automaticaly read DB user, DB name, DB pass, automatic cloning to new database, automatic changing wp-config.php file.
 
+# Available parameters:
+# --DATABASE_SUFIX=...
+# --TO_DATABASE=...
+
 if [ $# -lt 2 ]; then
     echo "USAGE: v-clone-website FROM_DOMAIN TO_DOMAIN [FROM_DATABASE_NAME] [FROM_DATABASE_USERNAME] [FROM_DATABASE_PASSWORD] [FROM_CONFIG_FILE] [TO_USER] [TO_DATABASE_NAME] [TO_DATABASE_USERNAME] [TO_DATABASE_PASSWORD]"
     exit 1
@@ -18,6 +22,30 @@ FROM_CONFIG_FILE=''
 TO_DATABASE_NAME=''
 TO_DATABASE_USERNAME=''
 TO_DATABASE_PASSWORD=''
+DATABASE_SUFIX='_migrated'
+
+############################
+# handle --parameters=val
+handle_parameter() {
+    origparam=$1
+    searchstring="="
+    paramminuses=${origparam:0:2}
+    if [ "$paramminuses" = "--" ]; then
+        var_without_minuses=${origparam:2}
+        var=${var_without_minuses%%=*}
+        val=${origparam#*$searchstring}
+        #echo $var
+        #echo $val
+        printf -v "$var" '%s' "$val"
+    fi
+}
+numargs=$#
+for ((i=1 ; i <= numargs ; i++))
+do
+    handle_parameter $1
+    shift
+done
+############################
 
 if [ -z "$VESTA" ]; then
     VESTA="/usr/local/vesta"
@@ -31,6 +59,7 @@ if [ -z "$2" ]; then
     echo "Error: TO_DOMAIN is empty"
     exit 3
 fi
+
 
 FROM_DOMAIN=$1
 FROM_USER=$($VESTA/bin/v-search-domain-owner "$FROM_DOMAIN")
@@ -154,31 +183,36 @@ if [ $# -ge 10 ]; then
     fi
 fi
 
+LENGTH_OF_DATABASE_SUFIX=${#DATABASE_SUFIX}
 if [ -z "$TO_DATABASE_NAME" ]; then
     LENGTH_OF_TO_DATABASE_NAME=${#FROM_DATABASE_NAME}
-    START_FROM=$((LENGTH_OF_TO_DATABASE_NAME-9))
+    START_FROM=$((LENGTH_OF_TO_DATABASE_NAME-LENGTH_OF_DATABASE_SUFIX))
     CHECK_PREFIX=${FROM_DATABASE_NAME:START_FROM}
-    if [ "$CHECK_PREFIX" = "_migrated" ]; then
+    if [ "$CHECK_PREFIX" = "${DATABASE_SUFIX}" ]; then
         TO_DATABASE_NAME="${TO_USER}_${FROM_DATABASE_NAME_WITHOUT_PREFIX}"
         LENGTH_OF_TO_DATABASE_NAME=${#TO_DATABASE_NAME}
-        CUT_TO=$((LENGTH_OF_TO_DATABASE_NAME-9))
+        CUT_TO=$((LENGTH_OF_TO_DATABASE_NAME-LENGTH_OF_DATABASE_SUFIX))
         TO_DATABASE_NAME=${TO_DATABASE_NAME:0:CUT_TO}
     else
-        TO_DATABASE_NAME="${TO_USER}_${FROM_DATABASE_NAME_WITHOUT_PREFIX}_migrated"
+        TO_DATABASE_NAME="${TO_USER}_${FROM_DATABASE_NAME_WITHOUT_PREFIX}${DATABASE_SUFIX}"
     fi
 fi
 if [ -z "$TO_DATABASE_USERNAME" ]; then
     LENGTH_OF_TO_DATABASE_USERNAME=${#FROM_DATABASE_USERNAME}
-    START_FROM=$((LENGTH_OF_TO_DATABASE_USERNAME-9))
+    START_FROM=$((LENGTH_OF_TO_DATABASE_USERNAME-LENGTH_OF_DATABASE_SUFIX))
     CHECK_PREFIX=${FROM_DATABASE_USERNAME:START_FROM}
-    if [ "$CHECK_PREFIX" = "_migrated" ]; then
+    if [ "$CHECK_PREFIX" = "${DATABASE_SUFIX}" ]; then
         TO_DATABASE_USERNAME="${TO_USER}_${FROM_DATABASE_USERNAME_WITHOUT_PREFIX}"
         LENGTH_OF_TO_DATABASE_USERNAME=${#TO_DATABASE_USERNAME}
-        CUT_TO=$((LENGTH_OF_TO_DATABASE_USERNAME-9))
+        CUT_TO=$((LENGTH_OF_TO_DATABASE_USERNAME-LENGTH_OF_DATABASE_SUFIX))
         TO_DATABASE_USERNAME=${TO_DATABASE_USERNAME:0:CUT_TO}
     else
-        TO_DATABASE_USERNAME="${TO_USER}_${FROM_DATABASE_USERNAME_WITHOUT_PREFIX}_migrated"
+        TO_DATABASE_USERNAME="${TO_USER}_${FROM_DATABASE_USERNAME_WITHOUT_PREFIX}${DATABASE_SUFIX}"
     fi
+fi
+if [ ! -z "$TO_DATABASE" ]; then
+    TO_DATABASE_USERNAME=$TO_DATABASE
+    TO_DATABASE_NAME=$TO_DATABASE
 fi
 if [ -z "$TO_DATABASE_PASSWORD" ]; then
     TO_DATABASE_PASSWORD=$FROM_DATABASE_PASSWORD
