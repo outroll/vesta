@@ -53,6 +53,8 @@ PATH_OF_APT_REPO="$PATH_OF_APT_REPO_ROOT/$TARGET_DEB_NAME"
 VESTA_VER=$(curl -s https://raw.githubusercontent.com/myvesta/vesta/master/src/deb/latest.txt)
 VESTA_VER=${VESTA_VER:6}
 
+BUILD_DATE=$(date +"%m-%b-%Y")
+
 # Set Version for compiling
 VESTA_V=$VESTA_VER"_amd64"
 NGINX_V='1.17.7'
@@ -274,6 +276,7 @@ if [ "$CWEB_B" = true ]; then
     cp /root/vesta/install/debian/$TARGET_DEB_VER_MAIN/deb_signing.key $PATH_OF_C_WEB_FOLDER_ROOT/deb_signing.key
   fi
   cp /root/vesta/src/deb/latest.txt $PATH_OF_C_WEB_FOLDER_ROOT/latest.txt
+  echo "$BUILD_DATE" > $PATH_OF_C_WEB_FOLDER_ROOT/build_date.txt
   cd $PATH_OF_C_WEB_FOLDER
   
   if [ -f "packages.tar.gz" ]; then
