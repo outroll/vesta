@@ -53,7 +53,7 @@ PATH_OF_APT_REPO="$PATH_OF_APT_REPO_ROOT/$TARGET_DEB_NAME"
 VESTA_VER=$(curl -s https://raw.githubusercontent.com/myvesta/vesta/master/src/deb/latest.txt)
 VESTA_VER=${VESTA_VER:6}
 
-BUILD_DATE=$(date +"%m-%b-%Y")
+BUILD_DATE=$(date +"%d-%b-%Y")
 
 # Set Version for compiling
 VESTA_V=$VESTA_VER"_amd64"
