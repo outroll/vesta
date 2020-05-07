@@ -9,7 +9,6 @@ add_deb_to_apt_repo=0
 
 TARGET_DEB_NAME='buster'
 TARGET_DEB_VER='10'
-VESTA_VER='0.9.8-26-11'
 
 run_apt_update_and_install=1
 wait_to_press_enter=1
@@ -50,6 +49,9 @@ PATH_OF_C_WEB_FOLDER="$PATH_OF_C_WEB_FOLDER_ROOT/debian/$TARGET_DEB_VER"
 APT_WEB_ADDRESS="apt.myvestacp.com"
 PATH_OF_APT_REPO_ROOT="/var/www/$APT_WEB_ADDRESS/html"
 PATH_OF_APT_REPO="$PATH_OF_APT_REPO_ROOT/$TARGET_DEB_NAME"
+
+VESTA_VER=$(curl -s https://raw.githubusercontent.com/myvesta/vesta/master/src/deb/latest.txt)
+VESTA_VER=${VESTA_VER:6}
 
 # Set Version for compiling
 VESTA_V=$VESTA_VER"_amd64"
