@@ -31,6 +31,18 @@ TO_DATABASE_USERNAME=''
 TO_DATABASE_PASSWORD=''
 DATABASE_SUFIX='_migrated'
 
+if [ -z "$1" ]; then
+    echo "Error: FROM_DOMAIN is empty"
+    exit 2
+fi
+if [ -z "$2" ]; then
+    echo "Error: TO_DOMAIN is empty"
+    exit 3
+fi
+
+FROM_DOMAIN=$1
+TO_DOMAIN=$2
+
 ############################
 # handle --parameters=val
 handle_parameter() {
@@ -58,17 +70,8 @@ if [ -z "$VESTA" ]; then
     VESTA="/usr/local/vesta"
 fi
 
-if [ -z "$1" ]; then
-    echo "Error: FROM_DOMAIN is empty"
-    exit 2
-fi
-if [ -z "$2" ]; then
-    echo "Error: TO_DOMAIN is empty"
-    exit 3
-fi
+###########################################################################
 
-
-FROM_DOMAIN=$1
 FROM_USER=$($VESTA/bin/v-search-domain-owner "$FROM_DOMAIN")
 if [ -z "$FROM_USER" ]; then
     echo "Error: domain $FROM_DOMAIN does not exists"
@@ -144,7 +147,6 @@ FROM_DATABASE_USERNAME_WITHOUT_PREFIX=${FROM_DATABASE_USERNAME:FROM_USER_LEN}
 CREATE_TO_USER=0
 CREATE_TO_DOMAIN=0
 
-TO_DOMAIN=$2
 if [ -z "$TO_USER" ]; then
     TO_USER=$($VESTA/bin/v-search-domain-owner "$TO_DOMAIN")
     if [ -z "$TO_USER" ]; then
