@@ -4,12 +4,19 @@
 # Useful for making staging copy in one command-line.
 # Automatic detection of WordPress, automaticaly read DB user, DB name, DB pass, automatic cloning to new database, automatic changing wp-config.php file.
 
-# Available parameters:
-# --DATABASE_SUFIX=...
-# --TO_DATABASE=...
-
 if [ $# -lt 2 ]; then
-    echo "USAGE: v-clone-website FROM_DOMAIN TO_DOMAIN [FROM_DATABASE_NAME] [FROM_DATABASE_USERNAME] [FROM_DATABASE_PASSWORD] [FROM_CONFIG_FILE] [TO_USER] [TO_DATABASE_NAME] [TO_DATABASE_USERNAME] [TO_DATABASE_PASSWORD]"
+    echo "USAGE: v-clone-website FROM_DOMAIN TO_DOMAIN"
+    echo "Available parameters:"
+    echo "--DATABASE_SUFIX=... (default is '_migrated')"
+    echo "--TO_DATABASE=... (this will override both --TO_DATABASE_NAME and --TO_DATABASE_USERNAME)"
+    echo "--FROM_DATABASE_NAME=..."
+    echo "--FROM_DATABASE_USERNAME=..."
+    echo "--FROM_DATABASE_PASSWORD=..."
+    echo "--FROM_CONFIG_FILE=..."
+    echo "--TO_DATABASE_NAME=..."
+    echo "--TO_DATABASE_USERNAME=..."
+    echo "--TO_DATABASE_PASSWORD=..."
+    echo "--=..."
     exit 1
 fi
 
@@ -74,9 +81,7 @@ if [ $CHECK_PUBLIC_SHTML -eq 1 ]; then
     FROM_FOLDER="/home/$FROM_USER/web/$FROM_DOMAIN/public_shtml"
 fi
 
-
-if [ $# -ge 6 ]; then
-    FROM_CONFIG_FILE="$6"
+if [ ! -z "$FROM_CONFIG_FILE" ]; then
     FROM_CONFIG_FILE_FULL_PATH="$FROM_FOLDER/$6"
 fi
 if [ -z "$FROM_CONFIG_FILE" ]; then
@@ -107,21 +112,7 @@ if [ $IT_IS_WP -eq 1 ]; then
     FROM_DATABASE_PASSWORD=$(grep 'DB_PASSWORD' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
     rm $FROM_CONFIG_FILE_FULL_PATH_BACKUP
 fi
-if [ $# -ge 3 ]; then
-    if [ ! -z "$3" ]; then
-        FROM_DATABASE_NAME=$3
-    fi
-fi
-if [ $# -ge 4 ]; then
-    if [ ! -z "$4" ]; then
-        FROM_DATABASE_USERNAME=$4
-    fi
-fi
-if [ $# -ge 5 ]; then
-    if [ ! -z "$5" ]; then
-        FROM_DATABASE_PASSWORD=$5
-    fi
-fi
+
 if [ -z "$FROM_DATABASE_NAME" ]; then
     echo "Error: FROM_DATABASE_NAME is empty"
     exit 6
@@ -166,22 +157,6 @@ if [ $CHECK_PUBLIC_SHTML -eq 1 ]; then
 fi
 
 TO_CONFIG_FILE_FULL_PATH="$TO_FOLDER/$FROM_CONFIG_FILE"
-
-if [ $# -ge 8 ]; then
-    if [ ! -z "$8" ]; then
-        TO_DATABASE_NAME=$8
-    fi
-fi
-if [ $# -ge 9 ]; then
-    if [ ! -z "$9" ]; then
-        TO_DATABASE_USERNAME=$9
-    fi
-fi
-if [ $# -ge 10 ]; then
-    if [ ! -z "${10}" ]; then
-        TO_DATABASE_PASSWORD=${10}
-    fi
-fi
 
 LENGTH_OF_DATABASE_SUFIX=${#DATABASE_SUFIX}
 if [ -z "$TO_DATABASE_NAME" ]; then
