@@ -141,6 +141,10 @@ fi
 FROM_DATABASE_NAME_WITHOUT_PREFIX=${FROM_DATABASE_NAME:FROM_USER_LEN}
 FROM_DATABASE_USERNAME_WITHOUT_PREFIX=${FROM_DATABASE_USERNAME:FROM_USER_LEN}
 
+FROM_DOMAIN_HAS_SSL=0
+if [ -f "/home/$FROM_USER/conf/web/ssl.$FROM_DOMAIN.pem" ]; then
+    FROM_DOMAIN_HAS_SSL=1
+fi
 
 # ----------- TO -------------
 
@@ -224,6 +228,16 @@ TO_DATABASE_NAME_WITHOUT_PREFIX=${TO_DATABASE_NAME:TO_USER_LEN}
 TO_DATABASE_USERNAME_WITHOUT_PREFIX=${TO_DATABASE_USERNAME:TO_USER_LEN}
 
 
+TO_DOMAIN_HAS_SSL=0
+if [ -f "/home/$TO_USER/conf/web/ssl.$TO_DOMAIN.pem" ]; then
+    TO_DOMAIN_HAS_SSL=1
+fi
+SHOULD_INSTALL_SSL=0
+if [ $FROM_DOMAIN_HAS_SSL -eq 1 ] && [ $TO_DOMAIN_HAS_SSL -eq 0 ]; then
+    SHOULD_INSTALL_SSL=1
+fi
+
+
 # ----------- CHECK -------------
 
 if [ $IT_IS_WP -eq 0 ]; then
@@ -269,6 +283,7 @@ echo "FROM_DATABASE_USERNAME_WITHOUT_PREFIX = $FROM_DATABASE_USERNAME_WITHOUT_PR
 echo "TO_DATABASE_USERNAME_WITHOUT_PREFIX   = $TO_DATABASE_USERNAME_WITHOUT_PREFIX"
 echo "CREATE_TO_USER = $CREATE_TO_USER"
 echo "CREATE_TO_DOMAIN = $CREATE_TO_DOMAIN"
+echo "SHOULD_INSTALL_SSL = $SHOULD_INSTALL_SSL"
 echo "==============================================================================="
 read -p "=== Press Enter to continue ==="
 
@@ -298,6 +313,10 @@ if [ $CREATE_TO_DOMAIN -eq 1 ]; then
     rm $TO_FOLDER/index.html
 fi
 
+if [ $SHOULD_INSTALL_SSL -eq 1 ]; then
+    echo "=== Installing LetsEncrypt for domain $TO_DOMAIN"
+    v-add-letsencrypt-domain "$TO_USER" "$TO_DOMAIN" "www.$TO_DOMAIN" "yes"
+fi
 
 object=$(grep "DB='$TO_DATABASE_NAME'" $VESTA/data/users/$TO_USER/db.conf)
 if [ -z "$object" ]; then
