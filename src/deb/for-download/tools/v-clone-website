@@ -336,7 +336,7 @@ fi
 
 if [ ! -z "$FROM_DOMAIN_PROXY_TPL" ]; then
     echo "=== Set $FROM_DOMAIN_PROXY_TPL proxy template to domain $TO_DOMAIN"
-    $VESTA/bin/v-change-web-domain-proxy-tpl "$TO_USER" "$TO_DOMAIN" "$FROM_DOMAIN_PROXY_TPL" "$FROM_DOMAIN_PROXY_TPL" "yes"
+    $VESTA/bin/v-change-web-domain-proxy-tpl "$TO_USER" "$TO_DOMAIN" "$FROM_DOMAIN_PROXY_TPL" "$FROM_DOMAIN_PROXY_EXT" "yes"
 fi
 
 object=$(grep "DB='$TO_DATABASE_NAME'" $VESTA/data/users/$TO_USER/db.conf)
