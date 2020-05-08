@@ -13,7 +13,7 @@ if [ $# -lt 2 ]; then
     echo "--FROM_DATABASE_USERNAME=..."
     echo "--FROM_DATABASE_PASSWORD=..."
     echo "--FROM_CONFIG_FILE=..."
-    echo "--=TO_USER=..."
+    echo "--TO_USER=..."
     echo "--TO_DATABASE_NAME=..."
     echo "--TO_DATABASE_USERNAME=..."
     echo "--TO_DATABASE_PASSWORD=..."
