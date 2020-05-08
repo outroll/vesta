@@ -13,10 +13,10 @@ if [ $# -lt 2 ]; then
     echo "--FROM_DATABASE_USERNAME=..."
     echo "--FROM_DATABASE_PASSWORD=..."
     echo "--FROM_CONFIG_FILE=..."
+    echo "--=TO_USER=..."
     echo "--TO_DATABASE_NAME=..."
     echo "--TO_DATABASE_USERNAME=..."
     echo "--TO_DATABASE_PASSWORD=..."
-    echo "--=..."
     exit 1
 fi
 
@@ -141,13 +141,23 @@ FROM_DATABASE_USERNAME_WITHOUT_PREFIX=${FROM_DATABASE_USERNAME:FROM_USER_LEN}
 
 # ----------- TO -------------
 
+CREATE_TO_USER=0
+CREATE_TO_DOMAIN=0
 
 TO_DOMAIN=$2
-TO_USER=$($VESTA/bin/v-search-domain-owner "$TO_DOMAIN")
-CREATE_TO_DOMAIN=0
 if [ -z "$TO_USER" ]; then
-    TO_USER=$FROM_USER
-    CREATE_TO_DOMAIN=1
+    TO_USER=$($VESTA/bin/v-search-domain-owner "$TO_DOMAIN")
+    if [ -z "$TO_USER" ]; then
+        TO_USER=$FROM_USER
+        CREATE_TO_DOMAIN=1
+    fi
+else
+    if [ ! -d "/home/$TO_USER" ]; then
+        CREATE_TO_USER=1
+    fi
+    if [ ! -d "/home/$TO_USER/web/$TO_DOMAIN/public_html" ]; then
+        CREATE_TO_DOMAIN=1
+    fi
 fi
 
 TO_FOLDER="/home/$TO_USER/web/$TO_DOMAIN/public_html"
@@ -255,11 +265,30 @@ echo "FROM_DATABASE_NAME_WITHOUT_PREFIX = $FROM_DATABASE_NAME_WITHOUT_PREFIX"
 echo "TO_DATABASE_NAME_WITHOUT_PREFIX   = $TO_DATABASE_NAME_WITHOUT_PREFIX"
 echo "FROM_DATABASE_USERNAME_WITHOUT_PREFIX = $FROM_DATABASE_USERNAME_WITHOUT_PREFIX"
 echo "TO_DATABASE_USERNAME_WITHOUT_PREFIX   = $TO_DATABASE_USERNAME_WITHOUT_PREFIX"
+echo "CREATE_TO_USER = $CREATE_TO_USER"
+echo "CREATE_TO_DOMAIN = $CREATE_TO_DOMAIN"
 echo "==============================================================================="
 read -p "=== Press Enter to continue ==="
 
 
 # ----------- ACTION -------------
+
+# Defining password-gen function
+gen_pass() {
+    MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    LENGTH=32
+    while [ ${n:=1} -le $LENGTH ]; do
+        PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
+        let n+=1
+    done
+    echo "$PASS"
+}
+
+if [ $CREATE_TO_USER -eq 1 ]; then
+    pass=$(gen_pass)
+    echo "=== Create user $TO_USER, pass=$pass"
+    $VESTA/bin/v-add-user "$TO_USER" "$pass" "info@$TO_DOMAIN" "default" "Migrated" "site"
+fi
 
 if [ $CREATE_TO_DOMAIN -eq 1 ]; then
     echo "=== Create domain $TO_DOMAIN"
