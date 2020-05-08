@@ -8,7 +8,7 @@ if [ $# -lt 2 ]; then
     echo "USAGE: v-clone-website FROM_DOMAIN TO_DOMAIN"
     echo "Available parameters:"
     echo "--DATABASE_SUFIX=... (default is '_migrated')"
-    echo "--TO_DATABASE=... (this will override both --TO_DATABASE_NAME and --TO_DATABASE_USERNAME)"
+    echo "--TO_DATABASE=... (this will override --TO_DATABASE_NAME, --TO_DATABASE_USERNAME and --DATABASE_SUFIX)"
     echo "--FROM_DATABASE_NAME=..."
     echo "--FROM_DATABASE_USERNAME=..."
     echo "--FROM_DATABASE_PASSWORD=..."
@@ -146,6 +146,10 @@ if [ -f "/home/$FROM_USER/conf/web/ssl.$FROM_DOMAIN.pem" ]; then
     FROM_DOMAIN_HAS_SSL=1
 fi
 
+FROM_DOMAIN_TPL=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'TEMPLATE:' | awk '{print $2}')
+FROM_DOMAIN_PROXY_TPL=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'PROXY:' | awk '{print $2}')
+FROM_DOMAIN_PROXY_EXT=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'PROXY EXT:' | awk '{print $2}')
+
 # ----------- TO -------------
 
 CREATE_TO_USER=0
@@ -281,9 +285,14 @@ echo "FROM_DATABASE_NAME_WITHOUT_PREFIX = $FROM_DATABASE_NAME_WITHOUT_PREFIX"
 echo "TO_DATABASE_NAME_WITHOUT_PREFIX   = $TO_DATABASE_NAME_WITHOUT_PREFIX"
 echo "FROM_DATABASE_USERNAME_WITHOUT_PREFIX = $FROM_DATABASE_USERNAME_WITHOUT_PREFIX"
 echo "TO_DATABASE_USERNAME_WITHOUT_PREFIX   = $TO_DATABASE_USERNAME_WITHOUT_PREFIX"
+echo "DATABASE_SUFIX = $DATABASE_SUFIX"
+echo "CREATE_TO_USER = $CREATE_TO_USER"
 echo "CREATE_TO_USER = $CREATE_TO_USER"
 echo "CREATE_TO_DOMAIN = $CREATE_TO_DOMAIN"
 echo "SHOULD_INSTALL_SSL = $SHOULD_INSTALL_SSL"
+echo "FROM_DOMAIN_TPL = $FROM_DOMAIN_TPL"
+echo "FROM_DOMAIN_PROXY_TPL = $FROM_DOMAIN_PROXY_TPL"
+echo "FROM_DOMAIN_PROXY_EXT = $FROM_DOMAIN_PROXY_EXT"
 echo "==============================================================================="
 read -p "=== Press Enter to continue ==="
 
@@ -315,7 +324,19 @@ fi
 
 if [ $SHOULD_INSTALL_SSL -eq 1 ]; then
     echo "=== Installing LetsEncrypt for domain $TO_DOMAIN"
-    v-add-letsencrypt-domain "$TO_USER" "$TO_DOMAIN" "www.$TO_DOMAIN" "yes"
+    $VESTA/bin/v-add-letsencrypt-domain "$TO_USER" "$TO_DOMAIN" "www.$TO_DOMAIN" "yes"
+    if [ $? -ne 0 ]; then
+        echo "=== LetsEncrypt installation failed"
+fi
+
+if [ ! -z "$FROM_DOMAIN_TPL" ]; then
+    echo "=== Set $FROM_DOMAIN_TPL template to domain $TO_DOMAIN"
+    $VESTA/bin/v-change-web-domain-tpl "$TO_USER" "$TO_DOMAIN" "$FROM_DOMAIN_TPL" "yes"
+fi
+
+if [ ! -z "$FROM_DOMAIN_PROXY_TPL" ]; then
+    echo "=== Set $FROM_DOMAIN_PROXY_TPL proxy template to domain $TO_DOMAIN"
+    $VESTA/bin/v-change-web-domain-proxy-tpl "$TO_USER" "$TO_DOMAIN" "$FROM_DOMAIN_PROXY_TPL" "$FROM_DOMAIN_PROXY_TPL" "yes"
 fi
 
 object=$(grep "DB='$TO_DATABASE_NAME'" $VESTA/data/users/$TO_USER/db.conf)
