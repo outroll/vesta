@@ -378,10 +378,18 @@ sed -i "s|= $FROM_DATABASE_PASSWORD$|= $TO_DATABASE_PASSWORD|g" $TO_CONFIG_FILE_
 
 echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in folder $TO_FOLDER"
 grep -rl "$FROM_DOMAIN" $TO_FOLDER | xargs sed -i "s#$FROM_DOMAIN#$TO_DOMAIN#g"
+if [ "$FROM_USER" != "$TO_USER" ]; then
+    echo "=== Replacing /home/$FROM_USER/ to /home/$TO_USER/ in folder $TO_FOLDER"
+    grep -rl "/home/$FROM_USER/" $TO_FOLDER | xargs sed -i "s#/home/$FROM_USER/#/home/$TO_USER/#g"
+fi
 
-echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in database $TO_DATABASE_NAME"
 if [ $IT_IS_WP -eq 0 ]; then
+    echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in database $TO_DATABASE_NAME"
     php7.0 /root/Search-Replace-DB-master/srdb.cli.php -h localhost -n "$TO_DATABASE_NAME" -u "$TO_DATABASE_USERNAME" -p "$TO_DATABASE_PASSWORD" -s "$FROM_DOMAIN" -r "$TO_DOMAIN"
+    if [ "$FROM_USER" != "$TO_USER" ]; then
+        echo "=== Replacing /home/$FROM_USER/ to /home/$TO_USER/ in database $TO_DATABASE_NAME"
+        php7.0 /root/Search-Replace-DB-master/srdb.cli.php -h localhost -n "$TO_DATABASE_NAME" -u "$TO_DATABASE_USERNAME" -p "$TO_DATABASE_PASSWORD" -s "/home/$FROM_USER/" -r "/home/$TO_USER/"
+    fi
 else
     cd $TO_FOLDER
     if [ -d "wp-content/plugins/w3-total-cache" ]; then
@@ -391,7 +399,12 @@ else
         rm -rf wp-content/w3tc-config
         rm -rf wp-content/plugins/w3-total-cache
     fi
+    echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in database $TO_DATABASE_NAME"
     sudo -H -u$TO_USER wp search-replace "$FROM_DOMAIN" "$TO_DOMAIN" --precise --all-tables --skip-columns=guid
+    if [ "$FROM_USER" != "$TO_USER" ]; then
+        echo "=== Replacing /home/$FROM_USER/ to /home/$TO_USER/ in database $TO_DATABASE_NAME"
+        sudo -H -u$TO_USER wp search-replace "/home/$FROM_USER/" "/home/$TO_USER/" --precise --all-tables --skip-columns=guid
+    fi
     sudo -H -u$TO_USER wp cache flush
 fi
 
