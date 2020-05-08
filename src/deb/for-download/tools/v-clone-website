@@ -148,7 +148,7 @@ fi
 
 FROM_DOMAIN_TPL=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'TEMPLATE:' | awk '{print $2}')
 FROM_DOMAIN_PROXY_TPL=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'PROXY:' | awk '{print $2}')
-FROM_DOMAIN_PROXY_EXT=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'PROXY EXT:' | awk '{print $3}')
+FROM_DOMAIN_PROXY_EXT=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'PROXY EXT:' | cut -d ' ' -f8-)
 
 # ----------- TO -------------
 
