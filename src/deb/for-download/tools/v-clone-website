@@ -327,6 +327,7 @@ if [ $SHOULD_INSTALL_SSL -eq 1 ]; then
     $VESTA/bin/v-add-letsencrypt-domain "$TO_USER" "$TO_DOMAIN" "www.$TO_DOMAIN" "yes"
     if [ $? -ne 0 ]; then
         echo "=== LetsEncrypt installation failed"
+    fi
 fi
 
 if [ ! -z "$FROM_DOMAIN_TPL" ]; then
