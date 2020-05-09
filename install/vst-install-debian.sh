@@ -1584,6 +1584,11 @@ fi
 echo "==="
 echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
 
+# folder for upgrade notations
+if [ ! -d "/usr/local/vesta/data/upgrades" ]; then
+    mkdir -p /usr/local/vesta/data/upgrades
+fi
+
 # Secret URL
 secretquery=''
 if [ ! -z "$secret_url" ]; then
