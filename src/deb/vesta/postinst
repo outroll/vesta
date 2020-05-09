@@ -46,6 +46,7 @@ if [ ! -f "/usr/local/vesta/data/upgrades/allow-backup-anytime" ]; then
     touch /usr/local/vesta/data/upgrades/allow-backup-anytime
     check_grep=$(grep -c 'ALLOW_BACKUP_ANYTIME' /usr/local/vesta/conf/vesta.conf)
     if [ "$check_grep" -eq 0 ]; then
+        echo "" >> /usr/local/vesta/conf/vesta.conf
         echo "ALLOW_BACKUP_ANYTIME='yes'" >> /usr/local/vesta/conf/vesta.conf
     fi
 fi
