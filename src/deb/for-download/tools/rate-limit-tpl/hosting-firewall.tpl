@@ -5,7 +5,7 @@ server {
 
     location / {
         limit_conn addr 2;
-        limit_req zone=one burst=5;
+        limit_req zone=one burst=7;
         proxy_pass      http://%ip%:%web_port%;
     }
 
