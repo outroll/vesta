@@ -13,19 +13,51 @@ if [ ! -e "/usr/local/vesta/data/users/admin" ]; then
     exit
 fi
 
-# Run triggers
-if [ -x "/root/vesta-patch.sh" ]; then
-    /root/vesta-patch.sh
+if [ ! -d "/usr/local/vesta/data/upgrades" ]; then
+    mkdir -p /usr/local/vesta/data/upgrades
 fi
 
-# sudoers fix
-if [ -e "/etc/sudoers.d/admin" ]; then
-    sed -i "s/admin.*ALL=(ALL).*/# sudo is limited to vesta scripts/" \
-        /etc/sudoers.d/admin
+if [ ! -f "/usr/local/vesta/data/upgrades/tune-fpm-config-files-v1" ]; then
+    touch /usr/local/vesta/data/upgrades/tune-fpm-config-files-v1
+    
+    OLDVAL='pm.max_children = 16'
+    NEWVAL='pm.max_children = 8'
+    find /etc/php/*/fpm/pool.d/ -name "*.conf" -type f -exec grep -l "$OLDVAL" {} \; | xargs sed -i "s|$OLDVAL|$NEWVAL|g"
+    find /usr/local/vesta/data/templates/web/apache2/ -type f -name "*.sh" -exec grep -l "$OLDVAL" {} \; | xargs sed -i "s|$OLDVAL|$NEWVAL|g"
+    
+    OLDVAL='request_terminate_timeout = 30s'
+    NEWVAL='request_terminate_timeout = 90s'
+    find /etc/php/*/fpm/pool.d/ -name "*.conf" -type f -exec grep -l "$OLDVAL" {} \; | xargs sed -i "s|$OLDVAL|$NEWVAL|g"
+    find /usr/local/vesta/data/templates/web/apache2/ -type f -name "*.sh" -exec grep -l "$OLDVAL" {} \; | xargs sed -i "s|$OLDVAL|$NEWVAL|g"
+    
+    OLDVAL='php_admin_value\[max_execution_time\] = 20'
+    NEWVAL='php_admin_value\[max_execution_time\] = 30'
+    find /etc/php/*/fpm/pool.d/ -name "*.conf" -type f -exec grep -l "$OLDVAL" {} \; | xargs sed -i "s|$OLDVAL|$NEWVAL|g"
+    find /usr/local/vesta/data/templates/web/apache2/ -type f -name "*.sh" -exec grep -l "$OLDVAL" {} \; | xargs sed -i "s|$OLDVAL|$NEWVAL|g"
+    
+    # restart all php-fpm services
+    systemctl --full --type service --all | grep "php...-fpm" | awk '{print $1}' | xargs systemctl restart
 fi
 
-check_apt=$(grep -c 'vesta.hostingpanel.dev' /etc/apt/sources.list.d/vesta.list)
-if [ "$check_apt" -eq 1 ]; then
+if [ ! -f "/usr/local/vesta/data/upgrades/allow-backup-anytime" ]; then
+    touch /usr/local/vesta/data/upgrades/allow-backup-anytime
+    check_grep=$(grep -c 'ALLOW_BACKUP_ANYTIME' /usr/local/vesta/conf/vesta.conf)
+    if [ "$check_grep" -eq 0 ]; then
+        echo "ALLOW_BACKUP_ANYTIME='yes'" >> /usr/local/vesta/conf/vesta.conf
+    fi
+fi
+
+if [ ! -f "/usr/local/vesta/data/upgrades/fix-sudoers" ]; then
+    touch /usr/local/vesta/data/upgrades/fix-sudoers
+    # sudoers fix
+    if [ -e "/etc/sudoers.d/admin" ]; then
+        sed -i "s/admin.*ALL=(ALL).*/# sudo is limited to vesta scripts/" \
+            /etc/sudoers.d/admin
+    fi
+fi
+
+check_grep=$(grep -c 'vesta.hostingpanel.dev' /etc/apt/sources.list.d/vesta.list)
+if [ "$check_grep" -eq 1 ]; then
     wget -O - http://apt.myvestacp.com/deb_signing.key | sudo apt-key add -
     codename="$(cat /etc/os-release |grep VERSION= |cut -f 2 -d \(|cut -f 1 -d \))"
     echo "deb http://apt.myvestacp.com/$codename/ $codename vesta" > /etc/apt/sources.list.d/vesta.list
@@ -40,14 +72,24 @@ if [ "$check_cron" -eq 0 ]; then
     crontab -l | { cat; echo "10 2 * * 6 sudo find /home/*/tmp/ -type f -mtime +5 -exec rm {} \;"; } | crontab -
 fi
 
+if [ ! -f "/usr/local/vesta/data/upgrades/change-clamav-socket" ]; then
+    touch /usr/local/vesta/data/upgrades/change-clamav-socket
+    check_grep=$(grep -c '/var/lib/clamav/clamd.sock' /etc/clamav/clamd.conf)
+    if [ "$check_grep" -eq 0 ]; then
+        touch /var/lib/clamav/clamd.sock
+        chown clamav:clamav /var/lib/clamav/clamd.sock
+        sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/clamav/clamd.conf
+        sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/exim4/exim4.conf.template
+        systemctl restart clamav-daemon
+        systemctl restart clamav-freshclam
+        systemctl restart exim4
+    fi
+fi
 
-touch /var/lib/clamav/clamd.sock
-chown clamav:clamav /var/lib/clamav/clamd.sock
-sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/clamav/clamd.conf
-sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/exim4/exim4.conf.template
-systemctl restart clamav-daemon
-systemctl restart clamav-freshclam
-systemctl restart exim4
+# Run custom triggers
+if [ -x "/root/vesta-patch.sh" ]; then
+    /root/vesta-patch.sh
+fi
 
 version=$(curl -s http://c.myvestacp.com/latest.txt?updated)
 version=${version:6}
