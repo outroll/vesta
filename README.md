@@ -17,7 +17,9 @@ Features
 
 + [Support for multi-PHP versions](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
 
-+ You can limit the maximum number of sent emails (per hour) [per mail account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L105-L106) and [per hosting account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L65-L66), preventimg hijacking of email accounts and PHP malware scripts to send spam.
++ You can limit the maximum number of sent emails (per hour) [per mail account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L105-L106) and [per hosting account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L65-L66), preventimg hijacking of email accounts and preventing PHP malware scripts to send spam.
+
++ You can see [what PHP scripts are sending emails](https://github.com/myvesta/vesta/blob/master/install/debian/10/php/php7.3-dedi.patch#L50), when and to whom
 
 + You can completely "lock" myVesta so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
     + During installation you will be asked to choose a secret URL for your hosting panel
@@ -28,7 +30,7 @@ Features
     + If you didn't set the secret URL during installation, you can do it anytime. Just execute in shell:
     + `echo "<?php \$login_url='MY-SECRET-URL';" > /usr/local/vesta/web/inc/login_url.php`
 
-+ We disabled dangerous PHP functions in php.ini, so even if, for example, your customer's CMS gets compromised, hacker will not be able to execute shell scripts from within PHP.
++ We [disabled dangerous PHP functions](https://github.com/myvesta/vesta/blob/master/install/debian/10/php/php7.3-dedi.patch#L9) in php.ini, so even if, for example, your customer's CMS gets compromised, hacker will not be able to execute shell scripts from within PHP.
 
 + Apache is fully switched to mpm_event mode, while PHP is running in PHP-FPM mode, which is the most stable PHP-stack solution
     + OPCache is turned on by default
