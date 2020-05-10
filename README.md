@@ -13,7 +13,7 @@ Features
 
 + Support for Debian 10 (previous releases are also supported)
 
-+ [nginx templates](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh) that can prevent denial-of-services
++ [nginx templates](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh) that can prevent denial-of-services on your server
 
 + You can completely "lock" VestaCP so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
     + During installation you will be asked to choose a secret URL for your hosting panel
@@ -42,6 +42,26 @@ Features
     + We are using latest nginx version for vesta-nginx package
     + With your own APT infrastructure you can take security of Vesta-installer infrastructure in your own hands. You will have full control of your Vesta code (this way you can rest assured that there's 0% chance that you'll install malicious packages from repositories that may get hacked)
     + Binaries that you compile are 100% compatible with official VestaCP from vestacp.com, so you can run official VestaCP code with your own binaries (in case you don't want the source code from this fork)
+
+Useful tools
+==================================================
+
++ [Script that will convert Vesta to myVesta](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/convert-vesta-to-myvesta.sh)
+
++ [Wordpress installer in one second](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/create_wp_https)
+
++ [Script for importing cPanel backups](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/cpanel-import.sh)
+
++ [Cloning script that will copy the whole site from one domain to another (sub)domain](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/v-clone-website)
+
++ [Script that will migrate your site from http to https, replacing http to https URLs in database](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/v-migrate-site-to-https)
+
++ [Script that will install multiple PHP versions on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
+
++ [Scrit that will insatall nginx templates that can prevent denial-of-services on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh)
+
++ [Official Vesta Softaculous installer](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/install-softaculous.sh)
+
 
 How to install
 ----------------------------
