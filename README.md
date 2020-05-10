@@ -13,6 +13,8 @@ Features
 
 + Support for Debian 10 (previous releases are also supported)
 
++ [nginx templates](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh) that can prevent denial-of-services
+
 + You can completely "lock" VestaCP so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
     + During installation you will be asked to choose a secret URL for your hosting panel
     + Literally no PHP scripts will be alive on your hosting panel (won't be able to get executed), unless you access the hosting panel with secret URL parameter. Thus, when it happens that, let's say, some zero-day exploit pops up - attackers won't be able to access it without knowing your secret URL. PHP scripts from VestaCP will be simply dead - no one will be able to interact with your panel unless they have the secret URL.
