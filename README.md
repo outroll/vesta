@@ -1,19 +1,19 @@
-MyVesta Control Panel
+myVesta Control Panel
 ==================================================
 
-* MyVesta is a fork of [VestaCP](https://vestacp.com/)
+* myVesta is a fork of [VestaCP](https://vestacp.com/)
 * Focused on security and stability
 * Therefore, only Debian is supported - keeping focus on only one eco-system - not wasting energy on compatibility with other Linux distributions
 * However, it will be always synchronized with official VestaCP commits
-* VestaCP commercial plugins will be only available for purchase on official vestacp.com website - we will NOT take their earnings, since we are not making this fork for monetary reasons. Instead, we are doing this with open source in mind - to enhance security and to build new features, without being interlocked with official VestaCP release cycles, and without affecting or heavily diverting from the VestaCP's planned development milestones
-* With previous in mind, all features that are built for this fork (MyVesta), will be offered to official VestaCP, via pull requests
+* VestaCP commercial plugins will be only available for purchase on official [vestacp.com](https://vestacp.com/) website - we will NOT take their earnings, since we are not making this fork for monetary reasons. Instead, we are doing this with open source in mind - to enhance security and to build new features, without being interlocked with official VestaCP release cycles, and without affecting or heavily diverting from the VestaCP's planned development milestones
+* With previous in mind, all features that are built for this fork (myVesta), will be offered to official VestaCP, via pull requests
 
-Features
+Features of myVesta
 ==================================================
 
 + Support for Debian 10 (previous Debian releases are also supported)
 
-+ [nginx templates](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh) that can prevent denial-of-services on your server
++ [nginx templates](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh) that can prevent denial-of-service on your server
 
 + [Support for multi-PHP versions](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
 
@@ -52,7 +52,7 @@ Useful tools
 
 + [Wordpress installer in one second](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/create_wp_https)
 
-+ [Script for importing cPanel backups](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/cpanel-import.sh)
++ [Script for importing cPanel backups to Vesta](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/cpanel-import.sh)
 
 + [Cloning script that will copy the whole site from one domain to another (sub)domain](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/v-clone-website)
 
@@ -60,7 +60,7 @@ Useful tools
 
 + [Script that will install multiple PHP versions on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
 
-+ [Script that will insatall nginx templates that can prevent denial-of-services on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh)
++ [Script that will insatall nginx templates that can prevent denial-of-service on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh)
 
 + [Official Vesta Softaculous installer](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/install-softaculous.sh)
 
