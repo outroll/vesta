@@ -1,7 +1,7 @@
 MyVesta Control Panel
 ==================================================
 
-* MyVesta is a fork of VestaCP
+* MyVesta is a fork of [VestaCP](https://vestacp.com/)
 * Focused on security and stability
 * Therefore, only Debian is supported - keeping focus on only one eco-system - not wasting energy on compatibility with other Linux distributions
 * However, it will be always synchronized with official VestaCP commits
@@ -77,7 +77,7 @@ bash vst-install-debian.sh
 About VestaCP
 ==================================================
 
-* Vesta is an open source hosting control panel.
+* [Vesta](https://vestacp.com/) is an open source hosting control panel.
 * Vesta has a clean and focused interface without clutter.
 * Vesta has the latest of very innovative technologies.
 
