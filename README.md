@@ -11,11 +11,15 @@ MyVesta Control Panel
 Features
 ==================================================
 
-+ Support for Debian 10 (previous releases are also supported)
++ Support for Debian 10 (previous Debian releases are also supported)
 
 + [nginx templates](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh) that can prevent denial-of-services on your server
 
-+ You can completely "lock" VestaCP so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
++ [Support for multi-PHP versions](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
+
++ You can limit the maximum number of sent emails (per hour) [per mail account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L105-L106) and [per hosting account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L65-L66), preventimg hijacking of email accounts and PHP malware scripts to send spam.
+
++ You can completely "lock" myVesta so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
     + During installation you will be asked to choose a secret URL for your hosting panel
     + Literally no PHP scripts will be alive on your hosting panel (won't be able to get executed), unless you access the hosting panel with secret URL parameter. Thus, when it happens that, let's say, some zero-day exploit pops up - attackers won't be able to access it without knowing your secret URL. PHP scripts from VestaCP will be simply dead - no one will be able to interact with your panel unless they have the secret URL.
     + You can see for yourself how this mechanism was built by looking at:
@@ -29,13 +33,9 @@ Features
 + Apache is fully switched to mpm_event mode, while PHP is running in PHP-FPM mode, which is the most stable PHP-stack solution
     + OPCache is turned on by default
 
-+ Support for multi-PHP versions - https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh
-
 + Auto-generating LetsEncrypt SSL for server hostname (signed SSL for Vesta 8083 port, for dovecot (IMAP & POP3) and for Exim (SMTP))
 
 + You can change Vesta port during installation or later using one command line: **v-change-vesta-port [number]**
-
-+ You can limit the maximum number of sent emails (per hour) per mail account and per hosting account.
 
 + You can compile Vesta binaries by yourself - https://github.com/myvesta/vesta/blob/master/src/deb/vesta_compile.sh
     + You can even create your own APT repository in a minute
