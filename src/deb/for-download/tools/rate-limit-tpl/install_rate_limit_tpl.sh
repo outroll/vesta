@@ -3,7 +3,7 @@
 # This installer will install hosting-firewall.tpl (nginx template) that will:
 # + allow 1 http request per second per IP address (sent to your server, more precisely to your PHP-FPM)
 # + allow 2 parallel http connections per IP address (sent to your PHP-FPM)
-# + make burst (queue) for 7 additional http requests in the same second, first 3 will be processed immediately, 4 others will processed each request each second (so this will handle natural peaks that CMS can generate to itself)
+# + allow burst for 7 additional http requests (they will enter queue), first 3 will be processed immediately, 4 others will processed each request each second (so this will handle natural peaks that CMS can generate to itself)
 # + if client fills allowed queue, additional requests will be denied
 #
 # Generally, this nginx template will prevent bad bots to run hundreds parallel http requests against your site, which will probably cause denial-of-service on your server.
