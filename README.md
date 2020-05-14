@@ -21,7 +21,7 @@ Features of myVesta
 
 + You can see [what PHP scripts are sending emails](https://github.com/myvesta/vesta/blob/master/install/debian/10/php/php7.3-dedi.patch#L50), when and to whom
 
-+ You can completely "lock" myVesta so it can be accessed only via https://serverhost:8083/?MY-SECRET-URL
++ You can completely "lock" myVesta so it can be accessed only via **secret URL**, for example https://serverhost:8083/?MY-SECRET-URL
     + During installation you will be asked to choose a secret URL for your hosting panel
     + Literally no PHP scripts will be alive on your hosting panel (won't be able to get executed), unless you access the hosting panel with secret URL parameter. Thus, when it happens that, let's say, some zero-day exploit pops up - attackers won't be able to access it without knowing your secret URL - PHP scripts from VestaCP will be simply dead - no one will be able to interact with your panel unless they have the secret URL.
     + You can see for yourself how this mechanism was built by looking at:
