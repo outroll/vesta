@@ -289,7 +289,7 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
     if [ -z "$web" ] || [ "$web" = '*' ]; then
         domains="$backup_domains"
     else
-        echo "$web" |tr ',' '\n' > $tmpdir/selected.txt
+        echo "$web" | tr ',' '\n' | sed -e "s/^/^/" > $tmpdir/selected.txt
         domains=$(echo "$backup_domains" |egrep -f $tmpdir/selected.txt)
     fi
 
