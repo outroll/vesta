@@ -93,15 +93,21 @@ fi
 # reverting to default clamd sock
 if [ ! -f "/usr/local/vesta/data/upgrades/change-clamav-socket-v2" ]; then
     touch /usr/local/vesta/data/upgrades/change-clamav-socket-v2
-    sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /etc/clamav/clamd.conf
-    sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /etc/exim4/exim4.conf.template
-    if [ -f "/lib/systemd/system/clamav-daemon.socket" ]; then
-        sed -i "s#/var/lib/clamav/clamd.sock#/run/clamav/clamd.ctl#g" /lib/systemd/system/clamav-daemon.socket
+    if [ -f "/etc/clamav/clamd.conf" ]; then
+        sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /etc/clamav/clamd.conf
+        if [ -f "/etc/exim4/exim4.conf.template" ]; then
+            sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /etc/exim4/exim4.conf.template
+        fi
+        if [ -f "/lib/systemd/system/clamav-daemon.socket" ]; then
+            sed -i "s#/var/lib/clamav/clamd.sock#/run/clamav/clamd.ctl#g" /lib/systemd/system/clamav-daemon.socket
+        fi
+        systemctl daemon-reload
+        systemctl restart clamav-daemon
+        systemctl restart clamav-freshclam
+        if [ -f "/etc/exim4/exim4.conf.template" ]; then
+            systemctl restart exim4
+        fi
     fi
-    systemctl daemon-reload
-    systemctl restart clamav-daemon
-    systemctl restart clamav-freshclam
-    systemctl restart exim4
 fi
 
 # Run custom triggers
