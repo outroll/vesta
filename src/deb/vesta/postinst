@@ -95,8 +95,9 @@ if [ ! -f "/usr/local/vesta/data/upgrades/change-clamav-socket-v2" ]; then
     touch /usr/local/vesta/data/upgrades/change-clamav-socket-v2
     sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /etc/clamav/clamd.conf
     sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /etc/exim4/exim4.conf.template
-    sed -i "s#/var/lib/clamav/clamd.sock#/run/clamav/clamd.ctl#g" /lib/systemd/system/clamav-daemon.socket
-    # sed -i "s#=/run/clamav/clamd.ctl#=/var/run/clamav/clamd.ctl#g" /lib/systemd/system/clamav-daemon.socket
+    if [ -f "/lib/systemd/system/clamav-daemon.socket" ]; then
+        sed -i "s#/var/lib/clamav/clamd.sock#/run/clamav/clamd.ctl#g" /lib/systemd/system/clamav-daemon.socket
+    fi
     systemctl daemon-reload
     systemctl restart clamav-daemon
     systemctl restart clamav-freshclam
