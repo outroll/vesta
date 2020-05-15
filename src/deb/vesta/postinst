@@ -76,18 +76,31 @@ if [ "$check_cron" -eq 0 ]; then
     crontab -l | { cat; echo "10 2 * * 6 sudo find /home/*/tmp/ -type f -mtime +5 -exec rm {} \;"; } | crontab -
 fi
 
-if [ ! -f "/usr/local/vesta/data/upgrades/change-clamav-socket" ]; then
-    touch /usr/local/vesta/data/upgrades/change-clamav-socket
-    check_grep=$(grep -c '/var/lib/clamav/clamd.sock' /etc/clamav/clamd.conf)
+# make sure clamav-daemon.service has mkdir fix
+if [ -f "/lib/systemd/system/clamav-daemon.service" ]; then
+    check_grep=$(grep -c 'mkdir' /lib/systemd/system/clamav-daemon.service)
     if [ "$check_grep" -eq 0 ]; then
-        touch /var/lib/clamav/clamd.sock
-        chown clamav:clamav /var/lib/clamav/clamd.sock
-        sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/clamav/clamd.conf
-        sed -i "s#/var/run/clamav/clamd.ctl#/var/lib/clamav/clamd.sock#g" /etc/exim4/exim4.conf.template
+        echo "=== patching clamav-daemon.service"
+        exec_pre1='ExecStartPre=-/bin/mkdir -p /var/run/clamav'
+        exec_pre2='ExecStartPre=-/bin/chown -R clamav:clamav /var/run/clamav'
+        sed -i "s|\[Service\]|[Service]\n$exec_pre1\n$exec_pre2|g" /lib/systemd/system/clamav-daemon.service
+        systemctl daemon-reload
         systemctl restart clamav-daemon
         systemctl restart clamav-freshclam
-        systemctl restart exim4
     fi
+fi
+
+# reverting to default clamd sock
+if [ ! -f "/usr/local/vesta/data/upgrades/change-clamav-socket-v2" ]; then
+    touch /usr/local/vesta/data/upgrades/change-clamav-socket-v2
+    sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /etc/clamav/clamd.conf
+    sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /etc/exim4/exim4.conf.template
+    sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /lib/systemd/system/clamav-daemon.socket
+    sed -i "s#=/run/clamav/clamd.ctl#=/var/run/clamav/clamd.ctl#g" /lib/systemd/system/clamav-daemon.socket
+    systemctl daemon-reload
+    systemctl restart clamav-daemon
+    systemctl restart clamav-freshclam
+    systemctl restart exim4
 fi
 
 # Run custom triggers
