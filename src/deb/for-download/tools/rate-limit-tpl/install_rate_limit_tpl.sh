@@ -36,18 +36,15 @@ wget -nv -O /usr/local/vesta/data/templates/web/nginx/force-https-firewall.tpl h
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/force-https-firewall.stpl http://c.myvestacp.com/tools/rate-limit-tpl/force-https-firewall.stpl
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/hosting-firewall.tpl http://c.myvestacp.com/tools/rate-limit-tpl/hosting-firewall.tpl
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/hosting-firewall.stpl http://c.myvestacp.com/tools/rate-limit-tpl/hosting-firewall.stpl
-wget -nv -O /usr/local/vesta/data/templates/web/nginx/hosting-firewall.sh http://c.myvestacp.com/tools/rate-limit-tpl/hosting-firewall.sh
 
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/force-https-firewall-burst-2.tpl http://c.myvestacp.com/tools/rate-limit-tpl/force-https-firewall-burst-2.tpl
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/force-https-firewall-burst-2.stpl http://c.myvestacp.com/tools/rate-limit-tpl/force-https-firewall-burst-2.stpl
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/hosting-firewall-burst-2.tpl http://c.myvestacp.com/tools/rate-limit-tpl/hosting-firewall-burst-2.tpl
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/hosting-firewall-burst-2.stpl http://c.myvestacp.com/tools/rate-limit-tpl/hosting-firewall-burst-2.stpl
-wget -nv -O /usr/local/vesta/data/templates/web/nginx/hosting-firewall-burst-2.sh http://c.myvestacp.com/tools/rate-limit-tpl/hosting-firewall-burst-2.sh
 
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/force-https-firewall-burst-2-speed-2.tpl http://c.myvestacp.com/tools/rate-limit-tpl/force-https-firewall-burst-2-speed-2.tpl
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/force-https-firewall-burst-2-speed-2.stpl http://c.myvestacp.com/tools/rate-limit-tpl/force-https-firewall-burst-2-speed-2.stpl
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/hosting-firewall-burst-2-speed-2.tpl http://c.myvestacp.com/tools/rate-limit-tpl/hosting-firewall-burst-2-speed-2.tpl
 wget -nv -O /usr/local/vesta/data/templates/web/nginx/hosting-firewall-burst-2-speed-2.stpl http://c.myvestacp.com/tools/rate-limit-tpl/hosting-firewall-burst-2-speed-2.stpl
-wget -nv -O /usr/local/vesta/data/templates/web/nginx/hosting-firewall-burst-2-speed-2.sh http://c.myvestacp.com/tools/rate-limit-tpl/hosting-firewall-burst-2-speed-2.sh
 
 service nginx restart
