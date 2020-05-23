@@ -32,6 +32,11 @@ if [ "$release" -eq 10 ]; then
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
         unrar-free vim-common net-tools unzip"
 elif [ "$release" -eq 9 ]; then
+    echo "==================================================="
+    echo "Important message:"
+    echo "myVesta is much more faster with Debian 10 ."
+    echo "Are you sure you want to continue with Debian 9 ?"
+    read -p "==================================================="
     software="nginx apache2 apache2-utils apache2-suexec-custom
         libapache2-mod-ruid2 libapache2-mod-fcgid libapache2-mod-php php
         php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
@@ -44,6 +49,11 @@ elif [ "$release" -eq 9 ]; then
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
         unrar-free vim-common net-tools unzip"
 elif [ "$release" -eq 8 ]; then
+    echo "==================================================="
+    echo "Important message:"
+    echo "myVesta is much more faster with Debian 10 ."
+    echo "Are you sure you want to continue with Debian 8 ?"
+    read -p "==================================================="
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
         libapache2-mod-fcgid libapache2-mod-php5 php5 php5-common php5-cgi
