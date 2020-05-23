@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "Sorry, CentOS is not supported."
+echo "myVesta supports only Debian."
+exit;
+
 # Vesta RHEL/CentOS installer v.05
 
 #----------------------------------------------------------#
