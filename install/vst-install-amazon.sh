@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "Sorry, Amazon linux distribution is not supported."
+echo "myVesta supports only Debian."
+exit;
+
 # Vesta Amazon installer v.05
 
 #----------------------------------------------------------#
