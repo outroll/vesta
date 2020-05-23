@@ -1,15 +1,10 @@
 #!/bin/bash
-# Vesta installation wrapper
-# http://vestacp.com
+# myVesta installation wrapper
+# http://myvestacp.com
 
 #
 # Currently Supported Operating Systems:
-#
-#   RHEL 5, 6, 7
-#   CentOS 5, 6, 7
-#   Debian 7, 8
-#   Ubuntu 12.04 - 18.04
-#   Amazon Linux 2017
+#   Debian 8, 9, 10
 #
 
 # Am I root?
