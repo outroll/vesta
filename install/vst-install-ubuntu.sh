@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "Sorry, Ubuntu is not supported."
+echo "myVesta supports only Debian."
+exit;
+
 # Vesta Ubuntu installer v.05
 
 #----------------------------------------------------------#
