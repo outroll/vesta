@@ -11,7 +11,7 @@ myVesta Control Panel
 Features of myVesta
 ==================================================
 
-+ Support for Debian 10 (previous Debian releases are also supported)
++ Support for Debian 10 (previous Debian releases are also supported, but Debian 10 is recommended)
 
 + [nginx templates](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh) that can prevent denial-of-service on your server
 
