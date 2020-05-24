@@ -22,7 +22,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 # Defining config host
-chost='c.vestacp.com'
+chost='c.myvestacp.com'
 
 # Detcing OS
 case $(head -n1 /etc/issue |cut -f 1 -d ' ') in
@@ -43,7 +43,7 @@ if [ "$version" = 'ubuntu' ]; then
     release=$(lsb_release -r |awk '{print $2}')
 fi
 if [ "$version" = 'debian' ]; then
-    release=$(cat /etc/issue|grep -o [0-9]|head -n1)
+    release=$(cat /etc/debian_version | tr "." "\n" | head -n1)
 fi
 
 # Defining download url
