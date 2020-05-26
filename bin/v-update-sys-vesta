@@ -49,7 +49,7 @@ else
         -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" -qq
 
     # Update vesta package
-    apt-get -y -qq -o Dpkg::Options::="--force-confold" install $package > /dev/null 2>&1
+    apt-get -y -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confmiss" install $package > /dev/null 2>&1
     check_result $? "$package update failed" $E_UPDATE
 fi
 
