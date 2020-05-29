@@ -7,6 +7,8 @@
 # + if client fills allowed queue, additional requests will be denied
 #
 # Generally, this nginx template will prevent bad bots to run hundreds parallel http requests against your site, which will probably cause denial-of-service on your server.
+#
+# There are also 3 additional templates, with larger limit values (for example: 2 req/sec, 14 allowed requests in queue, 7 burst, 8 parallel connections).
 
 grepc=$(grep -c 'limit_conn_zone' /etc/nginx/nginx.conf)
 if [ "$grepc" -eq 0 ]; then
