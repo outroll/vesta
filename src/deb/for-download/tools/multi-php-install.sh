@@ -202,6 +202,7 @@ if [ "$inst_74" -eq 1 ]; then
     apt -y install php7.4-mbstring php7.4-bcmath php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-intl php7.4-mysql php7.4-soap php7.4-xml php7.4-zip php7.4-memcache php7.4-memcached
     update-rc.d php7.4-fpm defaults
     a2enconf php7.4-fpm
+    apt-get -y remove libapache2-mod-php7.4
     systemctl restart apache2
     cp -r /etc/php/7.4/ /root/vst_install_backups/php7.4/
     wget -nv https://c.myvestacp.com/tools/apache-fpm-tpl/PHP-FPM-74.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-74.stpl
