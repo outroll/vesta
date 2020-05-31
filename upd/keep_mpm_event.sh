@@ -5,6 +5,7 @@ if [ "$check_grep" -eq 0 ]; then
     echo "apt is not running"
     echo "cleaning restart.pipe"
     sed -i "/keep_mpm_event/d" /usr/local/vesta/data/queue/restart.pipe
+    /usr/local/vesta/bin/v-delete-cron-restart-job
     if [ ! -f "/usr/local/vesta/data/upgrades/keeping-mpm-event-checked" ]; then
         touch /usr/local/vesta/data/upgrades/keeping-mpm-event-checked
         echo "mpm_event is not checked"
