@@ -1595,6 +1595,11 @@ echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
 if [ ! -d "/usr/local/vesta/data/upgrades" ]; then
     mkdir -p /usr/local/vesta/data/upgrades
 fi
+touch /usr/local/vesta/data/upgrades/tune-fpm-config-files-v1
+touch /usr/local/vesta/data/upgrades/allow-backup-anytime
+touch /usr/local/vesta/data/upgrades/fix-sudoers
+touch /usr/local/vesta/data/upgrades/change-clamav-socket-v2
+touch /usr/local/vesta/data/upgrades/keeping-mpm-event
 
 # Secret URL
 secretquery=''
