@@ -118,6 +118,13 @@ if [ ! -f "/usr/local/vesta/data/upgrades/keeping-mpm-event" ]; then
     /usr/local/vesta/bin/v-add-cron-restart-job > /dev/null 2>&1
 fi
 
+# Fixing ssl directive in nginx templates
+if [ ! -f "/usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates" ]; then
+    touch /usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates
+    echo "=== Fixing ssl directive in nginx templates"
+    bash /usr/local/vesta/upd/fix_ssl_directive_in_templates.sh
+fi
+
 # Run custom triggers
 if [ -x "/root/vesta-patch.sh" ]; then
     /root/vesta-patch.sh
