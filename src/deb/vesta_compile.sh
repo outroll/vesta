@@ -277,18 +277,20 @@ if [ "$CWEB_B" = true ]; then
   fi
   cp /root/vesta/src/deb/latest.txt $PATH_OF_C_WEB_FOLDER_ROOT/latest.txt
   echo "$BUILD_DATE" > $PATH_OF_C_WEB_FOLDER_ROOT/build_date.txt
-  cd $PATH_OF_C_WEB_FOLDER
-  
+
+  ###########
+  cd $PATH_OF_C_WEB_FOLDER_ROOT/debian/8
+
   if [ -f "packages.tar.gz" ]; then
     rm packages.tar.gz
   fi
   tar -czf packages.tar.gz packages/
-  
+
   if [ -f "templates.tar.gz" ]; then
     rm templates.tar.gz
   fi
   tar -czf templates.tar.gz templates/
-  
+
   if [ -f "firewall.tar.gz" ]; then
     rm firewall.tar.gz
   fi
@@ -303,12 +305,71 @@ if [ "$CWEB_B" = true ]; then
     rm dovecot.tar.gz
   fi
   tar -czf dovecot.tar.gz dovecot/
-  echo "=== All done"
-  
+  echo "=== All done for Debian8"
+  ###########
+  cd $PATH_OF_C_WEB_FOLDER_ROOT/debian/9
+
+  if [ -f "packages.tar.gz" ]; then
+    rm packages.tar.gz
+  fi
+  tar -czf packages.tar.gz packages/
+
+  if [ -f "templates.tar.gz" ]; then
+    rm templates.tar.gz
+  fi
+  tar -czf templates.tar.gz templates/
+
+  if [ -f "firewall.tar.gz" ]; then
+    rm firewall.tar.gz
+  fi
+  tar -czf firewall.tar.gz firewall/
+
+  if [ -f "fail2ban.tar.gz" ]; then
+    rm fail2ban.tar.gz
+  fi
+  tar -czf fail2ban.tar.gz fail2ban/
+
+  if [ -f "dovecot.tar.gz" ]; then
+    rm dovecot.tar.gz
+  fi
+  tar -czf dovecot.tar.gz dovecot/
+  echo "=== All done for Debian9"
+  ###########
+  cd $PATH_OF_C_WEB_FOLDER_ROOT/debian/10
+
+  if [ -f "packages.tar.gz" ]; then
+    rm packages.tar.gz
+  fi
+  tar -czf packages.tar.gz packages/
+
+  if [ -f "templates.tar.gz" ]; then
+    rm templates.tar.gz
+  fi
+  tar -czf templates.tar.gz templates/
+
+  if [ -f "firewall.tar.gz" ]; then
+    rm firewall.tar.gz
+  fi
+  tar -czf firewall.tar.gz firewall/
+
+  if [ -f "fail2ban.tar.gz" ]; then
+    rm fail2ban.tar.gz
+  fi
+  tar -czf fail2ban.tar.gz fail2ban/
+
+  if [ -f "dovecot.tar.gz" ]; then
+    rm dovecot.tar.gz
+  fi
+  tar -czf dovecot.tar.gz dovecot/
+  echo "=== All done for Debian10"
+  ##########
+
   cp /root/vesta/install/vst-install-debian.sh $PATH_OF_C_WEB_FOLDER_ROOT/vst-install-debian.sh
-  
+
   mkdir $PATH_OF_C_WEB_FOLDER_ROOT/tools
   cp -rf /root/vesta/src/deb/for-download/tools/* $PATH_OF_C_WEB_FOLDER_ROOT/tools
+
+  echo "=== All done for c subdomain ==="
 fi
 
 #################################################################################
