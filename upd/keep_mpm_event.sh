@@ -1,5 +1,9 @@
 #!/bin/bash
 
+###########
+# Script that will ensure that Apache2 will always stay in mpm_event mode
+###########
+
 switch_to_mpm_event=1
 
 if [ "$1" = 'background' ]; then
