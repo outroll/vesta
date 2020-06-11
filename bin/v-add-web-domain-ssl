@@ -143,6 +143,8 @@ if [ ! -z "$UPDATE_HOSTNAME_SSL" ] && [ "$UPDATE_HOSTNAME_SSL" = "yes" ]; then
     fi
 fi
 
+UPDATE_SSL_SCRIPT=''
+source $VESTA/conf/vesta.conf
 if [ ! -z "$UPDATE_SSL_SCRIPT" ]; then
     eval "$UPDATE_SSL_SCRIPT $user $domain"
 fi
