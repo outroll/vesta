@@ -1238,7 +1238,6 @@ if [ "$clamd" = 'yes' ]; then
         echo "=== Blocking executable files inside zip/rar/tar archives in ClamAV"
         wget -nv -O $clamavfolder/foxhole_all.cdb http://c.myvestacp.com/tools/clamav/foxhole_all.cdb
         chown clamav:clamav $clamavfolder/foxhole_all.cdb
-        service clamav-daemon restart
     fi
     service clamav-daemon start
     check_result $? "clamav-daeom start failed"
