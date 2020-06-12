@@ -125,6 +125,23 @@ if [ ! -f "/usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates" ]; the
     bash /usr/local/vesta/upd/fix_ssl_directive_in_templates.sh
 fi
 
+# Block executable files inside zip/rar/tar archives in ClamAV
+if [ ! -f "/usr/local/vesta/data/upgrades/clamav_block_exe_in_archives" ]; then
+    touch /usr/local/vesta/data/upgrades/clamav_block_exe_in_archives
+    if [ -f "/etc/exim4/exim4.conf.template" ]; then
+        check_grep=$(grep -c '#CLAMD' /etc/exim4/exim4.conf.template)
+        if [ "$check_grep" -eq 0 ]; then
+            folder="/var/lib/clamav"
+            if [ -d "$folder" ]; then
+                echo "=== Blocking executable files inside zip/rar/tar archives in ClamAV"
+                wget -nv -O $folder/foxhole_all.cdb http://c.myvestacp.com/tools/clamav/foxhole_all.cdb
+                chown clamav:clamav $folder/foxhole_all.cdb
+                service clamav-daemon restart
+            fi
+        fi
+    fi
+fi
+
 # Run custom triggers
 if [ -x "/root/vesta-patch.sh" ]; then
     /root/vesta-patch.sh
