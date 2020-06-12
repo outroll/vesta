@@ -15,11 +15,12 @@ if [ "$release" -eq 9 ] || [ "$release" -eq 10 ]; then
             sed -i "s|ssl *on;|#ssl_on;|g" $FILE
         fi
     done
-fi
 
-for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
-    if [ ! -f "/usr/local/vesta/data/users/$user/user.conf" ]; then
-        continue;
-    fi
-    v-rebuild-web-domains $user 'no'
-done
+    for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
+        if [ ! -f "/usr/local/vesta/data/users/$user/user.conf" ]; then
+            continue;
+        fi
+        v-rebuild-web-domains $user 'no'
+    done
+
+fi
