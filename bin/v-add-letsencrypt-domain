@@ -158,6 +158,14 @@ for auth in $authz; do
         check_result $? "DNS _acme-challenge record wasn't created"
     else
         if [ "$WEB_SYSTEM" = 'nginx' ] || [ ! -z "$PROXY_SYSTEM" ]; then
+            if [ -f "/usr/local/vesta/web/inc/nginx_proxy" ]; then
+                #  if vesta is behind main nginx
+                well_known="$HOMEDIR/$user/web/$domain/public_html/.well-known"
+                acme_challenge="$well_known/acme-challenge"
+                mkdir -p $acme_challenge
+                echo "$token.$THUMB" > $acme_challenge/$token
+                chown -R $user:$user $well_known
+            fi
             conf="$HOMEDIR/$user/conf/web/nginx.$domain.conf_letsencrypt"
             sconf="$HOMEDIR/$user/conf/web/snginx.$domain.conf_letsencrypt"
             if [ ! -e "$conf" ]; then
