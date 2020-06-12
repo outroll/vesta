@@ -1233,6 +1233,13 @@ if [ "$clamd" = 'yes' ]; then
         sed -i "s|\[Service\]|[Service]\n$exec_pre1\n$exec_pre2|g" /lib/systemd/system/clamav-daemon.service
         systemctl daemon-reload
     fi
+    clamavfolder="/var/lib/clamav"
+    if [ -d "$clamavfolder" ]; then
+        echo "=== Blocking executable files inside zip/rar/tar archives in ClamAV"
+        wget -nv -O $clamavfolder/foxhole_all.cdb http://c.myvestacp.com/tools/clamav/foxhole_all.cdb
+        chown clamav:clamav $clamavfolder/foxhole_all.cdb
+        service clamav-daemon restart
+    fi
     service clamav-daemon start
     check_result $? "clamav-daeom start failed"
 fi
@@ -1600,6 +1607,9 @@ touch /usr/local/vesta/data/upgrades/allow-backup-anytime
 touch /usr/local/vesta/data/upgrades/fix-sudoers
 touch /usr/local/vesta/data/upgrades/change-clamav-socket-v2
 touch /usr/local/vesta/data/upgrades/keeping-mpm-event
+touch /usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates
+touch /usr/local/vesta/data/upgrades/clamav_block_exe_in_archives
+touch /usr/local/vesta/data/upgrades/clearing-letsencrypt-pipe
 
 # Secret URL
 secretquery=''
@@ -1628,7 +1638,7 @@ echo "================================================================"
 crontab -l | { cat; echo "10 2 * * 6 sudo find /home/*/tmp/ -type f -mtime +5 -exec rm {} \;"; } | crontab -
 
 #----------------------------------------------------------#
-#                   Vesta Access Info                      #
+#                  myVesta Access Info                     #
 #----------------------------------------------------------#
 
 # Sending notification to admin email
