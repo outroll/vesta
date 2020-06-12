@@ -3,6 +3,8 @@
 build_date=$(curl -s http://c.myvestacp.com/build_date.txt)
 echo "$build_date" > /usr/local/vesta/build_date.txt
 
+release=$(cat /etc/debian_version | tr "." "\n" | head -n1)
+
 # Run triggers only on updates
 if [ ! -e "/usr/local/vesta/data/users/admin" ]; then
     version=$(curl -s http://c.myvestacp.com/latest.txt?installed)
@@ -119,10 +121,12 @@ if [ ! -f "/usr/local/vesta/data/upgrades/keeping-mpm-event" ]; then
 fi
 
 # Fixing ssl directive in nginx templates
-if [ ! -f "/usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates" ]; then
-    touch /usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates
-    echo "=== Fixing ssl directive in nginx templates"
-    bash /usr/local/vesta/upd/fix_ssl_directive_in_templates.sh
+if [ "$release" -eq 9 ] || [ "$release" -eq 10 ]; then
+    if [ ! -f "/usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates" ]; then
+        touch /usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates
+        echo "=== Fixing ssl directive in nginx templates"
+        bash /usr/local/vesta/upd/fix_ssl_directive_in_templates.sh
+    fi
 fi
 
 # Block executable files inside zip/rar/tar archives in ClamAV
