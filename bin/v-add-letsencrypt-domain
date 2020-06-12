@@ -165,22 +165,23 @@ for auth in $authz; do
                 mkdir -p $acme_challenge
                 echo "$token.$THUMB" > $acme_challenge/$token
                 chown -R $user:$user $well_known
+            else
+                # default nginx method
+                conf="$HOMEDIR/$user/conf/web/nginx.$domain.conf_letsencrypt"
+                sconf="$HOMEDIR/$user/conf/web/snginx.$domain.conf_letsencrypt"
+                if [ ! -e "$conf" ]; then
+                    echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' \
+                        > $conf
+                    echo '    default_type text/plain;' >> $conf
+                    echo '    return 200 "$1.'$THUMB'";' >> $conf
+                    echo '}' >> $conf
+                fi
+                if [ ! -e "$sconf" ]; then
+                    ln -s "$conf" "$sconf"
+                fi
+                $BIN/v-restart-proxy
+                check_result $? "Proxy restart failed" >/dev/null
             fi
-            conf="$HOMEDIR/$user/conf/web/nginx.$domain.conf_letsencrypt"
-            sconf="$HOMEDIR/$user/conf/web/snginx.$domain.conf_letsencrypt"
-            if [ ! -e "$conf" ]; then
-                echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' \
-                    > $conf
-                echo '    default_type text/plain;' >> $conf
-                echo '    return 200 "$1.'$THUMB'";' >> $conf
-                echo '}' >> $conf
-            fi
-            if [ ! -e "$sconf" ]; then
-                ln -s "$conf" "$sconf"
-            fi
-            $BIN/v-restart-proxy
-            check_result $? "Proxy restart failed" >/dev/null
-
         else
             well_known="$HOMEDIR/$user/web/$domain/public_html/.well-known"
             acme_challenge="$well_known/acme-challenge"
