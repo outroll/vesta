@@ -147,8 +147,11 @@ if [ ! -f "/usr/local/vesta/data/upgrades/clamav_block_exe_in_archives" ]; then
 fi
 
 # Clearing letsencrypt pipe
-if [ -f "/usr/local/vesta/data/queue/letsencrypt.pipe" ]; then
-    truncate -s 0 /usr/local/vesta/data/queue/letsencrypt.pipe
+if [ ! -f "/usr/local/vesta/data/upgrades/clearing-letsencrypt-pipe" ]; then
+    touch /usr/local/vesta/data/upgrades/clearing-letsencrypt-pipe
+    if [ -f "/usr/local/vesta/data/queue/letsencrypt.pipe" ]; then
+        truncate -s 0 /usr/local/vesta/data/queue/letsencrypt.pipe
+    fi
 fi
 
 # Run custom triggers
