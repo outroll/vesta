@@ -18,6 +18,8 @@ if [ "$release" -eq 9 ] || [ "$release" -eq 10 ]; then
     
     source /etc/profile
     PATH=$PATH:/usr/local/vesta/bin && export PATH
+    
+    echo "=== Rebuilding web config files (this can take a while)"
 
     for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
         if [ ! -f "/usr/local/vesta/data/users/$user/user.conf" ]; then
