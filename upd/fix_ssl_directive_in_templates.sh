@@ -15,12 +15,15 @@ if [ "$release" -eq 9 ] || [ "$release" -eq 10 ]; then
             sed -i "s|ssl *on;|#ssl_on;|g" $FILE
         fi
     done
+    
+    source /etc/profile
+    PATH=$PATH:/usr/local/vesta/bin && export PATH
 
     for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
         if [ ! -f "/usr/local/vesta/data/users/$user/user.conf" ]; then
             continue;
         fi
-        v-rebuild-web-domains $user 'no'
+        /usr/local/vesta/bin/v-rebuild-web-domains $user 'no'
     done
 
 fi
