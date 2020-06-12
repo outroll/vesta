@@ -87,6 +87,11 @@ if [ -f "$fpmconf" ]; then
     rm $fpmconf
     echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
 fi
+fpmconf="/etc/php/7.4/fpm/pool.d/$domain.conf"
+if [ -f "$fpmconf" ]; then
+    rm $fpmconf
+    echo "Deleted: $fpmconf" >> /usr/local/vesta/log/system.log
+fi
 
 # Deleting domain from web.conf
 sed -i "/DOMAIN='$domain'/ d" $USER_DATA/web.conf
