@@ -39,6 +39,10 @@ Features of myVesta
 
 + You can change Vesta port during installation or later using one command line: **v-change-vesta-port [number]**
 
++ ClamAV is configured to block zip/rar/7z archives that contains executable files (just like GMail)
+
++ Backup will run with lowest priority (to avoid load on server), and can be configured to run only by night (and to stop on the morning and continue next night)
+
 + You can compile Vesta binaries by yourself - https://github.com/myvesta/vesta/blob/master/src/deb/vesta_compile.sh
     + You can even create your own APT repository in a minute
     + We are using latest nginx version for vesta-nginx package
