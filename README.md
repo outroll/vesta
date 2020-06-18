@@ -1,3 +1,15 @@
+News
+==================================================
+
+Forum:
+- https://forum.myvestacp.com/
+
+Wiki:
+- https://wiki.myvestacp.com/
+
+And we finally have normal homepage:
+- https://myvestacp.com/
+
 myVesta Control Panel
 ==================================================
 
