@@ -26,7 +26,7 @@ if [[ $PATH != *"/usr/local/vesta/bin"* ]]; then
 fi
 if [ ! -e /usr/bin/rsync ] || [ ! -e /usr/bin/file ] ; then
 	echo "#######################################"
-	echo "rsync not installed, try install it"
+	echo "rsync not installed, try installing it"
 	echo "This script need: rsync, file"
 	echo "#######################################"
 	if  [ -e /etc/redhat-release ]; then
