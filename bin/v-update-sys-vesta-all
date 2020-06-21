@@ -21,6 +21,10 @@ source $VESTA/conf/vesta.conf
 #                       Action                             #
 #----------------------------------------------------------#
 
+
+# Checking official latest version
+latest=$(wget -q -T 10 -t 1 http://c.myvestacp.com/latest.txt?check_latest -O -)
+
 # Starting update loop
 for package in vesta vesta-nginx vesta-php; do
     $BIN/v-update-sys-vesta "$package"
