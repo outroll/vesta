@@ -801,7 +801,7 @@ if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
     echo "WEB_PORT='80'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL_PORT='443'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL='openssl'"  >> $VESTA/conf/vesta.conf
-    if [ "$release" -eq 9 ]; then
+    if [ "$release" -eq 9 ] || [ "$release" -eq 10 ]; then
         if [ "$phpfpm" = 'yes' ]; then
             echo "WEB_BACKEND='php-fpm'" >> $VESTA/conf/vesta.conf
         fi
