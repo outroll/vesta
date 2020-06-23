@@ -208,7 +208,7 @@ for auth in $authz; do
         if [ "$i" -gt 10 ]; then
             check_result $E_CONNECT "Let's Encrypt domain validation timeout"
         fi
-        sleep 1
+        sleep $((i*2))
     done
     if [ "$validation" = 'invalid' ]; then
         check_result $E_CONNECT "Let's Encrypt domain verification failed"
