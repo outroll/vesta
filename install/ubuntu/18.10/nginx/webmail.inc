@@ -1,5 +1,5 @@
 location /webmail {
-    alias /var/lib/roundcube/;
+    alias /var/lib/roundcube;
 
     location ~ /(config|temp|logs) {
         return 404;

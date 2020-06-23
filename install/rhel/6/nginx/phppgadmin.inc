@@ -1,5 +1,5 @@
 location /phppgadmin {
-    alias /usr/share/phpPgAdmin/;
+    alias /usr/share/phpPgAdmin;
 
     location ~ ^/phppgadmin/(.*\.php)$ {
         alias /usr/share/phpPgAdmin/$1;
