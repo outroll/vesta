@@ -13,6 +13,12 @@ inst_74=0
 
 #######################################################################
 
+check_grep=$(grep -c "WEB_SYSTEM='nginx'" /usr/local/vesta/conf/vesta.conf)
+if [ "$check_grep" -eq 1 ]; then
+    echo "Multi-PHP support is only for myVesta that is installed in nginx+Apache or Apache variant"
+    exit 1
+fi
+
 inst_repo=0
 debian_version=$(cat /etc/debian_version | tr "." "\n" | head -n1)
 
