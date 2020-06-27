@@ -1,13 +1,18 @@
 #!/bin/bash
 
-# Script will install unsigned SSL to desired domain
-
 if [ $# -lt 1 ]; then
-	echo "usage: v-install-unsigned-ssl DOMAIN"
-	exit 1
+    echo "usage: v-install-unsigned-ssl DOMAIN [RESTART]"
+    exit 1
 fi
 
 domain=$1
+
+if [ $# -lt 2 ]; then
+    restart='yes'
+else
+    restart=$2
+fi
+
 
 user=$(/usr/local/vesta/bin/v-search-domain-owner $domain)
 
@@ -27,7 +32,7 @@ TMPLOC="/home/$user/tmp/$domain"
 mkdir $TMPLOC
 
 # Generating SSL certificate
-/usr/local/vesta/bin/v-generate-ssl-cert $domain $email 'US' 'California' 'San Francisco' 'myVesta Control Panel' 'IT' "www.$domain" > $TMPLOC/vst.pem
+/usr/local/vesta/bin/v-generate-ssl-cert $domain $email 'US' 'California' 'San Francisco' 'Vesta Control Panel' 'IT' "www.$domain" > $TMPLOC/vst.pem
 
 # Parsing certificate file
 crt_end=$(grep -n "END CERTIFICATE-" $TMPLOC/vst.pem |cut -f 1 -d:)
@@ -48,10 +53,10 @@ get_domain_values 'web'
 if [[ $SSL == 'no' ]]
 then
     #Configure SSL and install the cert
-    /usr/local/vesta/bin/v-add-web-domain-ssl $user $domain $TMPLOC
+    /usr/local/vesta/bin/v-add-web-domain-ssl $user $domain $TMPLOC "same" "$restart"
 else
     #Replace the existing cert with the new one
-    /usr/local/vesta/bin/v-change-web-domain-sslcert $user $domain $TMPLOC
+    /usr/local/vesta/bin/v-change-web-domain-sslcert $user $domain $TMPLOC "$restart"
 fi
 
 rm -rf $TMPLOC
