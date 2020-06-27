@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# info: install unsigned SSL to domain
+# options: DOMAIN [RESTART]
+#
+# The function install unsigned SSL to domain
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
 if [ $# -lt 1 ]; then
     echo "usage: v-install-unsigned-ssl DOMAIN [RESTART]"
     exit 1
@@ -13,6 +24,9 @@ else
     restart=$2
 fi
 
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
 
 user=$(/usr/local/vesta/bin/v-search-domain-owner $domain)
 
@@ -25,6 +39,10 @@ if [ ! -d "/home/$user/web/$domain/public_html" ]; then
     echo "Domain doesn't exist";
     exit 1;
 fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
 
 email="info@$domain"
 
@@ -45,6 +63,7 @@ sed -n "1,${crt_end}p" $TMPLOC/vst.pem > $TMPLOC/$domain.crt
 sed -n "$key_start,${key_end}p" $TMPLOC/vst.pem > $TMPLOC/$domain.key
 chmod 666 $TMPLOC/*
 
+source /usr/local/vesta/func/main.sh
 source /usr/local/vesta/func/domain.sh
 
 USER_DATA="/usr/local/vesta/data/users/$user";
@@ -61,4 +80,12 @@ fi
 
 rm -rf $TMPLOC
 
-exit 0
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+
+exit
