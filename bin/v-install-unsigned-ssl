@@ -32,7 +32,7 @@ TMPLOC="/home/$user/tmp/$domain"
 mkdir $TMPLOC
 
 # Generating SSL certificate
-/usr/local/vesta/bin/v-generate-ssl-cert $domain $email 'US' 'California' 'San Francisco' 'Vesta Control Panel' 'IT' "www.$domain" > $TMPLOC/vst.pem
+/usr/local/vesta/bin/v-generate-ssl-cert $domain $email 'US' 'California' 'San Francisco' 'myVesta Control Panel' 'IT' "www.$domain" > $TMPLOC/vst.pem
 
 # Parsing certificate file
 crt_end=$(grep -n "END CERTIFICATE-" $TMPLOC/vst.pem |cut -f 1 -d:)
