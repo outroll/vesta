@@ -112,12 +112,51 @@ Version 0.9.8-26-6 [21-Feb-2020]
 * [Feature] Introducing KEEP_N_FTP_BACKUPS, ability to limit number of remote FTP backups
 * [Feature] Introducing force-https-webmail-phpmyadmin nginx template
 * [Feature] Trigger for /root/update_firewall_custom.sh
+
+Version 0.9.8-26-5 [10-Feb-2020]
+==================================================
+* [Security] sudoers fix for Debian10
+* [Feature] [Script that will migrate your site from http to https, replacing http to https URLs in database](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/v-migrate-site-to-https)
+* [Feature] [Cloning script that will copy the whole site from one domain to another (sub)domain](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/v-clone-website)
+* [Feature] [Script that will install multiple PHP versions on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
+* [Bugfix] Roundcube force https
+* [Bugfix] Exim compatibility with Loopia for Debian10
+
+Version 0.9.8-26-4 [07-Jan-2020]
+==================================================
+* [Feature] Allow whitelisting specific IP for /api/
+* [Feature] Allow whitelisting specific IP to avoid secret_url
+* [Feature] Allow Softaculous in secure_login gateway
+* [Bugfix] apparmor install fix again
+* [Bugfix] Turning off MariaDB SQL strict mode
+
+Version 0.9.8-26-3 [26-Nov-2019]
+==================================================
+* [Feature] Support for sub-releases
+* [Bugfix] Better check if session cron already added
+
+Version 0.9.8-26-2 [15-Nov-2019]
+==================================================
+* [Feature] Support for sub-sub-sub-sub versions :))
+* [Bugfix] Support for longer username of email accounts
+* [Bugfix] apparmor install fix
+* [Bugfix] Trying to fix ClamAV broken socket
 * Moving to myvestacp.com
 
-Older version
+Version 0.9.8-26 [28-Sep-2019]
 ==================================================
 * [Bugfix] Let's Encrypt HTTP/2 support (by @serghey-rodin)
 * [Bugfix] Fixing broken autoreply output
+* [Feature] Multi-PHP support for PHP 7.4
+* [Feature] Multi-PHP installer for Debian 8
+* [Bugfix] Cron for removing old PHP sessions files
+* [Bugfix] New CloudFlare IPs
+* [Security] MySQL port blocked by default from outside
+* [Feature] Warning when server hostname is not pointing to server IP
+* [Feature] max_length_of_MySQL_username=80
+
+Older versions
+==================================================
 * Support for Debian 10 (previous Debian releases are also supported, but Debian 10 is recommended)
 * [Support for multi-PHP versions](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
 * You can limit the maximum number of sent emails (per hour) [per mail account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L105-L106) and [per hosting account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L65-L66), preventing hijacking of email accounts and preventing PHP malware scripts to send spam.
@@ -134,8 +173,4 @@ Older version
 * [Script that will convert Vesta to myVesta](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/convert-vesta-to-myvesta.sh)
 * [Wordpress installer in one second](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/create_wp_https)
 * [Script for importing cPanel backups to Vesta](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/cpanel-import.sh)
-* [Cloning script that will copy the whole site from one domain to another (sub)domain](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/v-clone-website)
-* [Script that will migrate your site from http to https, replacing http to https URLs in database](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/v-migrate-site-to-https)
-* [Script that will install multiple PHP versions on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
-* [Script that will install nginx templates that can prevent denial-of-service on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh)
 * [Official Vesta Softaculous installer](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/install-softaculous.sh)
