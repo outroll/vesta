@@ -1,14 +1,17 @@
 News
 ==================================================
 
+We finally have normal homepage:
+- https://myvestacp.com/
+
 Forum:
 - https://forum.myvestacp.com/
 
 Wiki:
 - https://wiki.myvestacp.com/
 
-And we finally have normal homepage:
-- https://myvestacp.com/
+Changelog:
+- https://github.com/myvesta/vesta/blob/master/Changelog.md
 
 myVesta Control Panel
 ==================================================
