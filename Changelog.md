@@ -7,8 +7,8 @@ Version 0.9.8-26-26 [27-Jun-2020]
 
 Version 0.9.8-26-25 [23-Jun-2020]
 ==================================================
-* [Security] Fixing unnecessary slash in nginx configs for phpmyadmin and roundcube
-* [Security] Adding escapeshellarg on few more places in php code
+* [Security] Fixing unnecessary slash in nginx configs for phpmyadmin and roundcube (Credits to Bernardo Berg @bberg1984 for finding this issue!)
+* [Security] Adding escapeshellarg on few more places in php code (Credits to Talha Günay and @Lupul for finding these places)
 
 Version 0.9.8-26-24 [22-Jun-2020]
 ==================================================
@@ -49,10 +49,45 @@ Version 0.9.8-26-18 [15-May-2020]
 Version 0.9.8-26-17 [15-May-2020]
 ==================================================
 * [Bugfix] Reverting default clamav socket path 
-* [Bugfix] Putv mail_max_userip_connections = 50 in dovecot
+* [Bugfix] Put mail_max_userip_connections = 50 in dovecot
 
 Version 0.9.8-26-16 [15-May-2020]
 ==================================================
 * [Bugfix] Allow quick restarting of nginx if acme-challenge should be added many times
 * [Bugfix] Enabling email notification  to fresh installed servers about backup success status
 * [Bugfix] Timeout 10 sec for apache2 status
+
+Version 0.9.8-26-15 [09-May-2020]
+==================================================
+* [Feature] nginx anti-denial-of-service templates
+* New logo
+
+Version 0.9.8-26-14 [08-May-2020]
+==================================================
+* v-clone-website script switched to parameters
+* Display new version in console while updating myVesta
+
+Version 0.9.8-26-13 [07-May-2020]
+==================================================
+* [Feature] Put build date and version in right-bottom corner of control panel
+
+Version 0.9.8-26-12 [07-May-2020]
+==================================================
+* [Feature] Put build date and version while compiling myVesta
+* [Feature] Office365 DNS template
+* [Feature] Yandex DNS template
+* ProFTPD MaxIstances = 100 for fresh installed servers
+
+Version 0.9.8-26-11 [01-May-2020]
+==================================================
+* [Feature] Skipping LE renewing after 7 failed attempts
+* [Bugfix] Keep conf files during auto-update
+* [Bugfix] Do not restart apache while preparing letsencrypt acme challenge
+* [Bugfix] Set ALLOW_BACKUP_ANYTIME='yes' for fresh installed servers
+
+Version 0.9.8-26-10 [11-Apr-2020]
+==================================================
+* [Feature] Creating v-normalize-restored-user script (normalize NS1, NS2 and IP of account that is backuped on other server and restored on this server)
+* Tweak for hostname FPM conf
+* [Security] Forbid changing root password (Credits to Alexandre ZANNI, Orange Cyberdefense, https://cyberdefense.orange.com)
+* [Security] Importing system enviroment in v-change-user-password (Credits to Alexandre ZANNI, Orange Cyberdefense, https://cyberdefense.orange.com)
