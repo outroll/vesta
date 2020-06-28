@@ -54,12 +54,12 @@ Version 0.9.8-26-17 [15-May-2020]
 Version 0.9.8-26-16 [15-May-2020]
 ==================================================
 * [Bugfix] Allow quick restarting of nginx if acme-challenge should be added many times
-* [Bugfix] Enabling email notification  to fresh installed servers about backup success status
+* [Bugfix] Enabling email notification to fresh installed servers about backup success status
 * [Bugfix] Timeout 10 sec for apache2 status
 
 Version 0.9.8-26-15 [09-May-2020]
 ==================================================
-* [Feature] nginx anti-denial-of-service templates
+* [Feature] nginx templates that can prevent denial-of-service on your server
 * New logo
 
 Version 0.9.8-26-14 [08-May-2020]
@@ -91,3 +91,51 @@ Version 0.9.8-26-10 [11-Apr-2020]
 * Tweak for hostname FPM conf
 * [Security] Forbid changing root password (Credits to Alexandre ZANNI, Orange Cyberdefense, https://cyberdefense.orange.com)
 * [Security] Importing system enviroment in v-change-user-password (Credits to Alexandre ZANNI, Orange Cyberdefense, https://cyberdefense.orange.com)
+
+Version 0.9.8-26-9 [23-Mar-2020]
+==================================================
+* [Security] Preventing manipulation with $SERVER['HTTP_HOST'] (Credits to @mdisec - Managing Partner of PRODAFT / INVICTUS A.Ş. Master ninja at pentest.blog)
+
+Version 0.9.8-26-8 [23-Mar-2020]
+==================================================
+* [Security] Temporary fix for parsing backup conf (Credits to @dreiggy - https://pentest.blog/vesta-control-panel-second-order-remote-code-execution-0day-step-by-step-analysis/)
+
+Version 0.9.8-26-7 [18-Mar-2020]
+==================================================
+* [Bugfix] Fix that avoid LetsEncrypt domain validation timeout
+* [Bugfix] Set timeout in v-list-sys-web-status script
+
+Version 0.9.8-26-6 [21-Feb-2020]
+==================================================
+* [Bugfix] mail-wrapper.php from now works
+* [Feature] Introducing NOTIFY_ADMIN_FULL_BACKUP, email notification about backup success status
+* [Feature] Introducing KEEP_N_FTP_BACKUPS, ability to limit number of remote FTP backups
+* [Feature] Introducing force-https-webmail-phpmyadmin nginx template
+* [Feature] Trigger for /root/update_firewall_custom.sh
+* Moving to myvestacp.com
+
+Older version
+==================================================
+* [Bugfix] Let's Encrypt HTTP/2 support (by @serghey-rodin)
+* [Bugfix] Fixing broken autoreply output
+* Support for Debian 10 (previous Debian releases are also supported, but Debian 10 is recommended)
+* [Support for multi-PHP versions](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
+* You can limit the maximum number of sent emails (per hour) [per mail account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L105-L106) and [per hosting account](https://github.com/myvesta/vesta/blob/master/install/debian/10/exim/exim4.conf.template#L65-L66), preventing hijacking of email accounts and preventing PHP malware scripts to send spam.
+* You can see [what PHP scripts are sending emails](https://github.com/myvesta/vesta/blob/master/install/debian/10/php/php7.3-dedi.patch#L50), when and to whom
+* You can completely "lock" myVesta so it can be accessed only via **secret URL**, for example https://serverhost:8083/?MY-SECRET-URL
+    + Literally no PHP scripts will be alive on your hosting panel (won't be able to get executed), unless you access the hosting panel with secret URL parameter. Thus, when it happens that, let's say, some zero-day exploit pops up - attackers won't be able to access it without knowing your secret URL - PHP scripts from myVesta
+* We [disabled dangerous PHP functions](https://github.com/myvesta/vesta/blob/master/install/debian/10/php/php7.3-dedi.patch#L9) in php.ini, so even if, for example, your customer's CMS gets compromised, hacker will not be able to execute shell scripts from within PHP.
+* Apache is fully switched to mpm_event mode, while PHP is running in PHP-FPM mode, which is the most stable PHP-stack solution
+    + OPCache is turned on by default
+* Auto-generating LetsEncrypt SSL for server hostname (signed SSL for Vesta 8083 port, for dovecot (IMAP & POP3) and for Exim (SMTP))
+* You can change Vesta port during installation or later using one command line: **v-change-vesta-port [number]**
+* Backup will run with lowest priority (to avoid load on server), and can be configured to run only by night (and to stop on the morning and continue next night)
+* You can compile Vesta binaries by yourself
+* [Script that will convert Vesta to myVesta](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/convert-vesta-to-myvesta.sh)
+* [Wordpress installer in one second](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/create_wp_https)
+* [Script for importing cPanel backups to Vesta](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/cpanel-import.sh)
+* [Cloning script that will copy the whole site from one domain to another (sub)domain](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/v-clone-website)
+* [Script that will migrate your site from http to https, replacing http to https URLs in database](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/v-migrate-site-to-https)
+* [Script that will install multiple PHP versions on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/multi-php-install.sh)
+* [Script that will install nginx templates that can prevent denial-of-service on your server](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/rate-limit-tpl/install_rate_limit_tpl.sh)
+* [Official Vesta Softaculous installer](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/install-softaculous.sh)
