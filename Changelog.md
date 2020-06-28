@@ -1,6 +1,6 @@
 Version 0.9.8-26-26 [27-Jun-2020]
 ==================================================
-* [Feature] Self-signed SSL will be automaticaly added when you add new domain
+* [Feature] Self-signed SSL will be automaticaly added when you add new domain (CloudFlare is fine with that, you don't need LetsEncrypt anymore if you use CloudFlare as reverse-proxy(CDN+Firewall))
 * [Feature] Script for adding self-signed SSL to desired domain
 * From now, on fresh installed server, default backup cron goes at Saturday at 01 AM (instead of everyday at 05 AM)
 * New favicon for hosting panel
