@@ -25,6 +25,10 @@ acl_smtp_rcpt = acl_check_rcpt
 acl_smtp_data = acl_check_data
 acl_smtp_mime = acl_check_mime
 
+# log_selector = +smtp_connection
+smtp_accept_max = 50
+smtp_accept_max_per_host = 4
+
 .ifdef SPAMASSASSIN
 spamd_address = 127.0.0.1 783
 .endif
