@@ -64,6 +64,9 @@
 
     <div class="l-center units">
       <?php
+        if (isset($changelog))
+          echo "<br /><br /><h1 style='margin: 0'>".__("What's new:")."</h1><br />Changelog:<br /><pre>".$changelog."</pre>".__("See")." <a style=\"color: blue; text-decoration: underline;\" href=\"https://github.com/myvesta/vesta/blob/master/Changelog.md\" >".__("full changelog")."</a>.<br />".__("This changelog only admin see after myVesta upgrade, and will dissapear on next refresh.")."<hr />";
+        
         foreach ($data as $key => $value) {
           ++$i;
           if ($data[$key]['SUSPENDED'] == 'yes') {
