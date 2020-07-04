@@ -278,6 +278,12 @@ if [ "$CWEB_B" = true ]; then
   cp /root/vesta/src/deb/latest.txt $PATH_OF_C_WEB_FOLDER_ROOT/latest.txt
   echo "$BUILD_DATE" > $PATH_OF_C_WEB_FOLDER_ROOT/build_date.txt
 
+  if [ -f "/root/custom_callback.sh" ]; then
+    BUILD_RELEASE=$(</root/vesta/src/deb/latest.txt)
+    BUILD_RELEASE=${BUILD_RELEASE:6}
+    bash /root/custom_callback.sh "$BUILD_RELEASE" "$BUILD_DATE" "/root/vesta/Changelog.md"
+  fi
+
   ###########
   cd $PATH_OF_C_WEB_FOLDER_ROOT/debian/8
 
