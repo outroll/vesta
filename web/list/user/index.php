@@ -14,6 +14,23 @@ if ($user == 'admin') {
 $data = json_decode(implode('', $output), true);
 $data = array_reverse($data,true);
 
+// Check and get changelog if needed
+if ($user == 'admin') {
+    if (file_exists("/usr/local/vesta/data/upgrades/show_changelog")) {
+        $show_changelog_value=file_get_contents("/usr/local/vesta/data/upgrades/show_changelog");
+        $show_changelog_value_int=intval($show_changelog_value);
+        if ($show_changelog_value_int==1) {
+            $changelog='';
+            $changelog_arr=file("/usr/local/vesta/Changelog.md");
+            for ($i=0; $i<7; $i++) {
+                if ($i>1) $changelog.="\n";
+                $changelog.=$changelog_arr[$i];
+            }
+            file_put_contents("/usr/local/vesta/data/upgrades/show_changelog", "0");
+        }
+    }
+}
+
 // Render page
 render_page($user, $TAB, 'list_user');
 
