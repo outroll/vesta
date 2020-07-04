@@ -22,7 +22,8 @@ if ($user == 'admin') {
         if ($show_changelog_value_int==1) {
             $changelog='';
             $changelog_arr=file("/usr/local/vesta/Changelog.md");
-            for ($i=0; $i<7; $i++) {
+            for ($i=0; $i<30; $i++) {
+                if (trim($changelog_arr[$i])=="") break;
                 if ($i>1) $changelog.="\n";
                 $changelog.=$changelog_arr[$i];
             }
