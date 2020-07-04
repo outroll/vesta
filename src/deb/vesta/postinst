@@ -20,7 +20,8 @@ if [ ! -d "/usr/local/vesta/data/upgrades" ]; then
 fi
 
 # show changelog after update
-touch /usr/local/vesta/data/upgrades/show_changelog
+echo "1" > /usr/local/vesta/data/upgrades/show_changelog
+chmod a=rw /usr/local/vesta/data/upgrades/show_changelog
 
 if [ ! -f "/usr/local/vesta/data/upgrades/tune-fpm-config-files-v1" ]; then
     touch /usr/local/vesta/data/upgrades/tune-fpm-config-files-v1
