@@ -1,3 +1,9 @@
+Version 0.9.8-26-27 [05-Jul-2020]
+==================================================
+* [Feature] Admins now see changelog when they open myVesta panel after myVesta get updated (changelog will dissapear on next refresh)
+* [Bugfix] Better control of opened SMTP concurrent connections (preventing denial-of-service of SMTP) on fresh installed servers - https://github.com/myvesta/vesta/commit/c57b15b5daca2a0ea88ee6a89a2ff5a4ef47d2a3
+* Second tuning php-fpm pool.d config files (perfomances and limits)
+
 Version 0.9.8-26-26 [27-Jun-2020]
 ==================================================
 * [Feature] Self-signed SSL will be automaticaly added when you add new domain (CloudFlare is fine with that, you don't need LetsEncrypt anymore if you use CloudFlare as reverse-proxy(CDN+Firewall), just set "Full" in SSL section on CloudFlare)
@@ -60,6 +66,7 @@ Version 0.9.8-26-16 [15-May-2020]
 Version 0.9.8-26-15 [09-May-2020]
 ==================================================
 * [Feature] nginx templates that can prevent denial-of-service on your server
+* First tuning php-fpm pool.d config files (perfomances and limits)
 * New logo
 
 Version 0.9.8-26-14 [08-May-2020]
