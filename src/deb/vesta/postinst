@@ -23,8 +23,11 @@ fi
 echo "1" > /usr/local/vesta/data/upgrades/show_changelog
 chmod a=rw /usr/local/vesta/data/upgrades/show_changelog
 
+# Tuning of php-fpm pool.d config files (perfomances and limits)
 if [ ! -f "/usr/local/vesta/data/upgrades/tune-fpm-config-files-v2" ]; then
     touch /usr/local/vesta/data/upgrades/tune-fpm-config-files-v2
+    
+    echo "== Tuning of php-fpm pool.d config files (perfomances and limits)"
     
     mkdir -p /root/etc-php-backup2
     cp -r /etc/php/ /root/etc-php-backup2/
@@ -46,6 +49,7 @@ if [ ! -f "/usr/local/vesta/data/upgrades/tune-fpm-config-files-v2" ]; then
     
     # restart all php-fpm services
     systemctl --full --type service --all | grep "php...-fpm" | awk '{print $1}' | xargs systemctl restart
+    echo "== Done"
 fi
 
 if [ ! -f "/usr/local/vesta/data/upgrades/allow-backup-anytime" ]; then
