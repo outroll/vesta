@@ -1612,6 +1612,7 @@ if [ ! -d "/usr/local/vesta/data/upgrades" ]; then
     mkdir -p /usr/local/vesta/data/upgrades
 fi
 touch /usr/local/vesta/data/upgrades/tune-fpm-config-files-v1
+touch /usr/local/vesta/data/upgrades/tune-fpm-config-files-v2
 touch /usr/local/vesta/data/upgrades/allow-backup-anytime
 touch /usr/local/vesta/data/upgrades/fix-sudoers
 touch /usr/local/vesta/data/upgrades/change-clamav-socket-v2
