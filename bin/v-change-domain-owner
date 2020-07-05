@@ -61,7 +61,7 @@ if [ ! -z "$web_data" ]; then
         mv $ssl_key $VESTA/data/users/$user/ssl/
         mv $ssl_ca $VESTA/data/users/$user/ssl/ >> /dev/null 2>&1
         mv $ssl_pem $VESTA/data/users/$user/ssl/ >> /dev/null 2>&1
-        rm -f $HOMEDIR/$owner/conf/web/ssl.$domain.*
+        find $HOMEDIR/$owner/conf/web/ -name "ssl.$domain.*" -type f ! -name "*.conf" -delete
     fi
 
     # Check ftp user account

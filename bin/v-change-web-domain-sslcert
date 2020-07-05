@@ -49,7 +49,7 @@ is_web_domain_cert_valid
 
 # Deleting old certificate
 tmpdir=$(mktemp -p $HOMEDIR/$user/web/$domain/private -d)
-rm -f $HOMEDIR/$user/conf/web/ssl.$domain.*
+find $HOMEDIR/$user/conf/web/ -name "ssl.$domain.*" -type f ! -name "*.conf" -delete
 mv $USER_DATA/ssl/$domain.* $tmpdir
 chown -R $user:$user $tmpdir
 
