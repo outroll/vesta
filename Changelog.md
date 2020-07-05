@@ -2,7 +2,7 @@ Version 0.9.8-26-27 [05-Jul-2020]
 ==================================================
 * [Feature] Admins now see changelog when they open myVesta panel after myVesta get updated (changelog will dissapear on next refresh)
 * [Bugfix] Better control of opened SMTP concurrent connections (preventing denial-of-service of SMTP) on fresh installed servers - https://github.com/myvesta/vesta/commit/c57b15b5daca2a0ea88ee6a89a2ff5a4ef47d2a3
-* Second tuning php-fpm pool.d config files (perfomances and limits)
+* Second tuning of php-fpm pool.d config files (perfomances and limits)
 
 Version 0.9.8-26-26 [27-Jun-2020]
 ==================================================
