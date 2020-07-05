@@ -23,11 +23,11 @@ fi
 echo "1" > /usr/local/vesta/data/upgrades/show_changelog
 chmod a=rw /usr/local/vesta/data/upgrades/show_changelog
 
-if [ ! -f "/usr/local/vesta/data/upgrades/tune-fpm-config-files-v1" ]; then
-    touch /usr/local/vesta/data/upgrades/tune-fpm-config-files-v1
+if [ ! -f "/usr/local/vesta/data/upgrades/tune-fpm-config-files-v2" ]; then
+    touch /usr/local/vesta/data/upgrades/tune-fpm-config-files-v2
     
-    mkdir -p /root/etc-php-backup
-    cp -r /etc/php/ /root/etc-php-backup/
+    mkdir -p /root/etc-php-backup2
+    cp -r /etc/php/ /root/etc-php-backup2/
 
     OLDVAL='pm.max_children = 16'
     NEWVAL='pm.max_children = 8'
