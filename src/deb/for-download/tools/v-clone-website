@@ -357,7 +357,7 @@ mysql $TO_DATABASE_NAME < $FROM_DATABASE_NAME.sql
 
 echo "=== Copying files from $FROM_FOLDER to folder $TO_FOLDER"
 rsync -a --delete $FROM_FOLDER/ $TO_FOLDER/
-echo "=== Chowning to  $TO_USER:$TO_USER in folder $TO_FOLDER"
+echo "=== Chowning to $TO_USER:$TO_USER in folder $TO_FOLDER"
 chown -R $TO_USER:$TO_USER $TO_FOLDER
 
 echo "=== Replacing $FROM_DATABASE_NAME to $TO_DATABASE_NAME in $TO_CONFIG_FILE_FULL_PATH"
