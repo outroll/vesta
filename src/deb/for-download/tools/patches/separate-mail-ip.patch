@@ -1,0 +1,51 @@
+--- ./exim4.conf.template-normal	2020-07-12 00:56:40.000000000 +0200
++++ ./exim4.conf.template-separate	2020-07-12 00:56:07.000000000 +0200
+@@ -12,6 +12,10 @@
+ add_environment=<; PATH=/bin:/usr/bin
+ keep_environment=
+ 
++local_interfaces =  0.0.0.0
++smtp_active_hostname = ${lookup{$interface_address}lsearch{/etc/exim4/virtual/helo_data}{$value}}
++smtp_banner = "$smtp_active_hostname ESMTP $tod_full"
++
+ domainlist local_domains = dsearch;/etc/exim4/domains/
+ domainlist relay_to_domains = dsearch;/etc/exim4/domains/
+ hostlist relay_from_hosts = 127.0.0.1
+@@ -38,8 +42,8 @@
+ .endif
+ 
+ tls_advertise_hosts = *
+-tls_certificate = /usr/local/vesta/ssl/certificate.crt
+-tls_privatekey = /usr/local/vesta/ssl/certificate.key
++tls_certificate = /usr/local/vesta/ssl/$received_ip_address.crt
++tls_privatekey = /usr/local/vesta/ssl/$received_ip_address.key
+ 
+ daemon_smtp_ports = 25 : 465 : 587 : 2525
+ tls_on_connect_ports = 465
+@@ -72,6 +76,8 @@
+   warn ratelimit = 0 / 1h / strict / $authenticated_id
+   log_message = Sender rate [limitlog]: log / account / $authenticated_id / $sender_rate / $sender_rate_period
+ 
++  warn    set acl_m3    = yes
++
+   accept
+ 
+ acl_check_spammers:
+@@ -112,6 +118,8 @@
+   warn ratelimit = 0 / 1h / strict / $authenticated_id
+   log_message = Sender rate [limitlog]: log / email / $authenticated_id / $sender_rate / $sender_rate_period
+ 
++  warn    set acl_m3    = no
++
+   deny    message       = Restricted characters in address
+           domains       = +local_domains
+           local_parts   = ^[.] : ^.*[@%!/|]
+@@ -308,6 +316,8 @@
+ 
+ remote_smtp:
+   driver = smtp
++  interface = ${if eq{$acl_m3}{yes}{IP1}{IP2}}
++  helo_data = "${if eq{$acl_m3}{yes}{HOST1}{HOST2}}"
+   #helo_data = $sender_address_domain
+   dkim_domain = DKIM_DOMAIN
+   dkim_selector = mail
