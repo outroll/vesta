@@ -1057,3 +1057,11 @@ replace_php_config_value() {
     sed -i "s|=$1$|=$2|g" $3
     sed -i "s|= $1$|= $2|g" $3
 }
+
+get_database_name_without_user_prefix() {
+    user=$1
+    db=$2
+    user_len=${#user}
+    user_len=$((user_len+1))
+    echo ${db:user_len}
+}
