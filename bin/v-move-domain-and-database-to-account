@@ -1,0 +1,77 @@
+#!/bin/bash
+# info: change domain and database owner
+# options: DOMAIN USER
+#
+# The function of changing domain and database ownership.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+domain=$1
+user=$2
+
+# Importing system environment
+source /etc/profile
+
+# Includes
+source /usr/local/vesta/func/main.sh
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'DOMAIN USER'
+is_format_valid 'domain' 'user'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+owner=$(/usr/local/vesta/bin/v-search-domain-owner $domain)
+if [ -z "$owner" ]; then
+    check_result $E_NOTEXIST "domain $domain doesn't exist"
+fi
+if [ "$owner" = "$user" ]; then
+    exit
+fi
+
+USER_TO=$user
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+echo "================================="
+r=$(/usr/local/vesta/bin/v-get-database-credentials-of-domain $domain)
+echo $r
+eval $r
+echo "================================="
+
+if [ ! -z "$DATABASE_NAME" ]; then
+    echo "=== v-change-database-owner $DATABASE_NAME $USER_TO"
+    /usr/local/vesta/bin/v-change-database-owner $DATABASE_NAME $USER_TO
+    if [ $? -ne 0 ]; then
+        echo "=== v-change-database-owner failed"
+    fi
+
+    if [ ! -z "$DATABASE_USERNAME" ] && [ ! -z "$CONFIG_FILE_FULL_PATH" ]; then
+       replace_php_config_value "${DATABASE_NAME}" "${USER_TO}_${DATABASE_NAME_WITHOUT_USER_PREFIX}" "$CONFIG_FILE_FULL_PATH" "yes"
+       replace_php_config_value "${DATABASE_USERNAME}" "${USER_TO}_${DATABASE_USERNAME_WITHOUT_USER_PREFIX}" "$CONFIG_FILE_FULL_PATH" "yes"
+    else
+        if [ -z "$DATABASE_USERNAME" ]; then
+            echo "=== DATABASE_USERNAME is empty, so we will not change config file"
+        fi
+        if [ -z "$CONFIG_FILE_FULL_PATH" ]; then
+            echo "=== CONFIG_FILE_FULL_PATH is empty, so we will not change config file"
+        fi
+    fi
+else
+    echo "=== DATABASE_NAME is empty, so we will not move database"
+fi
+
+echo "=== v-change-domain-owner $domain $USER_TO"
+/usr/local/vesta/bin/v-change-domain-owner $domain $USER_TO
+if [ $? -ne 0 ]; then
+    echo "=== v-change-domain-owner failed"
+fi
