@@ -1,0 +1,128 @@
+#!/bin/bash
+
+# info: add new ip and makes email to be sent via that IP only for SMTP authenticated users
+# options: MAIL_HOSTNAME MAIL_IP
+#
+# The function add new ip, add new host for mail, try to generate letsencrypt for it, and makes email to be sent via that IP only for SMTP authenticated users
+
+if [ $# -lt 2 ]; then
+    echo "USAGE: v-make-separate-ip-for-email MAIL_HOSTNAME MAIL_IP"
+    exit 1
+fi
+
+MAIL_HOSTNAME=$1
+MAIL_IP=$2
+
+if [ $# -gt 2 ]; then
+    NETMASK=$3
+else
+    NETMASK='255.255.255.192'
+fi
+
+if [ $# -gt 3 ]; then
+    INTERFACE=$4
+else
+    INTERFACE='eth0'
+fi
+
+HOST_USER=$($VESTA/bin/v-search-domain-owner "$HOSTNAME")
+if [ -z "$HOST_USER" ]; then
+    echo "Error: hostname $HOSTNAME is not created as web domain"
+    exit 4
+fi
+
+HOST_IP=$($VESTA/bin/v-list-web-domain "$HOST_USER" "$HOSTNAME" | grep 'IP:' | awk '{print $2}')
+
+echo "HOSTNAME     : $HOSTNAME"
+echo "HOSTNAME IP  : $HOST_IP"
+echo "MAIL HOSTNAME: $MAIL_HOSTNAME"
+echo "MAIL_IP      : $MAIL_IP"
+if [ $# -gt 2 ]; then
+    echo "NETMASK      : $NETMASK"
+fi
+if [ $# -gt 3 ]; then
+    echo "INTERFACE    : $INTERFACE"
+fi
+
+if [ ! -f "/usr/local/vesta/data/ips/$MAIL_IP" ]; then
+    $VESTA/bin/v-add-sys-ip  "$MAIL_IP" "$NETMASK" "$INTERFACE" 'admin' 'dedicated' '' ''
+fi
+
+MAIL_USER=$($VESTA/bin/v-search-domain-owner "$MAIL_HOSTNAME")
+if [ -z "$MAIL_USER" ]; then
+    MAIL_USER=$HOST_USER
+    echo "=== Creating (sub)domain $MAIL_HOSTNAME"
+    $VESTA/bin/v-add-domain "$MAIL_USER" "$MAIL_HOSTNAME" "$MAIL_IP" 'yes'
+    echo "=== Deleting www from (sub)domain $MAIL_HOSTNAME"
+    www_host="www.$MAIL_HOSTNAME"
+    $VESTA/bin/v-delete-web-domain-alias "$MAIL_USER" "$MAIL_HOSTNAME" "$www_host" 'no'
+    $VESTA/bin/v-delete-dns-on-web-alias "$MAIL_USER" "$MAIL_HOSTNAME" "$www_host" 'no'
+else
+    CURRENT_MAIL_IP=$($VESTA/bin/v-list-web-domain "$MAIL_USER" "$MAIL_HOSTNAME" | grep 'IP:' | awk '{print $2}')
+    if [ "$CURRENT_MAIL_IP" != "$MAIL_IP" ]; then
+        echo "=== Switching (sub)domain $MAIL_HOSTNAME to IP: $MAIL_IP"
+        $VESTA/bin/v-change-web-domain-ip "$MAIL_USER" "$MAIL_HOSTNAME" "$MAIL_IP" 'yes'
+        $VESTA/bin/v-change-dns-domain-ip "$MAIL_USER" "$MAIL_HOSTNAME" "$MAIL_IP" 'yes'
+    fi
+fi
+
+LETSENCRYPT=$($VESTA/bin/v-list-web-domain "$MAIL_USER" "$MAIL_HOSTNAME" | grep 'LETSENCRYPT:' | awk '{print $2}')
+if [ "$LETSENCRYPT" = "yes" ]; then
+    echo "=== LetsEncrypt already installed"
+else
+    echo "=== Installing LetsEncrypt for (sub)domain $MAIL_HOSTNAME"
+    $VESTA/bin/v-add-letsencrypt-domain "$MAIL_USER" "$MAIL_HOSTNAME" "" "yes"
+    if [ $? -ne 0 ]; then
+        echo "=== LetsEncrypt installation failed"
+    fi
+fi
+
+
+if [ ! -d "/etc/exim4/virtual" ]; then
+    echo "=== Creating /etc/exim4/virtual files"
+    mkdir -p /etc/exim4/virtual
+    echo "$HOST_IP: $HOSTNAME" > /etc/exim4/virtual/helo_data
+    echo "$MAIL_IP: $MAIL_HOSTNAME" >> /etc/exim4/virtual/helo_data
+    echo "$HOSTNAME: $HOST_IP" > /etc/exim4/virtual/interfaces
+    echo "$MAIL_HOSTNAME: $MAIL_IP" >> /etc/exim4/virtual/interfaces
+    length=$(wc -c </etc/exim4/virtual/helo_data)
+    dd if=/dev/null of=/etc/exim4/virtual/helo_data obs="$((length-1))" seek=1 > /dev/null 2>&1
+    length=$(wc -c </etc/exim4/virtual/interfaces)
+    dd if=/dev/null of=/etc/exim4/virtual/interfaces obs="$((length-1))" seek=1 > /dev/null 2>&1
+else
+    echo "=== /etc/exim4/virtual files already exists"
+fi
+
+echo "=== Generating IP for hostname $HOSTNAME"
+$VESTA/bin/v-create-ip-ssl "$HOST_USER" "$HOSTNAME"
+echo "=== Generating IP for mail hostname $MAIL_HOSTNAME"
+$VESTA/bin/v-create-ip-ssl "$MAIL_USER" "$MAIL_HOSTNAME"
+
+check_grep=$(grep -c 'smtp_active_hostname' /etc/exim4/exim4.conf.template)
+if [ "$check_grep" -eq 0 ]; then
+    echo "=== patching exim4.conf.template"
+    patch /etc/exim4/exim4.conf.template < /usr/local/vesta/src/deb/for-download/tools/patches/separate-mail-ip.patch
+    if [ $? -ne 0 ]; then
+        echo "=== Patching failed, aborting"
+        exit 1
+    else
+        echo "=== Patching successful"
+        sed -i "s|IP1|$HOST_IP|g" /etc/exim4/exim4.conf.template
+        sed -i "s|IP2|$MAIL_IP|g" /etc/exim4/exim4.conf.template
+        sed -i "s|HOST1|$HOSTNAME|g" /etc/exim4/exim4.conf.template
+        sed -i "s|HOST2|$MAIL_HOSTNAME|g" /etc/exim4/exim4.conf.template
+        service exim4 restart
+    fi
+else
+    echo "=== exim4.conf.template already patched"
+fi
+
+check_grep=$(grep -c 'v-create-ip-ssl' /usr/local/vesta/conf/vesta.conf)
+if [ "$check_grep" -eq 0 ]; then
+    echo "=== Set UPDATE_SSL_SCRIPT to 'v-create-ip-ssl'"
+    echo "UPDATE_SSL_SCRIPT='/usr/local/vesta/bin/v-create-ip-ssl'" >> /usr/local/vesta/conf/vesta.conf
+else
+    echo "=== Value UPDATE_SSL_SCRIPT is already 'v-create-ip-ssl'"
+fi
+
+echo "=== Done!"
