@@ -1047,8 +1047,8 @@ escape_shell_quote() {
 }
 
 replace_php_config_value() {
-    if [ ! -z $4 ]; then
-        if [ "$4" = "yes" ] || [ $4 -eq 1 ]; then
+    if [ ! -z "$4" ]; then
+        if [ "$4" = "yes" ] || [ "$4" = "true" ] || [ "$4" = "1" ] || [ $4 -eq 1 ]; then
             echo "=== Replacing $1 to $2 in $3"
         fi
     fi
