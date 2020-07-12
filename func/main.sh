@@ -1040,3 +1040,8 @@ get_web_counter() {
 
     echo $counter
 }
+
+escape_shell_quote() { 
+    local escape_shell_quoted=${1//\'/\'\\\'\'};
+    printf "'%s'" "$escape_shell_quoted"
+}
