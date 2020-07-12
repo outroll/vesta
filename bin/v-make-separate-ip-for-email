@@ -77,7 +77,6 @@ else
     fi
 fi
 
-
 if [ ! -d "/etc/exim4/virtual" ]; then
     echo "=== Creating /etc/exim4/virtual files"
     mkdir -p /etc/exim4/virtual
@@ -123,6 +122,18 @@ if [ "$check_grep" -eq 0 ]; then
     echo "UPDATE_SSL_SCRIPT='/usr/local/vesta/bin/v-create-ip-ssl'" >> /usr/local/vesta/conf/vesta.conf
 else
     echo "=== Value UPDATE_SSL_SCRIPT is already 'v-create-ip-ssl'"
+fi
+
+check_grep=$(grep -c "ip4:$MAIL_IP" /usr/local/vesta/data/templates/dns/default.tpl)
+if [ "$check_grep" -eq 0 ]; then
+    echo "=== Adding IP to SPF"
+    sed -i "s|ip4:%ip%|ip4:%ip% ip4:$MAIL_IP|g" /usr/local/vesta/data/templates/dns/default.tpl
+    NOTFOUNDVAL="ip4:$MAIL_IP"
+    OLDVAL="ip4:$HOST_IP"
+    NEWVAL="ip4:$HOST_IP ip4:$MAIL_IP"
+    find /usr/local/vesta/data/users/*/dns/ -type f -exec grep -L "$NOTFOUNDVAL" {} \; | xargs sed -i "s|$OLDVAL|$NEWVAL|g"
+    find /home/*/conf/dns/ -type f -exec grep -L "$NOTFOUNDVAL" {} \; | xargs sed -i "s|$OLDVAL|$NEWVAL|g"
+    service bind9 reload
 fi
 
 echo "=== Done!"
