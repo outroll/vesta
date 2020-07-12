@@ -1045,3 +1045,15 @@ escape_shell_quote() {
     local escape_shell_quoted=${1//\'/\'\\\'\'};
     printf "'%s'" "$escape_shell_quoted"
 }
+
+replace_php_config_value() {
+    if [ ! -z $4 ]; then
+        if [ "$4" = "yes" ] || [ $4 -eq 1 ]; then
+            echo "=== Replacing $1 to $2 in $3"
+        fi
+    fi
+    sed -i "s|'$1'|'$2'|g" $3
+    sed -i "s|\"$1\"|\"$2\"|g" $3
+    sed -i "s|=$1$|=$2|g" $3
+    sed -i "s|= $1$|= $2|g" $3
+}
