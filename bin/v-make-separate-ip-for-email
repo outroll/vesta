@@ -139,7 +139,7 @@ fi
 echo "=== Done!"
 
 ptr=$(dig +short -x $MAIL_IP)
-if [ "$PTR" != "$MAIL_HOSTNAME" ]; then
+if [ "$PTR" != "$MAIL_HOSTNAME." ]; then
     echo ""
     echo "WARNING: PTR for $MAIL_IP is $ptr"
     echo "WARNING: PTR for $MAIL_IP should be $MAIL_HOSTNAME"
