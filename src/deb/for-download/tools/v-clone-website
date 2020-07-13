@@ -1,6 +1,8 @@
 #!/bin/bash
-
-# Migration tool that will copy whole site from one domain to another (sub)domain (on the same server), changing URL in database (it's careful with serialized arrays in database).
+# info: Migration tool that will copy whole site from one (sub)domain to another (sub)domain (on the same server)
+# options: FROM_DOMAIN TO_DOMAIN
+#
+# Migration tool that will copy whole site from one (sub)domain to another (sub)domain (on the same server), changing URL in database (it's careful with serialized arrays in database).
 # Useful for making staging copy in one command-line.
 # Automatic detection of WordPress, automaticaly read DB user, DB name, DB pass, automatic cloning to new database, automatic changing wp-config.php file.
 
@@ -20,6 +22,16 @@ if [ $# -lt 2 ]; then
     exit 1
 fi
 
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Importing system environment
+source /etc/profile
+
+# Includes
+source /usr/local/vesta/func/main.sh
+
 FROM_DOMAIN=''
 TO_DOMAIN=''
 FROM_DATABASE_NAME=''
@@ -31,17 +43,16 @@ TO_DATABASE_USERNAME=''
 TO_DATABASE_PASSWORD=''
 DATABASE_SUFIX='_migrated'
 
-if [ -z "$1" ]; then
-    echo "Error: FROM_DOMAIN is empty"
-    exit 2
-fi
-if [ -z "$2" ]; then
-    echo "Error: TO_DOMAIN is empty"
-    exit 3
-fi
-
 FROM_DOMAIN=$1
 TO_DOMAIN=$2
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'FROM_DOMAIN TO_DOMAIN'
+is_domain_format_valid "$FROM_DOMAIN"
+is_domain_format_valid "$TO_DOMAIN"
 
 ############################
 # handle --parameters=val
@@ -64,11 +75,18 @@ do
     handle_parameter $1
     shift
 done
-############################
 
-if [ -z "$VESTA" ]; then
-    VESTA="/usr/local/vesta"
-fi
+# Defining password-gen function
+gen_pass() {
+    MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    LENGTH=32
+    while [ ${n:=1} -le $LENGTH ]; do
+        PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
+        let n+=1
+    done
+    echo "$PASS"
+}
+############################
 
 ###########################################################################
 
@@ -241,7 +259,6 @@ if [ $FROM_DOMAIN_HAS_SSL -eq 1 ] && [ $TO_DOMAIN_HAS_SSL -eq 0 ]; then
     SHOULD_INSTALL_SSL=1
 fi
 
-
 # ----------- CHECK -------------
 
 if [ $IT_IS_WP -eq 0 ]; then
@@ -261,9 +278,7 @@ else
     fi
 fi
 
-
 # ----------- PRINT -------------
-
 
 echo "==============================================================================="
 echo "FROM_DOMAIN = $FROM_DOMAIN"
@@ -295,19 +310,9 @@ echo "FROM_DOMAIN_PROXY_EXT = $FROM_DOMAIN_PROXY_EXT"
 echo "==============================================================================="
 read -p "=== Press Enter to continue ==="
 
-
-# ----------- ACTION -------------
-
-# Defining password-gen function
-gen_pass() {
-    MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-    LENGTH=32
-    while [ ${n:=1} -le $LENGTH ]; do
-        PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
-        let n+=1
-    done
-    echo "$PASS"
-}
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
 
 if [ $CREATE_TO_USER -eq 1 ]; then
     pass=$(gen_pass)
@@ -410,3 +415,12 @@ fi
 
 echo "===== DONE ===="
 echo "You can visit http://$TO_DOMAIN/"
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
