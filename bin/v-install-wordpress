@@ -4,7 +4,7 @@
 # Credits to Luka Paunović for wp-cli implememtation
 
 if [ $# -lt 1 ]; then
-    echo usage: create_wp_https domain [db_name] [email]
+    echo usage: v-install-wordpress domain [db_name] [email]
     exit 1
 fi
 
@@ -80,19 +80,20 @@ v-add-database $user $DBUSERSUF $DBUSERSUF $PASSWDDB mysql
 
 cd /home/$user
 
-rm -rf /home/$user/wp
-curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-chmod +x wp-cli.phar
-sudo mv wp-cli.phar wp
-
+if [ ! -f "/usr/local/bin/wp" ]; then
+    echo "=== Downloading latest wp-cli"
+    wget -nv https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /usr/local/bin/wp
+    chmod +x /usr/local/bin/wp
+fi
+    
 cd /home/$user/web/$domain/public_html
 
-sudo -H -u$user /home/$user/wp core download
-sudo -H -u$user /home/$user/wp core config --dbname=$DBUSER --dbuser=$DBUSER --dbpass=$PASSWDDB
+sudo -H -u$user wp core download
+sudo -H -u$user wp core config --dbname=$DBUSER --dbuser=$DBUSER --dbpass=$PASSWDDB
 
 password=$(LC_CTYPE=C tr -dc A-Za-z0-9_\!\@\#\$\%\^\&\*\(\)-+= < /dev/urandom | head -c 12)
 
-sudo -H -u$user /home/$user/wp core install --url="$domain" --title="$domain" --admin_user="admin" --admin_password="$password" --admin_email="$email" --path=$WORKINGDIR
+sudo -H -u$user wp core install --url="$domain" --title="$domain" --admin_user="admin" --admin_password="$password" --admin_email="$email" --path=$WORKINGDIR
 
 #FIX za https://github.com/wp-cli/wp-cli/issues/2632
 
@@ -113,7 +114,5 @@ echo "================================================================="
 
 chown -R $user:$user $WORKINGDIR
 
-rm -rf /home/$user/wp
-
-echo "create_wp_https: Done."
+echo "v-install-wordpress: Done."
 exit 0
