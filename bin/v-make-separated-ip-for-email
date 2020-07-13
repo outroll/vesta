@@ -5,10 +5,9 @@
 #
 # The function add new ip, add new host for mail, try to generate letsencrypt for it, and makes email to be sent via that IP only for SMTP authenticated users
 
-if [ $# -lt 2 ]; then
-    echo "USAGE: v-make-separate-ip-for-email MAIL_HOSTNAME MAIL_IP"
-    exit 1
-fi
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
 
 MAIL_HOSTNAME=$1
 MAIL_IP=$2
@@ -24,6 +23,14 @@ if [ $# -gt 3 ]; then
 else
     INTERFACE='eth0'
 fi
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'MAIL_HOSTNAME MAIL_IP'
+is_domain_format_valid "$MAIL_HOSTNAME"
+is_ip_format_valid "$MAIL_IP"
 
 HOST_USER=$($VESTA/bin/v-search-domain-owner "$HOSTNAME")
 if [ -z "$HOST_USER" ]; then
@@ -43,6 +50,10 @@ fi
 if [ $# -gt 3 ]; then
     echo "INTERFACE    : $INTERFACE"
 fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
 
 if [ ! -f "/usr/local/vesta/data/ips/$MAIL_IP" ]; then
     $VESTA/bin/v-add-sys-ip  "$MAIL_IP" "$NETMASK" "$INTERFACE" 'admin' 'dedicated' '' ''
