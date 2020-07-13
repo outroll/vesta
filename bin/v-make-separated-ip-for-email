@@ -104,9 +104,9 @@ else
 fi
 
 echo "=== Generating IP for hostname $HOSTNAME"
-$VESTA/bin/v-create-ip-ssl "$HOST_USER" "$HOSTNAME"
+$VESTA/bin/v-make-ip-ssl "$HOST_USER" "$HOSTNAME"
 echo "=== Generating IP for mail hostname $MAIL_HOSTNAME"
-$VESTA/bin/v-create-ip-ssl "$MAIL_USER" "$MAIL_HOSTNAME"
+$VESTA/bin/v-make-ip-ssl "$MAIL_USER" "$MAIL_HOSTNAME"
 
 check_grep=$(grep -c 'smtp_active_hostname' /etc/exim4/exim4.conf.template)
 if [ "$check_grep" -eq 0 ]; then
@@ -127,12 +127,12 @@ else
     echo "=== exim4.conf.template already patched"
 fi
 
-check_grep=$(grep -c 'v-create-ip-ssl' /usr/local/vesta/conf/vesta.conf)
+check_grep=$(grep -c 'v-make-ip-ssl' /usr/local/vesta/conf/vesta.conf)
 if [ "$check_grep" -eq 0 ]; then
-    echo "=== Set UPDATE_SSL_SCRIPT to 'v-create-ip-ssl'"
-    echo "UPDATE_SSL_SCRIPT='/usr/local/vesta/bin/v-create-ip-ssl'" >> /usr/local/vesta/conf/vesta.conf
+    echo "=== Set UPDATE_SSL_SCRIPT to 'v-make-ip-ssl'"
+    echo "UPDATE_SSL_SCRIPT='/usr/local/vesta/bin/v-make-ip-ssl'" >> /usr/local/vesta/conf/vesta.conf
 else
-    echo "=== Value UPDATE_SSL_SCRIPT is already 'v-create-ip-ssl'"
+    echo "=== Value UPDATE_SSL_SCRIPT is already 'v-make-ip-ssl'"
 fi
 
 check_grep=$(grep -c "ip4:$MAIL_IP" /usr/local/vesta/data/templates/dns/default.tpl)
