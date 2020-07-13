@@ -1078,11 +1078,11 @@ if [ "$mysql" = 'yes' ]; then
     mysql -e "FLUSH PRIVILEGES"
 
     # Configuring phpMyAdmin
+    if [ "$release" -eq 10 ]; then
+        mkdir /etc/phpmyadmin
+        mkdir -p /var/lib/phpmyadmin/tmp
+    fi
     if [ "$apache" = 'yes' ]; then
-        if [ "$release" -eq 10 ]; then
-            mkdir /etc/phpmyadmin
-            mkdir -p /var/lib/phpmyadmin/tmp
-        fi
         cp -f $vestacp/pma/apache.conf /etc/phpmyadmin/
         ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
     fi
