@@ -35,10 +35,12 @@ if [ ! -d "/home/$user/web/$domain/public_html" ]; then
     exit 1;
 fi
 
-if [ ! -f "/home/$user/conf/web/ssl.$domain.pem" ]; then
+LETSENCRYPT=$($VESTA/bin/v-list-web-domain "$user" "$domain" | grep 'LETSENCRYPT:' | awk '{print $2}')
+if [ "$LETSENCRYPT" != "yes" ]; then
     v-add-letsencrypt-domain "$user" "$domain" "www.$domain" "yes"
 fi
-if [ -f "/home/$user/conf/web/ssl.$domain.pem" ]; then
+LETSENCRYPT=$($VESTA/bin/v-list-web-domain "$user" "$domain" | grep 'LETSENCRYPT:' | awk '{print $2}')
+if [ "$LETSENCRYPT" = "yes" ]; then
     if [ -f "/usr/local/vesta/data/templates/web/nginx/force-https.stpl" ]; then
         v-change-web-domain-proxy-tpl  "$user" "$domain" "force-https" "jpeg,jpg,png,gif,bmp,ico,svg,tif,tiff,css,js,ttf,otf,webp,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odf,odp,ods,odt,pdf,psd,ai,eot,eps,ps,zip,tar,tgz,gz,rar,bz2,7z,aac,m4a,mp3,mp4,ogg,wav,wma,3gp,avi,flv,m4v,mkv,mov,mpeg,mpg,wmv,exe,iso,dmg,swf,woff,woff2" "yes"
     fi
@@ -48,11 +50,9 @@ else
 fi
 
 WORKINGDIR="/home/$user/web/$domain/public_html"
-# FILE=latest.tar.gz
 
 rm -rf $WORKINGDIR/*
 
-#DBUSERSUF=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 5 | head -n 1)
 DBUSERSUF="$START_DB";
 DBUSERSUFB="$START_DB";
 DBUSER=$user\_$DBUSERSUFB;
