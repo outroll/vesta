@@ -9,6 +9,12 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
+# Importing system environment
+source /etc/profile
+
+# Includes
+source /usr/local/vesta/func/main.sh
+
 MAIL_HOSTNAME=$1
 MAIL_IP=$2
 
@@ -158,3 +164,12 @@ if [ "$PTR" != "$MAIL_HOSTNAME" ]; then
     echo "WARNING: PTR for $MAIL_IP is $ptr"
     echo "WARNING: PTR for $MAIL_IP should be $MAIL_HOSTNAME"
 fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
