@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# info: Copy host SSL as IP SSL
+# options: USER DOMAIN
+#
+# The function check if specific (sub)domain is marked as main host for specific IP, get its SSL and put it as IP SSL in /usr/local/vesta/ssl/
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+
+# Importing system environment
+source /etc/profile
+
+# Includes
+source /usr/local/vesta/func/main.sh
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'USER DOMAIN'
+is_format_valid 'user' 'domain'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+echo "Script ran with: $user $domain" >> /usr/local/vesta/log/v-create-ip-ssl.log
+
+grepr=$(grep -c "^$domain:" /etc/exim4/virtual/interfaces)
+if [ $grepr -ge 1 ]; then
+    grepr=$(grep "^$domain:" /etc/exim4/virtual/interfaces)
+    ip=${grepr/$domain: /}
+    if [ ! -z "$ip" ]; then
+        echo "Processinng $domain" >> /usr/local/vesta/log/v-create-ip-ssl.log
+        echo "IP = $ip" >> /usr/local/vesta/log/v-create-ip-ssl.log
+        cp /home/$user/conf/web/ssl.$domain.pem /usr/local/vesta/ssl/$ip.crt
+        cp /home/$user/conf/web/ssl.$domain.key /usr/local/vesta/ssl/$ip.key
+
+        exim_user="exim";
+        check_exim_username=$(grep -c '^Debian-exim:' /etc/passwd)
+        if [ "$check_exim_username" -eq 1 ]; then
+            exim_user="Debian-exim"
+        fi
+
+        # Assign exim permissions
+        chown $exim_user:mail /usr/local/vesp.crt ta/ssl/$
+        chown $exim_user:mail /usr/local/vesta/ssl/$ip.key
+
+        service exim4 restart
+        service dovecot restart
+        echo "Done." >> /usr/local/vesta/log/v-create-ip-ssl.log
+    fi
+fi
