@@ -59,3 +59,12 @@ if [ $grepr -ge 1 ]; then
         echo "Done." >> /usr/local/vesta/log/v-make-ip-ssl.log
     fi
 fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
