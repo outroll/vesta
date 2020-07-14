@@ -1563,7 +1563,7 @@ fi
 # Comparing hostname and ip
 make_ssl=0
 host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
-if [ "$host_ip" != "$ip" ]; then
+if [ "$host_ip" != "$pub_ip" ]; then
     echo "***** PROBLEM: Hostname $servername is not pointing to your server (IP address $ip)"
     echo "Without pointing your hostname to your IP, LetsEncrypt SSL will not be generated for your server hostname."
     echo "Try to setup an A record in your DNS, pointing your hostname $servername to IP address $ip and then press ENTER."
@@ -1584,7 +1584,7 @@ if [ $make_ssl -eq 1 ]; then
     # Check if www is also pointing to our IP
     www_host="www.$servername"
     www_host_ip=$(host $www_host | head -n 1 | awk '{print $NF}')
-    if [ "$www_host_ip" != "$ip" ]; then
+    if [ "$www_host_ip" != "$pub_ip" ]; then
         if [ "$named" = 'yes' ]; then
             echo "=== Deleting www to server hostname"
             $VESTA/bin/v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
