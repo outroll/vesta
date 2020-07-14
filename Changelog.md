@@ -4,7 +4,7 @@ Version 0.9.8-26-28 [15-Jul-2020]
 * [Feature] v-move-domain-and-database-to-account command introduced
 * [Feature] v-make-separated-ip-for-email command introduced
 * [Bugfix] Fix for LetsEncrypt issuing in apache-less variant (nginx + php-fpm variant)
-* [Bugfix] Fix for phpmyAdmin DB configuring in apache-less variant (nginx + php-fpm variant)
+* [Bugfix] Fix for configuring phpMyAdmin DB in apache-less variant (nginx + php-fpm variant)
 
 Version 0.9.8-26-27 [05-Jul-2020]
 ==================================================
