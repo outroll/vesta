@@ -82,6 +82,6 @@ fi
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-log_event "$OK" "$ARGUMENTS"
+log_event "$RET" "$ARGUMENTS"
 
 exit
