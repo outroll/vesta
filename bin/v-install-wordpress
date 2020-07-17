@@ -1,29 +1,46 @@
 #!/bin/bash
-
-# WordPress installer in one command line
+# info: WordPress installer in one command line
+# options: DOMAIN USER
+#
 # Credits to Luka Paunović for wp-cli implememtation
 
-if [ $# -lt 1 ]; then
-    echo usage: v-install-wordpress domain [db_name] [email]
-    exit 1
-fi
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
 
+# Argument definition
 domain=$1
 
-PATH=$PATH:/usr/local/vesta/bin
-export PATH
-
-user=$(/usr/local/vesta/bin/v-search-domain-owner $domain)
-
-START_DB="wp";
+database="wp";
 if [ $# -gt 1 ]; then
-    START_DB=$2
+    database=$2
 fi
 
 email="info@$domain";
 if [ $# -gt 2 ]; then
     email=$3
 fi
+
+user=$(/usr/local/vesta/bin/v-search-domain-owner $domain)
+if [ -z "$user" ]; then
+    check_result $E_NOTEXIST "domain $domain doesn't exist"
+fi
+
+# Importing system environment
+source /etc/profile
+
+# Includes
+source /usr/local/vesta/func/main.sh
+source /usr/local/vesta/func/db.sh
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'DOMAIN [DB_NAME] [EMAIL]'
+is_format_valid 'domain' 'database' 'email'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
 
 if [ ! -d "/home/$user" ]; then
     echo "User doesn't exist";
@@ -35,15 +52,20 @@ if [ ! -d "/home/$user/web/$domain/public_html" ]; then
     exit 1;
 fi
 
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
 PROTOCOL='http'
 if [ ! -f "/home/$user/conf/web/ssl.$domain.ca" ]; then
-    v-add-letsencrypt-domain "$user" "$domain" "www.$domain" "yes"
+    /usr/local/vesta/bin/v-add-letsencrypt-domain "$user" "$domain" "www.$domain" "yes"
 fi
 
 if [ -f "/home/$user/conf/web/ssl.$domain.ca" ]; then
     PROTOCOL='https'
     if [ -f "/usr/local/vesta/data/templates/web/nginx/force-https.stpl" ]; then
-        v-change-web-domain-proxy-tpl  "$user" "$domain" "force-https" "jpeg,jpg,png,gif,bmp,ico,svg,tif,tiff,css,js,ttf,otf,webp,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odf,odp,ods,odt,pdf,psd,ai,eot,eps,ps,zip,tar,tgz,gz,rar,bz2,7z,aac,m4a,mp3,mp4,ogg,wav,wma,3gp,avi,flv,m4v,mkv,mov,mpeg,mpg,wmv,exe,iso,dmg,swf,woff,woff2" "yes"
+        /usr/local/vesta/bin/v-change-web-domain-proxy-tpl  "$user" "$domain" "force-https" "jpeg,jpg,png,gif,bmp,ico,svg,tif,tiff,css,js,ttf,otf,webp,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odf,odp,ods,odt,pdf,psd,ai,eot,eps,ps,zip,tar,tgz,gz,rar,bz2,7z,aac,m4a,mp3,mp4,ogg,wav,wma,3gp,avi,flv,m4v,mkv,mov,mpeg,mpg,wmv,exe,iso,dmg,swf,woff,woff2" "yes"
     fi
 fi
 
@@ -51,32 +73,31 @@ WORKINGDIR="/home/$user/web/$domain/public_html"
 
 rm -rf $WORKINGDIR/*
 
-DBUSERSUF="$START_DB";
-DBUSERSUFB="$START_DB";
+DBUSERSUF="$database";
+DBUSERSUFB="$database";
 DBUSER=$user\_$DBUSERSUFB;
-DB_OK=0;
-if [ ! -d "/var/lib/mysql/$DBUSER" ]; then
-    DB_OK=1;
-fi
+DB_EXISTS=$(check_if_database_exists "$user" "$DBUSER")
 
-if [ "$DB_OK" -eq "0" ]; then
-i=1;
-while [ $i -lt 99 ]
-do
-i=$((i+1));
-DBUSERSUF="${DBUSERSUFB}${i}";
-DBUSER=$user\_$DBUSERSUF;
-if [ ! -d "/var/lib/mysql/$DBUSER" ]; then
-break;
-fi
-done
+if [ "$DB_EXISTS" = "yes" ]; then
+    i=1;
+    while [ $i -lt 99 ]; do
+        i=$((i+1));
+        DBUSERSUF="${DBUSERSUFB}${i}";
+        DBUSER=$user\_$DBUSERSUF;
+        DB_EXISTS=$(check_if_database_exists "$user" "$DBUSER")
+        if [ "$DB_EXISTS" = "no" ]; then
+            break;
+        fi
+    done
 fi
 
 PASSWDDB=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 
-v-add-database $user $DBUSERSUF $DBUSERSUF $PASSWDDB mysql
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
 
-cd /home/$user
+/usr/local/vesta/bin/v-add-database "$user" "$DBUSERSUF" "$DBUSERSUF" "$PASSWDDB" "mysql"
 
 if [ ! -f "/usr/local/bin/wp" ]; then
     echo "=== Downloading latest wp-cli"
@@ -93,11 +114,7 @@ password=$(LC_CTYPE=C tr -dc A-Za-z0-9_\!\@\#\$\%\^\&\*\(\)-+= < /dev/urandom | 
 
 sudo -H -u$user wp core install --url="$domain" --title="$domain" --admin_user="admin" --admin_password="$password" --admin_email="$email" --path=$WORKINGDIR
 
-#FIX za https://github.com/wp-cli/wp-cli/issues/2632
-
 mysql -u$DBUSER -p$PASSWDDB -e "USE $DBUSER; update wp_options set option_value = '$PROTOCOL://$domain' where option_name = 'siteurl'; update wp_options set option_value = '$PROTOCOL://$domain' where option_name = 'home';"
-
-# clear
 
 echo "================================================================="
 echo "Installation is complete. Your username/password is listed below."
@@ -112,5 +129,12 @@ echo "================================================================="
 
 chown -R $user:$user $WORKINGDIR
 
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
 echo "v-install-wordpress: Done."
-exit 0
+
+log_event "$OK" "$ARGUMENTS"
+
+exit
