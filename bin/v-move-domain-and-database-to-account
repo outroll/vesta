@@ -4,7 +4,6 @@
 #
 # The function of changing domain and database ownership.
 
-
 #----------------------------------------------------------#
 #                    Variable&Function                     #
 #----------------------------------------------------------#
@@ -18,7 +17,6 @@ source /etc/profile
 
 # Includes
 source /usr/local/vesta/func/main.sh
-
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -42,6 +40,8 @@ USER_TO=$user
 #                       Action                             #
 #----------------------------------------------------------#
 
+RET=$OK
+
 echo "================================="
 r=$(/usr/local/vesta/bin/v-get-database-credentials-of-domain $domain)
 echo $r
@@ -53,6 +53,7 @@ if [ ! -z "$DATABASE_NAME" ]; then
     /usr/local/vesta/bin/v-change-database-owner $DATABASE_NAME $USER_TO
     if [ $? -ne 0 ]; then
         echo "=== v-change-database-owner failed"
+        RET=$E_NOTEXIST
     fi
 
     if [ ! -z "$DATABASE_USERNAME" ] && [ ! -z "$CONFIG_FILE_FULL_PATH" ]; then
@@ -74,4 +75,13 @@ echo "=== v-change-domain-owner $domain $USER_TO"
 /usr/local/vesta/bin/v-change-domain-owner $domain $USER_TO
 if [ $? -ne 0 ]; then
     echo "=== v-change-domain-owner failed"
+    RET=$E_NOTEXIST
 fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+log_event "$OK" "$ARGUMENTS"
+
+exit
