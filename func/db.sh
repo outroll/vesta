@@ -464,3 +464,27 @@ delete_pgsql_user() {
     query="DROP ROLE $old_dbuser"
     psql_query "$query" > /dev/null
 }
+
+# Get database name without user prefix
+get_database_name_without_user_prefix() {
+    user=$1
+    db=$2
+    user_len=${#user}
+    user_len=$((user_len+1))
+    echo ${db:user_len}
+}
+
+# Check if database exists
+check_if_database_exists() {
+    USER_DATA_PATH=$VESTA/data/users/$1
+    if [ ! -d "$USER_DATA_PATH" ]; then
+        echo "no"
+        return;
+    fi
+    counter=$(grep -c "DB='$2'" $USER_DATA_PATH/db.conf)
+    if [ "$counter" = "0" ]; then
+        echo "no"
+    else
+        echo "yes"
+    fi
+}
