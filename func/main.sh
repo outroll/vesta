@@ -1057,3 +1057,17 @@ replace_php_config_value() {
     sed -i "s|=$1$|=$2|g" $3
     sed -i "s|= $1$|= $2|g" $3
 }
+
+# Defining password-gen function
+vesta_generate_pass() {
+    MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    LENGTH=32
+    if [ $# -gt 0 ] && [ $1 != "" ]; then
+        LENGTH=$1
+    fi
+    while [ ${n:=1} -le $LENGTH ]; do
+        PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
+        let n+=1
+    done
+    echo "$PASS"
+}
