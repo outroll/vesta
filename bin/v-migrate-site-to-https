@@ -1,98 +1,112 @@
 #!/bin/bash
-
+# info: migrate site to https
+# options: DOMAIN [DATABASE_NAME] [DATABASE_USERNAME] [DATABASE_PASSWORD]
+#
 # Tool that will replace http to https URLs in database, install SSL and switch to force-https proxy template
 # Automatic detection of WordPress, automaticaly read DB user, DB name and DB pass.
 
-if [ $# -lt 1 ]; then
-    echo "USAGE: v-migrate-site-to-https DOMAIN [DATABASE_NAME] [DATABASE_USERNAME] [DATABASE_PASSWORD]"
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+domain=$1
+
+user=$(/usr/local/vesta/bin/v-search-domain-owner $domain)
+if [ -z "$user" ]; then
+    echo "domain $domain doesn't exist"
     exit 1
 fi
 
-FROM_DOMAIN=''
+# Importing system environment
+source /etc/profile
+
+# Includes
+source /usr/local/vesta/func/main.sh
+source /usr/local/vesta/func/db.sh
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'DOMAIN'
+is_format_valid 'domain' 'user'
+is_object_valid 'user' 'USER' "$user"
+is_object_unsuspended 'user' 'USER' "$user"
+
 FROM_DATABASE_NAME=''
 FROM_DATABASE_USERNAME=''
 FROM_DATABASE_PASSWORD=''
 
-if [ -z "$VESTA" ]; then
-    VESTA="/usr/local/vesta"
-fi
+FROM_DOMAIN=$domain
+FROM_USER=$user
 
-if [ -z "$1" ]; then
-    echo "Error: DOMAIN is empty"
+r=$(/usr/local/vesta/bin/v-get-database-credentials-of-domain $FROM_DOMAIN)
+# echo $r
+eval $r
+
+############################
+# handle --parameters=val
+handle_parameter() {
+    origparam=$1
+    searchstring="="
+    paramminuses=${origparam:0:2}
+    if [ "$paramminuses" = "--" ]; then
+        var_without_minuses=${origparam:2}
+        var=${var_without_minuses%%=*}
+        val=${origparam#*$searchstring}
+        #echo $var
+        #echo $val
+        printf -v "$var" '%s' "$val"
+    fi
+}
+numargs=$#
+for ((i=1 ; i <= numargs ; i++))
+do
+    handle_parameter $1
+    shift
+done
+############################
+
+FROM_CONFIG_FILE=$CONFIG_FILE
+FROM_CONFIG_FILE_FULL_PATH=$CONFIG_FILE_FULL_PATH
+if [ ! -f "$FROM_CONFIG_FILE_FULL_PATH" ]; then
+    echo "Error: CONFIG_FILE_FULL_PATH $FROM_CONFIG_FILE_FULL_PATH does not exists"
     exit 2
 fi
 
-FROM_DOMAIN=$1
-FROM_USER=$($VESTA/bin/v-search-domain-owner "$FROM_DOMAIN")
-if [ -z "$FROM_USER" ]; then
-    echo "Error: domain $FROM_DOMAIN does not exists"
-    exit 4
-fi
-
-FROM_FOLDER="/home/$FROM_USER/web/$FROM_DOMAIN/public_html"
-CHECK_PUBLIC_SHTML=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'SSL:' | grep -c 'single')
-if [ $CHECK_PUBLIC_SHTML -eq 1 ]; then
-    FROM_FOLDER="/home/$FROM_USER/web/$FROM_DOMAIN/public_shtml"
-fi
-
-FROM_CONFIG_FILE="wp-config.php"
-FROM_CONFIG_FILE_FULL_PATH="$FROM_FOLDER/$FROM_CONFIG_FILE"
-if [ ! -f "$FROM_CONFIG_FILE_FULL_PATH" ]; then
-    echo "Error: CONFIG_FILE_FULL_PATH $FROM_CONFIG_FILE_FULL_PATH does not exists"
-    exit 5
-fi
-
 IT_IS_WP=0
-if [ -f "$FROM_FOLDER/wp-config.php" ]; then
+if [ "$CMS_TYPE" = "wordpress" ]; then
     IT_IS_WP=1
 fi
 
-if [ $IT_IS_WP -eq 1 ]; then
-    FROM_CONFIG_FILE_FULL_PATH_BACKUP="${FROM_CONFIG_FILE_FULL_PATH}_backup"
-    cp $FROM_CONFIG_FILE_FULL_PATH $FROM_CONFIG_FILE_FULL_PATH_BACKUP
-    sed -i "s|//.*$||g" $FROM_CONFIG_FILE_FULL_PATH_BACKUP
-    if [ -z "$FROM_DATABASE_NAME" ]; then
-        sed -i "s|('|( '|g" $FROM_CONFIG_FILE_FULL_PATH_BACKUP
-        sed -i "s|');|' );|g" $FROM_CONFIG_FILE_FULL_PATH_BACKUP
-        FROM_DATABASE_NAME=$(grep 'DB_NAME' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
-    fi
+if [ -z "$FROM_DATABASE_NAME" ]; then
+    FROM_DATABASE_NAME=$DATABASE_NAME
+fi
+if [ -z "$FROM_DATABASE_USERNAME" ]; then
+    FROM_DATABASE_USERNAME=$DATABASE_USERNAME
+fi
+if [ -z "$FROM_DATABASE_PASSWORD" ]; then
+    FROM_DATABASE_PASSWORD=$DATABASE_PASSWORD
+fi
 
-    FROM_DATABASE_USERNAME=$(grep 'DB_USER' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
-    FROM_DATABASE_PASSWORD=$(grep 'DB_PASSWORD' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
-    rm $FROM_CONFIG_FILE_FULL_PATH_BACKUP
-fi
-if [ $# -ge 2 ]; then
-    if [ ! -z "$2" ]; then
-        FROM_DATABASE_NAME=$3
-    fi
-fi
-if [ $# -ge 3 ]; then
-    if [ ! -z "$3" ]; then
-        FROM_DATABASE_USERNAME=$4
-    fi
-fi
-if [ $# -ge 4 ]; then
-    if [ ! -z "$4" ]; then
-        FROM_DATABASE_PASSWORD=$5
-    fi
-fi
 if [ -z "$FROM_DATABASE_NAME" ]; then
     echo "Error: DATABASE_NAME is empty"
-    exit 6
+    exit 3
 fi
 if [ -z "$FROM_DATABASE_USERNAME" ]; then
     echo "Error: DATABASE_USERNAME is empty"
-    exit 7
+    exit 4
 fi
 if [ -z "$FROM_DATABASE_PASSWORD" ]; then
     echo "Error: DATABASE_PASSWORD is empty"
-    exit 8
+    exit 5
 fi
 
-object=$(grep "DB='$FROM_DATABASE_NAME'" $VESTA/data/users/$FROM_USER/db.conf)
-if [ -z "$object" ]; then
+DB_EXISTS=$(check_if_database_exists "$user" "$FROM_DATABASE_NAME")
+if [ "$DB_EXISTS" = "no" ]; then
     echo "Error: database $FROM_DATABASE_NAME does not exists"
-    exit 9
+    exit 6
 fi
 
 # ----------- CHECK -------------
@@ -105,11 +119,11 @@ TO_REPLACE2="https://www.$FROM_DOMAIN"
 if [ $IT_IS_WP -eq 0 ]; then
     if [ ! -f "/root/Search-Replace-DB-master/srdb.cli.php" ]; then
         echo "Please download https://interconnectit.com/products/search-and-replace-for-wordpress-databases/ and extract to /root/Search-Replace-DB-master/"
-        exit 13
+        exit 7
     fi
     if [ ! -f "/usr/bin/php7.0" ]; then
         echo "Please download https://c.myvestacp.com/tools/multi-php-install.sh and install php 7.0"
-        exit 14
+        exit 8
     fi
 else
     if [ ! -f "/usr/local/bin/wp" ]; then
@@ -129,40 +143,39 @@ echo "TO_REPLACE1   = $TO_REPLACE1"
 echo "FROM_REPLACE2 = $FROM_REPLACE2"
 echo "TO_REPLACE2   = $TO_REPLACE2"
 echo "----"
-echo "FROM_DOMAIN = $FROM_DOMAIN"
-echo "FROM_USER   = $FROM_USER"
-echo "FROM_FOLDER = $FROM_FOLDER"
+echo "DOMAIN = $FROM_DOMAIN"
+echo "USER   = $FROM_USER"
+echo "SITE_FOLDER = $SITE_FOLDER"
 echo "IT_IS_WP = $IT_IS_WP"
-echo "FROM_CONFIG_FILE_FULL_PATH = $FROM_CONFIG_FILE_FULL_PATH"
-echo "FROM_DATABASE_NAME     = $FROM_DATABASE_NAME"
-echo "FROM_DATABASE_USERNAME = $FROM_DATABASE_USERNAME"
-echo "FROM_DATABASE_PASSWORD = $FROM_DATABASE_PASSWORD"
+echo "CONFIG_FILE_FULL_PATH = $FROM_CONFIG_FILE_FULL_PATH"
+echo "DATABASE_NAME     = $FROM_DATABASE_NAME"
+echo "DATABASE_USERNAME = $FROM_DATABASE_USERNAME"
+echo "DATABASE_PASSWORD = $FROM_DATABASE_PASSWORD"
 echo "==============================================================================="
 read -p "=== Press Enter to continue ==="
 
 
-# ----------- ACTION -------------
-
-domain=$FROM_DOMAIN
-user=$FROM_USER
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
 
 if [ ! -f "/home/$user/conf/web/ssl.$domain.ca" ]; then
-    v-add-letsencrypt-domain "$user" "$domain" "www.$domain" "yes"
+    /usr/local/vesta/bin/v-add-letsencrypt-domain "$user" "$domain" "www.$domain" "yes"
 fi
 if [ -f "/home/$user/conf/web/ssl.$domain.ca" ]; then
     if [ -f "/usr/local/vesta/data/templates/web/nginx/force-https.stpl" ]; then
-        v-change-web-domain-proxy-tpl  "$user" "$domain" "force-https" "jpeg,jpg,png,gif,bmp,ico,svg,tif,tiff,css,js,ttf,otf,webp,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odf,odp,ods,odt,pdf,psd,ai,eot,eps,ps,zip,tar,tgz,gz,rar,bz2,7z,aac,m4a,mp3,mp4,ogg,wav,wma,3gp,avi,flv,m4v,mkv,mov,mpeg,mpg,wmv,exe,iso,dmg,swf,woff,woff2" "yes"
+        /usr/local/vesta/bin/v-change-web-domain-proxy-tpl  "$user" "$domain" "force-https" "jpeg,jpg,png,gif,bmp,ico,svg,tif,tiff,css,js,ttf,otf,webp,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odf,odp,ods,odt,pdf,psd,ai,eot,eps,ps,zip,tar,tgz,gz,rar,bz2,7z,aac,m4a,mp3,mp4,ogg,wav,wma,3gp,avi,flv,m4v,mkv,mov,mpeg,mpg,wmv,exe,iso,dmg,swf,woff,woff2" "yes"
     fi
 else
     echo "Error: Can not generate SSL."
-    exit 20
+    exit 9
 fi
 
 echo "=== Replacing $FROM_REPLACE1 to $TO_REPLACE1 in folder $TO_FOLDER"
-grep -rl "$FROM_DOMAIN" $FROM_FOLDER | xargs sed -i "s#$FROM_REPLACE1#$TO_REPLACE1#g"
+grep -rl "$FROM_DOMAIN" $SITE_FOLDER | xargs sed -i "s#$FROM_REPLACE1#$TO_REPLACE1#g"
 
 echo "=== Replacing $FROM_REPLACE2 to $TO_REPLACE2 in folder $TO_FOLDER"
-grep -rl "$FROM_DOMAIN" $FROM_FOLDER | xargs sed -i "s#$FROM_REPLACE2#$TO_REPLACE2#g"
+grep -rl "$FROM_DOMAIN" $SITE_FOLDER | xargs sed -i "s#$FROM_REPLACE2#$TO_REPLACE2#g"
 
 if [ $IT_IS_WP -eq 0 ]; then
     echo "=== Replacing $FROM_REPLACE1 to $TO_REPLACE1 in database $FROM_DATABASE_NAME"
@@ -170,7 +183,7 @@ if [ $IT_IS_WP -eq 0 ]; then
     echo "=== Replacing $FROM_REPLACE2 to $TO_REPLACE2 in database $FROM_DATABASE_NAME"
     php7.0 /root/Search-Replace-DB-master/srdb.cli.php -h localhost -n "$FROM_DATABASE_NAME" -u "$FROM_DATABASE_USERNAME" -p "$FROM_DATABASE_PASSWORD" -s "$FROM_REPLACE2" -r "$TO_REPLACE2"
 else
-    cd $FROM_FOLDER
+    cd $SITE_FOLDER
     echo "=== Replacing $FROM_REPLACE1 to $TO_REPLACE1 in database $FROM_DATABASE_NAME"
     sudo -H -u$FROM_USER wp search-replace "$FROM_REPLACE1" "$TO_REPLACE1" --precise --all-tables --skip-columns=guid
     echo "=== Replacing $FROM_REPLACE2 to $TO_REPLACE2 in database $FROM_DATABASE_NAME"
@@ -179,3 +192,12 @@ fi
 
 echo "===== DONE ===="
 echo "You can visit $TO_REPLACE1"
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
