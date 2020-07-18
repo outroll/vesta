@@ -45,28 +45,7 @@ r=$(/usr/local/vesta/bin/v-get-database-credentials-of-domain $FROM_DOMAIN)
 # echo $r
 eval $r
 
-############################
-# handle --parameters=val
-handle_parameter() {
-    origparam=$1
-    searchstring="="
-    paramminuses=${origparam:0:2}
-    if [ "$paramminuses" = "--" ]; then
-        var_without_minuses=${origparam:2}
-        var=${var_without_minuses%%=*}
-        val=${origparam#*$searchstring}
-        #echo $var
-        #echo $val
-        printf -v "$var" '%s' "$val"
-    fi
-}
-numargs=$#
-for ((i=1 ; i <= numargs ; i++))
-do
-    handle_parameter $1
-    shift
-done
-############################
+source /usr/local/vesta/func/handle_parameters.sh
 
 FROM_CONFIG_FILE=$CONFIG_FILE
 FROM_CONFIG_FILE_FULL_PATH=$CONFIG_FILE_FULL_PATH
