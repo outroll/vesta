@@ -1,9 +1,9 @@
 #!/bin/bash
 # info: migrate site to https
-# options: DOMAIN [DATABASE_NAME] [DATABASE_USERNAME] [DATABASE_PASSWORD]
+# options: DOMAIN [--DATABASE_NAME=...] [--DATABASE_USERNAME=...] [--DATABASE_PASSWORD=...]
 #
 # Tool that will replace http to https URLs in database, install SSL and switch to force-https proxy template
-# Automatic detection of WordPress, automaticaly read DB user, DB name and DB pass.
+# Automatic detection of CMS, automaticaly read DB user, DB name and DB pass.
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
@@ -29,7 +29,7 @@ source /usr/local/vesta/func/db.sh
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '1' "$#" 'DOMAIN'
+check_args '1' "$#" 'DOMAIN [--DATABASE_NAME=...] [--DATABASE_USERNAME=...] [--DATABASE_PASSWORD=...]'
 is_format_valid 'domain' 'user'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
