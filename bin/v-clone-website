@@ -26,14 +26,22 @@ fi
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
+FROM_DOMAIN=$1
+TO_DOMAIN=$2
+
+user=$(/usr/local/vesta/bin/v-search-domain-owner "$FROM_DOMAIN")
+if [ -z "$user" ]; then
+    echo "Error: domain $FROM_DOMAIN does not exists"
+    exit 2
+fi
+
 # Importing system environment
 source /etc/profile
 
 # Includes
 source /usr/local/vesta/func/main.sh
+source /usr/local/vesta/func/db.sh
 
-FROM_DOMAIN=''
-TO_DOMAIN=''
 FROM_DATABASE_NAME=''
 FROM_DATABASE_USERNAME=''
 FROM_DATABASE_PASSWORD=''
@@ -43,130 +51,76 @@ TO_DATABASE_USERNAME=''
 TO_DATABASE_PASSWORD=''
 DATABASE_SUFIX='_migrated'
 
-FROM_DOMAIN=$1
-TO_DOMAIN=$2
+source /usr/local/vesta/func/handle_parameters.sh
 
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '2' "$#" 'FROM_DOMAIN TO_DOMAIN'
+# check_args '2' "$#" 'FROM_DOMAIN TO_DOMAIN'
 is_domain_format_valid "$FROM_DOMAIN"
 is_domain_format_valid "$TO_DOMAIN"
 
-############################
-# handle --parameters=val
-handle_parameter() {
-    origparam=$1
-    searchstring="="
-    paramminuses=${origparam:0:2}
-    if [ "$paramminuses" = "--" ]; then
-        var_without_minuses=${origparam:2}
-        var=${var_without_minuses%%=*}
-        val=${origparam#*$searchstring}
-        #echo $var
-        #echo $val
-        printf -v "$var" '%s' "$val"
-    fi
-}
-numargs=$#
-for ((i=1 ; i <= numargs ; i++))
-do
-    handle_parameter $1
-    shift
-done
+FROM_USER=$user
 
-# Defining password-gen function
-gen_pass() {
-    MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-    LENGTH=32
-    while [ ${n:=1} -le $LENGTH ]; do
-        PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
-        let n+=1
-    done
-    echo "$PASS"
-}
-############################
+r=$(/usr/local/vesta/bin/v-get-database-credentials-of-domain "$FROM_DOMAIN")
+eval $r
 
-###########################################################################
+FROM_FOLDER=$SITE_FOLDER
 
-FROM_USER=$($VESTA/bin/v-search-domain-owner "$FROM_DOMAIN")
-if [ -z "$FROM_USER" ]; then
-    echo "Error: domain $FROM_DOMAIN does not exists"
-    exit 4
-fi
+FROM_CONFIG_FILE=$CONFIG_FILE
+FROM_CONFIG_FILE_FULL_PATH=$CONFIG_FILE_FULL_PATH
 
-FROM_FOLDER="/home/$FROM_USER/web/$FROM_DOMAIN/public_html"
-CHECK_PUBLIC_SHTML=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'SSL:' | grep -c 'single')
-if [ $CHECK_PUBLIC_SHTML -eq 1 ]; then
-    FROM_FOLDER="/home/$FROM_USER/web/$FROM_DOMAIN/public_shtml"
-fi
-
-if [ ! -z "$FROM_CONFIG_FILE" ]; then
-    FROM_CONFIG_FILE_FULL_PATH="$FROM_FOLDER/$6"
-fi
-if [ -z "$FROM_CONFIG_FILE" ]; then
-    FROM_CONFIG_FILE="wp-config.php"
-    FROM_CONFIG_FILE_FULL_PATH="$FROM_FOLDER/$FROM_CONFIG_FILE"
-fi
 if [ ! -f "$FROM_CONFIG_FILE_FULL_PATH" ]; then
     echo "Error: FROM_CONFIG_FILE_FULL_PATH $FROM_CONFIG_FILE_FULL_PATH does not exists"
-    exit 5
+    exit 3
 fi
 
 IT_IS_WP=0
-if [ -f "$FROM_FOLDER/wp-config.php" ]; then
+if [ "$CMS_TYPE" = "wordpress" ]; then
     IT_IS_WP=1
 fi
 
-if [ $IT_IS_WP -eq 1 ]; then
-    FROM_CONFIG_FILE_FULL_PATH_BACKUP="${FROM_CONFIG_FILE_FULL_PATH}_backup"
-    cp $FROM_CONFIG_FILE_FULL_PATH $FROM_CONFIG_FILE_FULL_PATH_BACKUP
-    sed -i "s|//.*$||g" $FROM_CONFIG_FILE_FULL_PATH_BACKUP
-    if [ -z "$FROM_DATABASE_NAME" ]; then
-        sed -i "s|('|( '|g" $FROM_CONFIG_FILE_FULL_PATH_BACKUP
-        sed -i "s|');|' );|g" $FROM_CONFIG_FILE_FULL_PATH_BACKUP
-        FROM_DATABASE_NAME=$(grep 'DB_NAME' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
-    fi
-
-    FROM_DATABASE_USERNAME=$(grep 'DB_USER' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
-    FROM_DATABASE_PASSWORD=$(grep 'DB_PASSWORD' $FROM_CONFIG_FILE_FULL_PATH_BACKUP | awk '{print $3}' | sed -e "s/^'//" -e "s/'$//")
-    rm $FROM_CONFIG_FILE_FULL_PATH_BACKUP
+if [ -z "$FROM_DATABASE_NAME" ]; then
+    FROM_DATABASE_NAME=$DATABASE_NAME
+fi
+if [ -z "$FROM_DATABASE_USERNAME" ]; then
+    FROM_DATABASE_USERNAME=$DATABASE_USERNAME
+fi
+if [ -z "$FROM_DATABASE_PASSWORD" ]; then
+    FROM_DATABASE_PASSWORD=$DATABASE_PASSWORD
 fi
 
 if [ -z "$FROM_DATABASE_NAME" ]; then
     echo "Error: FROM_DATABASE_NAME is empty"
-    exit 6
+    exit 4
 fi
 if [ -z "$FROM_DATABASE_USERNAME" ]; then
     echo "Error: FROM_DATABASE_USERNAME is empty"
-    exit 7
+    exit 5
 fi
 if [ -z "$FROM_DATABASE_PASSWORD" ]; then
     echo "Error: FROM_DATABASE_PASSWORD is empty"
-    exit 8
+    exit 6
 fi
 
-FROM_USER_LEN=${#FROM_USER}
-FROM_USER_LEN=$((FROM_USER_LEN+1))
-
-object=$(grep "DB='$FROM_DATABASE_NAME'" $VESTA/data/users/$FROM_USER/db.conf)
-if [ -z "$object" ]; then
+DB_EXISTS=$(check_if_database_exists "$user" "$FROM_DATABASE_NAME")
+if [ "$DB_EXISTS" = "no" ]; then
     echo "Error: database $FROM_DATABASE_NAME does not exists"
-    exit 9
+    exit 7
 fi
 
-FROM_DATABASE_NAME_WITHOUT_PREFIX=${FROM_DATABASE_NAME:FROM_USER_LEN}
-FROM_DATABASE_USERNAME_WITHOUT_PREFIX=${FROM_DATABASE_USERNAME:FROM_USER_LEN}
+FROM_DATABASE_NAME_WITHOUT_PREFIX=$(get_database_name_without_user_prefix "$FROM_USER" "$FROM_DATABASE_NAME")
+FROM_DATABASE_USERNAME_WITHOUT_PREFIX=$(get_database_name_without_user_prefix "$FROM_USER" "$FROM_DATABASE_USERNAME")
 
 FROM_DOMAIN_HAS_SSL=0
 if [ -f "/home/$FROM_USER/conf/web/ssl.$FROM_DOMAIN.ca" ]; then
     FROM_DOMAIN_HAS_SSL=1
 fi
 
-FROM_DOMAIN_TPL=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'TEMPLATE:' | awk '{print $2}')
-FROM_DOMAIN_PROXY_TPL=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'PROXY:' | awk '{print $2}')
-FROM_DOMAIN_PROXY_EXT=$($VESTA/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'PROXY EXT:' | cut -d ' ' -f8- | sed "s# #,#g")
+FROM_DOMAIN_TPL=$(/usr/local/vesta/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'TEMPLATE:' | awk '{print $2}')
+FROM_DOMAIN_PROXY_TPL=$(/usr/local/vesta/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'PROXY:' | awk '{print $2}')
+FROM_DOMAIN_PROXY_EXT=$(/usr/local/vesta/bin/v-list-web-domain "$FROM_USER" "$FROM_DOMAIN" | grep 'PROXY EXT:' | cut -d ' ' -f8- | sed "s# #,#g")
 
 # ----------- TO -------------
 
@@ -174,7 +128,7 @@ CREATE_TO_USER=0
 CREATE_TO_DOMAIN=0
 
 if [ -z "$TO_USER" ]; then
-    TO_USER=$($VESTA/bin/v-search-domain-owner "$TO_DOMAIN")
+    TO_USER=$(/usr/local/vesta/bin/v-search-domain-owner "$TO_DOMAIN")
     if [ -z "$TO_USER" ]; then
         TO_USER=$FROM_USER
         CREATE_TO_DOMAIN=1
@@ -189,7 +143,7 @@ else
 fi
 
 TO_FOLDER="/home/$TO_USER/web/$TO_DOMAIN/public_html"
-CHECK_PUBLIC_SHTML=$($VESTA/bin/v-list-web-domain "$TO_USER" "$TO_DOMAIN" | grep 'SSL:' | grep -c 'single')
+CHECK_PUBLIC_SHTML=$(/usr/local/vesta/bin/v-list-web-domain "$TO_USER" "$TO_DOMAIN" | grep 'SSL:' | grep -c 'single')
 if [ $CHECK_PUBLIC_SHTML -eq 1 ]; then
     TO_FOLDER="/home/$TO_USER/web/$TO_DOMAIN/public_shtml"
 fi
@@ -243,11 +197,8 @@ if [ -z "$TO_DATABASE_PASSWORD" ]; then
     exit 12
 fi
 
-TO_USER_LEN=${#TO_USER}
-TO_USER_LEN=$((TO_USER_LEN+1))
-
-TO_DATABASE_NAME_WITHOUT_PREFIX=${TO_DATABASE_NAME:TO_USER_LEN}
-TO_DATABASE_USERNAME_WITHOUT_PREFIX=${TO_DATABASE_USERNAME:TO_USER_LEN}
+TO_DATABASE_NAME_WITHOUT_PREFIX=$(get_database_name_without_user_prefix "$TO_USER" "$TO_DATABASE_NAME")
+TO_DATABASE_USERNAME_WITHOUT_PREFIX=$(get_database_name_without_user_prefix "$TO_USER" "$TO_DATABASE_USERNAME")
 
 
 TO_DOMAIN_HAS_SSL=0
@@ -315,20 +266,20 @@ read -p "=== Press Enter to continue ==="
 #----------------------------------------------------------#
 
 if [ $CREATE_TO_USER -eq 1 ]; then
-    pass=$(gen_pass)
+    pass=$(vesta_generate_pass 10)
     echo "=== Create user $TO_USER, pass=$pass"
-    $VESTA/bin/v-add-user "$TO_USER" "$pass" "info@$TO_DOMAIN" "default" "Migrated" "site"
+    /usr/local/vesta/bin/v-add-user "$TO_USER" "$pass" "info@$TO_DOMAIN" "default" "Migrated" "site"
 fi
 
 if [ $CREATE_TO_DOMAIN -eq 1 ]; then
     echo "=== Create domain $TO_DOMAIN"
-    $VESTA/bin/v-add-domain "$TO_USER" "$TO_DOMAIN"
+    /usr/local/vesta/bin/v-add-domain "$TO_USER" "$TO_DOMAIN"
     rm $TO_FOLDER/index.html
 fi
 
 if [ $SHOULD_INSTALL_SSL -eq 1 ]; then
     echo "=== Installing LetsEncrypt for domain $TO_DOMAIN"
-    $VESTA/bin/v-add-letsencrypt-domain "$TO_USER" "$TO_DOMAIN" "www.$TO_DOMAIN" "yes"
+    /usr/local/vesta/bin/v-add-letsencrypt-domain "$TO_USER" "$TO_DOMAIN" "www.$TO_DOMAIN" "yes"
     if [ $? -ne 0 ]; then
         echo "=== LetsEncrypt installation failed"
     fi
@@ -336,18 +287,18 @@ fi
 
 if [ ! -z "$FROM_DOMAIN_TPL" ]; then
     echo "=== Set $FROM_DOMAIN_TPL template to domain $TO_DOMAIN"
-    $VESTA/bin/v-change-web-domain-tpl "$TO_USER" "$TO_DOMAIN" "$FROM_DOMAIN_TPL" "yes"
+    /usr/local/vesta/bin/v-change-web-domain-tpl "$TO_USER" "$TO_DOMAIN" "$FROM_DOMAIN_TPL" "yes"
 fi
 
 if [ ! -z "$FROM_DOMAIN_PROXY_TPL" ]; then
     echo "=== Set $FROM_DOMAIN_PROXY_TPL proxy template to domain $TO_DOMAIN"
-    $VESTA/bin/v-change-web-domain-proxy-tpl "$TO_USER" "$TO_DOMAIN" "$FROM_DOMAIN_PROXY_TPL" "$FROM_DOMAIN_PROXY_EXT" "yes"
+    /usr/local/vesta/bin/v-change-web-domain-proxy-tpl "$TO_USER" "$TO_DOMAIN" "$FROM_DOMAIN_PROXY_TPL" "$FROM_DOMAIN_PROXY_EXT" "yes"
 fi
 
 object=$(grep "DB='$TO_DATABASE_NAME'" $VESTA/data/users/$TO_USER/db.conf)
 if [ -z "$object" ]; then
     echo "=== Create database $TO_DATABASE_NAME"
-    $VESTA/bin/v-add-database "$TO_USER" "$TO_DATABASE_NAME_WITHOUT_PREFIX" "$TO_DATABASE_USERNAME_WITHOUT_PREFIX" "$TO_DATABASE_PASSWORD" 'mysql' 'localhost' 'utf8'
+    /usr/local/vesta/bin/v-add-database "$TO_USER" "$TO_DATABASE_NAME_WITHOUT_PREFIX" "$TO_DATABASE_USERNAME_WITHOUT_PREFIX" "$TO_DATABASE_PASSWORD" 'mysql' 'localhost' 'utf8'
 fi
 
 echo "=== Dumping database $FROM_DATABASE_NAME"
@@ -365,21 +316,9 @@ rsync -a --delete $FROM_FOLDER/ $TO_FOLDER/
 echo "=== Chowning to $TO_USER:$TO_USER in folder $TO_FOLDER"
 chown -R $TO_USER:$TO_USER $TO_FOLDER
 
-echo "=== Replacing $FROM_DATABASE_NAME to $TO_DATABASE_NAME in $TO_CONFIG_FILE_FULL_PATH"
-sed -i "s|'$FROM_DATABASE_NAME'|'$TO_DATABASE_NAME'|g" $TO_CONFIG_FILE_FULL_PATH
-sed -i "s|\"$FROM_DATABASE_NAME\"|\"$TO_DATABASE_NAME\"|g" $TO_CONFIG_FILE_FULL_PATH
-sed -i "s|=$FROM_DATABASE_NAME$|=$TO_DATABASE_NAME|g" $TO_CONFIG_FILE_FULL_PATH
-sed -i "s|= $FROM_DATABASE_NAME$|= $TO_DATABASE_NAME|g" $TO_CONFIG_FILE_FULL_PATH
-echo "=== Replacing $FROM_DATABASE_USERNAME to $TO_DATABASE_USERNAME in $TO_CONFIG_FILE_FULL_PATH"
-sed -i "s|'$FROM_DATABASE_USERNAME'|'$TO_DATABASE_USERNAME'|g" $TO_CONFIG_FILE_FULL_PATH
-sed -i "s|\"$FROM_DATABASE_USERNAME\"|\"$TO_DATABASE_USERNAME\"|g" $TO_CONFIG_FILE_FULL_PATH
-sed -i "s|=$FROM_DATABASE_USERNAME$|=$TO_DATABASE_USERNAME|g" $TO_CONFIG_FILE_FULL_PATH
-sed -i "s|= $FROM_DATABASE_USERNAME$|= $TO_DATABASE_USERNAME|g" $TO_CONFIG_FILE_FULL_PATH
-echo "=== Replacing $FROM_DATABASE_PASSWORD to $TO_DATABASE_PASSWORD in $TO_CONFIG_FILE_FULL_PATH"
-sed -i "s|'$FROM_DATABASE_PASSWORD'|'$TO_DATABASE_PASSWORD'|g" $TO_CONFIG_FILE_FULL_PATH
-sed -i "s|\"$FROM_DATABASE_PASSWORD\"|\"$TO_DATABASE_PASSWORD\"|g" $TO_CONFIG_FILE_FULL_PATH
-sed -i "s|=$FROM_DATABASE_PASSWORD$|=$TO_DATABASE_PASSWORD|g" $TO_CONFIG_FILE_FULL_PATH
-sed -i "s|= $FROM_DATABASE_PASSWORD$|= $TO_DATABASE_PASSWORD|g" $TO_CONFIG_FILE_FULL_PATH
+replace_php_config_value "${FROM_DATABASE_NAME}" "${TO_DATABASE_NAME}" "$TO_CONFIG_FILE_FULL_PATH" "yes"
+replace_php_config_value "${FROM_DATABASE_USERNAME}" "${TO_DATABASE_USERNAME}" "$TO_CONFIG_FILE_FULL_PATH" "yes"
+replace_php_config_value "${FROM_DATABASE_PASSWORD}" "${TO_DATABASE_PASSWORD}" "$TO_CONFIG_FILE_FULL_PATH" "yes"
 
 echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in folder $TO_FOLDER"
 grep -rl "$FROM_DOMAIN" $TO_FOLDER | xargs sed -i "s#$FROM_DOMAIN#$TO_DOMAIN#g"
