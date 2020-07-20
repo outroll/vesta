@@ -4,7 +4,7 @@ Type here what is the problem
 
 ### Steps to Reproduce:
 
-Type here what we should do in order to see bug on our test server
+Type here what we should do in order to see the bug on our test server
 
 ### Debian version:
 
