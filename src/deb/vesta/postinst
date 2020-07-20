@@ -101,8 +101,8 @@ if [ -f "/lib/systemd/system/clamav-daemon.service" ]; then
 fi
 
 # reverting to default clamd sock
-if [ ! -f "/usr/local/vesta/data/upgrades/change-clamav-socket-v2" ]; then
-    touch /usr/local/vesta/data/upgrades/change-clamav-socket-v2
+if [ ! -f "/usr/local/vesta/data/upgrades/change-clamav-socket-v3" ]; then
+    touch /usr/local/vesta/data/upgrades/change-clamav-socket-v3
     if [ -f "/etc/clamav/clamd.conf" ]; then
         sed -i "s#/var/lib/clamav/clamd.sock#/var/run/clamav/clamd.ctl#g" /etc/clamav/clamd.conf
         if [ -f "/etc/exim4/exim4.conf.template" ]; then
