@@ -3,6 +3,7 @@ Version 0.9.8-26-29 [21-Jul-2020]
 * [Feature] v-clone-website command moved to vesta-bin folder (becoming standard myVesta command)
 * [Feature] v-migrate-site-to-https command moved to vesta-bin folder (becoming standard myVesta command)
 * [Bugfix] Fix for ClamAV socket
+* Changing Vesta to myVesta in title of hosting panel pages
 
 Version 0.9.8-26-28 [15-Jul-2020]
 ==================================================
