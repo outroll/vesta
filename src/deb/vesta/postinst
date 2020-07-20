@@ -120,6 +120,18 @@ if [ ! -f "/usr/local/vesta/data/upgrades/change-clamav-socket-v3" ]; then
     fi
 fi
 
+# reverting to default clamd sock
+if [ ! -f "/usr/local/vesta/data/upgrades/change-clamav-socket-v4" ]; then
+    touch /usr/local/vesta/data/upgrades/change-clamav-socket-v4
+    if [ -f "/etc/clamav/clamd.conf" ]; then
+        check_grep=$(grep -c '/var/lib/clamav/clamd.ctl' /etc/clamav/clamd.conf)
+        if [ "$check_grep" -eq 1 ]; then
+            sed -i "s#/var/lib/clamav/clamd.ctl#/var/run/clamav/clamd.ctl#g" /etc/clamav/clamd.conf
+            systemctl restart clamav-daemon
+        fi
+    fi
+fi
+
 # Making sure mpm_event will stay
 if [ ! -f "/usr/local/vesta/data/upgrades/keeping-mpm-event" ]; then
     touch /usr/local/vesta/data/upgrades/keeping-mpm-event
