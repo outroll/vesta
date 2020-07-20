@@ -1,23 +1,19 @@
-### Operating System (OS/VERSION):
+### Describe the problem:
 
-Type here, e.g. CentOS 6
-
-### VestaCP Version:
-
-Type here, e.g. 3.14159
-
-### Installed Software (what you got with the installer):
-
-Type here, e.g. php-fpm, apache, nginx, mysql
+Type here what is the problem
 
 ### Steps to Reproduce:
 
-Type here, e.g. install vesta and type rm -rf / --no-preserve-root
+Type here what we should do in order to see bug on our test server
 
-### Related Issues/Forum Threads:
+### Debian version:
 
-Found anything that might be related to this? It might help us find the cause.
+Type here, example: Debian 10
 
-### Other Notes:
+### VestaCP Version:
 
-Anything else?
+Type here, example: 0.9.8.26-29
+
+### Installed Software (what you got with the installer):
+
+Copy here first 22 lines of file /usr/local/vesta/conf/vesta.conf
