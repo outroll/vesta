@@ -30,7 +30,7 @@ spamd_address = 127.0.0.1 783
 .endif
 
 .ifdef CLAMD
-av_scanner = clamd: /var/lib/clamav/clamd.sock
+av_scanner = clamd: /var/run/clamav/clamd.ctl
 .endif
 
 tls_advertise_hosts = *
