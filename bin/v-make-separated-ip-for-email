@@ -62,6 +62,7 @@ fi
 #----------------------------------------------------------#
 
 if [ ! -f "/usr/local/vesta/data/ips/$MAIL_IP" ]; then
+    echo "=== Adding IP $MAIL_IP" with netmask $NETMASK on interface $INTERFACE"
     $VESTA/bin/v-add-sys-ip  "$MAIL_IP" "$NETMASK" "$INTERFACE" 'admin' 'dedicated' '' ''
 fi
 
@@ -160,7 +161,7 @@ ptr=$(dig +short -x $MAIL_IP)
 ptr_len=${#ptr}
 ptr_len=$((ptr_len-1))
 ptr=${ptr:0:ptr_len}
-if [ "$PTR" != "$MAIL_HOSTNAME" ]; then
+if [ "$ptr" != "$MAIL_HOSTNAME" ]; then
     echo ""
     echo "WARNING: PTR for $MAIL_IP is $ptr"
     echo "WARNING: PTR for $MAIL_IP should be $MAIL_HOSTNAME"
