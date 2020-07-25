@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Vesta Debian installer v.05
+# myVesta Debian installer v.05
 
 #----------------------------------------------------------#
 #                  Variables&Functions                     #
@@ -97,7 +97,7 @@ help() {
   -f, --force             Force installation
   -h, --help              Print this help
 
-  Example: bash $0 -e demo@vestacp.com -p p4ssw0rd --apache no --phpfpm yes"
+  Example: bash $0 -e demo@myvestacp.com -p p4ssw0rd --apache no --phpfpm yes"
     exit 1
 }
 
@@ -1670,16 +1670,18 @@ myvestacp.com team
 " > $tmpfile
 
 send_mail="$VESTA/web/inc/mail-wrapper.php"
-cat $tmpfile | $send_mail -s "Vesta Control Panel" $email
+cat $tmpfile | $send_mail -s "myVesta Control Panel" $email
 
 # Congrats
-echo '======================================================='
+echo '=============================================================================='
 echo
-echo ' _|      _|  _|_|_|_|    _|_|_|  _|_|_|_|_|    _|_|   '
-echo ' _|      _|  _|        _|            _|      _|    _| '
-echo ' _|      _|  _|_|_|      _|_|        _|      _|_|_|_| '
-echo '   _|  _|    _|              _|      _|      _|    _| '
-echo '     _|      _|_|_|_|  _|_|_|        _|      _|    _| '
+echo '                           _|      _|                        _|               '
+echo ' _|_|_|  _|_|    _|    _|  _|      _|    _|_|      _|_|_|  _|_|_|_|    _|_|_| '
+echo ' _|    _|    _|  _|    _|  _|      _|  _|_|_|_|  _|_|        _|      _|    _| '
+echo ' _|    _|    _|  _|    _|    _|  _|    _|            _|_|    _|      _|    _| '
+echo ' _|    _|    _|    _|_|_|      _|        _|_|_|  _|_|_|        _|_|    _|_|_| '
+echo '                       _|                                                     '
+echo '                   _|_|                                                       '
 echo
 echo
 cat $tmpfile
