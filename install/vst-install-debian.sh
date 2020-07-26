@@ -337,13 +337,15 @@ fi
 # Printing nice ascii aslogo
 clear
 echo
-echo ' _|      _|  _|_|_|_|    _|_|_|  _|_|_|_|_|    _|_|'
-echo ' _|      _|  _|        _|            _|      _|    _|'
-echo ' _|      _|  _|_|_|      _|_|        _|      _|_|_|_|'
-echo '   _|  _|    _|              _|      _|      _|    _|'
-echo '     _|      _|_|_|_|  _|_|_|        _|      _|    _|'
+echo '                           _|      _|                        _|               '
+echo ' _|_|_|  _|_|    _|    _|  _|      _|    _|_|      _|_|_|  _|_|_|_|    _|_|_| '
+echo ' _|    _|    _|  _|    _|  _|      _|  _|_|_|_|  _|_|        _|      _|    _| '
+echo ' _|    _|    _|  _|    _|    _|  _|    _|            _|_|    _|      _|    _| '
+echo ' _|    _|    _|    _|_|_|      _|        _|_|_|  _|_|_|        _|_|    _|_|_| '
+echo '                       _|                                                     '
+echo '                   _|_|                                                       '
 echo
-echo '                                  Vesta Control Panel'
+echo '                                myVesta Control Panel'
 echo -e "\n\n"
 
 echo 'Following software will be installed on your system:'
