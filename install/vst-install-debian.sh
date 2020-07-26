@@ -337,13 +337,12 @@ fi
 # Printing nice ascii aslogo
 clear
 echo
-echo '                           _|      _|                        _|               '
-echo ' _|_|_|  _|_|    _|    _|  _|      _|    _|_|      _|_|_|  _|_|_|_|    _|_|_| '
-echo ' _|    _|    _|  _|    _|  _|      _|  _|_|_|_|  _|_|        _|      _|    _| '
-echo ' _|    _|    _|  _|    _|    _|  _|    _|            _|_|    _|      _|    _| '
-echo ' _|    _|    _|    _|_|_|      _|        _|_|_|  _|_|_|        _|_|    _|_|_| '
-echo '                       _|                                                     '
-echo '                   _|_|                                                       '
+echo '                __     __        _        '
+echo '  _ __ ___  _   \ \   / /__  ___| |_ __ _ '
+echo ' | '_ ` _ \| | | \ \ / / _ \/ __| __/ _` |'
+echo ' | | | | | | |_| |\ V /  __/\__ \ || (_| |'
+echo ' |_| |_| |_|\__, | \_/ \___||___/\__\__,_|'
+echo '            |___/                         '
 echo
 echo '                                myVesta Control Panel'
 echo -e "\n\n"
@@ -358,7 +357,8 @@ if [ "$apache" = 'yes' ] && [ "$nginx" = 'no' ] ; then
     echo '   - Apache Web Server'
 fi
 if [ "$apache" = 'yes' ] && [ "$nginx"  = 'yes' ] ; then
-    echo '   - Apache Web Server (as backend)'
+    echo '   - Apache Web Server (in very fast mpm_event mode)'
+    echo '   - PHP-FPM service for PHP'
 fi
 if [ "$phpfpm"  = 'yes' ]; then
     echo '   - PHP-FPM Application Server'
@@ -1675,15 +1675,14 @@ send_mail="$VESTA/web/inc/mail-wrapper.php"
 cat $tmpfile | $send_mail -s "myVesta Control Panel" $email
 
 # Congrats
-echo '=============================================================================='
+echo '=========================================='
 echo
-echo '                           _|      _|                        _|               '
-echo ' _|_|_|  _|_|    _|    _|  _|      _|    _|_|      _|_|_|  _|_|_|_|    _|_|_| '
-echo ' _|    _|    _|  _|    _|  _|      _|  _|_|_|_|  _|_|        _|      _|    _| '
-echo ' _|    _|    _|  _|    _|    _|  _|    _|            _|_|    _|      _|    _| '
-echo ' _|    _|    _|    _|_|_|      _|        _|_|_|  _|_|_|        _|_|    _|_|_| '
-echo '                       _|                                                     '
-echo '                   _|_|                                                       '
+echo '                __     __        _        '
+echo '  _ __ ___  _   \ \   / /__  ___| |_ __ _ '
+echo ' | '_ ` _ \| | | \ \ / / _ \/ __| __/ _` |'
+echo ' | | | | | | |_| |\ V /  __/\__ \ || (_| |'
+echo ' |_| |_| |_|\__, | \_/ \___||___/\__\__,_|'
+echo '            |___/                         '
 echo
 echo
 cat $tmpfile
