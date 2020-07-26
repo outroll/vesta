@@ -374,10 +374,10 @@ if [ "$exim" = 'yes' ]; then
     echo -n '   - Exim4 mail server'
     if [ "$clamd" = 'yes'  ] ||  [ "$spamd" = 'yes' ] ; then
         if [ "$clamd" = 'yes' ]; then
-            echo -n '+ ClamAV antivirus '
+            echo -n ' + ClamAV antivirus'
         fi
         if [ "$spamd" = 'yes' ]; then
-            echo -n '+  SpamAssassin antispam service'
+            echo -n '+ SpamAssassin antispam service'
         fi
     fi
     echo
