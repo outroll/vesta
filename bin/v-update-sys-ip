@@ -110,7 +110,7 @@ for ip in $ips; do
 done
 
 # Updating NAT
-pub_ip=$(curl -s https://scripts.myvestacp.com/ip.php)
+pub_ip=$(curl -4 -s https://scripts.myvestacp.com/ip.php)
 if [ ! -e "$VESTA/data/ips/$pub_ip" ]; then
     if [ -z "$(grep -R "$pub_ip" $VESTA/data/ips/)" ]; then
         ip=$(ls -t $VESTA/data/ips/ |head -n1)
