@@ -354,14 +354,14 @@ if [ "$nginx" = 'yes' ]; then
     echo '   - nginx Web server'
 fi
 if [ "$apache" = 'yes' ] && [ "$nginx" = 'no' ] ; then
-    echo '   - Apache Web server'
+    echo '   - Apache web server'
 fi
 if [ "$apache" = 'yes' ] && [ "$nginx"  = 'yes' ] ; then
-    echo '   - Apache Web server (in very fast mpm_event mode)'
-    echo '   - PHP-FPM service for PHP'
+    echo '   - Apache web server (in very fast mpm_event mode)'
+    echo '   - PHP-FPM service for PHP processing'
 fi
 if [ "$phpfpm"  = 'yes' ]; then
-    echo '   - PHP-FPM service'
+    echo '   - PHP-FPM service for PHP processing'
 fi
 
 # DNS stack
@@ -377,7 +377,7 @@ if [ "$exim" = 'yes' ]; then
             echo -n ' + ClamAV antivirus'
         fi
         if [ "$spamd" = 'yes' ]; then
-            echo -n '+ SpamAssassin antispam service'
+            echo -n ' + SpamAssassin antispam service'
         fi
     fi
     echo
