@@ -4,6 +4,7 @@ Version 0.9.8-26-30 [26-Jul-2020]
 * Deleted favicon when user don't know secret-url of hosting panel
 * [bugfix] Minor bug fixed in v-make-separated-ip-for-email
 * [bugfix] Minor fix of URL for templates in v-update-dns-templates
+* [bugfix] Minor fixes in installer
 
 Version 0.9.8-26-29 [21-Jul-2020]
 ==================================================
