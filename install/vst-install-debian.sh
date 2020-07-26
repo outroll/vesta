@@ -1410,7 +1410,7 @@ if [ "$iptables" = 'yes' ]; then
 fi
 
 # Get public ip
-pub_ip=$(curl -s https://scripts.myvestacp.com/ip.php)
+pub_ip=$(curl -4 -s https://scripts.myvestacp.com/ip.php)
 
 if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
     $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
