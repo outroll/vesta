@@ -351,59 +351,58 @@ echo 'Following software will be installed on your system:'
 
 # Web stack
 if [ "$nginx" = 'yes' ]; then
-    echo '   - Nginx Web Server'
+    echo '   - nginx Web server'
 fi
 if [ "$apache" = 'yes' ] && [ "$nginx" = 'no' ] ; then
-    echo '   - Apache Web Server'
+    echo '   - Apache Web server'
 fi
 if [ "$apache" = 'yes' ] && [ "$nginx"  = 'yes' ] ; then
-    echo '   - Apache Web Server (in very fast mpm_event mode)'
+    echo '   - Apache Web server (in very fast mpm_event mode)'
     echo '   - PHP-FPM service for PHP'
 fi
 if [ "$phpfpm"  = 'yes' ]; then
-    echo '   - PHP-FPM Application Server'
+    echo '   - PHP-FPM service'
 fi
 
 # DNS stack
 if [ "$named" = 'yes' ]; then
-    echo '   - Bind DNS Server'
+    echo '   - Bind9 DNS service'
 fi
 
 # Mail Stack
 if [ "$exim" = 'yes' ]; then
-    echo -n '   - Exim mail server'
+    echo -n '   - Exim4 mail server'
     if [ "$clamd" = 'yes'  ] ||  [ "$spamd" = 'yes' ] ; then
-        echo -n ' + '
         if [ "$clamd" = 'yes' ]; then
-            echo -n 'Antivirus '
+            echo -n '+ ClamAV antivirus '
         fi
         if [ "$spamd" = 'yes' ]; then
-            echo -n 'Antispam'
+            echo -n '+  SpamAssassin antispam service'
         fi
     fi
     echo
     if [ "$dovecot" = 'yes' ]; then
-        echo '   - Dovecot POP3/IMAP Server'
+        echo '   - Dovecot POP3/IMAP service'
     fi
 fi
 
 # DB stack
 if [ "$mysql" = 'yes' ]; then
-    echo '   - MySQL Database Server'
+    echo '   - MySQL Database server'
 fi
 if [ "$postgresql" = 'yes' ]; then
-    echo '   - PostgreSQL Database Server'
+    echo '   - PostgreSQL Database server'
 fi
-if [ "$mongodb" = 'yes' ]; then
-    echo '   - MongoDB Database Server'
-fi
+# if [ "$mongodb" = 'yes' ]; then
+#    echo '   - MongoDB Database Server'
+# fi
 
 # FTP stack
 if [ "$vsftpd" = 'yes' ]; then
-    echo '   - Vsftpd FTP Server'
+    echo '   - Vsftpd FTP service'
 fi
 if [ "$proftpd" = 'yes' ]; then
-    echo '   - ProFTPD FTP Server'
+    echo '   - ProFTPD FTP service'
 fi
 
 # Softaculous
@@ -413,10 +412,10 @@ fi
 
 # Firewall stack
 if [ "$iptables" = 'yes' ]; then
-    echo -n '   - Iptables Firewall'
+    echo -n '   - iptables firewall'
 fi
 if [ "$iptables" = 'yes' ] && [ "$fail2ban" = 'yes' ]; then
-    echo -n ' + Fail2Ban'
+    echo -n ' + Fail2Ban service'
 fi
 echo -e "\n\n"
 
