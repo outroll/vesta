@@ -44,10 +44,11 @@ GIT_SRC='https://raw.githubusercontent.com/myvesta/vesta/master/src'
 GIT_REP="$GIT_REP/deb"
 
 C_WEB_ADDRESS="c.myvestacp.com"
-PATH_OF_C_WEB_FOLDER_ROOT="/var/www/$C_WEB_ADDRESS/html"
+WWW_FOLDER="/var/www"
+PATH_OF_C_WEB_FOLDER_ROOT="$WWW_FOLDER/$C_WEB_ADDRESS/html"
 PATH_OF_C_WEB_FOLDER="$PATH_OF_C_WEB_FOLDER_ROOT/debian/$TARGET_DEB_VER"
 APT_WEB_ADDRESS="apt.myvestacp.com"
-PATH_OF_APT_REPO_ROOT="/var/www/$APT_WEB_ADDRESS/html"
+PATH_OF_APT_REPO_ROOT="$WWW_FOLDER/$APT_WEB_ADDRESS/html"
 PATH_OF_APT_REPO="$PATH_OF_APT_REPO_ROOT/$TARGET_DEB_NAME"
 
 VESTA_VER=$(curl -s https://raw.githubusercontent.com/myvesta/vesta/master/src/deb/latest.txt)
@@ -71,7 +72,7 @@ ZLIB='https://www.zlib.net/zlib-'$ZLIB_V'.tar.gz'
 PHP='http://de2.php.net/distributions/php-'$PHP_V'.tar.gz'
 
 # Set package dependencies for compiling
-SOFTWARE='build-essential libxml2-dev libz-dev libcurl4-gnutls-dev unzip openssl libssl-dev pkg-config reprepro dpkg-sig git'
+SOFTWARE='build-essential libxml2-dev libz-dev libcurl4-gnutls-dev unzip openssl libssl-dev pkg-config reprepro dpkg-sig git rsync'
 
 function press_enter {
     if [ $wait_to_press_enter -eq 1 ]; then
@@ -165,6 +166,12 @@ if [ $# -eq 0 ]; then
   echo "!!! Please run with argument --vesta, --nginx, --php, --git, --c, --apt or --all"
   exit 1
 fi
+
+if [ ! -d "/root/backup-www" ]; then
+    mkdir /root/backup-www
+fi
+echo "=== Making backup of $WWW_FOLDER"
+rsync -a $WWW_FOLDER/ /root/backup-www/
 
 if [ $build_deb_package -eq 1 ]; then
   if [ "$APTWEB_B" = true ]; then
