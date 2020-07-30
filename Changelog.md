@@ -1,3 +1,8 @@
+Version 0.9.8-26-31 [30-Jul-2020]
+==================================================
+* [Feature] v-import-cpanel-backup command moved to vesta-bin folder (becoming standard myVesta command)
+* Starting to log auto-update output
+
 Version 0.9.8-26-30 [26-Jul-2020]
 ==================================================
 * New ASCII logo in installer
