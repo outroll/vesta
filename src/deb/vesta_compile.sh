@@ -171,7 +171,7 @@ if [ ! -d "/root/backup-www" ]; then
     mkdir /root/backup-www
 fi
 echo "=== Making backup of $WWW_FOLDER"
-rsync -a $WWW_FOLDER/ /root/backup-www/
+rsync -a --delete $WWW_FOLDER/ /root/backup-www/
 
 if [ $build_deb_package -eq 1 ]; then
   if [ "$APTWEB_B" = true ]; then
