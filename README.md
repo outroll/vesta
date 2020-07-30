@@ -7,7 +7,7 @@ We finally have normal homepage:
 Forum:
 - https://forum.myvestacp.com/
 
-Wiki:
+Knowledge base:
 - https://wiki.myvestacp.com/
 
 Changelog:
@@ -71,7 +71,7 @@ Useful tools
 
 + [Wordpress installer in one second](https://github.com/myvesta/vesta/blob/master/bin/v-install-wordpress)
 
-+ [Script for importing cPanel backups to Vesta](https://github.com/myvesta/vesta/blob/master/src/deb/for-download/tools/cpanel-import.sh)
++ [Script for importing cPanel backups to Vesta](https://forum.myvestacp.com/viewtopic.php?f=24&t=63)
 
 + [Cloning script that will copy the whole site from one domain to another (sub)domain](https://github.com/myvesta/vesta/blob/master/bin/v-clone-website)
 
