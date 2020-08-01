@@ -1,3 +1,7 @@
+Version 0.9.8-26-32 [02-Aug-2020]
+==================================================
+* [Security] Making sure new myVesta commands can be called only by root
+
 Version 0.9.8-26-31 [30-Jul-2020]
 ==================================================
 * [Feature] v-import-cpanel-backup command moved to vesta-bin folder (becoming standard myVesta command)
