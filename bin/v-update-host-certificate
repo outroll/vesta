@@ -11,11 +11,10 @@
 #----------------------------------------------------------#
 
 whoami=$(whoami)
-if [ "$whoami" != "root" ] && [ "$whoami" != "admin" ] ; then
-    echo "You must be root or admin to execute this script";
-    exit 1;
+if [ "$whoami" != "root" ]; then
+    echo "You must be root to execute this script"
+    exit 1
 fi
-
 
 # Argument definition
 user=$1
