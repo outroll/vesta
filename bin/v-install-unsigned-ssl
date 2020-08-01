@@ -5,10 +5,15 @@
 #
 # The function install unsigned SSL to domain
 
-
 #----------------------------------------------------------#
 #                    Variable&Function                     #
 #----------------------------------------------------------#
+
+whoami=$(whoami)
+if [ "$whoami" != "root" ]; then
+    echo "You must be root to execute this script"
+    exit 1
+fi
 
 # Argument definition
 if [ $# -lt 1 ]; then
