@@ -8,6 +8,12 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
+whoami=$(whoami)
+if [ "$whoami" != "root" ]; then
+    echo "You must be root to execute this script"
+    exit 1
+fi
+
 # Argument definition
 domain=$1
 
