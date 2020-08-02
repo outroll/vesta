@@ -1,5 +1,6 @@
 Version 0.9.8-26-32 [02-Aug-2020]
 ==================================================
+* [Feature] v-replace-in-file command introduced
 * [Security] Making sure new myVesta commands can be called only by root
 
 Version 0.9.8-26-31 [30-Jul-2020]
