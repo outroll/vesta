@@ -105,21 +105,33 @@ if [ ! -d "/etc/exim4/virtual" ]; then
     mkdir -p /etc/exim4/virtual
     echo "$HOST_IP: $HOSTNAME" > /etc/exim4/virtual/helo_data
     echo "$HOSTNAME: $HOST_IP" > /etc/exim4/virtual/interfaces
-else
-    echo "" >> /etc/exim4/virtual/helo_data
-    echo "" >> /etc/exim4/virtual/interfaces
+    length=$(wc -c </etc/exim4/virtual/helo_data)
+    dd if=/dev/null of=/etc/exim4/virtual/helo_data obs="$((length-1))" seek=1 > /dev/null 2>&1
+    length=$(wc -c </etc/exim4/virtual/interfaces)
+    dd if=/dev/null of=/etc/exim4/virtual/interfaces obs="$((length-1))" seek=1 > /dev/null 2>&1
 fi
-echo "=== Adding $MAIL_IP: $MAIL_HOSTNAME to /etc/exim4/virtual/helo_data"
-echo "$MAIL_IP: $MAIL_HOSTNAME" >> /etc/exim4/virtual/helo_data
-echo "$MAIL_HOSTNAME: $MAIL_IP" >> /etc/exim4/virtual/interfaces
-length=$(wc -c </etc/exim4/virtual/helo_data)
-dd if=/dev/null of=/etc/exim4/virtual/helo_data obs="$((length-1))" seek=1 > /dev/null 2>&1
-length=$(wc -c </etc/exim4/virtual/interfaces)
-dd if=/dev/null of=/etc/exim4/virtual/interfaces obs="$((length-1))" seek=1 > /dev/null 2>&1
+check_grep1=$(grep -c "^$MAIL_IP:" /etc/exim4/virtual/helo_data)
+check_grep2=$(grep -c ": $MAIL_HOSTNAME" /etc/exim4/virtual/helo_data)
+if [ "$check_grep1" -eq 0 ] && [ "$check_grep2" -eq 0 ]; then
+    echo "=== Adding $MAIL_IP: $MAIL_HOSTNAME to /etc/exim4/virtual/helo_data"
+    echo "" >> /etc/exim4/virtual/helo_data
+    echo "$MAIL_IP: $MAIL_HOSTNAME" >> /etc/exim4/virtual/helo_data
+    length=$(wc -c </etc/exim4/virtual/helo_data)
+    dd if=/dev/null of=/etc/exim4/virtual/helo_data obs="$((length-1))" seek=1 > /dev/null 2>&1
+fi
+check_grep1=$(grep -c "^$MAIL_HOSTNAME:" /etc/exim4/virtual/interfaces)
+check_grep2=$(grep -c ": $MAIL_IP" /etc/exim4/virtual/interfaces)
+if [ "$check_grep1" -eq 0 ] && [ "$check_grep2" -eq 0 ]; then
+    echo "=== Adding $MAIL_HOSTNAME: $MAIL_IP to /etc/exim4/virtual/interfaces"
+    echo "" >> /etc/exim4/virtual/interfaces
+    echo "$MAIL_HOSTNAME: $MAIL_IP" >> /etc/exim4/virtual/interfaces
+    length=$(wc -c </etc/exim4/virtual/interfaces)
+    dd if=/dev/null of=/etc/exim4/virtual/interfaces obs="$((length-1))" seek=1 > /dev/null 2>&1
+fi
 
-echo "=== Generating IP for hostname $HOSTNAME"
+echo "=== Generating IP SSL for hostname $HOSTNAME"
 $VESTA/bin/v-make-ip-ssl "$HOST_USER" "$HOSTNAME"
-echo "=== Generating IP for mail hostname $MAIL_HOSTNAME"
+echo "=== Generating IP SSL for mail hostname $MAIL_HOSTNAME"
 $VESTA/bin/v-make-ip-ssl "$MAIL_USER" "$MAIL_HOSTNAME"
 
 check_grep=$(grep -c 'smtp_active_hostname' /etc/exim4/exim4.conf.template)
