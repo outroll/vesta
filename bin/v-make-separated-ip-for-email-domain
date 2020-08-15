@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# info: Switch domain to send emails from desired IP
+# options: DOMAIN IP
+#
+# The function switch domain to send emails from desired IP
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+whoami=$(whoami)
+if [ "$whoami" != "root" ]; then
+    echo "You must be root to execute this script"
+    exit 1
+fi
+
+# Importing system environment
+source /etc/profile
+
+# Includes
+source /usr/local/vesta/func/main.sh
+
+DOMAIN=$1
+IP=$2
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '2' "$#" 'DOMAIN IP'
+is_domain_format_valid "$DOMAIN"
+is_ip_format_valid "$IP"
+
+if [ ! -d "/etc/exim4/virtual" ]; then
+    echo "You must first dedicate IP to some hostname using command v-make-separated-ip-for-email"
+    exit 1
+fi
+
+HOST_USER=$($VESTA/bin/v-search-domain-owner "$HOSTNAME")
+if [ -z "$HOST_USER" ]; then
+    echo "Error: hostname $HOSTNAME is not created as web domain"
+    exit 2
+fi
+
+HOST_IP=$($VESTA/bin/v-list-web-domain "$HOST_USER" "$HOSTNAME" | grep 'IP:' | awk '{print $2}')
+
+# echo "HOSTNAME     : $HOSTNAME"
+# echo "HOSTNAME IP  : $HOST_IP"
+
+check_grep=$(grep -c "^$IP:" /etc/exim4/virtual/helo_data)
+if [ "$check_grep" -eq 0 ]; then
+    echo "You must first dedicate IP to some hostname using command v-make-separated-ip-for-email"
+    exit 3
+fi
+
+USER=$($VESTA/bin/v-search-domain-owner "$DOMAIN")
+if [ -z "$USER" ]; then
+    echo "Error: hostname $DOMAIN is not created as web domain"
+    exit 4
+fi
+
+echo "=== patching exim4.conf.template"
+NEWVALUE="  interface = \${lookup{\$sender_address_domain}lsearch{/etc/exim4/virtual/interfaces} {\$value}{$HOST_IP}}"
+sed -i "s#^  interface = .*#$NEWVALUE#g" /etc/exim4/exim4.conf.template
+NEWVALUE="  helo_data = \"\${lookup{\$sending_ip_address}lsearch{/etc/exim4/virtual/helo_data}{\$value}{$HOSTNAME}}\""
+sed -i "s#^  helo_data = .*#$NEWVALUE#g" /etc/exim4/exim4.conf.template
+
+service exim4 restart
+
+check_grep=$(grep -c "^$DOMAIN:" /etc/exim4/virtual/interfaces)
+if [ "$check_grep" -eq 0 ]; then
+    echo "=== Adding $DOMAIN: $IP to /etc/exim4/virtual/interfaces"
+    echo "" >> /etc/exim4/virtual/interfaces
+    echo "$DOMAIN: $IP" >> /etc/exim4/virtual/interfaces
+    length=$(wc -c </etc/exim4/virtual/interfaces)
+    dd if=/dev/null of=/etc/exim4/virtual/interfaces obs="$((length-1))" seek=1 > /dev/null 2>&1
+    echo "=== Done!"
+else
+    echo "=== Domain $DOMAIN is already added"
+fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
