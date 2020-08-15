@@ -33,8 +33,7 @@ is_domain_format_valid "$DOMAIN"
 is_ip_format_valid "$IP"
 
 if [ ! -d "/etc/exim4/virtual" ]; then
-    echo "You must first dedicate IP to some hostname using command v-make-separated-ip-for-email"
-    exit 1
+    /usr/local/vesta/bin/v-make-separated-ip-for-email "$DOMAIN" "$IP"
 fi
 
 HOST_USER=$($VESTA/bin/v-search-domain-owner "$HOSTNAME")
@@ -50,8 +49,7 @@ HOST_IP=$($VESTA/bin/v-list-web-domain "$HOST_USER" "$HOSTNAME" | grep 'IP:' | a
 
 check_grep=$(grep -c "^$IP:" /etc/exim4/virtual/helo_data)
 if [ "$check_grep" -eq 0 ]; then
-    echo "You must first dedicate IP to some hostname using command v-make-separated-ip-for-email"
-    exit 3
+    /usr/local/vesta/bin/v-make-separated-ip-for-email "$DOMAIN" "$IP"
 fi
 
 USER=$($VESTA/bin/v-search-domain-owner "$DOMAIN")
