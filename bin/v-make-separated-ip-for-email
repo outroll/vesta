@@ -68,7 +68,7 @@ fi
 #----------------------------------------------------------#
 
 if [ ! -f "/usr/local/vesta/data/ips/$MAIL_IP" ]; then
-    echo "=== Adding IP $MAIL_IP" with netmask $NETMASK on interface $INTERFACE"
+    echo "=== Adding IP $MAIL_IP with netmask $NETMASK on interface $INTERFACE"
     $VESTA/bin/v-add-sys-ip  "$MAIL_IP" "$NETMASK" "$INTERFACE" 'admin' 'dedicated' '' ''
 fi
 
