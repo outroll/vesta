@@ -90,8 +90,6 @@ else
     fi
 fi
 
-# LETSENCRYPT=$($VESTA/bin/v-list-web-domain "$MAIL_USER" "$MAIL_HOSTNAME" | grep 'LETSENCRYPT:' | awk '{print $2}')
-# if [ "$LETSENCRYPT" = "yes" ]; then
 if [ -f "/home/$MAIL_USER/conf/web/ssl.$MAIL_HOSTNAME.ca" ]; then
     echo "=== Signed SSL already installed"
 else
@@ -103,19 +101,21 @@ else
 fi
 
 if [ ! -d "/etc/exim4/virtual" ]; then
-    echo "=== Creating /etc/exim4/virtual files"
+    echo "=== Creating /etc/exim4/virtual directory"
     mkdir -p /etc/exim4/virtual
     echo "$HOST_IP: $HOSTNAME" > /etc/exim4/virtual/helo_data
-    echo "$MAIL_IP: $MAIL_HOSTNAME" >> /etc/exim4/virtual/helo_data
     echo "$HOSTNAME: $HOST_IP" > /etc/exim4/virtual/interfaces
-    echo "$MAIL_HOSTNAME: $MAIL_IP" >> /etc/exim4/virtual/interfaces
-    length=$(wc -c </etc/exim4/virtual/helo_data)
-    dd if=/dev/null of=/etc/exim4/virtual/helo_data obs="$((length-1))" seek=1 > /dev/null 2>&1
-    length=$(wc -c </etc/exim4/virtual/interfaces)
-    dd if=/dev/null of=/etc/exim4/virtual/interfaces obs="$((length-1))" seek=1 > /dev/null 2>&1
 else
-    echo "=== /etc/exim4/virtual files already exists"
+    echo "" >> /etc/exim4/virtual/helo_data
+    echo "" >> /etc/exim4/virtual/interfaces
 fi
+echo "=== Adding $MAIL_IP: $MAIL_HOSTNAME to /etc/exim4/virtual/helo_data"
+echo "$MAIL_IP: $MAIL_HOSTNAME" >> /etc/exim4/virtual/helo_data
+echo "$MAIL_HOSTNAME: $MAIL_IP" >> /etc/exim4/virtual/interfaces
+length=$(wc -c </etc/exim4/virtual/helo_data)
+dd if=/dev/null of=/etc/exim4/virtual/helo_data obs="$((length-1))" seek=1 > /dev/null 2>&1
+length=$(wc -c </etc/exim4/virtual/interfaces)
+dd if=/dev/null of=/etc/exim4/virtual/interfaces obs="$((length-1))" seek=1 > /dev/null 2>&1
 
 echo "=== Generating IP for hostname $HOSTNAME"
 $VESTA/bin/v-make-ip-ssl "$HOST_USER" "$HOSTNAME"
