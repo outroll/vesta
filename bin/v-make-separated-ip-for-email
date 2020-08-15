@@ -180,9 +180,11 @@ ptr_len=${#ptr}
 ptr_len=$((ptr_len-1))
 ptr=${ptr:0:ptr_len}
 if [ "$ptr" != "$MAIL_HOSTNAME" ]; then
-    echo ""
-    echo "WARNING: PTR for $MAIL_IP is $ptr"
-    echo "WARNING: PTR for $MAIL_IP should be $MAIL_HOSTNAME"
+    echo "========================================================="
+    echo "WARNING:"
+    echo "PTR record (reverse DNS) for IP $MAIL_IP is $ptr"
+    echo "PTR record (reverse DNS) for IP $MAIL_IP should be $MAIL_HOSTNAME"
+    echo "========================================================="
 fi
 
 #----------------------------------------------------------#
