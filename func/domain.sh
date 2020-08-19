@@ -416,13 +416,19 @@ update_domain_zone() {
         if [ "$TYPE" = 'TXT' ]; then
             txtlength=${#VALUE}
             if [ $txtlength -gt 255 ]; then
-                if [[ ${VALUE:0:1} = '"' ]]; then
-                    txtlength=$(( $txtlength - 2 ))
-                    VALUE=${VALUE:1:txtlength}
+                already_chunked=0
+                if [[ $VALUE == *"\" \""* ]]; then
+                    already_chunked=1
                 fi
-                VALUE=$(echo $VALUE | fold -w 255 | xargs -I '$' echo -n ' "$"')
-                VALUE=${VALUE:1}
-                VALUE="($VALUE)"
+                if [ $already_chunked -eq 0 ]; then
+                    if [[ ${VALUE:0:1} = '"' ]]; then
+                        txtlength=$(( $txtlength - 2 ))
+                        VALUE=${VALUE:1:txtlength}
+                    fi
+                    VALUE=$(echo $VALUE | fold -w 255 | xargs -I '$' echo -n ' "$"')
+                    VALUE=${VALUE:1}
+                    VALUE="($VALUE)"
+                fi
             fi
         fi
 
