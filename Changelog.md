@@ -1,3 +1,7 @@
+Version 0.9.8-26-34 [19-Aug-2020]
+==================================================
+* [Bugfix] Split long DNS TXT entries into 255 chunks
+
 Version 0.9.8-26-33 [16-Aug-2020]
 ==================================================
 * [Feature] Ability to set some domain to send emails from another IP (command: v-make-separated-ip-for-email-domain)
