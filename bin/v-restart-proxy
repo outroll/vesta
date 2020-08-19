@@ -49,7 +49,19 @@ if [ -z "$PROXY_SYSTEM" ] || [ "$PROXY_SYSTEM" = 'remote' ]; then
     exit
 fi
 
+
 if [ -f "/usr/local/vesta/web/inc/nginx_proxy" ]; then
+
+  # if vesta is behind default nginx, restart in background with 15 sec delay
+  # background restart
+  if [ "$1" = 'background' ]; then
+      # Restart system
+      sleep 25
+      service $PROXY_SYSTEM restart >/dev/null 2>&1
+      if [ $? -ne 0 ]; then
+          send_email_report
+          check_result $E_RESTART "$PROXY_SYSTEM restart failed"
+      fi
 
   # if vesta is behind default nginx, restart in background with 15 sec delay
   # background restart
