@@ -1,3 +1,7 @@
+Version 0.9.8-26-35 [23-Aug-2020]
+==================================================
+* [Feature] Limiting max recipients per email to 15, in order to prevent mass spamming
+
 Version 0.9.8-26-34 [19-Aug-2020]
 ==================================================
 * [Bugfix] Split long DNS TXT entries into 255 chunks
