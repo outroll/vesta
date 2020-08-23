@@ -1,6 +1,7 @@
 Version 0.9.8-26-35 [23-Aug-2020]
 ==================================================
 * [Feature] Limiting max recipients per email to 15, in order to prevent mass spamming
+* [Bugfix] While restoring backup, only exclude logs folder from root, not in public_html
 
 Version 0.9.8-26-34 [19-Aug-2020]
 ==================================================
