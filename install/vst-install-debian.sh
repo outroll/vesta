@@ -1622,6 +1622,7 @@ touch /usr/local/vesta/data/upgrades/keeping-mpm-event
 touch /usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates
 touch /usr/local/vesta/data/upgrades/clamav_block_exe_in_archives
 touch /usr/local/vesta/data/upgrades/clearing-letsencrypt-pipe
+touch /usr/local/vesta/data/upgrades/limit_max_recipients
 
 # Secret URL
 secretquery=''
