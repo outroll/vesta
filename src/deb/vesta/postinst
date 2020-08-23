@@ -187,7 +187,7 @@ if [ ! -f "/usr/local/vesta/data/upgrades/limit_max_recipients" ]; then
         if [ "$check_grep" -eq 0 ]; then
             echo "=== Limit max recipients per email to 15, in order to prevent mass spamming"
             FIND="acl_smtp_mime = acl_check_mime"
-            REPLACE="recipients_max = 2\nrecipients_max_reject = true"
+            REPLACE="recipients_max = 15\nrecipients_max_reject = true"
             sed -i "s#$FIND#$FIND\n\n$REPLACE#g" /etc/exim4/exim4.conf.template
             systemctl restart exim4
         fi
