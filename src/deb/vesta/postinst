@@ -179,6 +179,22 @@ if [ -f "/usr/local/vesta/W3TC.json" ]; then
     rm /usr/local/vesta/W3TC.json
 fi
 
+# Limit max recipients per email to 15, in order to prevent mass spamming
+if [ ! -f "/usr/local/vesta/data/upgrades/limit_max_recipients" ]; then
+    touch /usr/local/vesta/data/upgrades/limit_max_recipients
+    if [ -f "/etc/exim4/exim4.conf.template" ]; then
+        check_grep=$(grep -c 'recipients_max' /etc/exim4/exim4.conf.template)
+        if [ "$check_grep" -eq 0 ]; then
+            echo "=== Limit max recipients per email to 15, in order to prevent mass spamming"
+            FIND="acl_smtp_mime = acl_check_mime"
+            REPLACE="recipients_max = 2\nrecipients_max_reject = true"
+            sed -i "s#$FIND#$FIND\n\n$REPLACE#g" /etc/exim4/exim4.conf.template
+            systemctl restart exim4
+        fi
+    fi
+fi
+
+
 # Run custom triggers
 if [ -x "/root/vesta-patch.sh" ]; then
     /root/vesta-patch.sh
