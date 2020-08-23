@@ -417,7 +417,7 @@ update_domain_zone() {
             txtlength=${#VALUE}
             if [ $txtlength -gt 255 ]; then
                 already_chunked=0
-                if [[ $VALUE == *"\" \""* ]]; then
+                if [[ $VALUE == *"\" \""* ]] || [[ $VALUE == *"\"\""* ]]; then
                     already_chunked=1
                 fi
                 if [ $already_chunked -eq 0 ]; then
@@ -425,9 +425,7 @@ update_domain_zone() {
                         txtlength=$(( $txtlength - 2 ))
                         VALUE=${VALUE:1:txtlength}
                     fi
-                    VALUE=$(echo $VALUE | fold -w 255 | xargs -I '$' echo -n ' "$"')
-                    VALUE=${VALUE:1}
-                    VALUE="($VALUE)"
+                    VALUE=$(echo $VALUE | fold -w 255 | xargs -I '$' echo -n '"$"')
                 fi
             fi
         fi
