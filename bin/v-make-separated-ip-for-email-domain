@@ -67,15 +67,16 @@ sed -i "s#^  helo_data = .*#$NEWVALUE#g" /etc/exim4/exim4.conf.template
 service exim4 restart
 
 check_grep=$(grep -c "^$DOMAIN:" /etc/exim4/virtual/interfaces)
-if [ "$check_grep" -eq 0 ]; then
+if [ "$check_grep" -eq 1 ]; then
+    echo "=== Changing $DOMAIN: $IP in /etc/exim4/virtual/interfaces"
+    sed -i "s#^$DOMAIN: .*#$DOMAIN: $IP#g" /etc/exim4/virtual/interfaces
+else
     echo "=== Adding $DOMAIN: $IP to /etc/exim4/virtual/interfaces"
     echo "" >> /etc/exim4/virtual/interfaces
     echo "$DOMAIN: $IP" >> /etc/exim4/virtual/interfaces
     length=$(wc -c </etc/exim4/virtual/interfaces)
     dd if=/dev/null of=/etc/exim4/virtual/interfaces obs="$((length-1))" seek=1 > /dev/null 2>&1
     echo "=== Done!"
-else
-    echo "=== Domain $DOMAIN is already added"
 fi
 
 #----------------------------------------------------------#
