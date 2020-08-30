@@ -10,7 +10,7 @@ echo "Find: ".$find."\n";
 echo "Replace: ".$replace."\n";
 echo "File: ".$file."\n";
 
-$r=myvesta_replace_in_file($file, $find, $replace);
+$r=myvesta_replace_in_file($find, $replace, $file);
 
 if ($r) echo "Replacing done!\n";
 
