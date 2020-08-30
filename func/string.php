@@ -5,7 +5,7 @@ function myvesta_replace_in_file($find, $replace, $file) {
 
     $buf=file_get_contents($file);
 
-    if (strpos($buf, $find)===false) return myvesta_throw_error (MYVESTA_ERROR_STRING_DOES_NOT_EXISTS, "String '$find' not found");
+    if (strpos($buf, $find)===false) return myvesta_throw_error (MYVESTA_ERROR_STRING_NOT_FOUND, "String '$find' not found");
 
     $buf=str_replace($find, $replace, $buf);
     $r=file_put_contents($file, $buf);
