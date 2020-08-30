@@ -178,6 +178,10 @@ fi
 if [ -f "/usr/local/vesta/W3TC.json" ]; then
     rm /usr/local/vesta/W3TC.json
 fi
+# Deleting renamed command
+if [ -f "/usr/local/vesta/bin/v-replace-in-file" ]; then
+    rm /usr/local/vesta/bin/v-replace-in-file
+fi
 
 # Limit max recipients per email to 15, in order to prevent mass spamming
 if [ ! -f "/usr/local/vesta/data/upgrades/limit_max_recipients" ]; then
