@@ -7,7 +7,7 @@ $myvesta_exit_on_error=true;
 define('MYVESTA_ERROR_PERMISSION_DENIED', 1);
 define('MYVESTA_ERROR_MISSING_ARGUMENTS', 2);
 define('MYVESTA_ERROR_FILE_DOES_NOT_EXISTS', 3);
-define('MYVESTA_ERROR_STRING_DOES_NOT_EXISTS', 4);
+define('MYVESTA_ERROR_STRING_NOT_FOUND', 4);
 
 function myvesta_throw_error($code, $message) {
     global $myvesta_exit_on_error;
