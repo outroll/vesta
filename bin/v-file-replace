@@ -1,8 +1,6 @@
 #!/usr/bin/php
 <?php
 
-echo "----------------------------------------";
-
 include ("/usr/local/vesta/func/main.php");
 include ("/usr/local/vesta/func/string.php");
 
@@ -16,6 +14,4 @@ $r=myvesta_replace_in_file($file, $find, $replace);
 
 if ($r) echo "Replacing done!\n";
 
-echo "----------------------------------------";
-
-exit(0);
+myvesta_exit(0);
