@@ -3,11 +3,16 @@
 $myvesta_current_user=exec('whoami', $myvesta_output, $myvesta_return_var);
 if ($myvesta_current_user != 'root') {echo "ERROR: You must be root to execute this script\n"; exit(1);}
 
-define('myvesta_exit_on_error', true);
+$myvesta_exit_on_error=true;
+define('MYVESTA_ERROR_PERMISSION_DENIED', 1);
+define('MYVESTA_ERROR_MISSING_ARGUMENTS', 2);
+define('MYVESTA_ERROR_FILE_DOES_NOT_EXISTS', 3);
+define('MYVESTA_ERROR_STRING_DOES_NOT_EXISTS', 4);
 
 function myvesta_throw_error($code, $message) {
+    global $myvesta_exit_on_error;
     echo "ERROR: ".$message."\n";
-    if (defined('myvesta_exit_on_error')) myvesta_exit($code);
+    if ($myvesta_exit_on_error) myvesta_exit($code);
     return $code;
 }
 
@@ -27,7 +32,7 @@ function myvesta_check_args ($requried_arguments, $arguments) {
     if ($argument_counter<$requried_arguments) {
         $arguments=str_replace(" ", "' '", $arguments);
         $arguments="'".$arguments."'";
-        return myvesta_throw_error(1, "Usage: $command $arguments");
+        return myvesta_throw_error(MYVESTA_ERROR_MISSING_ARGUMENTS, "Usage: $command $arguments");
     }
     $argument_arr=explode(" ", $arguments);
     $i=1;
