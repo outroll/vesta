@@ -7,7 +7,7 @@ define('myvesta_exit_on_error', true);
 
 function myvesta_throw_error($code, $message) {
     echo "ERROR: ".$message."\n";
-    if (defined('myvesta_exit_on_error')) exit($code);
+    if (defined('myvesta_exit_on_error')) myvesta_exit($code);
     return $code;
 }
 
@@ -22,9 +22,9 @@ function myvesta_check_args ($requried_arguments, $arguments) {
     global $argv;
     $argument_counter=count($argv);
     $argument_counter--;
+    $argv[0]=str_replace('/usr/local/vesta/bin/', '', $argv[0]);
+    echo "-------------------- ".$argv[0]." --------------------\n";
     if ($argument_counter<$requried_arguments) {
-        $command=$argv[0];
-        $command=str_replace('/usr/local/vesta/bin/', '', $command);
         $arguments=str_replace(" ", "' '", $arguments);
         $arguments="'".$arguments."'";
         return myvesta_throw_error(1, "Usage: $command $arguments");
@@ -35,4 +35,10 @@ function myvesta_check_args ($requried_arguments, $arguments) {
         $GLOBALS[$argument]=myvesta_fix_backslashes($argv[$i]);
         $i++;
     }
+}
+
+function myvesta_exit($code) {
+    global $argv;
+    echo "==================== ".$argv[0].": ".$code." ====================\n";
+    exit($code);
 }
