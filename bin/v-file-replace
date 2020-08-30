@@ -1,0 +1,17 @@
+#!/usr/bin/php
+<?php
+
+include ("/usr/local/vesta/func/main.php");
+include ("/usr/local/vesta/func/string.php");
+
+myvesta_check_args (3, 'find replace file');
+
+echo "Find: ".$find."\n";
+echo "Replace: ".$replace."\n";
+echo "File: ".$file."\n";
+
+$r=myvesta_replace_in_file($file, $find, $replace);
+
+if ($r) echo "Replacing done!\n";
+
+exit(0);
