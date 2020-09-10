@@ -30,7 +30,7 @@ if ((!empty($_POST['user'])) && (empty($_POST['code']))) {
         } else {
             $mailtext = __('GREETINGS');
         }
-        $mailtext .= __('PASSWORD_RESET_REQUEST',$_SERVER['HTTP_HOST'],$user,$rkey,$_SERVER['HTTP_HOST'],$user,$rkey);
+        $mailtext .= __('PASSWORD_RESET_REQUEST',$hostname.":".$_SERVER['SERVER_PORT'],$user,$rkey,$hostname.":".$_SERVER['SERVER_PORT'],$user,$rkey);
         if (!empty($rkey)) send_email($to, $subject, $mailtext, $from);
         unset($output);
     }

@@ -1,5 +1,5 @@
 location /webmail {
-    alias /usr/share/roundcubemail/;
+    alias /usr/share/roundcubemail;
 
     location ~ /(config|temp|logs) {
         return 404;

@@ -412,6 +412,24 @@ update_domain_zone() {
             VALUE=$(idn --quiet -a -t "$VALUE")
         fi
 
+        # Split long TXT entries into 255 chunks
+        if [ "$TYPE" = 'TXT' ]; then
+            txtlength=${#VALUE}
+            if [ $txtlength -gt 255 ]; then
+                already_chunked=0
+                if [[ $VALUE == *"\" \""* ]] || [[ $VALUE == *"\"\""* ]]; then
+                    already_chunked=1
+                fi
+                if [ $already_chunked -eq 0 ]; then
+                    if [[ ${VALUE:0:1} = '"' ]]; then
+                        txtlength=$(( $txtlength - 2 ))
+                        VALUE=${VALUE:1:txtlength}
+                    fi
+                    VALUE=$(echo $VALUE | fold -w 255 | xargs -I '$' echo -n '"$"')
+                fi
+            fi
+        fi
+
         if [ "$SUSPENDED" != 'yes' ]; then
             eval echo -e "\"$fields\""|sed "s/%quote%/'/g" >> $zn_conf
         fi

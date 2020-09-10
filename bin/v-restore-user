@@ -289,7 +289,7 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
     if [ -z "$web" ] || [ "$web" = '*' ]; then
         domains="$backup_domains"
     else
-        echo "$web" |tr ',' '\n' > $tmpdir/selected.txt
+        echo "$web" | tr ',' '\n' | sed -e "s/^/^/" > $tmpdir/selected.txt
         domains=$(echo "$backup_domains" |egrep -f $tmpdir/selected.txt)
     fi
 
@@ -409,7 +409,7 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
         chown $user $tmpdir
         chmod u+w $HOMEDIR/$user/web/$domain
         sudo -u $user tar -xzpf $tmpdir/web/$domain/domain_data.tar.gz \
-            -C $HOMEDIR/$user/web/$domain/ --exclude=logs/* \
+            -C $HOMEDIR/$user/web/$domain/ --exclude=./logs/* \
             2> $HOMEDIR/$user/web/$domain/restore_errors.log
         if [ -e "$HOMEDIR/$user/web/$domain/restore_errors.log" ]; then
             chown $user:$user $HOMEDIR/$user/web/$domain/restore_errors.log

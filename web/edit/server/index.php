@@ -356,7 +356,7 @@ if (!empty($_POST['save'])) {
     // Change remote backup host type
     if (empty($_SESSION['error_msg'])) {
         if ((!empty($_POST['v_backup_host'])) && ($_POST['v_backup_type'] != $v_backup_type)) {
-            exec (VESTA_CMD."v-delete-backup-host ". $v_backup_type, $output, $return_var);
+            exec (VESTA_CMD."v-delete-backup-host " . escapeshellarg($v_backup_type), $output, $return_var);
             unset($output);
 
             $v_backup_host = escapeshellarg($_POST['v_backup_host']);

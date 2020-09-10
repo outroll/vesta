@@ -22,7 +22,7 @@ json_list() {
     i=1
     objects=$(grep BACKUP $USER_DATA/backup.conf |wc -l)
     echo "{"
-    while read str; do
+    while read -r str; do
         eval $str
         echo -n '    "'$BACKUP'": {
         "TYPE": "'$TYPE'",
