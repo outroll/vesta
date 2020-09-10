@@ -1,3 +1,7 @@
+Version 0.9.8-26-36 [10-Aug-2020]
+==================================================
+* [Bugfix] Checking necessary available disk space before doing backup
+
 Version 0.9.8-26-35 [23-Aug-2020]
 ==================================================
 * [Feature] Limiting max recipients per email to 15, in order to prevent mass spamming
