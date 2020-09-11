@@ -1,4 +1,4 @@
-Version 0.9.8-26-36 [10-Aug-2020]
+Version 0.9.8-26-36 [10-Sep-2020]
 ==================================================
 * [Bugfix] Checking necessary available disk space before doing backup
 * [Security] Disabling login with 'root'
