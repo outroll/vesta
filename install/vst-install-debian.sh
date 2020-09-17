@@ -1658,13 +1658,13 @@ crontab -l | { cat; echo "10 2 * * 6 sudo find /home/*/tmp/ -type f -mtime +5 -e
 
 # Sending notification to admin email
 echo -e "Congratulations, you have just successfully installed \
-Vesta Control Panel
+myVesta Control Panel
 
 https://$ip:$port/$secretquery
 username: admin
 password: $vpass
 
-We hope that you enjoy your installation of Vesta. Please \
+We hope that you enjoy your installation of myVesta. Please \
 feel free to contact us anytime if you have any questions.
 Thank you.
 
