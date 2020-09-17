@@ -61,7 +61,7 @@ let v_disk=$(($(stat -f --format="%a*%S" $BACKUP)))/1024/1024
 
 if [ "$u_disk" -gt "$v_disk" ]; then
     echo "available space on disk: $v_disk" |tee $BACKUP/$user.log
-    echo "account size           : $v_account" |tee $BACKUP/$user.log
+    echo "account size           : $u_account" |tee $BACKUP/$user.log
     echo "needed space on disk   : $u_disk" |tee $BACKUP/$user.log
     echo "not enough diskspace available to perform the backup." |$SENDMAIL -s "$subj" $email $notify
     check_result $E_LIMIT "not enough diskspace available to perform the backup."
