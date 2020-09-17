@@ -1531,17 +1531,19 @@ touch /var/log/php-mail.log
 chmod a=rw /var/log/php-mail.log
 
 if [ "$release" -eq 9 ]; then
-  if [ $memory -lt 10000000 ]; then
-    echo "=== Patching php7.0-vps"
-    mkdir -p /root/vesta-temp-dl/vesta/patch
-    cp $vestacp/php/php7.0-vps.patch /root/vesta-temp-dl/vesta/patch/php7.0-vps.patch
-    patch -p1 --directory=/ < /root/vesta-temp-dl/vesta/patch/php7.0-vps.patch
-  fi
-  if [ $memory -gt 9999999 ]; then
-    echo "=== Patching php7.0-dedi"
-    mkdir -p /root/vesta-temp-dl/vesta/patch
-    cp $vestacp/php/php7.0-dedi.patch /root/vesta-temp-dl/vesta/patch/php7.0-dedi.patch
-    patch -p1 --directory=/ < /root/vesta-temp-dl/vesta/patch/php7.0-dedi.patch
+  if [ "$apache" = 'yes' ]; then
+    if [ $memory -lt 10000000 ]; then
+      echo "=== Patching php7.0-vps"
+      mkdir -p /root/vesta-temp-dl/vesta/patch
+      cp $vestacp/php/php7.0-vps.patch /root/vesta-temp-dl/vesta/patch/php7.0-vps.patch
+      patch -p1 --directory=/ < /root/vesta-temp-dl/vesta/patch/php7.0-vps.patch
+    fi
+    if [ $memory -gt 9999999 ]; then
+      echo "=== Patching php7.0-dedi"
+      mkdir -p /root/vesta-temp-dl/vesta/patch
+      cp $vestacp/php/php7.0-dedi.patch /root/vesta-temp-dl/vesta/patch/php7.0-dedi.patch
+      patch -p1 --directory=/ < /root/vesta-temp-dl/vesta/patch/php7.0-dedi.patch
+    fi
   fi
 fi
 if [ "$release" -eq 10 ]; then
