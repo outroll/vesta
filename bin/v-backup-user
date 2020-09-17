@@ -55,10 +55,14 @@ subj="$user → backup failed"
 email=$(grep CONTACT $VESTA/data/users/admin/user.conf |cut -f 2 -d \')
 
 # Validate available disk space (take usage * 2, due to the backup handling)
+let u_account=$(grep "U_DISK=" $VESTA/data/users/$user/user.conf |cut -f 2 -d \')
 let u_disk=$(grep "U_DISK=" $VESTA/data/users/$user/user.conf |cut -f 2 -d \')*2
 let v_disk=$(($(stat -f --format="%a*%S" $BACKUP)))/1024/1024
 
 if [ "$u_disk" -gt "$v_disk" ]; then
+    echo "available space on disk: $v_disk" |tee $BACKUP/$user.log
+    echo "account size           : $v_account" |tee $BACKUP/$user.log
+    echo "needed space on disk   : $u_disk" |tee $BACKUP/$user.log
     echo "not enough diskspace available to perform the backup." |$SENDMAIL -s "$subj" $email $notify
     check_result $E_LIMIT "not enough diskspace available to perform the backup."
 fi
