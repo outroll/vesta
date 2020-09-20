@@ -321,7 +321,8 @@ replace_php_config_value "${FROM_DATABASE_USERNAME}" "${TO_DATABASE_USERNAME}" "
 replace_php_config_value "${FROM_DATABASE_PASSWORD}" "${TO_DATABASE_PASSWORD}" "$TO_CONFIG_FILE_FULL_PATH" "yes"
 
 echo "=== Replacing $FROM_DOMAIN to $TO_DOMAIN in folder $TO_FOLDER"
-grep -rl "$FROM_DOMAIN" $TO_FOLDER | xargs sed -i "s#$FROM_DOMAIN#$TO_DOMAIN#g"
+REGEXP_FROM_DOMAIN="${FROM_DOMAIN//\./\\.}"
+grep -rl "$REGEXP_FROM_DOMAIN" $TO_FOLDER | xargs sed -i "s#$REGEXP_FROM_DOMAIN#$TO_DOMAIN#g"
 if [ "$FROM_USER" != "$TO_USER" ]; then
     echo "=== Replacing /home/$FROM_USER/ to /home/$TO_USER/ in folder $TO_FOLDER"
     grep -rl "/home/$FROM_USER/" $TO_FOLDER | xargs sed -i "s#/home/$FROM_USER/#/home/$TO_USER/#g"
