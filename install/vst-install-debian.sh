@@ -1305,6 +1305,8 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
         chown root:www-data /etc/roundcube/debian-db-roundcube.php
         chown root:www-data /etc/roundcube/config.inc.php
     fi
+    sed -i "s#^\$config\['smtp_user'\].*#\$config\['smtp_user'\] = '%u';#g" /etc/roundcube/defaults.inc.php
+    sed -i "s#^\$config\['smtp_pass'\].*#\$config\['smtp_pass'\] = '%p';#g" /etc/roundcube/defaults.inc.php
     if [ "$release" -eq 8 ]; then
         # RoundCube tinyMCE fix
         tinymceFixArchiveURL=$vestacp/roundcube/roundcube-tinymce.tar.gz
@@ -1625,6 +1627,7 @@ touch /usr/local/vesta/data/upgrades/fix_ssl_directive_in_templates
 touch /usr/local/vesta/data/upgrades/clamav_block_exe_in_archives
 touch /usr/local/vesta/data/upgrades/clearing-letsencrypt-pipe
 touch /usr/local/vesta/data/upgrades/limit_max_recipients
+touch /usr/local/vesta/data/upgrades/roundcube_smtp_auth
 
 # Secret URL
 secretquery=''
