@@ -1,6 +1,6 @@
 Version 0.9.8-26-37 [26-Oct-2020]
 ==================================================
-* [Bugfix] Fixing LetsEncrypt deprecated GET method for ACME v2
+* [Bugfix] Fixing LetsEncrypt deprecated GET method for ACME v2 (thanks to @moucho)
 * [Bugfix] Fixing Roundcube to send via authenticated SMTP user instead via php
 
 Version 0.9.8-26-36 [10-Sep-2020]
