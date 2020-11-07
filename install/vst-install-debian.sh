@@ -253,10 +253,10 @@ set_default_value 'interactive' 'yes'
 set_default_lang 'en'
 
 # Checking software conflicts
-if [ "$phpfpm" = 'yes' ]; then
-    apache='no'
-    nginx='yes'
-fi
+# if [ "$phpfpm" = 'yes' ]; then
+#     apache='no'
+#     nginx='yes'
+# fi
 if [ "$proftpd" = 'yes' ]; then
     vsftpd='no'
 fi
