@@ -1628,6 +1628,7 @@ touch /usr/local/vesta/data/upgrades/clamav_block_exe_in_archives
 touch /usr/local/vesta/data/upgrades/clearing-letsencrypt-pipe
 touch /usr/local/vesta/data/upgrades/limit_max_recipients
 touch /usr/local/vesta/data/upgrades/roundcube_smtp_auth
+touch /usr/local/vesta/data/upgrades/apache_status_public_access
 
 # Secret URL
 secretquery=''
