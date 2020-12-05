@@ -1,6 +1,6 @@
 Version 0.9.8-26-38 [05-Dec-2020]
 ==================================================
-* Fixing Apache status public access (thanks to HestiaCP for for letting us know)
+* Fixing Apache status public access (thanks to HestiaCP for letting us know)
 
 Version 0.9.8-26-37 [26-Oct-2020]
 ==================================================
