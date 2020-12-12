@@ -1,6 +1,11 @@
+Version 0.9.8-26-39 [12-Dec-2020]
+==================================================
+* [Security] Fixing useless issue with tokens in "download backup" and "loginas" functions (thanks to HestiaCP for fixes)
+* [Security] Fixing XSS in /list/rrd/?period= value
+
 Version 0.9.8-26-38 [05-Dec-2020]
 ==================================================
-* Fixing Apache status public access (thanks to HestiaCP for letting us know)
+* [Security] Fixing Apache status public access (thanks to HestiaCP for letting us know)
 
 Version 0.9.8-26-37 [26-Oct-2020]
 ==================================================
