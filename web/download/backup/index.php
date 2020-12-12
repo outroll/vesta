@@ -3,6 +3,13 @@
 error_reporting(NULL);
 session_start();
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
+
+// Check token
+if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
+    header('Location: /login/');
+    exit();
+}
+
 $backup = basename($_GET['backup']);
 
 // Check if the backup exists
