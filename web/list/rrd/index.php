@@ -11,6 +11,10 @@ if ($_SESSION['user'] != 'admin') {
     exit;
 }
 
+if (!empty($_GET['period'])) {
+    if ($_GET['period']!="daily" && $_GET['period']!="weekly" && $_GET['period']!="monthly" && $_GET['period']!="yearly") unset($_GET['period']);
+}
+
 // Data
 exec (VESTA_CMD."v-list-sys-rrd json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
