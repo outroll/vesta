@@ -76,7 +76,8 @@ get_domain_values 'web'
 # check if alias is the letsencrypt wildcard domain, if not, make the normal checks
 if [[ "$aliases" != "*.$domain" ]]; then
     for alias in $(echo "$aliases" |tr ',' '\n' |sort -u); do
-        check_alias="$(echo $ALIAS |tr ',' '\n' |grep ^$alias$)"
+        alias_unicode=`idn -t --quiet -u $alias`
+        check_alias="$(echo $ALIAS |tr ',' '\n' |egrep ^$alias\|$alias_unicode$)"
         if [ -z "$check_alias" ]; then
             check_result $E_NOTEXIST "domain alias $alias doesn't exist"
         fi
@@ -158,6 +159,7 @@ for auth in $authz; do
             $BIN/v-delete-dns-record $user $domain $old_record
         done
         $BIN/v-add-dns-record $user $domain "_acme-challenge" "TXT" $record
+        $BIN/v-update-sys-queue dns-cluster
         check_result $? "DNS _acme-challenge record wasn't created"
     else
         if [ "$WEB_SYSTEM" = 'nginx' ] || [ ! -z "$PROXY_SYSTEM" ]; then
