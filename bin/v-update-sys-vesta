@@ -28,6 +28,23 @@ source $VESTA/conf/vesta.conf
 # Checking arg number
 check_args '1' "$#" 'PACKAGE'
 
+valid=0
+if [ "$package" = "vesta" ]; then
+    valid=1
+fi
+if [ "$package" = "vesta-nginx" ]; then
+    valid=1
+fi
+if [ "$package" = "vesta-php" ]; then
+    valid=1
+fi
+if [ "$package" = "vesta-softaculous" ]; then
+    valid=1
+fi
+if [ $valid -eq 0 ]; then
+    echo "Package $package is not valid"
+    exit 1
+fi
 
 #----------------------------------------------------------#
 #                       Action                             #
