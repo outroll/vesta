@@ -296,6 +296,20 @@ is_dir_symlink() {
     fi
 }
 
+# Check if file exists
+if_file_exists() {
+    if [[ -f "$1" ]]; then
+        check_result $E_FORBIDEN "$1 file exists"
+    fi
+}
+
+# Check if directory exists
+if_dir_exists() {
+    if [[ -d "$1" ]]; then
+        check_result $E_FORBIDEN "$1 directory exists"
+    fi
+}
+
 # Get object value
 get_object_value() {
     object=$(grep "$2='$3'" $USER_DATA/$1.conf)
