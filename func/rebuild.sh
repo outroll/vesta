@@ -51,7 +51,7 @@ rebuild_user_conf() {
     mkdir -p $HOMEDIR/$user/conf
     chmod a+x $HOMEDIR/$user
     chmod a+x $HOMEDIR/$user/conf
-    chown $user:$user $HOMEDIR/$user
+    chown --no-dereference $user:$user $HOMEDIR/$user
     chown root:root $HOMEDIR/$user/conf
 
     # Update disk pipe
@@ -80,7 +80,7 @@ rebuild_user_conf() {
         chmod 751 $HOMEDIR/$user/conf/web
         chmod 751 $HOMEDIR/$user/web
         chmod 771 $HOMEDIR/$user/tmp
-        chown $user:$user $HOMEDIR/$user/web
+        chown --no-dereference $user:$user $HOMEDIR/$user/web
         if [ -z "$create_user" ]; then
             $BIN/v-rebuild-web-domains $user $restart
         fi
@@ -183,10 +183,10 @@ rebuild_web_domain_conf() {
     fi
 
     # Set folder permissions
-    chmod 551 $HOMEDIR/$user/web/$domain \
+    no_symlink_chmod 551 $HOMEDIR/$user/web/$domain \
         $HOMEDIR/$user/web/$domain/stats \
         $HOMEDIR/$user/web/$domain/logs
-    chmod 751 $HOMEDIR/$user/web/$domain/private \
+    no_symlink_chmod 751 $HOMEDIR/$user/web/$domain/private \
         $HOMEDIR/$user/web/$domain/cgi-bin \
         $HOMEDIR/$user/web/$domain/public_html \
         $HOMEDIR/$user/web/$domain/public_shtml \
@@ -194,7 +194,7 @@ rebuild_web_domain_conf() {
     chmod 640 /var/log/$WEB_SYSTEM/domains/$domain.*
 
     # Set ownership
-    chown $user:$user $HOMEDIR/$user/web/$domain \
+    chown --no-dereference $user:$user $HOMEDIR/$user/web/$domain \
         $HOMEDIR/$user/web/$domain/private \
         $HOMEDIR/$user/web/$domain/cgi-bin \
         $HOMEDIR/$user/web/$domain/public_html \
