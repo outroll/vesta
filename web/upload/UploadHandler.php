@@ -2,6 +2,13 @@
 
 //session_start();
 
+$hostname = exec('hostname');
+$port = $_SERVER['SERVER_PORT'];
+$expected_http_origin="https://".$hostname.":".$port;
+if ($_SERVER['HTTP_ORIGIN'] != $expected_http_origin) {
+    die ("Nope.");
+}
+
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 // Check login_as feature
