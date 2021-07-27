@@ -27,7 +27,6 @@ source $VESTA/conf/vesta.conf
 
 # Checking arg number
 check_args '2' "$#" 'MODULE LICENSE'
-
 is_user_format_valid "$license" "license"
 
 #----------------------------------------------------------#
