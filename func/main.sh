@@ -954,3 +954,15 @@ format_aliases() {
         aliases=$(echo "$aliases" |tr '\n' ',' |sed -e "s/,$//")
     fi
 }
+
+# Simple chmod wrapper that skips symlink files after glob expand
+# Taken from HestiaCP
+no_symlink_chmod() {
+    local filemode=$1; shift;
+
+    for i in "$@"; do
+        [[ -L ${i} ]] && continue
+
+        chmod "${filemode}" "${i}"
+    done
+}
