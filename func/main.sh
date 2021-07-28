@@ -955,6 +955,56 @@ format_aliases() {
     fi
 }
 
+alter_web_counter() {
+    user=$1
+    domain=$2
+    USER_DATA=$VESTA/data/users/$user
+    
+    varc=$3
+    vard="\$${varc}"
+    counter=$(get_object_value 'web' 'DOMAIN' "$domain" "$vard")
+    
+    if [ -z "$counter" ]; then
+        add_object_key "web" 'DOMAIN' "$domain" "$varc" "TIME"
+        counter=0
+    fi
+    
+    ((counter++))
+    backup_counter=$counter
+    
+    update_object_value 'web' 'DOMAIN' "$domain" "$vard" "$counter"
+    counter=$backup_counter
+    
+    echo $counter
+}
+
+reset_web_counter() {
+    user=$1
+    domain=$2
+    USER_DATA=$VESTA/data/users/$user
+    
+    varc=$3
+    vard="\$${varc}"
+
+    update_object_value 'web' 'DOMAIN' "$domain" "$vard" "0"
+}
+
+get_web_counter() {
+    user=$1
+    domain=$2
+    USER_DATA=$VESTA/data/users/$user
+    
+    varc=$3
+    vard="\$${varc}"
+    counter=$(get_object_value 'web' 'DOMAIN' "$domain" "$vard")
+
+    if [ -z "$counter" ]; then
+        counter=0
+    fi
+
+    echo $counter
+}
+
 # Simple chmod wrapper that skips symlink files after glob expand
 # Taken from HestiaCP
 no_symlink_chmod() {
