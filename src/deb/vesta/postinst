@@ -36,4 +36,14 @@ if [ -x /usr/local/vesta/upd/fix_dhcprenew.sh ]; then
     /usr/local/vesta/upd/fix_dhcprenew.sh
 fi
 
+# Fixing Apache status public access
+if [ ! -f "/usr/local/vesta/data/upgrades/apache_status_public_access" ]; then
+    touch /usr/local/vesta/data/upgrades/apache_status_public_access
+    if [ -f "/etc/apache2/mods-available/status.conf" ]; then
+        echo "=== Fixing Apache status public access"
+        sed -i "s|Allow from all|# Allow from all|g" /etc/apache2/mods-available/status.conf
+        service apache2 restart
+    fi
+fi
+
 exit 0
