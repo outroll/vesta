@@ -1016,3 +1016,19 @@ no_symlink_chmod() {
         chmod "${filemode}" "${i}"
     done
 }
+
+# $1 = subject
+# $2 = body
+send_email_to_admin() {
+    email=$(grep CONTACT /usr/local/vesta/data/users/admin/user.conf)
+    email=$(echo "$email" | cut -f 2 -d "'")
+    if [ -z "$email" ]; then
+        if [ ! -z "$NOTIFY_ADMIN_FULL_BACKUP" ]; then
+            email=$NOTIFY_ADMIN_FULL_BACKUP
+        fi
+    fi
+    if [ -z "$email" ]; then
+        return;
+    fi
+    echo "$2" | $SENDMAIL -s "$1" "$email" 'yes'
+}
