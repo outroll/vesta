@@ -73,11 +73,16 @@ is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_unsuspended 'web' 'DOMAIN' "$domain"
 get_domain_values 'web'
+
+echo "-----------------------------------------------------------------------------------" >> /usr/local/vesta/log/letsencrypt.log
+echo "[$(date)] : v-add-letsencrypt-domain $domain [$aliases]" >> /usr/local/vesta/log/letsencrypt.log
+
 # check if alias is the letsencrypt wildcard domain, if not, make the normal checks
 if [[ "$aliases" != "*.$domain" ]]; then
     for alias in $(echo "$aliases" |tr ',' '\n' |sort -u); do
         check_alias="$(echo $ALIAS |tr ',' '\n' |grep ^$alias$)"
         if [ -z "$check_alias" ]; then
+            echo "[$(date)] : EXIT=domain alias $alias doesn't exist" >> /usr/local/vesta/log/letsencrypt.log
             check_result $E_NOTEXIST "domain alias $alias doesn't exist"
         fi
     done
@@ -88,11 +93,14 @@ fi;
 #----------------------------------------------------------#
 
 # Registering LetsEncrypt user account
+echo "[$(date)] : v-add-letsencrypt-user $user" >> /usr/local/vesta/log/letsencrypt.log
 $BIN/v-add-letsencrypt-user $user
+echo "[$(date)] : result: $?" >> /usr/local/vesta/log/letsencrypt.log
 if [ "$?" -ne 0  ]; then
     touch $VESTA/data/queue/letsencrypt.pipe
     sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
     send_notice "LETSENCRYPT" "Account registration failed"
+    echo "[$(date)] : EXIT=LE account registration" >> /usr/local/vesta/log/letsencrypt.log
     check_result $E_CONNECT "LE account registration" >/dev/null
 fi
 
@@ -101,9 +109,11 @@ source $USER_DATA/ssl/le.conf
 
 # Checking wildcard alias
 if [ "$aliases" = "*.$domain" ]; then
+    echo "[$(date)] : Checking wildcard alias" >> /usr/local/vesta/log/letsencrypt.log
     wildcard='yes'
     proto="dns-01"
     if [ ! -e "$VESTA/data/users/$user/dns/$domain.conf" ]; then
+        echo "[$(date)] : EXIT=DNS domain $domain doesn't exist" >> /usr/local/vesta/log/letsencrypt.log
         check_result $E_NOTEXIST "DNS domain $domain doesn't exist"
     fi
 else
@@ -111,14 +121,21 @@ else
 fi
 
 # Requesting nonce / STEP 1
+echo "[$(date)] : --- Requesting nonce / STEP 1 ---" >> /usr/local/vesta/log/letsencrypt.log
+echo "[$(date)] : curl -s -I \"$API/directory\"" >> /usr/local/vesta/log/letsencrypt.log
 answer=$(curl -s -I "$API/directory")
+echo "[$(date)] : answer=$answer" >> /usr/local/vesta/log/letsencrypt.log
 nonce=$(echo "$answer" |grep -i nonce |cut -f2 -d \ |tr -d '\r\n')
+echo "[$(date)] : nonce=$nonce" >> /usr/local/vesta/log/letsencrypt.log
 status=$(echo "$answer"|grep HTTP/ |tail -n1 |cut -f 2 -d ' ')
+echo "[$(date)] : status=$status" >> /usr/local/vesta/log/letsencrypt.log
 if [[ "$status" -ne 200 ]]; then
+    echo "[$(date)] : EXIT=Let's Encrypt nonce request status $status" >> /usr/local/vesta/log/letsencrypt.log
     check_result $E_CONNECT "Let's Encrypt nonce request status $status"
 fi
 
 # Placing new order / STEP 2
+echo "[$(date)] : --- Placing new order / STEP 2 ---" >> /usr/local/vesta/log/letsencrypt.log
 url="$API/acme/new-order"
 payload='{"identifiers":['
 for identifier in $(echo $domain,$aliases |tr ',' '\n' |sort -u); do
@@ -127,68 +144,116 @@ for identifier in $(echo $domain,$aliases |tr ',' '\n' |sort -u); do
 done
 payload=$(echo "$payload"|sed "s/,$//")
 payload=$payload']}'
+echo "[$(date)] : payload=$payload" >> /usr/local/vesta/log/letsencrypt.log
+echo "[$(date)] : query_le_v2 \"$url\" \"$payload\" \"$nonce\"" >> /usr/local/vesta/log/letsencrypt.log
 answer=$(query_le_v2 "$url" "$payload" "$nonce")
+echo "[$(date)] : answer=$answer" >> /usr/local/vesta/log/letsencrypt.log
 nonce=$(echo "$answer" |grep -i nonce |cut -f2 -d \ |tr -d '\r\n')
+echo "[$(date)] : nonce=$nonce" >> /usr/local/vesta/log/letsencrypt.log
 authz=$(echo "$answer" |grep "acme/authz" |cut -f2 -d '"')
+echo "[$(date)] : authz=$authz" >> /usr/local/vesta/log/letsencrypt.log
 finalize=$(echo "$answer" |grep 'finalize":' |cut -f4 -d '"')
+echo "[$(date)] : finalize=$finalize" >> /usr/local/vesta/log/letsencrypt.log
 status=$(echo "$answer" |grep HTTP/ |tail -n1 |cut -f2 -d ' ')
+echo "[$(date)] : status=$status" >> /usr/local/vesta/log/letsencrypt.log
 if [[ "$status" -ne 201 ]]; then
+    echo "[$(date)] : EXIT=Let's Encrypt new auth status $status" >> /usr/local/vesta/log/letsencrypt.log
     check_result $E_CONNECT "Let's Encrypt new auth status $status"
 fi
 
 # Requesting authorization token / STEP 3
+echo "[$(date)] : --- Requesting authorization token / STEP 3 ---" >> /usr/local/vesta/log/letsencrypt.log
 for auth in $authz; do
     payload=''
+    echo "[$(date)] : for auth=$auth" >> /usr/local/vesta/log/letsencrypt.log
+    echo "[$(date)] : query_le_v2 \"$auth\" \"$payload\" \"$nonce\"" >> /usr/local/vesta/log/letsencrypt.log
     answer=$(query_le_v2 "$auth" "$payload" "$nonce")
+    echo "[$(date)] : answer=$answer" >> /usr/local/vesta/log/letsencrypt.log
     url=$(echo "$answer" |grep -A3 $proto |grep url |cut -f 4 -d \")
+    echo "[$(date)] : url=$url" >> /usr/local/vesta/log/letsencrypt.log
     token=$(echo "$answer" |grep -A3 $proto |grep token |cut -f 4 -d \")
+    echo "[$(date)] : token=$token" >> /usr/local/vesta/log/letsencrypt.log
     nonce=$(echo "$answer" |grep -i nonce |cut -f2 -d \ |tr -d '\r\n')
+    echo "[$(date)] : nonce=$nonce" >> /usr/local/vesta/log/letsencrypt.log
     status=$(echo "$answer"|grep HTTP/ |tail -n1 |cut -f 2 -d ' ')
+    echo "[$(date)] : status=$status" >> /usr/local/vesta/log/letsencrypt.log
     if [[ "$status" -ne 200 ]]; then
+        echo "[$(date)] : EXIT=Let's Encrypt acme/authz bad status $status" >> /usr/local/vesta/log/letsencrypt.log
         check_result $E_CONNECT "Let's Encrypt acme/authz bad status $status"
     fi
 
-    # Accepting challenge / STEP 4
+    # Configuring challenge / STEP 4
+    echo "[$(date)] : --- Configuring challenge / STEP 4 ---" >> /usr/local/vesta/log/letsencrypt.log
+    echo "[$(date)] : wildcard=$wildcard" >> /usr/local/vesta/log/letsencrypt.log
     if [ "$wildcard" = 'yes'  ]; then
         record=$(printf "%s" "$token.$THUMB" |\
             openssl dgst -sha256 -binary |encode_base64)
         old_records=$($BIN/v-list-dns-records $user $domain plain|grep 'TXT')
         old_records=$(echo "$old_records" |grep _acme-challenge |cut -f 1)
         for old_record in $old_records; do
-            $BIN/v-delete-dns-record $user $domain $old_record
+            $BIN/v-delete-dns-record "$user" "$domain" "$old_record"
         done
-        $BIN/v-add-dns-record $user $domain "_acme-challenge" "TXT" $record
-        check_result $? "DNS _acme-challenge record wasn't created"
+        $BIN/v-add-dns-record "$user" "$domain" "_acme-challenge" "TXT" "$record"
+        exitstatus=$?
+        echo "[$(date)] : v-add-dns-record \"$user\" \"$domain\" \"_acme-challenge\" \"TXT\" \"$record\"" >> /usr/local/vesta/log/letsencrypt.log
+        if [ "$exitstatus" -ne 0  ]; then
+            echo "[$(date)] : EXIT=DNS _acme-challenge record wasn't created" >> /usr/local/vesta/log/letsencrypt.log
+        fi
+        check_result $exitstatus "DNS _acme-challenge record wasn't created"
     else
         if [ "$WEB_SYSTEM" = 'nginx' ] || [ ! -z "$PROXY_SYSTEM" ]; then
-            conf="$HOMEDIR/$user/conf/web/nginx.$domain.conf_letsencrypt"
-            sconf="$HOMEDIR/$user/conf/web/snginx.$domain.conf_letsencrypt"
-            if [ ! -e "$conf" ]; then
-                echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' \
-                    > $conf
-                echo '    default_type text/plain;' >> $conf
-                echo '    return 200 "$1.'$THUMB'";' >> $conf
-                echo '}' >> $conf
+            if [ -f "/usr/local/vesta/web/inc/nginx_proxy" ]; then
+                #  if vesta is behind main nginx
+                well_known="$HOMEDIR/$user/web/$domain/public_html/.well-known"
+                acme_challenge="$well_known/acme-challenge"
+                mkdir -p $acme_challenge
+                echo "$token.$THUMB" > $acme_challenge/$token
+                echo "[$(date)] : in $acme_challenge/$token we put: $token.$THUMB" >> /usr/local/vesta/log/letsencrypt.log
+                chown -R $user:$user $well_known
+            else
+                # default nginx method
+                conf="$HOMEDIR/$user/conf/web/nginx.$domain.conf_letsencrypt"
+                sconf="$HOMEDIR/$user/conf/web/snginx.$domain.conf_letsencrypt"
+                # if [ ! -e "$conf" ]; then
+                    echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' \
+                        > $conf
+                    echo '    default_type text/plain;' >> $conf
+                    echo '    return 200 "$1.'$THUMB'";' >> $conf
+                    echo '}' >> $conf
+                # fi
+                echo "[$(date)] : in $conf we put: $THUMB" >> /usr/local/vesta/log/letsencrypt.log
+                if [ ! -e "$sconf" ]; then
+                    ln -s "$conf" "$sconf"
+                fi
+                echo "[$(date)] : v-restart-proxy" >> /usr/local/vesta/log/letsencrypt.log 
+                $BIN/v-restart-proxy
+                if [ -z "$PROXY_SYSTEM" ]; then
+                    # apache-less variant
+                    echo "[$(date)] : v-restart-web" >> /usr/local/vesta/log/letsencrypt.log 
+                    $BIN/v-restart-web
+                fi
+                exitstatus=$?
+                if [ "$exitstatus" -ne 0  ]; then
+                    echo "[$(date)] : EXIT=Proxy restart failed = $exitstatus" >> /usr/local/vesta/log/letsencrypt.log
+                fi
+                check_result $exitstatus "Proxy restart failed" >/dev/null
             fi
-            if [ ! -e "$sconf" ]; then
-                ln -s "$conf" "$sconf"
-            fi
-            $BIN/v-restart-proxy
-            check_result $? "Proxy restart failed" >/dev/null
-
         else
             well_known="$HOMEDIR/$user/web/$domain/public_html/.well-known"
             acme_challenge="$well_known/acme-challenge"
             mkdir -p $acme_challenge
             echo "$token.$THUMB" > $acme_challenge/$token
             chown -R $user:$user $well_known
+            echo "[$(date)] : in $acme_challenge/$token we put: $token.$THUMB" >> /usr/local/vesta/log/letsencrypt.log
+            # $BIN/v-restart-web
+            # check_result $? "Web restart failed" >/dev/null
         fi
-        $BIN/v-restart-web
-        check_result $? "Web restart failed" >/dev/null
     fi
 
     # Requesting ACME validation / STEP 5
+    echo "[$(date)] : --- Requesting ACME validation / STEP 5 ---" >> /usr/local/vesta/log/letsencrypt.log
     validation_check=$(echo "$answer" |grep '"valid"')
+    echo "[$(date)] : validation_check=$validation_check" >> /usr/local/vesta/log/letsencrypt.log
     if [[ ! -z "$validation_check" ]]; then
         validation='valid'
     else
@@ -198,22 +263,33 @@ for auth in $authz; do
     # Doing pol check on status
     i=1
     while [ "$validation" = 'pending' ]; do
+        echo "[$(date)] : - Doing pol check on status" >> /usr/local/vesta/log/letsencrypt.log
         payload='{}'
+        echo "[$(date)] : query_le_v2 \"$url\" \"$payload\" \"$nonce\"" >> /usr/local/vesta/log/letsencrypt.log
         answer=$(query_le_v2 "$url" "$payload" "$nonce")
+        echo "[$(date)] : answer=$answer" >> /usr/local/vesta/log/letsencrypt.log
         validation=$(echo "$answer"|grep -A1 $proto |tail -n1|cut -f4 -d \")
+        echo "[$(date)] : validation=$validation" >> /usr/local/vesta/log/letsencrypt.log
         nonce=$(echo "$answer" |grep -i nonce |cut -f2 -d \ |tr -d '\r\n')
+        echo "[$(date)] : nonce=$nonce" >> /usr/local/vesta/log/letsencrypt.log
         status=$(echo "$answer"|grep HTTP/ |tail -n1 |cut -f 2 -d ' ')
+        echo "[$(date)] : status=$status" >> /usr/local/vesta/log/letsencrypt.log
         if [[ "$status" -ne 200 ]]; then
+            echo "[$(date)] : EXIT=Let's Encrypt validation status $status" >> /usr/local/vesta/log/letsencrypt.log
             check_result $E_CONNECT "Let's Encrypt validation status $status"
         fi
 
         i=$((i + 1))
         if [ "$i" -gt 10 ]; then
+            echo "[$(date)] : EXIT=Let's Encrypt domain validation timeout" >> /usr/local/vesta/log/letsencrypt.log
             check_result $E_CONNECT "Let's Encrypt domain validation timeout"
         fi
-        sleep $((i*2))
+        sleeping=$((i*2))
+        echo "[$(date)] : sleep $sleeping (i=$i)" >> /usr/local/vesta/log/letsencrypt.log
+        sleep $sleeping
     done
     if [ "$validation" = 'invalid' ]; then
+        echo "[$(date)] : EXIT=Let's Encrypt domain verification failed" >> /usr/local/vesta/log/letsencrypt.log
         check_result $E_CONNECT "Let's Encrypt domain verification failed"
     fi
 done
@@ -224,42 +300,69 @@ ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "info@$domain" "US" "California"\
     "San Francisco" "Vesta" "IT" "$aliases" |tail -n1 |awk '{print $2}')
 
 # Sending CSR to finalize order / STEP 6
+echo "[$(date)] : --- Sending CSR to finalize order / STEP 6 ---" >> /usr/local/vesta/log/letsencrypt.log
+
 csr=$(openssl req -in $ssl_dir/$domain.csr -outform DER |encode_base64)
 payload='{"csr":"'$csr'"}'
+echo "[$(date)] : query_le_v2 \"$finalize\" \"$payload\" \"$nonce\"" >> /usr/local/vesta/log/letsencrypt.log
 answer=$(query_le_v2 "$finalize" "$payload" "$nonce")
+echo "[$(date)] : answer=$answer" >> /usr/local/vesta/log/letsencrypt.log
 nonce=$(echo "$answer" |grep -i nonce |cut -f2 -d \ |tr -d '\r\n')
+echo "[$(date)] : nonce=$nonce" >> /usr/local/vesta/log/letsencrypt.log
 status=$(echo "$answer"|grep HTTP/ |tail -n1 |cut -f 2 -d ' ')
+echo "[$(date)] : status=$status" >> /usr/local/vesta/log/letsencrypt.log
 certificate=$(echo "$answer"|grep 'certificate":' |cut -f4 -d '"')
+echo "[$(date)] : certificate=$certificate" >> /usr/local/vesta/log/letsencrypt.log
 if [[ "$status" -ne 200 ]]; then
+    echo "[$(date)] : EXIT=Let's Encrypt finalize bad status $status" >> /usr/local/vesta/log/letsencrypt.log
     check_result $E_CONNECT "Let's Encrypt finalize bad status $status"
 fi
 
 # Downloading signed certificate / STEP 7
+echo "[$(date)] : --- Downloading signed certificate / STEP 7 ---" >> /usr/local/vesta/log/letsencrypt.log
+echo "[$(date)] : query_le_v2 \"$certificate\" \"\" \"$nonce\"" >> /usr/local/vesta/log/letsencrypt.log
 answer=$(query_le_v2 "$certificate" "" "$nonce" "$ssl_dir/$domain.pem")
+echo "[$(date)] : answer=$answer" >> /usr/local/vesta/log/letsencrypt.log
 status=$(echo "$answer"|grep HTTP/ |tail -n1 |cut -f 2 -d ' ')
+echo "[$(date)] : status=$status" >> /usr/local/vesta/log/letsencrypt.log
 if [[ "$status" -ne 200 ]]; then
     [ -d "$ssl_dir" ] && rm -rf "$ssl_dir"
+    echo "[$(date)] : EXIT=Let's Encrypt downloading signed cert failed status: $status" >> /usr/local/vesta/log/letsencrypt.log
     check_result $E_NOTEXIST "Let's Encrypt downloading signed cert failed status: $status"
 fi
 
 # Splitting up downloaded pem
-crt_end=$(grep -n END $ssl_dir/$domain.pem |head -n1 |cut -f1 -d:)
+# echo "[$(date)] : - Splitting up downloaded pem" >> /usr/local/vesta/log/letsencrypt.log
+crt_end=$(grep -n 'END CERTIFICATE' $ssl_dir/$domain.pem |head -n1 |cut -f1 -d:)
+# echo "[$(date)] : crt_end=$crt_end" >> /usr/local/vesta/log/letsencrypt.log
 head -n $crt_end $ssl_dir/$domain.pem > $ssl_dir/$domain.crt
 
 pem_lines=$(wc -l $ssl_dir/$domain.pem |cut -f 1 -d ' ')
-ca_end=$(grep -n  "BEGIN" $ssl_dir/$domain.pem |tail -n1 |cut -f 1 -d :)
+# echo "[$(date)] : pem_lines=$pem_lines" >> /usr/local/vesta/log/letsencrypt.log
+ca_end=$(grep -n 'BEGIN CERTIFICATE' $ssl_dir/$domain.pem |tail -n1 |cut -f 1 -d :)
+# echo "[$(date)] : ca_end=$ca_end" >> /usr/local/vesta/log/letsencrypt.log
 ca_end=$(( pem_lines - crt_end + 1 ))
+# echo "[$(date)] : ca_end=$ca_end" >> /usr/local/vesta/log/letsencrypt.log
 tail -n $ca_end $ssl_dir/$domain.pem > $ssl_dir/$domain.ca
+
+# Temporary fix for double "END CERTIFICATE"
+if [[ $(head -n 1 $ssl_dir/$domain.ca) = "-----END CERTIFICATE-----" ]]; then
+    sed -i '1,2d' $ssl_dir/$domain.ca
+fi
 
 # Adding SSL
 ssl_home=$(search_objects 'web' 'LETSENCRYPT' 'yes' 'SSL_HOME')
 $BIN/v-delete-web-domain-ssl $user $domain >/dev/null 2>&1
+echo "[$(date)] : v-add-web-domain-ssl $user $domain $ssl_dir $ssl_home" >> /usr/local/vesta/log/letsencrypt.log
 $BIN/v-add-web-domain-ssl $user $domain $ssl_dir $ssl_home
-if [ "$?" -ne '0' ]; then
+exitstatus=$?
+echo "[$(date)] : v-add-web-domain-ssl status: $exitstatus" >> /usr/local/vesta/log/letsencrypt.log
+if [ "$exitstatus" -ne '0' ]; then
     touch $VESTA/data/queue/letsencrypt.pipe
     sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
+    echo "[$(date)] : EXIT=$domain certificate installation failed" >> /usr/local/vesta/log/letsencrypt.log
     send_notice 'LETSENCRYPT' "$domain certificate installation failed"
-    check_result $? "SSL install" >/dev/null
+    check_result $exitstatus "SSL install" >/dev/null
 fi
 
 # Adding LE autorenew cronjob
@@ -276,6 +379,7 @@ if [ -z "$LETSENCRYPT" ]; then
 fi
 update_object_value 'web' 'DOMAIN' "$domain" '$LETSENCRYPT' 'yes'
 
+reset_web_counter "$user" "$domain" 'LETSENCRYPT_FAIL_COUNT'
 
 #----------------------------------------------------------#
 #                       Vesta                              #
@@ -287,7 +391,7 @@ sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
 
 # Notifying user
 send_notice 'LETSENCRYPT' "$domain SSL has been installed successfully"
-
+echo "[$(date)] : EXIT=***** $domain SSL has been installed successfully *****" >> /usr/local/vesta/log/letsencrypt.log
 
 # Logging
 log_event "$OK" "$ARGUMENTS"
