@@ -561,7 +561,7 @@ mv $VESTA/conf/* $vst_backups/vesta > /dev/null 2>&1
 
 # Excluding packages
 if [ "$nginx" = 'no'  ]; then
-    software=$(echo "$software" | sed -e "s/^nginx//")
+    software=$(echo "$software" | sed -e "s/ nginx/ /")
 fi
 if [ "$apache" = 'no' ]; then
     software=$(echo "$software" | sed -e "s/httpd//")
