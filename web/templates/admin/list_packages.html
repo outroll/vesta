@@ -138,6 +138,14 @@ sort-star="<?if($_SESSION['favourites']['PACKAGE'][$key] == 1) echo '1'; else ec
                     </div>
                   </div>
                   <? } ?>
+                     <? if (!empty($_SESSION['WEB_BACKEND'])) { ?>
+                  <div class="l-unit__stat-cols clearfix">
+                    <div class="l-unit__stat-col l-unit__stat-col--left"><?=__('Backend Template')?>:</div>
+                    <div class="l-unit__stat-col l-unit__stat-col--right">
+                      <b><?=$data[$key]['BACKEND_TEMPLATE']?></b>
+                    </div>
+                  </div>
+                  <? } ?>
                 </td>
                 <td>
                   <div class="l-unit__stat-cols clearfix">
