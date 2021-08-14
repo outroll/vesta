@@ -357,6 +357,11 @@ if [ "$proftpd" = 'yes' ]; then
     echo '   - ProFTPD FTP Server'
 fi
 
+# LE SSL for hostname
+if [ "$ssl" = 'yes' ]; then
+    echo '   - LE SSL for hostname'
+fi
+
 # Softaculous
 if [ "$softaculous" = 'yes' ]; then
     echo '   - Softaculous Plugin'
