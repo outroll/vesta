@@ -112,7 +112,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
                     }
 
                     // Regenerate session id to prevent session fixation
-                    session_regenerate_id();
+                    session_regenerate_id(true);
 
                     // Redirect request to control panel interface
                     if (!empty($_SESSION['request_uri'])) {
@@ -158,7 +158,8 @@ if (empty($_SESSION['language'])) {
 }
 
 // Generate CSRF token
-$_SESSION['token'] = md5(uniqid(mt_rand(), true));
+$token = bin2hex(file_get_contents('/dev/urandom', false, null, 0, 16));
+$_SESSION['token'] = $token;
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n/'.$_SESSION['language'].'.php');
 require_once('../templates/header.html');
