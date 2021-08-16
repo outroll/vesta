@@ -24,7 +24,7 @@ function _translate() {
 
     // Load language file (if not loaded yet)
     if (!isset($LANG[$l])) {
-        require_once($_SERVER['DOCUMENT_ROOT']."/inc/i18n/$l.php");
+        require_once($_SERVER['DOCUMENT_ROOT']."/inc/i18n/".basename($l).".php");
     }
 
     //if (!isset($LANG[$l][$key])) file_put_contents('/somewhere/something.log', "$key\n", FILE_APPEND);
