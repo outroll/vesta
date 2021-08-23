@@ -258,9 +258,6 @@ if [ ! -e '/usr/bin/wget' ]; then
     check_result $? "Can't install wget"
 fi
 
-# Installing gnupg
-apt-get -y install gnupg2
-
 # Checking repository availability
 wget -q "c.vestacp.com/deb_signing.key" -O /dev/null
 check_result $? "No access to Vesta repository"
