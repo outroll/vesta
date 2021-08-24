@@ -14,6 +14,9 @@ if ($_SESSION['user'] != 'admin') {
 // Get server hostname
 $v_hostname = exec('hostname');
 
+// Get server port
+$port = $_SERVER['SERVER_PORT'];
+
 // List available timezones and get current one
 $v_timezones = list_timezones();
 exec (VESTA_CMD."v-get-sys-timezone", $output, $return_var);
@@ -131,6 +134,14 @@ if (!empty($_POST['save'])) {
         check_return_code($return_var,$output);
         unset($output);
         $v_hostname = $_POST['v_hostname'];
+    }
+
+     // Change port
+     if ((!empty($_POST['port'])) && ($port != $_POST['port'])) {
+        exec (VESTA_CMD."v-change-vesta-port ".escapeshellarg($_POST['port']), $output, $return_var);
+        check_return_code($return_var,$output);
+        unset($output);
+        $port = $_POST['port'];
     }
 
     // Change timezone
