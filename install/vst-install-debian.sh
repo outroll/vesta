@@ -1387,6 +1387,8 @@ if [ "$port" != "8083" ]; then
     $VESTA/bin/v-change-vesta-port $port
 fi
 
+echo "NOTIFY_ADMIN_FULL_BACKUP='$email'" >> $VESTA/conf/vesta.conf
+
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
 #----------------------------------------------------------#
