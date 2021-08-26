@@ -50,7 +50,6 @@ help() {
   -k, --named             Install Bind             [yes|no]  default: yes
   -m, --mysql             Install MySQL            [yes|no]  default: yes
   -g, --postgresql        Install PostgreSQL       [yes|no]  default: no
-  -d, --mongodb           Install MongoDB          [yes|no]  unsupported
   -x, --exim              Install Exim             [yes|no]  default: yes
   -z, --dovecot           Install Dovecot          [yes|no]  default: yes
   -c, --clamav            Install ClamAV           [yes|no]  default: yes
@@ -65,6 +64,7 @@ help() {
   -s, --hostname          Set hostname
   -u, --ssl               Add LE SSL for hostname  [yes|no]  default: no
   -e, --email             Set admin email
+  -d, --port              Set Vesta port
   -p, --password          Set admin password
   -f, --force             Force installation
   -h, --help              Print this help
@@ -135,7 +135,6 @@ for arg; do
         --named)                args="${args}-k " ;;
         --mysql)                args="${args}-m " ;;
         --postgresql)           args="${args}-g " ;;
-        --mongodb)              args="${args}-d " ;;
         --exim)                 args="${args}-x " ;;
         --dovecot)              args="${args}-z " ;;
         --clamav)               args="${args}-c " ;;
@@ -150,6 +149,7 @@ for arg; do
         --hostname)             args="${args}-s " ;;
         --ssl)                  args="${args}-u " ;;
         --email)                args="${args}-e " ;;
+        --port)                 args="${args}-d " ;;
         --password)             args="${args}-p " ;;
         --force)                args="${args}-f " ;;
         --help)                 args="${args}-h " ;;
@@ -160,7 +160,7 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:u:e:p:fh" Option; do
+while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:o:q:l:y:s:u:e:d:p:fh" Option; do
     case $Option in
         a) apache=$OPTARG ;;            # Apache
         n) nginx=$OPTARG ;;             # Nginx
@@ -185,6 +185,7 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:u:e:p:fh" Option; do
         s) servername=$OPTARG ;;        # Hostname
         u) ssl=$OPTARG ;;               # Add Let's Encrypt SSL for hostname
         e) email=$OPTARG ;;             # Admin email
+        d) port=$OPTARG ;;              # Vesta port
         p) vpass=$OPTARG ;;             # Admin password
         f) force='yes' ;;               # Force install
         h) help ;;                      # Help
@@ -395,6 +396,11 @@ if [ "$interactive" = 'yes' ]; then
         read -p 'Please enter admin email address: ' email
     fi
 
+     # Asking for Vesta port
+    if [ -z "$port" ]; then
+        read -p 'Please enter Vesta port number (press enter for 8083): ' port
+    fi
+
     # Asking to set FQDN hostname
     if [ -z "$servername" ]; then
         read -p "Please enter FQDN hostname [$(hostname -f)]: " servername
@@ -426,6 +432,11 @@ fi
 # Set email if it wasn't set
 if [ -z "$email" ]; then
     email="admin@$servername"
+fi
+
+# Set port if it wasn't set
+if [ -z "$port" ]; then
+    port="8083"
 fi
 
 # Defining backup directory
@@ -1368,13 +1379,12 @@ $VESTA/upd/add_notifications.sh
 # Adding cronjob for autoupdates
 $VESTA/bin/v-add-cron-vesta-autoupdate
 
-# Add Let's Encrypt SSL for hostname and enable auto-renew
-if [ "$ssl" = 'yes' ]; then
-    $VESTA/bin/v-add-letsencrypt-domain 'admin' $servername '' 'yes'
-    $VESTA/bin/v-update-host-certificate admin $servername
-    echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
+if [ "$port" != "8083" ]; then
+    echo "=== Set Vesta port: $port"
+    $VESTA/bin/v-change-vesta-port $port
 fi
 
+echo "NOTIFY_ADMIN_FULL_BACKUP='$email'" >> $VESTA/conf/vesta.conf
 
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
@@ -1390,7 +1400,7 @@ fi
 echo -e "Congratulations, you have just successfully installed \
 Vesta Control Panel
 
-    https://$ip:8083
+    https://$ip:$port
     username: admin
     password: $vpass
 
