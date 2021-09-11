@@ -80,7 +80,7 @@ echo "[$(date)] : v-add-letsencrypt-domain $domain [$aliases]" >> /usr/local/ves
 # check if alias is the letsencrypt wildcard domain, if not, make the normal checks
 if [[ "$aliases" != "*.$domain" ]]; then
     for alias in $(echo "$aliases" |tr ',' '\n' |sort -u); do
-        check_alias="$(echo $ALIAS |tr ',' '\n' |grep ^$alias$)"
+        check_alias="$(echo $alias |tr ',' '\n' |grep ^$alias$)"
         if [ -z "$check_alias" ]; then
             echo "[$(date)] : EXIT=domain alias $alias doesn't exist" >> /usr/local/vesta/log/letsencrypt.log
             check_result $E_NOTEXIST "domain alias $alias doesn't exist"
