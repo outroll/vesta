@@ -908,9 +908,9 @@ if [ "$apache" = 'yes'  ]; then
     a2enmod headers
     mkdir -p /etc/apache2/conf.d
     echo > /etc/apache2/conf.d/vesta.conf
-    echo "# Powered by vesta" > /etc/apache2/sites-available/default
-    echo "# Powered by vesta" > /etc/apache2/sites-available/default-ssl
-    echo "# Powered by vesta" > /etc/apache2/ports.conf
+    echo "# Server control panel by VESTA" > /etc/apache2/sites-available/default
+    echo "# Server control panel by VESTA" > /etc/apache2/sites-available/default-ssl
+    echo "# Server control panel by VESTA" > /etc/apache2/ports.conf
     echo -e "/home\npublic_html/cgi-bin" > /etc/apache2/suexec/www-data
     touch /var/log/apache2/access.log /var/log/apache2/error.log
     mkdir -p /var/log/apache2/domains
