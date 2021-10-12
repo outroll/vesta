@@ -1,0 +1,16 @@
+.r-menu {
+  > div {
+    > button {
+      font-size: 13px;
+      background: white;
+      border-color: white;
+      color: gray;
+
+      &:hover {
+        background: white;
+        border-color: white;
+        color: gray;
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+.edit-web {
+  .ssl-support {
+    .additional-info {
+      display: flex;
+      flex-direction: column;
+
+      span {
+        &:nth-child(1) {
+          width: 120px;
+        }
+
+        &:nth-child(2) {
+          width: fit-content;
+        }
+      }
+    }
+
+    a.generate-csr {
+      text-transform: initial;
+      text-decoration: none;
+      color: #2C9491;
+      font-weight: bold;
+
+      &:hover {
+        color: #ff6701;
+      }
+    }
+  }
+}

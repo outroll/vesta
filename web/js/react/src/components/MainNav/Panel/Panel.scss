@@ -1,0 +1,258 @@
+.top-panel.small-device {
+  display: none;
+}
+
+.top-panel {
+  display: flex;
+  flex-direction: row;
+  font-size: 12px;
+  position: fixed;
+  width: 100%;
+  text-align: center;
+  color: white;
+  background: #111;
+  height: 34px;
+  align-items: center;
+  padding: 0 13%;
+  z-index: 2;
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    height: 100%;
+
+    .logo .logo-img {
+      background-image: url("/images/sprite.png?1446554103");
+      background-position: -117px -57px;
+      background-repeat: no-repeat;
+      height: 22px;
+      width: 70px;
+      margin-left: -2px;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+
+    div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      a, button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 5px;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+        color: white;
+      }
+
+      button {
+        background: none;
+        border: none;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    div.active {
+      background: white;
+      
+      a, button {
+        color: #f79b44;
+        font-weight: bold;
+
+        &:hover {
+          color: white;
+        }
+
+        &:active {
+          background: #ff6701;
+          color: white;
+        }
+      }
+
+      &:hover {
+        background: #f79b44;
+      }
+    }
+  }
+
+  .left-menu {
+    width: 80%;
+    padding-left: 0;
+
+    div {
+      width: 7rem;
+      height: 100%;
+
+      &:hover {
+        background: #f79b44;
+      }
+    }
+
+    div.logo {
+      img {
+        width: 90%;
+      }
+
+      &:hover {
+        background: transparent;
+      }
+    }
+
+    div.fm {
+      width: 10rem;
+    }
+
+    .top-link.focus {
+      a, button {
+        color: #5edad0;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .profile-menu {
+    width: 20%;
+
+    div {
+      width: 4rem;
+      height: 100%;
+    }
+
+    div.bell {
+      width: auto;
+      color: #C0E60E;
+
+      svg {
+        border-radius: 30px;
+        width: 25px;
+        height: 25px;
+        padding: 5px;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.4);
+        }
+
+        &:hover {
+          background: #c0e6198a;
+        }
+      }
+    }
+
+    div + div a {
+      color: #a4abad;
+      font-weight: 700;
+    
+      &:hover {
+        color: #ffd62e;
+      }
+
+      &:active {
+        color: #f79b44;
+      }
+    }
+
+    div + div + div a,
+    div + div + div button {
+      color: white;
+      cursor: pointer;
+      font-weight: 100;
+
+      &:hover {
+        color: #C0E60E;
+      }
+
+      &:active {
+        color: #ffd62e;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1350px) {
+  .top-panel {
+    padding: 0 10%;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .top-panel {
+    padding: 0 5%;
+  }
+}
+
+//Small Devices
+@media (max-width: 900px) {
+  .top-panel {
+    display: none;
+  }
+
+  .top-panel.small-device {
+    display: flex;
+    padding: 0;
+
+    > .container {
+      justify-content: center;
+      align-items: center;
+      width: 30%;
+    }
+
+    .profile-menu {
+      padding-left: 10%;
+    }
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+
+      .bar {
+        height: 2px;
+        margin: 2px;
+        width: 20px;
+        background: white;
+      }
+    }
+  }
+
+  @keyframes toggleNav {
+    from {
+      transform: translateY(-20px);
+    }
+
+    to {
+      transform: translateY(50px);
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .top-panel.small-device {
+    .profile-menu {
+      padding: 0;
+      margin-right: 5px;
+
+      .bell {
+        width: 20%;
+      }
+
+      .bell + div {
+        width: 40%;
+      }
+
+      .bell + div + div {
+        width: 40%;
+      }
+    }
+  }
+}

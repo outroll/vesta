@@ -1,0 +1,35 @@
+.edit-template.add-package {
+  form {
+    label.label-wrapper {
+      display: flex;
+      align-items: flex-end;
+      width: fit-content;
+
+      span {
+        font-weight: normal;
+        text-transform: uppercase;
+        margin-left: 5px;
+        font-size: 12px;
+      }
+
+      span.lowercase {
+        text-transform: lowercase;
+      }
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+
+      svg {
+        cursor: pointer;
+        color: #bec4ca;
+        margin-left: 10px;
+
+        &:hover {
+          color: #abb1b6;
+        }
+      }
+    }
+  }
+}

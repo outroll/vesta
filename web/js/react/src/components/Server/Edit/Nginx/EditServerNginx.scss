@@ -1,0 +1,36 @@
+.content .edit-template.edit-nginx {
+  .toolbar {
+    .search-toolbar-name {
+      width: fit-content;
+    }
+
+    .link {
+      width: fit-content;
+      margin-left: 15px;
+
+      a {
+        text-decoration: none;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: rgb(119, 119, 119);
+        font-weight: 700;
+
+        &:hover {
+          color: #ff6701;
+        }
+      }
+    }
+  }
+
+  textarea {
+    width: 75%;
+  }
+
+  .checkbox-wrapper label {
+    text-transform: capitalize;
+  }
+
+  svg {
+    margin-left: 5px;
+  }
+}

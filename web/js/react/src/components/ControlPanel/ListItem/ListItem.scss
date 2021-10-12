@@ -1,0 +1,148 @@
+.list-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-left: 15px;
+  font-size: 18px;
+  position: relative;
+  padding: 25px 0;
+  border-left: 2px solid white;
+  border-bottom: 1px solid #ddd;
+  color: rgb(104, 104, 104);
+
+  &:hover .l-col div.star div svg,
+  &:hover .actions {
+    opacity: 1;
+  }
+
+  .l-col {
+    .suspended {
+      letter-spacing: 3px;
+    }
+    
+    .text-status {
+      font-size: 10px;
+    }
+
+    div.star {
+      display: flex;
+      align-items: center;
+  
+      div.checkbox {
+        margin: 0 25% 4px 0;
+      }
+    }
+  }
+
+  .r-col {
+    .stats {
+      div > span {
+        width: 50%;
+        text-align: left;
+      }
+  
+      .c-2 div > span {
+        width: 50%;
+      }
+    }
+
+    div.bandwidth span,
+    div.disk span {
+      width: auto;
+    }
+  }
+
+  .date {
+    font-size: 13px;
+    margin: 20px 0 10px;
+  }
+}
+
+.list-item.toggled {
+  background: #feef9a;
+}
+
+.list-item.starred {
+  border-left: 2px solid #ff6701;
+
+  .l-col div.star {
+    div > svg {
+      opacity: 1;
+      color: #ff6701;
+    }
+  }
+}
+
+.list-item.suspended {
+  background: #eaeaea;
+  color: #c0c0c0;
+
+  .r-col div, .r-col span {
+    color: #c0c0c0 !important;
+  }
+}
+
+.list-item.suspended.toggled {
+  background: #f2eab8;
+  color: #b2ac87;
+
+  .l-col,
+  .r-col .name,
+  .r-col .stats {
+    color: #b2ac87 !important;
+  }
+}
+
+.list-item.outdated {
+  background: #ffcaca;
+  border-left: 5px solid #ff6f6f;
+}
+
+.list-item.toggled.outdated {
+  background: #755d5d;
+  color: black;
+
+  .stat {
+    color: black;
+  }
+}
+
+.list-item.stopped {
+  background: #eaeaea;
+}
+
+.list-item.focused {
+  border-left: 2px solid #5edad0;
+
+  .actions {
+    opacity: 1;
+
+    div > a,
+    div > button {
+      padding-top: 6.5px;
+      padding-bottom: 6.5px;
+
+      .shortcut-button {
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        margin-left: 15px;
+        background: #69a298;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+      }
+
+      .shortcut-button.html-unicode {
+        align-items: flex-end;
+      }
+
+      .shortcut-button.del {
+        text-transform: capitalize;
+        font-size: 10px;
+      }
+    }
+  }
+}

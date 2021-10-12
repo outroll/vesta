@@ -1,0 +1,79 @@
+.panel-wrapper {
+  .logo-img {
+    background-image: url("/images/sprite.png?1446554103");
+    background-position: -117px -57px;
+    background-repeat: no-repeat;
+    height: 22px;
+    width: 70px;
+    margin-left: -2px;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  .nav-link {
+    padding: 0;
+  }
+
+  .left-menu {
+    a, button {
+      padding: 0 !important;
+      outline: none;
+    }
+    
+    > div.nav-link {
+      padding: 0;
+      width: fit-content;
+    }
+  }
+
+  .profile-menu {
+    > div:nth-child(1) a {
+      &:hover {
+        color: #ffd62e;
+      }
+
+      &:active {
+        color: #f79b44;
+      }
+    }
+
+    > div:nth-child(2) a {
+      &:hover {
+        color: #C0E60E;
+      }
+
+      &:active {
+        color: #ffd62e;
+      }
+    }
+
+    .user {
+      color: #a4abad;
+      font-weight: 700;
+    
+      &:hover {
+        color: #ffd62e;
+      }
+
+      &:active {
+        color: #f79b44;
+      }
+    }
+
+    .log-out {
+      color: white;
+      cursor: pointer;
+      font-weight: 100;
+
+      &:hover {
+        color: #C0E60E;
+      }
+
+      &:active {
+        color: #ffd62e;
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+.cron-job-generator {
+  border: 1px solid #d9d9d9;
+  padding: 1rem 1.5rem;
+  margin-left: 2rem;
+  width: 90%;
+
+  .header {
+    display: flex;
+    padding: .4rem 0;
+
+    a {
+      color: #222222;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-weight: bolder;
+      margin-right: 2.3rem;
+      text-decoration: none;
+
+      &:hover {
+        color: #ff6701;
+      }
+
+      &:active {
+        color: #55C9C0;
+      }
+    }
+
+    a.active {
+      color: #ff6701;
+    }
+  }
+
+  .body {
+    padding: 2rem 0 .4rem;
+
+    form {
+
+      .form-group {
+        display: flex;
+        align-items: center;
+
+        label {
+          width: 26%;
+          font-size: 13px;
+          margin: 0;
+        }
+
+        input {
+          width: auto;
+        }
+      }
+
+      .form-group.minute select {
+        width: 70px;
+      }
+
+      .form-group select,
+      .form-group textarea {
+        border-radius: 0;
+  
+        &:hover {
+          border-color: #909090;
+        }
+  
+        &:focus,
+        &:active {
+          outline: none;
+          border-color: #55C9C0;
+          box-shadow: unset;
+        }
+      }
+
+      .form-group select {
+        padding: .4rem .25rem;
+        border-color: #d9d9d9;
+        color: #555;
+      }
+
+      .form-actions {    
+        button {
+          background: #55C9C0;
+          color: white;
+          border-radius: 3px;
+          padding: .35rem 1.1rem;
+          font-size: 14px;
+    
+          &:hover {
+            color: #555;
+            background: #5BD8CF;
+          }
+    
+          &:active {
+            color: white;
+            background: #D1D70D;
+          }
+        }
+      }
+
+      .form-group.show {
+        display: block;
+      }
+      
+      .form-group.hide {
+        display: none;
+      }
+    }
+  }
+}

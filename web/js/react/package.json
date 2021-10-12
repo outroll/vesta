@@ -1,0 +1,51 @@
+{
+  "name": "react-control-panel",
+  "author": "Alexander Osinskii",
+  "email": "alexanderosinskii@gmail.com",
+  "version": "1.0.0",
+  "private": false,
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.10.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.21",
+    "@fortawesome/free-brands-svg-icons": "^5.10.1",
+    "@fortawesome/free-solid-svg-icons": "^5.10.1",
+    "@fortawesome/react-fontawesome": "^0.1.4",
+    "axios": "^0.21.4",
+    "bootstrap": "^4.3.1",
+    "classname": "0.0.0",
+    "dayjs": "^1.10.7",
+    "jquery": "^3.5.1",
+    "node-sass": "^4.14.1",
+    "popper.js": "^1.15.0",
+    "prop-types": "^15.7.2",
+    "qs": "^6.9.4",
+    "react": "^16.10.2",
+    "react-codemirror": "^1.0.0",
+    "react-dom": "^16.10.2",
+    "react-helmet": "^6.1.0",
+    "react-html-parser": "^2.0.2",
+    "react-redux": "^7.2.1",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^3.4.1",
+    "react-toastify": "^5.3.1",
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-thunk": "^2.3.0",
+    "validate.js": "^0.13.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

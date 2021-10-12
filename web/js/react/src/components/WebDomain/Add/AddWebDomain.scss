@@ -1,0 +1,26 @@
+.add-web {
+  form {
+    .form-group {
+      .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+
+        label {
+          margin: 0 10px;
+        };
+      }
+    }
+
+    .advanced-options-button {
+      button {
+        display: flex;
+        align-items: center;        
+        padding: 0; 
+
+        svg {
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+}

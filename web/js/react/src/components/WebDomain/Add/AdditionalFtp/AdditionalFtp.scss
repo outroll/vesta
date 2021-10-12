@@ -1,0 +1,48 @@
+.additional-ftp {
+  .title {
+    span:nth-child(1) {
+      color: #555;
+      font-size: 15px;
+      font-weight: bold;
+    }
+  }
+
+  .form-transform {
+    margin-top: 15px;
+    transform: translateX(3rem);
+
+    .form-group.username {
+      display: flex;
+      flex-direction: column;
+  
+      label {
+        margin: 0;
+      }
+  
+      span {
+        font-size: 10pt;
+        color: #777;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .input-wrapper {
+        display: flex;
+        align-items: center;
+
+        span {
+          color: #777;
+          font-size: 15px;
+          font-style: italic;
+          font-weight: normal;
+          margin-left: 15px;
+        }
+      }
+    }
+  }
+
+  .path-note {
+    font-weight: bold;
+    color: #555;
+  }
+}

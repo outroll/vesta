@@ -1,0 +1,19 @@
+div.edit-item {
+  form {
+    label.label-wrapper {
+      align-items: center;
+
+      span {
+        text-transform: lowercase;
+      }
+    }
+
+    div.assigned-user {
+      padding-left: 25px;
+
+      select {
+        width: 48.4%;
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+.backups-restore-settings {
+  .list-item {
+    .r-col {
+      .stats {
+        .c-1 {
+          margin: 12px 0 0;
+        }
+      }
+    }
+
+    .actions {
+      > div {
+        font-weight: bolder;
+        text-transform: uppercase;
+        height: 38px;
+    
+        a, button {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #777;
+          padding: 10px 15px;
+          text-decoration: none;
+    
+          &:hover {
+            background: rgb(145, 145, 145);
+            color: white;
+    
+            svg {
+              color: white;
+            }
+          }
+        }
+    
+        svg {
+          color: #777;
+        }
+      }
+
+      .link-restore {
+        svg {
+          color: white;
+        }
+
+        &:hover {
+          background-color: #9fbf0c;
+        }
+      }
+    }
+  }
+}

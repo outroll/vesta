@@ -1,0 +1,97 @@
+.content {
+  padding: 0 13%;
+  padding-bottom: 1%;
+  margin-top: 5px;
+
+  > div > div.total {
+    margin-top: 25px;
+    margin-left: 14%;
+    font-size: 12px;
+    color: #929292;
+  }
+}
+
+@media (max-width: 1350px) {
+  .content {
+    padding: 0 10%;
+  }
+}
+
+@media (max-width: 1000px) {
+  .content {
+    padding: 5%;
+  }
+}
+
+@media (max-width: 800px) {
+  .content {
+    padding-top: 5%;
+  }
+}
+
+.fixed-buttons {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  > div {
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 50%;
+    background: #c3c3c3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    &:hover {
+      background: #55c9c0;
+    }
+  
+    &:active {
+      background: #51beb5;
+    }
+  
+    button {
+      background: none;
+      border: none;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      transform: scale(1.32);
+  
+      svg {
+        color: white;
+        height: 70%;
+      }
+    }
+  }
+
+  > div:first-child {
+    background: none;
+
+    &:hover {
+      background: #55c9c0;
+
+      button svg {
+        color: white;
+      }
+    }
+
+    &:active {
+      background: #51beb5;
+    }
+
+    button {
+      padding: 0;
+
+      svg {
+        color: #c3c3c3;
+      }
+    }
+  }
+}

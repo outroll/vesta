@@ -1,0 +1,79 @@
+.btn-group button {
+  border: 0;
+
+  > span {
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 5px;
+    height: 100%;
+    width: auto;
+  }
+
+  &::after {
+    display: none;
+  }
+}
+
+.dropdown-menu {
+  padding: 0;
+  border-radius: 0;
+  font-size: 13px;
+  width: 200px;
+
+  ul {
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    list-style: none;
+    height: auto;
+    width: 100%;
+    color: #333;
+
+    li {
+      display: flex;
+      width: 100%;
+      height: 37.5px;
+      border-top: 1px solid #dbdbdb;
+
+      .arrow-down {
+        float: right;
+      }
+
+      .dropdown-item {
+        &:hover {
+          background: #bdbdbd;
+        }
+      }
+
+      > span:nth-child(1) {
+        width: 75%;
+        padding: 0 5px;
+      }
+
+      > span:nth-child(2) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 25%;
+      }
+
+      span {
+        padding: 0 5px 0 10px;
+        line-height: 38px;
+      }
+
+      span.active{
+        background: #ffc900;
+      }
+
+      span + span {
+        text-align: center;
+        width: 100px;
+      }
+    }
+
+    li:nth-child(1) {
+      border-width: 0 0 1px 0;
+    }
+  }
+}

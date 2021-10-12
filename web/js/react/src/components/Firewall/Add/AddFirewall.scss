@@ -1,0 +1,9 @@
+.content .edit-template.add-firewall {
+  .toolbar .search-toolbar-name {
+    width: fit-content;
+  }
+
+  label.label-wrapper[for=ip] span {
+    text-transform: unset !important;
+  }
+}

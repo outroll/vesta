@@ -1,0 +1,34 @@
+.servers-list .list-item .star {
+  display: none;
+}
+
+.servers-list .r-col .stats .c-2 {
+  padding: 0;
+}
+
+.servers-wrapper .list-item .r-col .stats .c-3 {
+  padding: 0;
+
+  span.stat {
+    margin-left: 0;
+  }
+}
+
+.servers-wrapper .r-col {
+  padding-left: 2rem;
+
+  .server-name {
+    color: black;
+    font-size: 28px;
+  }
+}
+
+.servers-wrapper .list-item .r-col {
+  .c-3 > div > span {
+    transform: translateX(-10px);
+  }
+
+  .stats div>span {
+    width: 100%;
+  }
+}
