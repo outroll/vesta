@@ -1,0 +1,3 @@
+[submodule "web/js/react-control-panel"]
+	path = web/js/react-control-panel
+	url = https://github.com/Ozea/react-control-panel
