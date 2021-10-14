@@ -1,0 +1,21 @@
+.backups-restore-settings {
+  .toolbar {
+    .backup-details-icon {
+      svg {
+        transform: translateX(2px);
+      }
+    }
+  }
+
+  .mail-accounts-wrapper {
+    .list-item {
+      .l-col {
+        .star {
+          .checkbox + div {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}

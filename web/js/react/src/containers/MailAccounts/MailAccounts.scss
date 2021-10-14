@@ -1,0 +1,45 @@
+.mail-accounts {
+  div.subtitle {
+    color: #ff6701;
+    font-size: 12px;
+    margin: 30px 0 18px 14.3%;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+
+  .mail-accounts-wrapper {
+    > div:nth-child(2) {
+      border-top: 1px solid #ddd;
+    }
+
+    div.list-item {
+      .r-col {
+        .stat.email {
+            text-transform: none;
+        }
+      }
+    }
+  }
+
+  .footer-actions-wrapper {
+    display: flex;
+    align-items: center;
+    margin-top: 2rem;
+
+    .total {
+      margin: 0 3.5rem 0 14.3%;
+    }
+
+    .back {
+      a {
+        padding: 8px 38px;
+        color: #777;
+        background: #DFDEDD;
+        border: 1px solid #DFDEDD;
+        border-radius: 3px;
+        font-size: 13px;
+        font-weight: bold;
+      }
+    }
+  }
+}

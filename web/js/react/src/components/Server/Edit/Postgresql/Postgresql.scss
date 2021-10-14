@@ -1,0 +1,15 @@
+.content .edit-template.edit-pgsql {
+  .toolbar {
+    .search-toolbar-name {
+      width: fit-content;
+    }
+  }
+
+  textarea {
+    width: 75%;
+  }
+
+  .checkbox-wrapper label {
+    text-transform: capitalize;
+  }
+}

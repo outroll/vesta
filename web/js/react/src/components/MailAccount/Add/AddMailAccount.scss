@@ -1,0 +1,48 @@
+.content .edit-template.add-mail-account {
+  .search-toolbar-name {
+    width: fit-content;
+  }
+
+  form {
+    .r-1 {
+      display: flex;
+
+      .c-1 {
+        width: 55%;
+
+        .form-group {
+          > * {
+            width: 85%;
+          }
+
+          .password-wrapper {
+            input {
+              width: 100%;
+            }
+          }
+        }
+      }
+
+      .c-2 {
+        width: 45%;
+        border: 1px solid #d9d9d9;
+        padding: 0px 5px 12px 20px;
+      }
+    }
+
+    .r-2 {
+      > button {
+        padding-left: 0;
+        margin-bottom: 1.5rem;
+
+        svg {
+          margin-left: .75rem;
+        }
+      }
+
+      .form-group .input-wrapper {
+        display: flex;
+      }
+    }
+  }
+}

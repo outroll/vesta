@@ -1,0 +1,37 @@
+.banlist-wrapper {
+  display: flex;
+
+  > div {
+    margin-right: 15px;
+  }
+
+  .buttons-wrapper {
+    width: 100%;
+    display: flex;
+    margin-top: 4rem;
+    align-items: center;
+
+    .total {
+      margin-right: 15px;
+      margin-top: 0;
+    }
+
+    button.back {
+      font-weight: 700;
+      font-size: 13px;
+      margin-right: 10px;
+      padding: .35rem 2.25rem;
+      border-radius: 4px;
+      transition: all .2s cubic-bezier(.4,.1,.5,.85);
+      color: #777;
+      background: #dfdedd;
+      border: none;
+      box-shadow: unset;
+  
+      &:hover {
+        color: #fff;
+        background: #999;
+      }
+    }
+  }
+}

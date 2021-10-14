@@ -1,0 +1,49 @@
+.content .edit-template.edit-php {
+  .toolbar {
+    .search-toolbar-name {
+      width: fit-content;
+      color: rgb(119, 119, 119);
+    }
+    
+    .search-toolbar-name,
+    .link {
+      width: fit-content;
+
+      a {
+        text-decoration: none;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: rgb(119, 119, 119);
+        font-weight: 700;
+
+        &:hover {
+          color: #ff6701;
+        }
+      }
+    }
+
+    .link {
+      margin-left: 15px;
+
+      a {
+        color: #ff6701;
+
+        &:hover {
+          color: rgb(119, 119, 119);
+        }
+      }
+    }
+  }
+
+  textarea {
+    width: 75%;
+  }
+
+  .checkbox-wrapper label {
+    text-transform: capitalize;
+  }
+
+  svg {
+    margin-left: 5px;
+  }
+}

@@ -1,0 +1,268 @@
+$textColor: #555;
+$addButtonBackground: #9FBF0C;
+$addButtonBackgroundHover: #C0E60F;
+$optionalButtonHover: #9FBF0C;
+$optionalButtonActive: #c0e60f;
+$deleteButtonColorHover: #FF3438;
+$deleteButtonColorActive: #FF5F5F;
+$backButtonBackground: #DFDEDD;
+$backButtonBackgroundHover: #999;
+$transition: all 200ms cubic-bezier(0.4, 0.1, 0.5, 0.85);
+$errorColor: #BE5ABF;
+$successColor: $addButtonBackground;
+
+.content .edit-template {
+  padding-bottom: 2rem;
+
+  .toolbar {
+    justify-content: unset;
+  
+    > div {
+      width: 14.3%;
+      display: flex;
+      align-items: center;
+    }
+  
+    div.error,
+    div.success {
+      width: fit-content;
+  
+      span {
+        font-weight: bold;
+        font-size: 14px;
+  
+        svg {
+          font-size: 13px;
+        }
+      }
+  
+      span.error-message {
+        color: $errorColor;
+  
+        svg {
+          margin-right: 7px;
+          font-size: 13px;
+          color: $errorColor;
+        }
+      }
+  
+      span.ok-message {
+        color: $successColor;
+  
+        svg {
+          color: $successColor;
+        }
+      }
+    }
+  
+    .search-toolbar-name {
+      padding: 10px 0;
+      margin-left: 0;
+    }
+  }
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: flex;
+}
+
+.edit-item,
+.login-layout {
+  display: flex;
+  font-size: 15px;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+
+  .l-col {
+    margin-right: 1.75%;
+  }
+
+  form {
+    button,
+    a {
+      color:#2C9491;
+      font-weight: bold;
+    
+      &:hover {
+        color: #ff6701;
+      }
+    
+      &:active {
+        color: #F7D616;
+      }
+    }
+
+    button.optional {
+      &:hover {
+        color: $optionalButtonHover;
+      }
+
+      &:active {
+        color: $optionalButtonActive;
+      }
+    }
+
+    button.delete {
+      &:hover {
+        color: $deleteButtonColorHover;
+      }
+
+      &:active {
+        color: $deleteButtonColorActive;
+      }
+    }
+
+    .form-group {
+      input[type=text],
+      input[type=password],
+      input[type=email],
+      textarea,
+      select {
+        width: 50%;
+      }
+    }
+
+    width: 100%;
+
+    .form-group select,
+    .form-group textarea {
+      border-radius: 0;
+
+      &:hover {
+        border-color: #909090;
+      }
+
+      &:focus,
+      &:active {
+        outline: none;
+        border-color: #55C9C0;
+        box-shadow: unset;
+      }
+    }
+
+    textarea {
+      &:focus {
+        background: #D7F9FF;;
+      }
+    }
+
+    button {
+      background: unset;
+      border: none;
+      box-shadow: unset;
+    
+      &:focus,
+      &:active {
+        outline: none;
+      }
+    }
+    
+    input {
+      height: calc(1.5em + 0.75rem + 6px);
+      border-radius: 0;
+
+      &:hover {
+        border-color: #909090;
+      }
+
+      &:focus,
+      &:active {
+        box-shadow: unset;
+        border-color: #55C9C0;
+        background: #D7F9FF;
+      }
+    }
+    
+    label {
+      color: $textColor;
+      font-weight: bold;
+    }
+    
+    label.label-wrapper {
+      display: flex;
+      align-items: flex-end;
+      width: fit-content;
+
+      span {
+        font-weight: normal;
+        text-transform: uppercase;
+        margin-left: 5px;
+        font-size: 12px;
+      }
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+
+      label {
+        margin: 0 12px;
+      }
+    }
+
+    input {
+      color: $textColor;
+    }
+
+    .buttons-wrapper {
+      margin-top: 2.5rem;
+
+      button {
+        font-weight: bold;
+        font-size: 13px;
+        margin-right: 10px;
+        padding: .35rem 2.25rem;
+        border-radius: 4px;
+        transition: $transition;
+      }
+
+      .add {
+        color: white;
+        background: $addButtonBackground;
+
+        &:hover {
+          color: #555;
+          background: $addButtonBackgroundHover;
+        }
+      }
+
+      .back {
+        color: #777;
+        background: $backButtonBackground;
+
+        &:hover {
+          color: white;
+          background: $backButtonBackgroundHover;
+        }
+      }
+    }
+  }
+
+  .l-col {
+    padding: 20px 0 0;
+
+    .date,
+    .time {
+      margin: 10px 0 0;
+      color: #777;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .time {
+      margin: 6px 0 10px;
+    }
+
+    .status {
+      color: #9FBF0C;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+  }
+}

@@ -1,0 +1,59 @@
+$textColor: #555;
+
+.password-wrapper {
+  display: flex;
+
+  button {
+    color: #2C9491;
+
+    &:hover {
+      color: #ff6701;
+    }
+  }
+
+  span.eye {
+    margin-left: 9px;
+  }
+
+  span.eye-slash {
+    margin-left: 7px;
+  }
+}
+
+button.generate-password {
+  color:#2C9491;
+  font-weight: bold;
+
+  &:hover {
+    color: #ff6701;
+  }
+
+  &:active {
+    color: #F7D616;
+  }
+}
+
+input {
+  color: $textColor;
+}
+
+label[for=email] {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  > div {
+    display: flex;
+    align-items: center;
+
+    input {
+      height: fit-content;
+      margin: 0 10px;
+    }
+
+    label {
+      margin: 0;
+      font-size: 12px;
+    }
+  }
+}

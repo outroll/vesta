@@ -1,0 +1,11 @@
+.form-group.text-on-the-right {
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+
+    span {
+      margin-left: 15px;
+      color: #777;
+    }
+  }
+}

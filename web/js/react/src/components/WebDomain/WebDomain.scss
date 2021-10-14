@@ -1,0 +1,38 @@
+.web-stats,
+.add-ftp {
+  text-decoration: line-through;
+}
+
+.r-col {
+  .stats {
+    .c-2 {
+      margin-left: 20px;
+    }
+  }
+}
+
+.r-col {
+  .c-2 span.stat,
+  .c-3 span.stat {
+    margin-left: 1rem;
+  }
+
+  .name {
+    display: flex;
+    align-items: center;
+
+    > div:nth-child(1) {
+      width: 34%;
+    }
+
+    .dns-name-span {
+      font-style: italic;
+      color: #858585;
+      font-size: 14px;
+    }
+  }
+}
+
+div.crossed {
+  text-decoration: line-through;
+}

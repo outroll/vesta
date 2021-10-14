@@ -1,0 +1,31 @@
+.statistics-list {
+  color: #686868;
+
+  .toolbar {
+    padding-bottom: 5px;
+  }
+
+  .l-col {
+    width: 14.3%;
+
+    div.date {
+      margin-top: 25px;
+    }
+  }
+}
+
+.total {
+  margin-top: 25px;
+  margin-left: 15%;
+  font-size: 12px;
+  color: #929292;
+}
+
+.statistic-item.focused {
+  border-left: 2px solid #5edad0;
+  transform: translateX(-2px);
+
+  .r-col .date {
+    color: #5edad0;
+  }
+}

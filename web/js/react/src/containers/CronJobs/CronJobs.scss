@@ -1,0 +1,35 @@
+.r-menu {
+  > div {
+    > button {
+      font-size: 13px;
+      background: white;
+      border-color: white;
+      color: gray;
+
+      &:hover {
+        background: white;
+        border-color: white;
+        color: gray;
+      }
+    }
+  }
+}
+
+.cron-wrapper {
+  .r-col .stats > div {
+    flex: none;
+    width: 17%;
+  }
+
+  .actions {
+    > div:nth-child(1) a:hover,
+    > div:nth-child(1) button:hover {
+      background: #9fbf0c;
+    }
+
+    > div:nth-child(2) a:hover,
+    > div:nth-child(2) button:hover {
+      background: #ff3438;
+    }
+  }
+}

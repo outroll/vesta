@@ -1,0 +1,19 @@
+.statistics-list.updates {
+  .text-status {
+    display: flex;
+    margin-top: 20px;
+
+    > div.checkbox {
+      margin-bottom: 0;
+      margin-right: 10px;
+    }
+  }
+
+  .list-item .star {
+    display: none;
+  }
+
+  .r-col .c-1 {
+    margin-right: 10px;
+  }
+}

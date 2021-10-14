@@ -1,0 +1,45 @@
+.edit-template.add-db {
+  form {
+    span.italic {
+      font-style: italic;
+    }
+
+    .form-group {
+      .label-wrapper {
+        display: flex;
+
+        span.italic {
+          margin-left: 1.5rem;
+          color: #555;
+        }
+      }
+
+      .input-wrapper {
+        display: flex;
+        align-items: center;
+
+        span.italic {
+          font-size: 15px;
+          font-weight: bold;
+          margin-left: 1.5rem;
+          color: #777;
+        }
+      }
+
+      .input-wrapper {
+        span.italic {
+          font-weight: normal;
+        }
+      }
+    }
+
+    .form-group.database {
+      margin-top: 1rem;
+    }
+
+    span.prefix {
+      color: #777;
+      font-style: italic;
+    }
+  }
+}

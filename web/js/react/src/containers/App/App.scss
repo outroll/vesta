@@ -1,0 +1,84 @@
+.App {
+  font-size: 25px;
+  font-family: Arial;
+}
+
+.window {
+  background: #ececec;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .lists-container {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+.active {
+  background: #fff;
+}
+
+.progress {
+  height: 10px;
+  transition: all ease-out 0.1s;
+}
+
+.Toastify__toast-body {
+  font-size: 20px;
+  word-break: break-word;
+}
+.Toastify__toast-container {
+  top: 15em;
+}
+
+.actions {
+  div {
+    a.link-download:hover, button.link-download:hover,
+    a.link-edit:hover, button.link-edit:hover {
+      background: #9fbf0c !important;
+    }
+    
+    a.link-list:hover,
+    button.link-list:hover {
+      background: #55c9c0 !important;
+    }
+    
+    a.link-delete:hover,
+    button.link-delete:hover {
+      background: #ff3438 !important;
+    }
+
+    a.link-gray:hover,
+    button.link-gray:hover {
+      background: #afafac !important;
+    }
+
+    button {
+      text-transform: inherit;
+      font-weight: bolder;
+      background: #dfdedd;
+      border: none;
+    }
+  }
+}
+
+button:active, a:active, .period:active {
+  color: #55C9C0;
+}
+
+.list-item:first-child {
+  margin-top: 5px;
+}
+
+.list-item .text-status {
+  display: none;
+}
+
+button {
+  &:hover, &:active, &:focus {
+    outline: none;
+  }
+}

@@ -1,0 +1,43 @@
+.rrd-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  position: relative;
+
+  .l-col {
+    .date {
+      font-size: 13px;
+      margin-top: 3rem;
+    }
+
+    .time {
+      font-size: 13px;
+      margin-top: 2rem;
+      text-align: left;
+    }
+  }
+
+  .r-col {
+    .name {
+      font-size: 32px;
+    }
+
+    .rrd-image {
+      font-size: 20px;
+      text-transform: lowercase;
+    }
+  }
+}
+
+.rrd-item.focused {
+  border-left: 2px solid #5edad0;
+
+  .l-col {
+    padding-left: 11px;
+  }
+
+  div.actions {
+    opacity: 1;
+  }
+}

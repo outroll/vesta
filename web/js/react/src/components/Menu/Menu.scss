@@ -1,0 +1,116 @@
+.menu {
+  display: flex;
+  background: #f8f9fa;
+  height: 40px;
+
+  .logo {
+    padding-left: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      width: 80%;
+    }
+  }
+
+  .btn-group {
+    padding: 0;
+    margin: 0;
+    font-size: 17px;
+    border-radius: 0;
+    background: #F8F9FA;
+  
+    .small {
+      display: none;
+    }
+  
+    #upload {
+      line-height: 0;
+      margin-top: 7px;
+      margin-bottom: 7px;
+      padding-top: 8px;
+      padding-bottom: 7px;
+      margin-left: 2px;
+      color: white;
+      border-radius: 4px;
+      background: #AACC0D;
+    
+      &:hover {
+        color: white;
+        background: rgb(184, 221, 17);
+      }
+    }
+  
+    button {
+      text-transform: uppercase;
+      font-size: 12px;
+      margin: 2px;
+      padding-top: 11px;
+      padding-bottom: 12px;
+      margin-top: 0;
+      margin-bottom: 0;
+      margin-right: 25px;
+      text-align: center;
+  
+      &:hover {
+        color: rgb(1, 148, 148);
+      }
+  
+      &:focus {
+        box-shadow: none;
+        outline: none;
+      }
+    }
+  
+    .btn-hidden {
+      display: none;
+    }
+  
+    .upload {
+      display: none;
+    }
+  
+    .delete:hover{
+      color: rgb(221, 57, 57);
+    }
+  }
+}
+
+@media screen and (max-width: 1200px){
+  .menu .btn-group {
+    .small {
+      font-size: 18px;
+      padding-top: 8px;
+      display: inline-block;
+    }
+
+    .icon {
+      color: #777;
+    }
+
+    .small {
+      &:hover {
+        .file, .folder-close, .download, .copy {
+          color: #aacc0d;
+        }
+
+        .italic, .user, .paste {
+          color: #44a8b3;
+        }
+
+        .trash {
+          color: rgb(221, 57, 57);
+        }
+
+        .book {
+          color: rgb(216, 186, 77);
+        }
+      }
+    }
+  }
+
+  .big {
+    display: none;
+  }
+}
