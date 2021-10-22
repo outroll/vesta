@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 import './Backups.scss';
 
 const Backups = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
@@ -146,14 +146,14 @@ const Backups = props => {
   }
 
   const download = () => {
-    props.history.push(`/download/backup?backup=${controlPanelFocusedElement}&token=${token}`);
+    props.history.push(`/download/backup?backup=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {
     const { backups } = state;
     let currentBackupData = backups.filter(backup => backup.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentBackupData.delete_conf, `/delete/cron/?job=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentBackupData.delete_conf, `/api/v1/delete/cron/?job=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
@@ -164,6 +164,8 @@ const Backups = props => {
           backups: reformatData(result.data.data),
           backupFav: result.data.backup_fav,
           totalAmount: result.data.totalAmount,
+          selection: [],
+          toggledAll: false,
           loading: false
         });
       })

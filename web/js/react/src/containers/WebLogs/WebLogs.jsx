@@ -12,11 +12,11 @@ import Spinner from 'src/components/Spinner/Spinner';
 import { Helmet } from 'react-helmet';
 
 export default function WebLogs() {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
   const mainNavigation = useSelector(state => state.mainNavigation);
-  const { user, token } = useSelector(state => state.session);
+  const { userName } = useSelector(state => state.session);
   const [domain, setDomain] = useState();
   const [state, setState] = useState({
     data: "",
@@ -24,25 +24,24 @@ export default function WebLogs() {
   });
 
   useEffect(() => {
-    if (!user && !token) {
+    if (!userName) {
       history.push('/login/');
     }
   }, []);
 
   useEffect(() => {
     let parsedQueryString = QueryString.parse(history.location.search, { ignoreQueryPrefix: true });
+    const { domain, type } = parsedQueryString;
 
-    if (!parsedQueryString && !parsedQueryString.domain && !parsedQueryString.type) {
+    if (!parsedQueryString && !domain && !type) {
       return history.goBack();
     }
 
     setDomain(domain);
-    let uri = `/list/web-log/?domain=${domain}&type=${parsedQueryString.type}`;
-    history.push(uri);
-
+    let uri = `/list/web-log/?domain=${domain}&type=${type}`;
     fetchData(uri);
 
-    dispatch(addActiveElement(`/list/web-log/${parsedQueryString.type}`));
+    dispatch(addActiveElement(`/list/web-log/${type}`));
   }, [mainNavigation.activeElement]);
 
   const fetchData = uri => {
@@ -77,10 +76,12 @@ export default function WebLogs() {
   const extraMenuItems = [
     {
       link: `/download/web-log/?domain=${domain ?? ''}&type=access`,
+      type: 'download',
       text: i18n['Download AccessLog']
     },
     {
       link: `/download/web-log/?domain=${domain ?? ''}&type=error`,
+      type: 'download',
       text: i18n['Download ErrorLog'],
     }
   ];

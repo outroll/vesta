@@ -1,3 +1,5 @@
+$secondaryLight: #f8b014;
+
 .mobile-top-nav-wrapper.hide {
   opacity: 0;
 }
@@ -58,7 +60,7 @@
         padding: 2px;
 
         &:hover {
-          color: #ff6701;
+          color: $secondaryLight;
         }
       }
     }

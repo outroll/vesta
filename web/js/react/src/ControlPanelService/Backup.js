@@ -1,14 +1,14 @@
 import axios from "axios";
+import { getAuthToken } from "src/utils/token";
 
-const token = localStorage.getItem("token");
 const BASE_URL = window.location.origin;
-const webApiUri = '/list/backup/backup.php';
+const webApiUri = '/api/v1/list/backup/index.php';
 const scheduleBackupUri = '/schedule/backup/';
-const backupDetailsUri = '/list/backup/backup.php';
-const backupExclusionsUri = '/api/list/backup/exclusions/index.php';
-const backupExclusionsInfoUri = '/api/edit/backup/exclusions/index.php';
-const backupRestoreSettingUri = '/api/schedule/restore/index.php';
-const bulkRestoreUri = '/api/bulk/restore/index.php';
+const backupDetailsUri = '/api/v1/list/backup/index.php';
+const backupExclusionsUri = '/api/v1/list/backup/exclusions/index.php';
+const backupExclusionsInfoUri = '/api/v1/edit/backup/exclusions/index.php';
+const backupRestoreSettingUri = '/api/v1/schedule/restore/index.php';
+const bulkRestoreUri = '/api/v1/bulk/restore/index.php';
 
 export const getBackupList = () => {
   return axios.get(BASE_URL + webApiUri);
@@ -17,18 +17,21 @@ export const getBackupList = () => {
 export const bulkAction = (action, backups) => {
   const formData = new FormData();
   formData.append("action", action);
-  formData.append("token", token);
+  formData.append("token", getAuthToken());
 
   backups.forEach(backup => {
     formData.append("backup[]", backup);
-    formData.append("delete_url", `/delete/backup/?backup=${backup}&token=${token}`);
   });
 
-  return axios.post(BASE_URL + '/bulk/backup/', formData);
+  return axios.post(BASE_URL + '/api/v1/bulk/backup/', formData);
 };
 
 export const handleAction = uri => {
-  return axios.get(BASE_URL + uri);
+  return axios.get(BASE_URL + uri, {
+    params: {
+      token: getAuthToken()
+    }
+  });
 }
 
 export const scheduleBackup = () => {
@@ -45,7 +48,7 @@ export const restoreBackupSetting = params => {
 
 export const bulkRestore = (action, selection, backup) => {
   const formData = new FormData();
-  formData.append("token", token);
+  formData.append("token", getAuthToken());
   formData.append("action", action);
   formData.append("backup", backup);
 
@@ -73,7 +76,7 @@ export const updateBackupExclusions = data => {
 
   return axios.post(BASE_URL + backupExclusionsInfoUri, formDataObject, {
     params: {
-      token
+      token: getAuthToken()
     }
   });
 }

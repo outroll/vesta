@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const NameServers = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [state, setState] = useState({
     nameServersAmount: [],
     usersNS: []

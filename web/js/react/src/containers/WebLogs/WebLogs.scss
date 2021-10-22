@@ -4,4 +4,9 @@
     color: #7d7d7d;
     font-size: 20px;
   }
+
+  .nav-link:nth-child(3),
+  .nav-link:nth-child(4) {
+    width: 9rem;
+  }
 }

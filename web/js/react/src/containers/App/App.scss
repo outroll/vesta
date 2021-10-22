@@ -1,3 +1,15 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$danger: #b00e5b;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 .App {
   font-size: 25px;
   font-family: Arial;
@@ -38,17 +50,17 @@
   div {
     a.link-download:hover, button.link-download:hover,
     a.link-edit:hover, button.link-edit:hover {
-      background: #9fbf0c !important;
+      background: $primary !important;
     }
     
     a.link-list:hover,
     button.link-list:hover {
-      background: #55c9c0 !important;
+      background: $primary !important;
     }
-    
+
     a.link-delete:hover,
     button.link-delete:hover {
-      background: #ff3438 !important;
+      background: $danger !important;
     }
 
     a.link-gray:hover,
@@ -66,7 +78,7 @@
 }
 
 button:active, a:active, .period:active {
-  color: #55C9C0;
+  color: $primaryActive;
 }
 
 .list-item:first-child {
@@ -80,5 +92,83 @@ button:active, a:active, .period:active {
 button {
   &:hover, &:active, &:focus {
     outline: none;
+  }
+}
+
+.fixed-buttons.fm {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  > div {
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 50%;
+    background: #c3c3c3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    &:hover {
+      color: $hoverButtonText;
+      background: $primaryLight;
+    }
+  
+    &:active {
+      color: $activeButtonText;
+      background: $primaryActive;
+    }
+  
+    button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: none;
+      border: none;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      transform: scale(1.32);
+  
+      svg {
+        color: white;
+        height: 70%;
+      }
+    }
+  }
+
+  > div:first-child {
+    background: $primary;
+
+    &:hover {
+      color: $hoverButtonText;
+      background: $primaryLight;
+
+      button svg {
+        color: $hoverButtonText;
+      }
+    }
+
+    &:active {
+      color: $activeButtonText;
+      background: $primaryActive;
+
+      button svg {
+        color: $activeButtonText;
+      }
+    }
+
+    button {
+      padding: 0;
+
+      svg {
+        color: $activeButtonText;
+      }
+    }
   }
 }

@@ -1,8 +1,10 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
-const { i18n } = window.GLOBAL.App;
 
 const AddDirectory = (props) => {
+  const { i18n } = useSelector(state => state.session);
+
   return (
     <div className="modal-content">
       <div className="modal-header">

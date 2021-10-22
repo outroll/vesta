@@ -6,10 +6,11 @@ import { Link, useHistory } from 'react-router-dom';
 import QS from 'qs';
 
 import './Generator.scss';
+import { useSelector } from 'react-redux';
 
 const Generator = props => {
   const formElement = useRef(null);
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const [state, setState] = useState({
     activeTab: '1'

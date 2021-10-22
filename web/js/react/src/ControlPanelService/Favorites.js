@@ -1,6 +1,6 @@
 import axios from "axios";
-let addFavoriteUri = '/add/favorite/index.php';
-let deleteFavoriteUri = '/delete/favorite/index.php';
+let addFavoriteUri = '/api/v1/add/favorite/index.php';
+let deleteFavoriteUri = '/api/v1/delete/favorite/index.php';
 let BASE_URL = window.location.origin;
 
 

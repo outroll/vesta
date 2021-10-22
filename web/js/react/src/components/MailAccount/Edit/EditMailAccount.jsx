@@ -6,20 +6,20 @@ import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/
 import Password from 'src/components/ControlPanel/AddItemLayout/Form/Password/Password';
 import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/TextArea';
 import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
-import { addMailAccount, editMailAccount, getMailAccountInfo } from '../../../ControlPanelService/Mail';
+import { editMailAccount, getMailAccountInfo } from '../../../ControlPanelService/Mail';
 import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MailInfoBlock from '../MailInfoBlock/MailInfoBlock';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import { useHistory } from 'react-router-dom';
 import Spinner from '../../Spinner/Spinner';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 
 export default function EditMailAccount(props) {
   const [autoreplyChecked, setAutoreplyChecked] = useState(false);
   const token = localStorage.getItem("token");
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const history = useHistory();
   const [state, setState] = useState({

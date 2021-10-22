@@ -13,13 +13,13 @@ import MailInfoBlock from '../MailInfoBlock/MailInfoBlock';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import { useHistory } from 'react-router-dom';
 import Spinner from '../../Spinner/Spinner';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import './AddMailAccount.scss';
 import { Helmet } from 'react-helmet';
 
 export default function AddMailAccount(props) {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const history = useHistory();

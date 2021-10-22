@@ -18,8 +18,7 @@ import './Packages.scss';
 import { Helmet } from 'react-helmet';
 
 const Packages = props => {
-  const { i18n } = window.GLOBAL.App;
-  const token = localStorage.getItem("token");
+  const { i18n } = useSelector(state => state.session);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
@@ -150,7 +149,7 @@ const Packages = props => {
     const { packages } = state;
     let currentPackageData = packages.filter(pack => pack.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentPackageData.delete_conf, `/delete/package/?package=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentPackageData.delete_conf, `/api/v1/delete/package/?package=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
@@ -161,6 +160,8 @@ const Packages = props => {
           packages: reformatData(result.data.data),
           packagesFav: result.data.packagesFav,
           totalAmount: result.data.totalAmount,
+          selection: [],
+          toggledAll: false,
           loading: false
         });
       })

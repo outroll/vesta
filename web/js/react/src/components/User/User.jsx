@@ -1,20 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { loginAs, logout } from 'src/actions/Session/sessionActions';
 import Container from '../ControlPanel/Container/Container';
 import ListItem from '../ControlPanel/ListItem/ListItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import './User.scss';
 
-const { i18n } = window.GLOBAL.App;
-
 const User = ({ data, toggleFav, handleModal, checkItem }) => {
-  const [loading, setLoading] = useState(false);
+  const { i18n } = useSelector(state => state.session);
   const session = useSelector(state => state.session);
   const token = localStorage.getItem("token");
-  const history = useHistory();
   const dispatch = useDispatch();
 
   const printNameServers = servers => {
@@ -26,22 +23,11 @@ const User = ({ data, toggleFav, handleModal, checkItem }) => {
   }
 
   const signInAs = username => {
-    setLoading(true);
-
-    dispatch(loginAs(username))
-      .then(() => {
-        setLoading(false);
-      });
+    dispatch(loginAs(username));
   }
 
   const signOut = () => {
-    setLoading(true);
-
-    dispatch(logout())
-      .then(() => {
-        history.push('/login/');
-        setLoading(false);
-      });
+    dispatch(logout());
   }
 
   const printLoginActionButton = user => {
@@ -79,11 +65,11 @@ const User = ({ data, toggleFav, handleModal, checkItem }) => {
 
   const handleSuspend = () => {
     let suspendedStatus = data.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend';
-    handleModal(data.spnd_conf, `/${suspendedStatus}/user?user=${data.NAME}&token=${token}`);
+    handleModal(data.spnd_conf, `/api/v1/${suspendedStatus}/user/index.php?user=${data.NAME}`);
   }
 
   const handleDelete = () => {
-    handleModal(data.delete_conf, `/delete/user/?user=${data.NAME}&token=${token}`);
+    handleModal(data.delete_conf, `/api/v1/delete/user/index.php?user=${data.NAME}`);
   }
 
   return (
@@ -135,7 +121,7 @@ const User = ({ data, toggleFav, handleModal, checkItem }) => {
       <div className="actions">
         {printLoginActionButton(data.NAME)}
         <div>
-          <Link to={`/edit/user?user=${data.NAME}&token=${token}`}>{i18n.edit}
+          <Link to={`/edit/user?user=${data.NAME}`}>{i18n.edit}
             {data.FOCUSED ? <span className="shortcut-button html-unicode">&#8617;</span> : <FontAwesomeIcon icon="pen" />}
           </Link>
         </div>

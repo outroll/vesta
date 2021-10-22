@@ -19,7 +19,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Helmet } from 'react-helmet';
 
 const Mails = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
@@ -164,14 +164,14 @@ const Mails = props => {
     let currentMailData = mails.filter(mail => mail.NAME === controlPanelFocusedElement)[0];
     let suspendedStatus = currentMailData.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend';
 
-    displayModal(currentMailData.suspend_conf, `/${suspendedStatus}/mail?domain=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentMailData.suspend_conf, `/api/v1/${suspendedStatus}/mail/index.php?domain=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {
     const { mails } = state;
     let currentMailData = mails.filter(mail => mail.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentMailData.delete_conf, `/delete/mail/?domain=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentMailData.delete_conf, `/api/v1/delete/mail/index.php?domain=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
@@ -185,6 +185,7 @@ const Mails = props => {
           webMail: result.data.webMail,
           mailFav: result.data.mailFav,
           selection: [],
+          toggledAll: false,
           totalAmount: result.data.totalAmount,
           loading: false
         });

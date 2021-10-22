@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 const Checkbox = ({ name, id, title, defaultChecked = false, onChange = () => { }, checked }) => {
-  const [checkedState, setCheckedState] = useState(false);
+  const [checkedState, setCheckedState] = useState(defaultChecked);
 
   useEffect(() => {
-    if (!!checked) {
-      setCheckedState(checked);
-    }
-
-    if (!!defaultChecked) {
-      setCheckedState(defaultChecked);
-    }
-  }, [checked, defaultChecked]);
+    setCheckedState(checked);
+  }, [checked]);
 
   const changeCheckbox = event => {
     setCheckedState(event.target.checked);

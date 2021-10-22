@@ -1,47 +1,48 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import './Dropdown.scss';
 
-const { i18n } = window.GLOBAL.App;
-
-function changeSorting(field, order, props) {
-  if (!props.isActive) {
-    return;
-  } else {
-    props.changeSorting(field, order);
-  }
-}
-
-function sort(sorting) {
-  if (sorting === "Type") {
-    return i18n.type;
-  } else if (sorting === "Size") {
-    return i18n.size;
-  } else if (sorting === "Date") {
-    return i18n.date;
-  } else if (sorting === "Name") {
-    return i18n.name;
-  }
-}
-
-function button(sorting, order) {
-  if (order === "descending") {
-    return (
-      <button type="button" className="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {sort(sorting)}
-        <span className="arrow-down">&#8595;</span>
-      </button>
-    );
-  } else {
-    return (
-      <button type="button" className="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {sort(sorting)}
-        <span>&#8593;</span>
-      </button>
-    );
-  }
-}
-
 const Dropdown = (props) => {
+  const { i18n } = useSelector(state => state.session);
+
+  const changeSorting = (field, order, props) => {
+    if (!props.isActive) {
+      return;
+    } else {
+      props.changeSorting(field, order);
+    }
+  }
+
+  const sort = (sorting) => {
+    if (sorting === "Type") {
+      return i18n.type;
+    } else if (sorting === "Size") {
+      return i18n.size;
+    } else if (sorting === "Date") {
+      return i18n.date;
+    } else if (sorting === "Name") {
+      return i18n.name;
+    }
+  }
+
+  const button = (sorting, order) => {
+    if (order === "descending") {
+      return (
+        <button type="button" className="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {sort(sorting)}
+          <span className="arrow-down">&#8595;</span>
+        </button>
+      );
+    } else {
+      return (
+        <button type="button" className="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {sort(sorting)}
+          <span>&#8593;</span>
+        </button>
+      );
+    }
+  }
+
   return (
     <div class="btn-group">
       {button(props.sorting, props.order)}

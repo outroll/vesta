@@ -4,9 +4,10 @@ import SelectInput from 'src/components/ControlPanel/AddItemLayout/Form/SelectIn
 import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/TextArea';
 import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const EditVestaSslOption = ({ data, visible }) => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [domainsVisible, setDomainsVisible] = useState(false);
   const [sslDomains, setSslDomains] = useState([]);
 

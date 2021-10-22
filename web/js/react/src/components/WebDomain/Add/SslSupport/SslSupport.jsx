@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import './SslSupport.scss';
 
 const SslSupport = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [letsEncrypt, setLetsEncrypt] = useState(false);
 
   return (

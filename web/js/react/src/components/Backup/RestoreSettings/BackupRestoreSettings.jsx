@@ -17,7 +17,7 @@ import { Helmet } from 'react-helmet';
 import './BackupRestoreSettings.scss';
 
 export default function BackupRestoreSettings(props) {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
@@ -153,6 +153,8 @@ export default function BackupRestoreSettings(props) {
         setState({
           ...state,
           totalAmount: result.data.totalAmount,
+          selection: [],
+          toggledAll: false,
           loading: false
         });
       })
@@ -165,7 +167,7 @@ export default function BackupRestoreSettings(props) {
         acc.push({
           type: cat,
           name: item,
-          restoreLinkParams: `?backup=${props.backup}&type=${cat.toLowerCase()}&object=${item}&token=${token}`
+          restoreLinkParams: `?backup=${props.backup}&type=${cat.toLowerCase()}&object=${item}`
         });
       });
 

@@ -9,13 +9,13 @@ import { getIpList } from '../../../ControlPanelService/Ip';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import { useHistory } from 'react-router-dom';
 import Spinner from '../../Spinner/Spinner';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import './AddWebDomain.scss';
 import { Helmet } from 'react-helmet';
 
 const AddWebDomain = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const history = useHistory();

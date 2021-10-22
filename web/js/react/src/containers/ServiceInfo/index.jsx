@@ -13,10 +13,9 @@ import ReactHtmlParser from 'react-html-parser';
 import './styles.scss';
 
 const ServiceInfo = () => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n, userName } = useSelector(state => state.session);
   const dispatch = useDispatch();
-  const mainNavigation = useSelector(state => state.mainNavigation);
-  const { user, token } = useSelector(state => state.session);
+  const { activeElement } = useSelector(state => state.mainNavigation);
   const history = useHistory();
   const { service } = useParams();
   const [state, setState] = useState({
@@ -25,15 +24,15 @@ const ServiceInfo = () => {
   });
 
   useEffect(() => {
-    if (!user && !token) {
+    if (!userName) {
       history.push('/login/');
     }
-  }, []);
+  }, [userName]);
 
   useEffect(() => {
     fetchData();
     dispatch(addActiveElement(`/list/server/${service}`));
-  }, [mainNavigation.activeElement]);
+  }, [activeElement]);
 
   const fetchData = () => {
     setState({ ...state, loading: true });

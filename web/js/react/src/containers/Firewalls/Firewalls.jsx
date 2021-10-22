@@ -19,7 +19,7 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 
 const Firewalls = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
@@ -154,14 +154,14 @@ const Firewalls = props => {
     let currentFirewallData = firewalls.filter(firewall => firewall.NAME === controlPanelFocusedElement)[0];
     let suspendedStatus = currentFirewallData.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend';
 
-    displayModal(currentFirewallData.suspend_conf, `/${suspendedStatus}/firewall?rule=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentFirewallData.suspend_conf, `/api/v1/${suspendedStatus}/firewall/index.php?rule=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {
     const { firewalls } = state;
     let currentFirewallData = firewalls.filter(firewall => firewall.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentFirewallData.delete_conf, `/delete/firewall/?rule=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentFirewallData.delete_conf, `/api/v1/delete/firewall/index.php?rule=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
@@ -173,8 +173,10 @@ const Firewalls = props => {
           ...state,
           firewalls: reformatData(result.data.data),
           firewallFav: result.data.firewallFav,
+          selection: [],
           firewallExtension: result.data.firewallExtension,
           totalAmount: result.data.totalAmount,
+          toggledAll: false,
           loading: false
         });
       })

@@ -1,3 +1,17 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$notifications: #e49d45;
+$notificationsLight: #de9234;
+$notificationsActive: #6f4e2b;
+$textColor: #555;
+
 .top-panel .profile-menu {
   div {
     width: auto;
@@ -31,14 +45,17 @@
     border-color: unset;
     box-shadow: unset;
   }
-  
+
   .dropdown-menu {
     display: none;
     height: auto;
     max-height: 75vh;
     overflow: auto;
     cursor: default;
-    background: #454545;
+    background: #222e44;
+    border: 1px solid #fcac04;
+    border-width: 1px 0 0 0;
+    box-shadow: rgb(34, 46, 68) 0px 0px 10px -1px;
 
     > div {
       cursor: default;
@@ -65,18 +82,18 @@
         width: 100%;
         padding: 10px 0 0 10px;
         text-align: left;
-        color: #C4DA5E;
+        color: $secondary;
       }
 
       span.delete-notification {
         width: 10px;
         height: 10px;
-        background: #C4DA5E;
+        background: $secondary;
         border-radius: 50%;
         cursor: pointer;
 
         &:hover {
-          border: 2px solid #C4DA5E;
+          border: 2px solid $secondaryLight;
           background: transparent;
         }
       }
@@ -94,10 +111,10 @@
 
       a {
         display: contents;
-        color: #5ABDB5;
+        color: $notifications;
 
         &:hover {
-          color: #2CA99B;
+          color: $notificationsLight;
         }
       }
     }

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = window.location.origin;
-const resetPasswordUri = '/api/reset/index.php';
+const resetPasswordUri = '/api/v1/reset/index.php';
 
 export const resetPassword = (user = '', code = '', password = '', confirmPassword = '') => {
   const formData = new FormData();

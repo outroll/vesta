@@ -18,7 +18,7 @@ import './Databases.scss';
 import { Helmet } from 'react-helmet';
 
 const Databases = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
@@ -154,14 +154,14 @@ const Databases = props => {
     let currentDatabaseData = databases.filter(database => database.NAME === controlPanelFocusedElement)[0];
     let suspendedStatus = currentDatabaseData.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend';
 
-    displayModal(currentDatabaseData.suspend_conf, `/${suspendedStatus}/database?domain=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentDatabaseData.suspend_conf, `/api/v1/${suspendedStatus}/database/index.php?domain=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {
     const { databases } = state;
     let currentDatabaseData = databases.filter(database => database.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentDatabaseData.delete_conf, `/delete/database/?domain=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentDatabaseData.delete_conf, `/api/v1/delete/database/index.php?domain=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
@@ -174,6 +174,7 @@ const Databases = props => {
           dbAdminLink: result.data.db_admin_link,
           dbFav: result.data.dbFav,
           selection: [],
+          toggledAll: false,
           totalAmount: result.data.totalAmount,
           loading: false
         });

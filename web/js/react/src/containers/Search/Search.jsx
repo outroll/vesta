@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import DropdownFilter from '../../components/MainNav/Toolbar/DropdownFilter/DropdownFilter';
 import { getSearchResultsList, handleAction } from '../../ControlPanelService/Search';
 import SearchInput from '../../components/MainNav/Toolbar/SearchInput/SearchInput';
@@ -7,77 +7,84 @@ import Toolbar from '../../components/MainNav/Toolbar/Toolbar';
 import Modal from '../../components/ControlPanel/Modal/Modal';
 import Spinner from '../../components/Spinner/Spinner';
 import './Search.scss';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
-class Search extends Component {
-  state = {
+const Search = props => {
+  const { i18n } = useSelector(state => state.session);
+  const history = useHistory();
+  const [state, setState] = useState({
     searchResults: [],
     totalAmount: '',
-    modalText: '',
-    modalVisible: false,
-    modalActionUrl: '',
-    sorting: window.GLOBAL.App.i18n.Date,
+    sorting: i18n.Date,
     order: "descending",
     loading: false,
     total: 0
-  }
+  });
+  const [modal, setModal] = useState({
+    visible: false,
+    text: '',
+    actionUrl: ''
+  });
 
-  componentWillMount() {
-    const { search } = this.props.history.location;
+  useEffect(() => {
+    const { search } = history.location;
 
     if (search) {
       let searchTerm = search.split('=')[1];
 
       if (searchTerm !== '') {
-        this.fetchData(searchTerm);
+        fetchData(searchTerm);
       } else {
-        return this.props.history.push({ pathname: '/list/user/', search: '' });
+        return history.push({ pathname: '/list/user/', search: '' });
       }
-    } else if (this.props.searchTerm !== '') {
-      this.fetchData(this.props.searchTerm);
+    } else if (props.searchTerm !== '') {
+      fetchData(props.searchTerm);
     } else {
-      return this.props.history.push({ pathname: '/list/user/', search: '' });
+      return history.push({ pathname: '/list/user/', search: '' });
     }
+  }, []);
+
+  const fetchData = searchTerm => {
+    setState({ ...state, loading: true });
+    getSearchResultsList(searchTerm)
+      .then(result => {
+        setState({
+          ...state,
+          searchResults: result.data.data,
+          totalAmount: result.data.total_amount,
+          loading: false
+        });
+      })
+      .catch(err => console.error(err));
   }
 
-  fetchData = searchTerm => {
-    this.setState({ loading: true }, () => {
-      getSearchResultsList(searchTerm)
-        .then(result => {
-          this.setState({
-            searchResults: result.data.data,
-            totalAmount: result.data.totalAmount,
-            loading: false
-          });
-        })
-        .catch(err => console.error(err));
-    });
-  }
-
-  searchResults = () => {
-    const { searchResults } = this.state;
+  const searchResults = () => {
+    const { searchResults } = state;
     const result = [];
 
     for (let i in searchResults) {
       result.push(searchResults[i]);
     }
 
-    let sortedResult = this.sortArray(result);
+    let sortedResult = sortArray(result);
 
     return sortedResult.map((item, index) => {
-      return <SearchItem data={item} key={index} handleModal={this.displayModal} />;
+      return <SearchItem data={item} key={index} handleModal={displayModal} />;
     });
   }
 
-  changeSorting = (sorting, order) => {
-    this.setState({
+  const changeSorting = (sorting, order) => {
+    setState({
+      ...state,
       sorting,
       order
     });
   }
 
-  sortArray = array => {
-    const { order, sorting } = this.state;
-    let sortBy = this.sortBy(sorting);
+  const sortArray = array => {
+    const { order, sorting } = state;
+    let sortBy = sortByHandler(sorting);
 
     if (order === "descending") {
       return array.sort((a, b) => (a[sortBy] < b[sortBy]) ? 1 : ((b[sortBy] < a[sortBy]) ? -1 : 0));
@@ -86,8 +93,8 @@ class Search extends Component {
     }
   }
 
-  sortBy = sorting => {
-    const { Date, Name, Starred } = window.GLOBAL.App.i18n;
+  const sortByHandler = sorting => {
+    const { Date, Name, Starred } = i18n;
 
     switch (sorting) {
       case Date: return 'DATE';
@@ -97,53 +104,53 @@ class Search extends Component {
     }
   }
 
-  displayModal = (text, url) => {
-    this.setState({
-      modalVisible: !this.state.modalVisible,
-      modalText: text,
-      modalActionUrl: url
+  const displayModal = (text, url) => {
+    setModal({
+      ...modal,
+      visible: !modal.visible,
+      text,
+      actionUrl: url
     });
   }
 
-  modalConfirmHandler = () => {
-    handleAction(this.state.modalActionUrl)
+  const modalConfirmHandler = () => {
+    handleAction(state.modalActionUrl)
       .then(() => {
-        this.fetchData();
-        this.modalCancelHandler();
+        fetchData();
+        modalCancelHandler();
       })
       .catch(err => console.error(err));
   }
 
-  modalCancelHandler = () => {
-    this.setState({
-      modalVisible: false,
-      modalText: '',
-      modalActionUrl: ''
+  const modalCancelHandler = () => {
+    setModal({
+      ...modal,
+      visible: false,
+      text: '',
+      actionUrl: ''
     });
   }
 
-  render() {
-    return (
-      <div className="logs-list">
-        <Toolbar mobile={false}>
-          <div className="search-toolbar-name">{window.GLOBAL.App.i18n['Search Results']}</div>
-          <div className="search-toolbar-right">
-            <DropdownFilter changeSorting={this.changeSorting} sorting={this.state.sorting} order={this.state.order} list="searchList" />
-            <SearchInput handleSearchTerm={term => this.props.changeSearchTerm(term)} />
-          </div>
-        </Toolbar>
-        <div className="statistics-wrapper">
-          {this.state.loading ? <Spinner /> : this.searchResults()}
+  return (
+    <div className="logs-list">
+      <Toolbar mobile={false}>
+        <div className="search-toolbar-name">{i18n['Search Results']}</div>
+        <div className="search-toolbar-right">
+          <DropdownFilter changeSorting={changeSorting} sorting={state.sorting} order={state.order} list="searchList" />
+          <SearchInput handleSearchTerm={term => props.changeSearchTerm(term)} />
         </div>
-        <div className="total">{this.state.totalAmount}</div>
-        <Modal
-          onSave={this.modalConfirmHandler}
-          onCancel={this.modalCancelHandler}
-          show={this.state.modalVisible}
-          text={this.state.modalText} />
+      </Toolbar>
+      <div className="statistics-wrapper">
+        {state.loading ? <Spinner /> : searchResults()}
       </div>
-    );
-  }
+      <div className="total">{state.totalAmount}</div>
+      <Modal
+        onSave={modalConfirmHandler}
+        onCancel={modalCancelHandler}
+        show={modal.visible}
+        text={modal.text} />
+    </div>
+  );
 }
 
 export default Search;

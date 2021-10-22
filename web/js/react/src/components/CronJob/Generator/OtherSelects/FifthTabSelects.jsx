@@ -1,8 +1,10 @@
 import React from 'react';
-import { dailyMinutesOptions, hoursOptions, dateOptions } from '../../../../ControlPanelService/GeneratorOptions';
+import { useSelector } from 'react-redux';
+import { generatorOptions } from '../../../../ControlPanelService/GeneratorOptions';
 
 export default function FifthTabSelects() {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
+  const { dailyMinutesOptions, hoursOptions, dateOptions } = generatorOptions(i18n);
 
   const renderDate = () => {
     return dateOptions.map((option, index) => <option key={index} value={option.value}>{option.name}</option>);

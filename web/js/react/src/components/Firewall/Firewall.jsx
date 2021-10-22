@@ -4,10 +4,11 @@ import Container from '../ControlPanel/Container/Container';
 import ListItem from '../ControlPanel/ListItem/ListItem';
 import { Link } from 'react-router-dom';
 import './Firewall.scss';
+import { useSelector } from 'react-redux';
 
 const Firewall = ({ data, ...props }) => {
   const token = localStorage.getItem("token");
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
 
   const toggleFav = (starred) => {
     if (starred) {
@@ -23,11 +24,11 @@ const Firewall = ({ data, ...props }) => {
 
   const handleSuspend = () => {
     let suspendedStatus = data.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend';
-    props.handleModal(data.suspend_conf, `/${suspendedStatus}/firewall/?rule=${data.NAME}&token=${token}`);
+    props.handleModal(data.suspend_conf, `/api/v1/${suspendedStatus}/firewall/index.php?rule=${data.NAME}`);
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/delete/firewall/?rule=${data.NAME}&token=${token}`);
+    props.handleModal(data.delete_conf, `/api/v1/delete/firewall/index.php?rule=${data.NAME}`);
   }
 
   return (

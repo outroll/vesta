@@ -1,12 +1,11 @@
 import axios from "axios";
+import { getAuthToken } from "src/utils/token";
 
-const token = localStorage.getItem("token");
-const { i18n } = window.GLOBAL.App;
 const BASE_URL = window.location.origin;
-const webApiUri = '/list/mail/mail.php';
-const addMailApiUri = '/api/add/mail/index.php';
-const mailInfoUri = '/api/edit/mail/index.php';
-const updateMailUri = '/api/edit/mail/index.php';
+const webApiUri = '/api/v1/list/mail/index.php';
+const addMailApiUri = '/api/v1/add/mail/index.php';
+const mailInfoUri = '/api/v1/edit/mail/index.php';
+const updateMailUri = '/api/v1/edit/mail/index.php';
 
 export const getMailList = () => {
   return axios.get(BASE_URL + webApiUri);
@@ -23,30 +22,34 @@ export const getMailAccountInfo = (domain, account) => {
 export const bulkAction = (action, domainNameSystems) => {
   const formData = new FormData();
   formData.append("action", action);
-  formData.append("token", token);
+  formData.append("token", getAuthToken());
 
   domainNameSystems.forEach(domainNameSystem => {
     formData.append("domain[]", domainNameSystem);
   });
 
-  return axios.post(BASE_URL + '/bulk/mail/', formData);
+  return axios.post(BASE_URL + '/api/v1/bulk/mail/', formData);
 };
 
 export const bulkMailAccountAction = (action, domain, accounts = []) => {
   const formData = new FormData();
   formData.append("action", action);
-  formData.append("token", token);
+  formData.append("token", getAuthToken());
   formData.append("domain", domain);
 
   accounts.forEach(account => {
     formData.append("account[]", account);
   });
 
-  return axios.post(BASE_URL + '/bulk/mail/', formData);
+  return axios.post(BASE_URL + '/api/v1/bulk/mail/', formData);
 };
 
 export const handleAction = uri => {
-  return axios.get(BASE_URL + uri);
+  return axios.get(BASE_URL + uri, {
+    params: {
+      token: getAuthToken()
+    }
+  });
 }
 
 export const addMail = data => {
@@ -83,7 +86,7 @@ export const getMailInfo = domain => {
   return axios.get(BASE_URL + mailInfoUri, {
     params: {
       domain,
-      token
+      token: getAuthToken()
     }
   });
 }
@@ -98,12 +101,12 @@ export const updateMail = (data, domain) => {
   return axios.post(BASE_URL + updateMailUri, formDataObject, {
     params: {
       domain,
-      token
+      token: getAuthToken()
     }
   });
 }
 
-export const mailInfoBlockSelectOptions = [
+export const mailInfoBlockSelectOptions = i18n => [
   {
     value: i18n['Use server hostname'],
     type: 'hostname',

@@ -1,3 +1,5 @@
+$primary: #2c54ac;
+
 div.modal {
   z-index: 2;
 }
@@ -11,8 +13,8 @@ div.content .modal .modal-content {
 
   .modal-footer {
     .btn-primary {
-      background: #9FBF0C;
-      border: 1px solid #9FBF0C;
+      background: $primary;
+      border: 1px solid $primary;
     }
   }
 }

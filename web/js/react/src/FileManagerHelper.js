@@ -1,23 +1,35 @@
 import axios from "axios";
+import QueryString from "qs";
 const server = window.location.origin + "/file_manager/fm_api.php?";
 
 export function validateAction(url) {
   return axios.get(url);
 }
 
-export function cacheData(currentUser, history) {
+export function cacheData(currentUser, history, rootDir) {
+  const parsedQueryString = QueryString.parse(history.location.search, { ignoreQueryPrefix: true });
+
+  if (parsedQueryString.path) {
+    localStorage.setItem("activeWindow", "left");
+    localStorage.setItem("leftListPath", parsedQueryString.path);
+    localStorage.setItem("rightListPath", parsedQueryString.path);
+    return;
+  }
+
   if (localStorage.getItem("lastUser") === null || currentUser !== localStorage.getItem("lastUser")) {
     localStorage.setItem("lastUser", currentUser);
     localStorage.setItem("activeWindow", "left");
-    localStorage.setItem("leftListPath", window.GLOBAL.ROOT_DIR);
-    localStorage.setItem("rightListPath", window.GLOBAL.ROOT_DIR);
+    localStorage.setItem("leftListPath", rootDir);
+    localStorage.setItem("rightListPath", rootDir);
+    return;
   }
 
   if (localStorage.getItem("activeWindow") === null || localStorage.getItem("leftListPath") === null || localStorage.getItem("rightListPath") === null) {
     let path = history.location.search.substring(6).split('/');
     localStorage.setItem("activeWindow", "left");
     localStorage.setItem("leftListPath", path);
-    localStorage.setItem("rightListPath", window.GLOBAL.ROOT_DIR);
+    localStorage.setItem("rightListPath", rootDir);
+    return;
   }
 }
 

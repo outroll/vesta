@@ -15,7 +15,7 @@ import './Updates.scss';
 import { Helmet } from 'react-helmet';
 
 const Updates = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
@@ -124,6 +124,7 @@ const Updates = props => {
       .then(result => {
         setState({
           ...state,
+          selection: [],
           updates: reformatData(result.data.data),
           autoUpdate: result.data.totalAmount,
           loading: false

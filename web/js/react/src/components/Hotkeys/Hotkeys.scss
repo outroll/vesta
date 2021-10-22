@@ -1,72 +1,78 @@
-.panel {
-  margin: 0;
-  position: absolute;
-  right: 30%;
-  bottom: 0;
-  width: 40%;
-  font-size: 15px;
-  background: #38383891;
+$secondary: #fcac04;
 
-  .panel-heading {
-    background: #474646b0;
-    text-align: center;
-    color: #ffcc00;
-    padding: 10px;
+.hotkeys-list {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-45%);
+  width: 53%;
+  background: #222e44de;
+  font-size: 13px;
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid $secondary;
+
+    .name {
+      text-transform: uppercase;
+      padding: 5px 0 5px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      color: $secondary;
+      letter-spacing: 2px;
+      padding: 15px;
+    }
 
     .close {
-      position: absolute;
-      color: white;
-      right: 10px;
-      top: 10px;
-      opacity: 1;
+      padding: 12px;
+      opacity: 1 !important;
 
-      &:hover,&:focus{
-        color: #333;
-        outline: none;
-        text-decoration: none;
+      svg {
+        color: $secondary;
+      }
+
+      &:hover {
         cursor: pointer;
+        background: #222e44;
       }
     }
   }
 
-  .panel-body {
+  .body {
     display: flex;
-    justify-content: space-between;
-    background: rgba(56,56,56,0.4);
 
     ul {
+      padding: 25px 10px;
+      margin: 0;
       width: 50%;
-      color: white;
+      list-style: none;
+      margin-left: 3rem;
 
       li {
-        list-style-type: none;
-        margin-bottom: 10px;
+        padding: 5px;
 
-        .shortcut {
-          color: #48F4EF;
+        span.name {
+          margin-right: 15px;
+          color: $secondary;
+          font-weight: bold;
         }
+    
+        span.description {
+          color: white;
+        }
+      }
+
+      li.space-top {
+        padding-top: 30px;
       }
     }
   }
 }
 
-.hotkeys-button {
-  color: white;
-  background: rgb(170, 166, 166);
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-  width: 40px;
-  height: 38px;
-  text-align: center;
-  border-radius: 30px;
-  cursor: pointer;
-
-  svg {
-    margin-top: 7px;
-  }
-
-  &:hover {
-    background: #aacc0d;
-  }
+.hide {
+  display: none;
 }

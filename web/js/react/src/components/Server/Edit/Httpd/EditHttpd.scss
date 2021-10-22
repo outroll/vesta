@@ -1,10 +1,13 @@
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+
 .content .edit-template.edit-httpd {
   .toolbar {
     .search-toolbar-name {
       width: fit-content;
 
       a {
-        color: #ff6701;
+        color: $secondary;
         text-decoration: none;
 
         &:hover {
@@ -25,7 +28,7 @@
         font-weight: 700;
 
         &:hover {
-          color: #ff6701;
+          color: $secondaryLight;
         }
       }
     }

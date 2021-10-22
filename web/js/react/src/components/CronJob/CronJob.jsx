@@ -4,10 +4,11 @@ import ListItem from '../ControlPanel/ListItem/ListItem';
 import Container from '../ControlPanel/Container/Container';
 import './CronJob.scss';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const CronJob = props => {
   const { data } = props;
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
 
   const toggleFav = (starred) => {
@@ -24,11 +25,11 @@ const CronJob = props => {
 
   const handleSuspend = () => {
     let suspendedStatus = data.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend' === 'yes' ? 'unsuspend' : 'suspend';
-    props.handleModal(data.suspend_conf, `/${suspendedStatus}/cron/?job=${data.NAME}&token=${token}`);
+    props.handleModal(data.suspend_conf, `/${suspendedStatus}/cron/index.php?job=${data.NAME}`);
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/delete/cron/?job=${data.NAME}&token=${token}`);
+    props.handleModal(data.delete_conf, `/delete/cron/index.php?job=${data.NAME}`);
   }
 
   return (

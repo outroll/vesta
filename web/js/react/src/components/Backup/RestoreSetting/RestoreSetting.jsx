@@ -5,9 +5,10 @@ import ListItem from '../../ControlPanel/ListItem/ListItem';
 import { Link } from 'react-router-dom';
 
 import './RestoreSetting.scss';
+import { useSelector } from 'react-redux';
 
 export default function RestoreSetting({ data, checkItemFunc = () => { }, restoreSetting = () => { } }) {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
 
   const displayBackupDetailName = type => {
     switch (type) {

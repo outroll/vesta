@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAuthToken } from "src/utils/token";
 
 const BASE_URL = window.location.origin;
 const webApiUri = '/search/search.php';
@@ -8,5 +9,9 @@ export const getSearchResultsList = term => {
 }
 
 export const handleAction = uri => {
-  return axios.get(BASE_URL + uri);
+  return axios.get(BASE_URL + uri, {
+    params: {
+      token: getAuthToken()
+    }
+  });
 }

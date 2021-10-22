@@ -1,60 +1,61 @@
 import React, { useEffect, useState } from 'react';
-
+import { useSelector } from 'react-redux';
 import AdditionalFtp from '../AdditionalFtp/AdditionalFtp';
 import AdditionalFtpForEditing from '../AdditionalFtpForEditing/AdditionalFtpForEditing';
 
 const AdditionalFtpWrapper = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [state, setState] = useState({
-    additionalFtp: [1],
-    editIndexing: false
+    additionalFtp: []
   });
 
   useEffect(() => {
     if (props.ftps) {
-      // For EditWeb.jsx. Second state is kept for indexing Additional Ftp ( starting from 0 )
-      setState({ ...state, additionalFtp: props.ftps, editIndexing: true });
+      const data = props.ftps.map((item, index) => {
+        item['deleted'] = false;
+        item['id'] = index;
+        return item;
+      });
+      setState({ ...state, additionalFtp: data });
     }
   }, [props.ftps]);
 
   const renderAdditionalFtps = () => {
-    if (state.additionalFtp.length) {
-      return state.additionalFtp.map((ftp, index) => {
-        if (state.editIndexing) {
-          return <AdditionalFtpForEditing
-            key={index}
-            prefixI18N={props.prefixI18N}
-            index={index}
-            data={ftp}
-            domain={props.domain}
-            onDeleteAdditionalFtp={index => onDeleteFtp(index)} />;
-        } else {
-          return <AdditionalFtp
-            key={index}
-            prefixI18N={props.prefixI18N}
-            index={index + 1}
-            domain={props.domain}
-            onDeleteAdditionalFtp={index => onDeleteFtp(index)} />;
-        }
-      });
-    } else {
-      props.unCheckAdditionalFtpBox();
-    }
+    return state.additionalFtp.map(ftp => {
+      return <AdditionalFtpForEditing
+        key={ftp.id}
+        prefixI18N={props.prefixI18N}
+        data={ftp}
+        checked={props.checked}
+        prePath={props.ftpUserPrePath}
+        domain={props.domain}
+        onDeleteAdditionalFtp={id => onDeleteFtp(id)} />;
+    });
   }
 
   const onDeleteFtp = index => {
-    let additionalFtpsDuplicate = [...state.additionalFtp];
+    let updatedAdditionalFtps = [];
 
-    additionalFtpsDuplicate.splice(index - 1, 1);
+    state.additionalFtp.forEach(item => {
+      if (item.id === index) {
+        item.deleted = true;
+      }
 
-    setState({ ...state, additionalFtp: additionalFtpsDuplicate });
+      updatedAdditionalFtps.push(item);
+    });
+
+    if (!updatedAdditionalFtps.length) {
+      props.unCheckAdditionalFtpBox();
+    }
+
+    setState({ ...state, additionalFtp: updatedAdditionalFtps });
   }
 
   const addAdditionalFtp = () => {
     let additionalFtpArrayLength = state.additionalFtp.length;
     let additionalFtpsDuplicate = [...state.additionalFtp];
 
-    additionalFtpsDuplicate.push(additionalFtpArrayLength + 1);
+    additionalFtpsDuplicate.push({ id: additionalFtpArrayLength, deleted: false, is_new: 1 });
 
     setState({ ...state, additionalFtp: additionalFtpsDuplicate });
   }
@@ -63,9 +64,10 @@ const AdditionalFtpWrapper = props => {
     <div>
       {renderAdditionalFtps()}
 
-      <button type="button" onClick={() => addAdditionalFtp()}>
-        {i18n['Add one more FTP Account'] ?? 'Add'}
-      </button>
+      {props.checked && (
+        <button type="button" onClick={() => addAdditionalFtp()}>
+          {i18n['Add one more FTP Account'] ?? 'Add'}
+        </button>)}
     </div>
   );
 }

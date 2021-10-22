@@ -4,10 +4,11 @@ import Container from '../ControlPanel/Container/Container';
 import ListItem from '../ControlPanel/ListItem/ListItem';
 import { Link } from 'react-router-dom';
 import './Mail.scss';
+import { useSelector } from 'react-redux';
 
 const Mail = props => {
   const { data } = props;
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const printStat = (stat, text) => {
     if (text === 'no') {
@@ -31,11 +32,11 @@ const Mail = props => {
 
   const handleSuspend = () => {
     let suspendedStatus = data.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend' === 'yes' ? 'unsuspend' : 'suspend';
-    props.handleModal(data.suspend_conf, `/${suspendedStatus}/mail?domain=${data.NAME}&token=${token}`);
+    props.handleModal(data.suspend_conf, `/api/v1/${suspendedStatus}/mail/index.php?domain=${data.NAME}`);
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/delete/mail?domain=${data.NAME}&token=${token}`);
+    props.handleModal(data.delete_conf, `/api/v1/delete/mail/index.php?domain=${data.NAME}`);
   }
 
   return (

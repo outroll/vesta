@@ -9,7 +9,7 @@ import { Link, useHistory } from "react-router-dom";
 import './Panel.scss';
 
 const Panel = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n, userName, session: { look, user } } = useSelector(state => state.session);
   const session = useSelector(state => state.session);
   const { activeElement, focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
@@ -29,7 +29,7 @@ const Panel = props => {
     }
   }
 
-  const className = activeName => {
+  const className = (activeName, extraClass = '') => {
     let className = 'top-link';
 
     if (activeName === activeElement) {
@@ -40,12 +40,14 @@ const Panel = props => {
       className += ' focus';
     }
 
-    return className;
+    return className + ` ${extraClass}`;
   }
 
   const handleState = (tab, event) => {
-    event.preventDefault();
-    history.push(tab);
+    if (`${window.location.pathname}${window.location.search}` === tab) {
+      return event.preventDefault();
+    }
+
     dispatch(addActiveElement(tab));
   }
 
@@ -67,45 +69,65 @@ const Panel = props => {
     <div className="panel-wrapper">
       {loading && <Spinner />}
 
-      <div className="top-panel">
+      <div className={`top-panel ${user ? 'long-profile' : ''}`}>
         <div className="container left-menu">
           <div className="logo">
             <Link to="/list/user/" onClick={() => dispatch(addActiveElement('/list/user/'))}>
-              <div className="logo-img"></div>
+              <div>
+                <img src="/images/white_logo.png" alt="Logo" />
+              </div>
             </Link>
           </div>
-          <div className={className("/list/package/")}>
-            <button onClick={event => handleState("/list/package/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Packages}</button>
-          </div>
-          <div className={className("/list/ip/")}>
-            <button onClick={event => handleState("/list/ip/", event)} onKeyPress={event => event.preventDefault()}>{i18n.IP}</button>
-          </div>
-          <div className={className("/list/rrd/")}>
-            <button onClick={event => handleState("/list/rrd/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Graphs}</button>
-          </div>
+          {userName === 'admin' && (<>
+            <div className={className("/list/package/")}>
+              <Link to="/list/package/" onClick={event => handleState("/list/package/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Packages}</Link>
+            </div>
+            <div className={className("/list/ip/")}>
+              <Link to="/list/ip/" onClick={event => handleState("/list/ip/", event)} onKeyPress={event => event.preventDefault()}>{i18n.IP}</Link>
+            </div>
+            <div className={className("/list/rrd/")}>
+              <Link to="/list/rrd/" onClick={event => handleState("/list/rrd/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Graphs}</Link>
+            </div>
+          </>)}
           <div className={className("/list/stats/")}>
-            <button onClick={event => handleState("/list/stats/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Statistics}</button>
+            <Link to="/list/stats/" onClick={event => handleState("/list/stats/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Statistics}</Link>
           </div>
           <div className={className("/list/log/")}>
-            <button onClick={event => handleState("/list/log/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Log}</button>
+            <Link to="/list/log/" onClick={event => handleState("/list/log/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Log}</Link>
           </div>
-          <div className={className("/list/updates/")}>
-            <button onClick={event => handleState("/list/updates/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Updates}</button>
-          </div>
-          {session.session.FIREWALL_SYSTEM && <div className={className("/list/firewall/")}>
-            <button onClick={event => handleState("/list/firewall/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Firewall}</button>
+          {userName === 'admin' && (<>
+            <div className={className("/list/updates/")}>
+              <Link to="/list/updates/" onClick={event => handleState("/list/updates/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Updates}</Link>
+            </div>
+            {session.session.FIREWALL_SYSTEM && <div className={className("/list/firewall/")}>
+              <Link to="/list/firewall/" onClick={event => handleState("/list/firewall/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Firewall}</Link>
+            </div>}
+          </>)}
+          {session.session.FILEMANAGER_KEY && <div className={className("/list/directory/", "fm")}>
+            <Link to="/list/directory/">{i18n['File Manager']}</Link>
           </div>}
-          {session.session.FILEMANAGER_KEY && <div className="fm">
-            <a href="/list/directory/">{i18n['File Manager']}</a>
+          {session.session.SOFTACULOUS === "yes" && <div className={className("/softaculous/")}><a href="/softaculous/">{i18n.Apps ?? 'Apps'}</a>
           </div>}
-          {session.session.SOFTACULOUS === "yes" && <div><a href="/list/softaculous/">{i18n.Apps}</a>
-          </div>}
-          <div className={className("/list/server/")}>
-            <button onClick={event => handleState("/list/server/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Server}</button></div>
+          {userName === 'admin' && (
+            <div className={className("/list/server/")}>
+              <Link to="/list/server/" onClick={event => handleState("/list/server/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Server}</Link>
+            </div>
+          )}
         </div>
         <div className="container profile-menu">
           <Notifications />
-          <div><Link to={`/edit/user?user=${session.userName}`}>{session.userName}</Link></div>
+          <div>
+            <Link to={`/edit/user?user=${session.userName}`}>
+              {look
+                ? <div className="long-username">
+                  <span>{user}</span>
+                  <FontAwesomeIcon icon="long-arrow-alt-right" />
+                  <span>{look}</span>
+                </div>
+                : session.userName
+              }
+            </Link>
+          </div>
           <div><button onClick={signOut}>{i18n['Log out']}</button></div>
         </div>
       </div>

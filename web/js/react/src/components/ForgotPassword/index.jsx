@@ -13,7 +13,7 @@ import { Helmet } from 'react-helmet';
 import QueryString from 'qs';
 
 export default function ForgotPassword() {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
@@ -43,7 +43,7 @@ export default function ForgotPassword() {
       return;
     }
 
-    if (session.token) {
+    if (session.token && session.userName) {
       history.push('/list/user/');
     }
   }, [session]);
@@ -120,7 +120,7 @@ export default function ForgotPassword() {
           <form onSubmit={submitHandler}>
             <div className="c1">
               <Link to="/">
-                <img src="https://r5.vestacp.com:8083/images/vesta_logo.png" alt="Logo" />
+                <img src="/images/logo.png" alt="Logo" />
               </Link>
             </div>
             <div className="c2">

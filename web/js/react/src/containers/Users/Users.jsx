@@ -18,8 +18,7 @@ import { Helmet } from 'react-helmet';
 import './Users.scss';
 
 const Users = props => {
-  const { i18n } = window.GLOBAL.App;
-  const { token, userName } = useSelector(state => state.session);
+  const { userName, i18n, session: { look } } = useSelector(state => state.session);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
@@ -51,10 +50,6 @@ const Users = props => {
   }, []);
 
   useEffect(() => {
-    fetchData();
-  }, [userName]);
-
-  useEffect(() => {
     window.addEventListener("keydown", handleContentSelection);
     window.addEventListener("keydown", handleFocusedElementShortcuts);
 
@@ -74,6 +69,8 @@ const Users = props => {
           users: reformatData(result.data.data),
           userFav: result.data.userFav,
           totalAmount: result.data.totalAmount,
+          toggledAll: false,
+          selection: [],
           loading: false
         });
       })
@@ -111,14 +108,14 @@ const Users = props => {
     let currentUserData = users.filter(user => user.NAME === controlPanelFocusedElement)[0];
     let suspendedStatus = currentUserData.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend';
 
-    displayModal(currentUserData.spnd_conf, `/${suspendedStatus}/user?user=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentUserData.spnd_conf, `/api/v1/${suspendedStatus}/user/index.php?user=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {
     const { users } = state;
     let currentUserData = users.filter(user => user.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentUserData.delete_conf, `/delete/user?user=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentUserData.delete_conf, `/api/v1/delete/user/index.php?user=${controlPanelFocusedElement}`);
   }
 
   const handleContentSelection = event => {
@@ -372,7 +369,10 @@ const Users = props => {
         <title>{`Vesta - ${i18n.USER}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
-        <LeftButton name={i18n['Add User']} href="/add/user/" showLeftMenu={true} />
+        <LeftButton
+          name={look ? i18n['Add Web Domain'] : i18n['Add User']}
+          href={look ? "/add/web/" : "/add/user/"}
+          showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />

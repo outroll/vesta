@@ -4,10 +4,11 @@ import Container from '../ControlPanel/Container/Container';
 import ListItem from '../ControlPanel/ListItem/ListItem';
 import { Link } from 'react-router-dom';
 import './WebDomain.scss';
+import { useSelector } from 'react-redux';
 
 export default function WebDomain(props) {
   const { data } = props;
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
 
   const printStat = (stat, text) => {
@@ -32,11 +33,11 @@ export default function WebDomain(props) {
 
   const handleSuspend = () => {
     let suspendedStatus = data.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend';
-    props.handleModal(data.spnd_confirmation, `/${suspendedStatus}/web?domain=${data.NAME}&token=${token}`);
+    props.handleModal(data.spnd_confirmation, `/api/v1/${suspendedStatus}/web/index.php?domain=${data.NAME}`);
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_confirmation, `/delete/web/?domain=${data.NAME}&token=${token}`);
+    props.handleModal(data.delete_confirmation, `/api/v1/delete/web/index.php?domain=${data.NAME}`);
   }
 
   return (

@@ -1,3 +1,11 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #2e5bb1;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$secondaryActive: #fdb51c;
+$textColor: #555;
+
 .list-item {
   display: flex;
   justify-content: flex-start;
@@ -63,12 +71,12 @@
 }
 
 .list-item.starred {
-  border-left: 2px solid #ff6701;
+  border-left: 2px solid $primary;
 
   .l-col div.star {
     div > svg {
       opacity: 1;
-      color: #ff6701;
+      color: $primary;
     }
   }
 }
@@ -112,7 +120,13 @@
 }
 
 .list-item.focused {
-  border-left: 2px solid #5edad0;
+  border-left: 2px solid $secondaryLight;
+
+  .l-col div.star {
+    div > svg {
+      color: $secondaryLight;
+    }
+  }
 
   .actions {
     opacity: 1;
@@ -127,7 +141,7 @@
         width: 25px;
         height: 25px;
         margin-left: 15px;
-        background: #69a298;
+        background: $secondaryLight;
         color: white;
         display: flex;
         justify-content: center;

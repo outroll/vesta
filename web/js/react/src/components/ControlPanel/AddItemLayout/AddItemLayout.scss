@@ -1,15 +1,22 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
 $textColor: #555;
-$addButtonBackground: #9FBF0C;
-$addButtonBackgroundHover: #C0E60F;
-$optionalButtonHover: #9FBF0C;
-$optionalButtonActive: #c0e60f;
-$deleteButtonColorHover: #FF3438;
-$deleteButtonColorActive: #FF5F5F;
+
+$optionalButtonHover: $primary;
+$optionalButtonActive: $primaryLight;
+$deleteButtonColorHover: #b00e5b;
+$deleteButtonColorActive: #b11661;
 $backButtonBackground: #DFDEDD;
 $backButtonBackgroundHover: #999;
 $transition: all 200ms cubic-bezier(0.4, 0.1, 0.5, 0.85);
 $errorColor: #BE5ABF;
-$successColor: $addButtonBackground;
 
 .content .edit-template {
   padding-bottom: 2rem;
@@ -25,7 +32,7 @@ $successColor: $addButtonBackground;
   
     div.error,
     div.success {
-      width: fit-content;
+      width: fit-content !important;
   
       span {
         font-weight: bold;
@@ -47,10 +54,10 @@ $successColor: $addButtonBackground;
       }
   
       span.ok-message {
-        color: $successColor;
+        color: $primary;
   
         svg {
-          color: $successColor;
+          color: $primary;
         }
       }
     }
@@ -84,15 +91,15 @@ $successColor: $addButtonBackground;
   form {
     button,
     a {
-      color:#2C9491;
+      color:$primary;
       font-weight: bold;
     
       &:hover {
-        color: #ff6701;
+        color: $secondaryLight;
       }
     
       &:active {
-        color: #F7D616;
+        color: $secondaryActive;
       }
     }
 
@@ -139,14 +146,14 @@ $successColor: $addButtonBackground;
       &:focus,
       &:active {
         outline: none;
-        border-color: #55C9C0;
+        border-color: $primaryActive;
         box-shadow: unset;
       }
     }
 
     textarea {
       &:focus {
-        background: #D7F9FF;;
+        background: #D7F9FF;
       }
     }
 
@@ -172,7 +179,7 @@ $successColor: $addButtonBackground;
       &:focus,
       &:active {
         box-shadow: unset;
-        border-color: #55C9C0;
+        border-color: $primaryActive;
         background: #D7F9FF;
       }
     }
@@ -221,12 +228,17 @@ $successColor: $addButtonBackground;
       }
 
       .add {
-        color: white;
-        background: $addButtonBackground;
+        color: $activeButtonText;
+        background: $primary;
 
         &:hover {
-          color: #555;
-          background: $addButtonBackgroundHover;
+          color: $hoverButtonText;
+          background: $primaryLight;
+        }
+        
+        &:active {
+          color: $activeButtonText;
+          background: $primaryActive;
         }
       }
 
@@ -258,7 +270,7 @@ $successColor: $addButtonBackground;
     }
 
     .status {
-      color: #9FBF0C;
+      color: $primary;
       font-size: 11px;
       letter-spacing: 1px;
       text-transform: uppercase;

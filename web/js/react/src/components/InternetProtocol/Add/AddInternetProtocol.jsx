@@ -17,7 +17,7 @@ import { Helmet } from 'react-helmet';
 
 const AddInternetProtocol = props => {
   const token = localStorage.getItem("token");
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const session = useSelector(state => state.session);
   const dispatch = useDispatch();
   const history = useHistory();

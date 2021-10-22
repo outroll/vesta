@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import Editor from './Editor/Editor';
 import Photo from './Photo/Photo';
 import Video from './Video/Video';
 
 const Preview = (props) => {
+  const session = useSelector(state => state.session);
   const history = useHistory();
 
   useEffect(() => {
+    if (!session.userName) history.push('/login');
+
     document.addEventListener("keydown", hotkeys);
 
     return () => {

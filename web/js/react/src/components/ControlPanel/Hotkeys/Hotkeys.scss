@@ -1,3 +1,5 @@
+$secondary: #fcac04;
+
 .hotkeys-list {
   position: fixed;
   bottom: 0;
@@ -6,39 +8,36 @@
   flex-direction: column;
   transform: translateX(-45%);
   width: 53%;
-  background: rgba(50, 50, 50, 0.9);
+  background: #222e44de;
   font-size: 13px;
 
   .head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid $secondary;
 
     .name {
       text-transform: uppercase;
       padding: 5px 0 5px 10px;
       font-size: 12px;
       font-weight: bold;
-      color: #ffcc00;
+      color: $secondary;
       letter-spacing: 2px;
       padding: 15px;
     }
 
     .close {
       padding: 12px;
+      opacity: 1 !important;
 
       svg {
-        color: #a1a1a1;
+        color: $secondary;
       }
 
       &:hover {
         cursor: pointer;
-        background: black;
-      }
-
-      &:active {
-        background: #55c9c0;
+        background: #222e44;
       }
     }
   }
@@ -58,12 +57,12 @@
 
         span.name {
           margin-right: 15px;
-          color: #48F4EF;
+          color: $secondary;
           font-weight: bold;
         }
     
         span.description {
-          color: #929292;
+          color: white;
         }
       }
 

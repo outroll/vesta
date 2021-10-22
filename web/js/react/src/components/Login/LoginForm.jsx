@@ -11,7 +11,7 @@ import './Login.scss';
 import { Helmet } from 'react-helmet';
 
 export default function LoginForm() {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ export default function LoginForm() {
       return;
     }
 
-    if (session.token) {
+    if (session.token && session.userName) {
       history.push('/list/user/');
     }
   }, [session]);
@@ -57,7 +57,7 @@ export default function LoginForm() {
   return (
     <div className="login-page">
       <Helmet>
-        <title>{`Vesta - ${i18n.LOGIN}`}</title>
+        <title>{`Vesta - ${i18n.LOGIN ?? 'LOGIN'}`}</title>
       </Helmet>
       {loading && <Spinner />}
       <div className="login-form-wrapper">
@@ -65,24 +65,24 @@ export default function LoginForm() {
           <form onSubmit={submitHandler}>
             <div className="c1">
               <Link to="/">
-                <img src="https://r5.vestacp.com:8083/images/vesta_logo.png" alt="Logo" />
+                <img src="/images/logo.png" alt="Logo" />
               </Link>
             </div>
             <div className="c2">
               <TextInput
                 onChange={changeInputHandler}
-                title={i18n['Username']}
+                title={i18n['Username'] ?? 'Username'}
                 value={formValues.user}
                 name="user"
                 id="user" />
 
               <TextInput
                 onChange={changeInputHandler}
-                title={i18n['Password']}
+                title={i18n['Password'] ?? 'Password'}
                 value={formValues.password}
                 optionalTitle={(
                   <Link className="forgot-password" tabIndex="-1" to="/reset">
-                    {i18n['forgot password']}
+                    {i18n['forgot password'] ?? 'forgot password'}
                   </Link>
                 )}
                 name="password"
@@ -90,7 +90,7 @@ export default function LoginForm() {
                 id="password" />
 
               <button type="submit" disabled={loading} className={loading ? 'disabled' : ''}>
-                {i18n['Log in']}
+                {i18n['Log in'] ?? 'Log in'}
               </button>
 
               <div className="error-message">{errorMessage}</div>

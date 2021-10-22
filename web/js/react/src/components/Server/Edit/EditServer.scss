@@ -1,3 +1,15 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$danger: #b00e5b;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 .edit-server {
   .modules {
     display: flex;
@@ -22,12 +34,12 @@
     .form-group {
       a {
         text-decoration: none;
-        color: #2C9491;
+        color: $primary;
         font-weight: bold;
         font-size: 14px;
 
         &:hover {
-          color: #ff6701;
+          color: $primaryLight;
         }
       }
     }
@@ -92,7 +104,7 @@
       .sftp-module,
       .fm-module {
         font-size: 15px;
-        color: #555;
+        color: $textColor;
       }
 
       .buy-license {
@@ -101,7 +113,7 @@
 
         a {
           color: #FFF;
-          background: #9fbf0c;
+          background: $primary;
           border: none;
           border-radius: 3px;
           font-size: 13px;
@@ -113,8 +125,13 @@
           margin-right: 10px;
 
           &:hover {
-            color: #555;
-            background: #c0e60f;
+            color: $hoverButtonText;
+            background: $primaryLight;
+          }
+
+          &:hover {
+            color: $activeButtonText;
+            background: $primaryActive;
           }
         }
 
@@ -132,7 +149,7 @@
         margin: 1rem 0;
 
         > span {
-          color: #2c9491;
+          color: $primary;
         }
 
         .form-group {

@@ -3,7 +3,7 @@ import { ADD_FOCUSED_ELEMENT, ADD_ACTIVE_ELEMENT, REMOVE_ACTIVE_ELEMENT, REMOVE_
 const INITIAL_STATE = {
   focusedElement: '',
   activeElement: '',
-  menuTabs: [
+  adminMenuTabs: [
     '/list/user/',
     '/list/web/',
     '/list/dns/',
@@ -19,7 +19,21 @@ const INITIAL_STATE = {
     '/list/updates/',
     '/list/firewall/',
     '/list/directory/',
+    '/softaculous/',
     '/list/server/'
+  ],
+  userMenuTabs: [
+    '/list/user/',
+    '/list/web/',
+    '/list/dns/',
+    '/list/mail/',
+    '/list/db/',
+    '/list/cron/',
+    '/list/backup/',
+    '/list/stats/',
+    '/list/log/',
+    '/list/directory/',
+    '/softaculous/',
   ]
 };
 

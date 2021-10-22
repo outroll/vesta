@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Checkbox from '../../../ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
 import SelectInput from '../../../ControlPanel/AddItemLayout/Form/SelectInput/SelectInput';
@@ -7,7 +8,7 @@ import TextArea from '../../../ControlPanel/AddItemLayout/Form/TextArea/TextArea
 import './SslSupport.scss';
 
 const SslSupport = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [letsEncrypt, setLetsEncrypt] = useState(false);
   const [sslHomeOptions, setSslHomeOptions] = useState(['public_html', 'public_shtml']);
 

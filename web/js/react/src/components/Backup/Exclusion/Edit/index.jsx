@@ -7,14 +7,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Toolbar from 'src/components/MainNav/Toolbar/Toolbar';
 import Spinner from 'src/components/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 
 import './style.scss';
 
 const EditBackupExclusions = () => {
   const token = localStorage.getItem("token");
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
   const [state, setState] = useState({

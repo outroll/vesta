@@ -1,11 +1,12 @@
 import React, { } from 'react';
+import { useSelector } from 'react-redux';
 import Container from '../ControlPanel/Container/Container';
 import ListItem from '../ControlPanel/ListItem/ListItem';
 import './Update.scss';
 
 const Update = props => {
   const { data } = props;
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
 
   const isUpdated = status => {
     if (status === 'no') {

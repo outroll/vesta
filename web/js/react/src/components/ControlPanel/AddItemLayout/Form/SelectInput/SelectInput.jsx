@@ -1,7 +1,8 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 const SelectInput = ({ options = [], id, name, title, optionalTitle = '', selected = '', onChange = () => { }, disabled = false }) => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
 
   const renderOptions = () => {
     return options.map((option, index) =>
