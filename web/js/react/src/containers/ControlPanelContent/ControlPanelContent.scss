@@ -1,3 +1,15 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$danger: #b00e5b;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 .content {
   padding: 0 13%;
   padding-bottom: 1%;
@@ -49,14 +61,19 @@
     align-items: center;
   
     &:hover {
-      background: #55c9c0;
+      color: $hoverButtonText;
+      background: $primaryLight;
     }
   
     &:active {
-      background: #51beb5;
+      color: $activeButtonText;
+      background: $primaryActive;
     }
   
     button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       background: none;
       border: none;
       width: 100%;
@@ -72,18 +89,20 @@
   }
 
   > div:first-child {
+    color: #c3c3c3;
     background: none;
 
     &:hover {
-      background: #55c9c0;
+      background: $primaryLight;
 
       button svg {
-        color: white;
+        color: $activeButtonText;
       }
     }
 
     &:active {
-      background: #51beb5;
+      color: $activeButtonText;
+      background: $primaryActive;
     }
 
     button {

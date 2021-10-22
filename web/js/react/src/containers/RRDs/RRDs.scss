@@ -1,9 +1,21 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$danger: #b00e5b;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 div.content {
   margin-top: 0;
 }
 
 .rrd-list {
-  color: #686868;
+  color: $textColor;
 
   .toolbar {
     padding-bottom: 10px;
@@ -49,11 +61,11 @@ div.content {
     font-size: 14px;
 
     &:hover {
-      color: #ff6701;
+      color: $secondaryLight;
     }
 
     &:active {
-      color: #55C9C0;
+      color: $primaryActive;
     }
   }
 
@@ -61,11 +73,11 @@ div.content {
     > button svg {
 
       &:hover {
-        color: #ff6701;
+        color: $secondaryLight;
       }
 
       &:active {
-        color: #55C9C0;
+        color: $primaryActive;
       }
     }
 
@@ -75,6 +87,6 @@ div.content {
   }
 
   > div.active {
-    color: #ff6701;
+    color: $secondaryActive;
   }
 }

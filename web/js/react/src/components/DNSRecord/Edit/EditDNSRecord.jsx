@@ -8,13 +8,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import QS from 'qs';
 import { Helmet } from 'react-helmet';
 
 export default function EditDNSRecord(props) {
   const token = localStorage.getItem("token");
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const history = useHistory();
   const [state, setState] = useState({
@@ -72,13 +72,13 @@ export default function EditDNSRecord(props) {
     }
 
     updatedRecord['v_domain'] = state.data.domain;
-    updatedRecord['v_rec'] = state.data.record;
+    updatedRecord['v_record_id'] = props.record_id;
     updatedRecord['v_type'] = state.data.type;
 
     if (Object.keys(updatedRecord).length !== 0 && updatedRecord.constructor === Object) {
       setState({ ...state, loading: true });
 
-      updateDNS(updatedRecord, state.data.domain)
+      updateDNS(updatedRecord, props.domain, props.record_id)
         .then(result => {
           if (result.status === 200) {
             const { error_msg, ok_msg } = result.data;
@@ -131,7 +131,7 @@ export default function EditDNSRecord(props) {
             <TextInput
               value={state.data.rec}
               title={i18n['Record']}
-              name="v_rec"
+              name="v_record_id"
               id="domain"
               disabled />
 

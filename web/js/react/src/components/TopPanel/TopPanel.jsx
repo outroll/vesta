@@ -10,7 +10,7 @@ import './TopPanel.scss';
 const TopPanel = ({ menuItems = [], extraMenuItems = [] }) => {
   const mainNavigation = useSelector(state => state.mainNavigation);
   const [loading, setLoading] = useState(false);
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const history = useHistory();
   const { userName } = useSelector(state => state.session);
@@ -38,9 +38,13 @@ const TopPanel = ({ menuItems = [], extraMenuItems = [] }) => {
   const renderExtraMenuItems = () => {
     if (!extraMenuItems.length) return;
 
-    return extraMenuItems.map(({ link, text }, index) => (
+    return extraMenuItems.map(({ link, text, type }, index) => (
       <div className="nav-link" key={index}>
-        <Link to={link} target="_blank">{text}</Link>
+        {
+          type === 'download'
+            ? <a href={`/api/v1${link}`} target="_blank" rel="noopener noreferrer">{text}</a>
+            : <Link to={link} target="_blank">{text}</Link>
+        }
       </div>
     ));
   }
@@ -73,7 +77,9 @@ const TopPanel = ({ menuItems = [], extraMenuItems = [] }) => {
         <div className="container left-menu">
           <div className="logo">
             <Link to="/list/user/">
-              <div className="logo-img"></div>
+              <div className="logo-img">
+                <img src="/images/white_logo.png" alt="Logo" />
+              </div>
             </Link>
           </div>
 

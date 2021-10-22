@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import classNames from 'classname';
+import { connect } from 'react-redux';
 
 const defaultPermissions = {
   owner: {
@@ -101,7 +102,7 @@ class Permissions extends Component {
   }
 
   render() {
-    const { Constants } = window.GLOBAL.App;
+    const { i18n } = this.props.session;
     const { inputInvalid } = this.state;
     const { close, save, fName } = this.props;
     const inputClasses = classNames({
@@ -112,33 +113,39 @@ class Permissions extends Component {
     return (
       <div className="modal-content permissions">
         <div className="modal-header">
-          <h3 className="modal-title perms">{Constants.FM_CHMOD} <span className="quot">&quot;{fName}&quot;</span></h3>
+          <h3 className="modal-title perms">{i18n['Change Rights']} <span className="quot">&quot;{fName}&quot;</span></h3>
         </div>
         <form name="form" onChange={this.onChangeForm}>
           <div>
-            <label><input type="checkbox" name={'owner_read'} value="4" checked={!!this.state.permissions["owner"].read} id="read" />{Constants.FM_READ_BY_OWNER}</label>
-            <label><input type="checkbox" name={'owner_write'} value="2" checked={!!this.state.permissions["owner"].write} />{Constants.FM_WRITE_BY_OWNER}</label>
-            <label><input type="checkbox" name={'owner_execute'} value="1" checked={!!this.state.permissions["owner"].execute} />{Constants.FM_EXECUTE_BY_OWNER}</label>
+            <label><input type="checkbox" name={'owner_read'} value="4" checked={!!this.state.permissions["owner"].read} id="read" />{i18n['read by owner']}</label>
+            <label><input type="checkbox" name={'owner_write'} value="2" checked={!!this.state.permissions["owner"].write} />{i18n['write by owner']}</label>
+            <label><input type="checkbox" name={'owner_execute'} value="1" checked={!!this.state.permissions["owner"].execute} />{i18n['execute/search by owner']}</label>
           </div>
           <div>
-            <label><input type="checkbox" name={'group_read'} value="4" checked={!!this.state.permissions["group"].read} id="read" />{Constants.FM_READ_BY_GROUP}</label>
-            <label><input type="checkbox" name={'group_write'} value="2" checked={!!this.state.permissions["group"].write} />{Constants.FM_WRITE_BY_GROUP}</label>
-            <label><input type="checkbox" name={'group_execute'} value="1" checked={!!this.state.permissions["group"].execute} />{Constants.FM_EXECUTE_BY_GROUP}</label>
+            <label><input type="checkbox" name={'group_read'} value="4" checked={!!this.state.permissions["group"].read} id="read" />{i18n['read by group']}</label>
+            <label><input type="checkbox" name={'group_write'} value="2" checked={!!this.state.permissions["group"].write} />{i18n['write by group']}</label>
+            <label><input type="checkbox" name={'group_execute'} value="1" checked={!!this.state.permissions["group"].execute} />{i18n['execute/search by group']}</label>
           </div>
           <div>
-            <label><input type="checkbox" name={'others_read'} value="4" checked={!!this.state.permissions["others"].read} id="read" />{Constants.FM_READ_BY_OTHERS}</label>
-            <label><input type="checkbox" name={'others_write'} value="2" checked={!!this.state.permissions["others"].write} />{Constants.FM_WRITE_BY_OTHERS}</label>
-            <label><input type="checkbox" name={'others_execute'} value="1" checked={!!this.state.permissions["others"].execute} />{Constants.FM_EXECUTE_BY_OTHERS}</label>
+            <label><input type="checkbox" name={'others_read'} value="4" checked={!!this.state.permissions["others"].read} id="read" />{i18n['read by others']}</label>
+            <label><input type="checkbox" name={'others_write'} value="2" checked={!!this.state.permissions["others"].write} />{i18n['write by others']}</label>
+            <label><input type="checkbox" name={'others_execute'} value="1" checked={!!this.state.permissions["others"].execute} />{i18n['execute/search by others']}</label>
           </div>
         </form>
         <input type="text" className={inputClasses} defaultValue={this.encode()} ref={(ref) => this.inputRef = ref} onChange={this.handleInputChange} maxLength="3" />
         <div className="modal-footer">
-          <button type="button" className="btn btn-danger mr-auto" onClick={close}>{Constants.FM_CANCEL}</button>
-          <button type="button" className="btn btn-primary" onClick={save} disabled={inputInvalid}>{Constants.FM_OK}</button>
+          <button type="button" className="btn btn-danger mr-auto" onClick={close}>{i18n['Cancel']}</button>
+          <button type="button" className="btn btn-primary" onClick={save} disabled={inputInvalid}>{i18n['OK']}</button>
         </div>
       </div>
     );
   }
 }
 
-export default Permissions;
+function mapStateToProps(state) {
+  return {
+    session: state.session
+  }
+}
+
+export default connect(mapStateToProps)(Permissions);

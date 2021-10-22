@@ -18,7 +18,7 @@ import { Helmet } from 'react-helmet';
 import './Web.scss';
 
 const Web = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
@@ -157,14 +157,14 @@ const Web = props => {
     let currentWebDomainData = webDomains.filter(webDomain => webDomain.NAME === controlPanelFocusedElement)[0];
     let suspendedStatus = currentWebDomainData.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend';
 
-    displayModal(currentWebDomainData.spnd_confirmation, `/${suspendedStatus}/web?domain=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentWebDomainData.spnd_confirmation, `/api/v1/${suspendedStatus}/web/index.php?domain=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {
     const { webDomains } = state;
     let currentWebDomainData = webDomains.filter(webDomain => webDomain.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentWebDomainData.delete_confirmation, `/delete/web/?domain=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentWebDomainData.delete_confirmation, `/api/v1/web/index.php?domain=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
@@ -177,6 +177,8 @@ const Web = props => {
           webDomains: reformatData(result.data.data),
           webFav: result.data.webFav,
           totalAmount: result.data.totalAmount,
+          toggledAll: false,
+          selection: [],
           loading: false
         });
       })
@@ -363,7 +365,7 @@ const Web = props => {
         <title>{`Vesta - ${i18n.WEB}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
-        <LeftButton name="Add Web Domain" href="/add/web/" showLeftMenu={true} />
+        <LeftButton name={i18n['Add Web Domain']} href="/add/web/" showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />

@@ -6,11 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from 'src/components/Spinner/Spinner';
 import Toolbar from '../../../MainNav/Toolbar/Toolbar';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 
 const AddBanIP = () => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const userLanguage = localStorage.getItem("language");
   const history = useHistory();
   const dispatch = useDispatch();

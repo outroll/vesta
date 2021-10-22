@@ -1,8 +1,9 @@
 import React from 'react';
-
-const { i18n } = window.GLOBAL.App;
+import { useSelector } from 'react-redux';
 
 const Archive = (props) => {
+  const { i18n } = useSelector(state => state.session);
+
   return (
     <div className="modal-content">
       <div className="modal-header">

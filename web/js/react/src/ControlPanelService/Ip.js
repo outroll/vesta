@@ -1,12 +1,12 @@
 import axios from "axios";
+import { getAuthToken } from "src/utils/token";
 
-const token = localStorage.getItem("token");
 const BASE_URL = window.location.origin;
-const webApiUri = '/list/ip/ip.php';
-const addIpApiUri = '/api/add/ip/index.php';
-const additionalInfoUri = '/api/add/ip/index.php';
-const ipInfoUri = '/api/edit/ip/index.php';
-const updateIpUri = '/api/edit/ip/index.php';
+const webApiUri = '/api/v1/list/ip/index.php';
+const addIpApiUri = '/api/v1/add/ip/index.php';
+const additionalInfoUri = '/api/v1/add/ip/index.php';
+const ipInfoUri = '/api/v1/edit/ip/index.php';
+const updateIpUri = '/api/v1/edit/ip/index.php';
 
 export const getIpList = () => {
   return axios.get(BASE_URL + webApiUri);
@@ -15,18 +15,21 @@ export const getIpList = () => {
 export const bulkAction = (action, internetProtocols) => {
   const formData = new FormData();
   formData.append("action", action);
-  formData.append("token", token);
+  formData.append("token", getAuthToken());
 
   internetProtocols.forEach(internetProtocol => {
     formData.append("ip[]", internetProtocol);
-    formData.append("delete_url", `/delete/ip/?ip=${internetProtocol}&token=${token}`);
   });
 
-  return axios.post(BASE_URL + '/bulk/ip/', formData);
+  return axios.post(BASE_URL + '/api/v1/bulk/ip/', formData);
 };
 
 export const handleAction = uri => {
-  return axios.get(BASE_URL + uri);
+  return axios.get(BASE_URL + uri, {
+    params: {
+      token: getAuthToken()
+    }
+  });
 }
 
 export const getAdditionalInfo = () => {
@@ -47,7 +50,7 @@ export const getInternetProtocolInfo = ip => {
   return axios.get(BASE_URL + ipInfoUri, {
     params: {
       ip,
-      token
+      token: getAuthToken()
     }
   });
 }
@@ -62,7 +65,7 @@ export const updateInternetProtocol = (data, ip) => {
   return axios.post(BASE_URL + updateIpUri, formDataObject, {
     params: {
       ip,
-      token
+      token: getAuthToken()
     }
   });
 }

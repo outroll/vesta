@@ -3,9 +3,10 @@ import React from 'react';
 import SelectInput from 'src/components/ControlPanel/AddItemLayout/Form/SelectInput/SelectInput';
 import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/TextInput';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const EditServerDnsOption = ({ dnsSystem, selected, dnsCluster, visible }) => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
 
   const printHosts = () => {
     return dnsCluster.map((cluster, index) => (

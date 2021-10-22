@@ -4,9 +4,10 @@ import { useHistory } from 'react-router-dom';
 import Mails from '../Mails/Mails';
 import QueryString from 'qs';
 import { Helmet } from 'react-helmet';
+import { useSelector } from 'react-redux';
 
 export default function MailWrapper(props) {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [mailDomain, setMailDomain] = useState('');
   const history = useHistory();
 

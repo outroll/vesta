@@ -3,10 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Container from '../ControlPanel/Container/Container';
 import ListItem from '../ControlPanel/ListItem/ListItem';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 export default function MailAccount(props) {
   const { data, domain } = props;
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const printStat = (stat, text) => {
     if (text === 'no') {
@@ -30,11 +31,11 @@ export default function MailAccount(props) {
 
   const handleSuspend = () => {
     let suspendedStatus = data.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend' === 'yes' ? 'unsuspend' : 'suspend';
-    props.handleModal(data.suspend_conf, `/${suspendedStatus}/mail?domain=${domain}&account=${data.NAME}&token=${token}`);
+    props.handleModal(data.suspend_conf, `/api/v1/${suspendedStatus}/mail/index.php?domain=${domain}&account=${data.NAME}`);
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/delete/mail?domain=${domain}&account=${data.NAME}&token=${token}`);
+    props.handleModal(data.delete_conf, `/api/v1/delete/mail/index.php?domain=${domain}&account=${data.NAME}`);
   }
 
   return (

@@ -4,10 +4,11 @@ import Container from '../ControlPanel/Container/Container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './InternetProtocol.scss';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const InternetProtocol = props => {
   const { data } = props;
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
 
   const toggleFav = (starred) => {
@@ -23,7 +24,7 @@ const InternetProtocol = props => {
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/delete/ip/?ip=${data.NAME}&token=${token}`);
+    props.handleModal(data.delete_conf, `/api/v1/delete/ip/?ip=${data.NAME}`);
   }
 
   return (

@@ -1,3 +1,12 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #2e5bb1;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$secondaryActive: #fdb51c;
+$textColor: #555;
+
 .edit-web {
   .ssl-support {
     .additional-info {
@@ -18,11 +27,11 @@
     a.generate-csr {
       text-transform: initial;
       text-decoration: none;
-      color: #2C9491;
+      color: $primary;
       font-weight: bold;
 
       &:hover {
-        color: #ff6701;
+        color: $secondaryLight;
       }
     }
   }

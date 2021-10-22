@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 
 import './AdvancedOptions.scss';
+import { useSelector } from 'react-redux';
 
 const AdvancedOptions = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [state, setState] = useState({
     nameServersAmount: [],
     userNS: props.userNS

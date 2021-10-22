@@ -19,7 +19,7 @@ import './DNSRecords.scss';
 import { Helmet } from 'react-helmet';
 
 export default function DnsRecords(props) {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem('token');
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
@@ -151,7 +151,7 @@ export default function DnsRecords(props) {
     const { databases } = state;
     let currentDatabaseData = databases.filter(database => database.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentDatabaseData.delete_conf, `/delete/database/?domain=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentDatabaseData.delete_conf, `/api/v1/delete/database/?domain=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
@@ -167,6 +167,8 @@ export default function DnsRecords(props) {
           dnsRecordFav: result.data.dnsRecordsFav,
           totalAmount: result.data.totalAmount,
           domain: parsedQueryString.domain,
+          toggledAll: false,
+          selection: [],
           loading: false
         });
       })

@@ -1,16 +1,19 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import Container from '../../ControlPanel/Container/Container';
 
 import './style.scss';
 
 const Exclusion = ({ data, focused }) => {
+  const { i18n } = useSelector(state => state.session);
+
   const renderExclusionItems = () => {
     if (!Array.isArray(data.ITEMS)) {
       for (let item in data.ITEMS) {
         return <><b>{item}</b> &nbsp; {data.ITEMS[item]}<br /></>;
       }
     } else {
-      return window.GLOBAL.App.i18n['no exclusions'];
+      return i18n['no exclusions'];
     }
   }
 

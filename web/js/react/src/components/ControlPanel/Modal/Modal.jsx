@@ -1,9 +1,10 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import './Modal.scss';
 
-const { i18n } = window.GLOBAL.App;
-
 const Modal = ({ show, text, onSave, onCancel, showSaveButton = true, showCancelButton = true }) => {
+  const { i18n } = useSelector(state => state.session);
+
   return (
     <div>
       <div className={`modal fade ${show ? 'show' : ''}`} id="c-panel-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: show ? 'block' : 'none' }}>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Password from '../../../../components/ControlPanel/AddItemLayout/Form/Password/Password';
 import AdditionalFtpWrapper from '../AdditionalFtpWrapper/AdditionalFtpWrapper';
 import SslSupport from '../SslSupport/SslSupport';
@@ -6,7 +7,7 @@ import SslSupport from '../SslSupport/SslSupport';
 import './AdvancedOptions.scss';
 
 const AdvancedOptions = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [state, setState] = useState({
     sslSupport: false,
     additionalFtp: false,

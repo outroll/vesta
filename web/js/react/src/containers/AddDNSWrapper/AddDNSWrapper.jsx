@@ -4,9 +4,10 @@ import AddDNSRecord from 'src/components/DNSRecord/Add/AddDNSRecord';
 import { useHistory } from 'react-router-dom';
 import QueryString from 'qs';
 import { Helmet } from 'react-helmet';
+import { useSelector } from 'react-redux';
 
 export default function AddDNSWrapper() {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const parsedQueryString = QueryString.parse(history.location.search, { ignoreQueryPrefix: true });
   const [isDnsRecord, setIsDnsRecord] = useState(false);

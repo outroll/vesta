@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const webApiUri = '/api/languages.php';
+const webApiUri = '/api/v1/languages.php';
 const BASE_URL = window.location.origin;
 
 export const getLanguages = () => {

@@ -1,3 +1,14 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 .top-panel.small-device {
   display: none;
 }
@@ -10,7 +21,7 @@
   width: 100%;
   text-align: center;
   color: white;
-  background: #111;
+  background: #222e44;
   height: 34px;
   align-items: center;
   padding: 0 13%;
@@ -22,13 +33,10 @@
     width: 80%;
     height: 100%;
 
-    .logo .logo-img {
-      background-image: url("/images/sprite.png?1446554103");
-      background-position: -117px -57px;
-      background-repeat: no-repeat;
-      height: 22px;
-      width: 70px;
-      margin-left: -2px;
+    .logo div {
+      img {
+        width: 82%;
+      }
 
       &:hover {
         background-color: transparent;
@@ -65,7 +73,7 @@
       background: white;
       
       a, button {
-        color: #f79b44;
+        color: $secondary;
         font-weight: bold;
 
         &:hover {
@@ -73,13 +81,13 @@
         }
 
         &:active {
-          background: #ff6701;
+          background: $secondaryActive;
           color: white;
         }
       }
 
       &:hover {
-        background: #f79b44;
+        background: $secondaryLight;
       }
     }
   }
@@ -91,9 +99,11 @@
     div {
       width: 7rem;
       height: 100%;
+      transform: translateX(-5px);
+      padding-right: 5px;
 
       &:hover {
-        background: #f79b44;
+        background: $secondaryLight;
       }
     }
 
@@ -113,8 +123,7 @@
 
     .top-link.focus {
       a, button {
-        color: #5edad0;
-        text-decoration: underline;
+        color: $secondaryActive;
       }
     }
   }
@@ -129,20 +138,21 @@
 
     div.bell {
       width: auto;
-      color: #C0E60E;
+      color: $secondary;
+      padding: 3px 0;
 
       svg {
         border-radius: 30px;
-        width: 25px;
-        height: 25px;
-        padding: 5px;
+        width: 100%;
+        height: 100%;
+        padding: 3px;
 
         &:hover {
-          background: rgba(255, 255, 255, 0.4);
+          background: #79522294;
         }
 
-        &:hover {
-          background: #c0e6198a;
+        &:active {
+          background: #866032;
         }
       }
     }
@@ -152,11 +162,11 @@
       font-weight: 700;
     
       &:hover {
-        color: #ffd62e;
+        color: $secondaryLight;
       }
 
       &:active {
-        color: #f79b44;
+        color: $secondaryActive;
       }
     }
 
@@ -167,11 +177,40 @@
       font-weight: 100;
 
       &:hover {
-        color: #C0E60E;
+        color: $secondaryLight;
       }
 
       &:active {
-        color: #ffd62e;
+        color: $secondaryActive;
+      }
+    }
+  }
+}
+
+.top-panel.long-profile {
+  .left-menu {
+    width: 75%;
+  }
+
+  .profile-menu {
+    width: 25%;
+
+    > div + div {
+      width: max-content;
+    }
+
+    .long-username {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: auto;
+
+      > span:nth-child(1) {
+        margin-right: 5px;
+      }
+
+      > span:nth-child(3) {
+        margin-left: 5px;
       }
     }
   }

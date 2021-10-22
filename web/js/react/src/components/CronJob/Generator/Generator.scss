@@ -1,3 +1,14 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 .cron-job-generator {
   border: 1px solid #d9d9d9;
   padding: 1rem 1.5rem;
@@ -17,16 +28,16 @@
       text-decoration: none;
 
       &:hover {
-        color: #ff6701;
+        color: $secondaryLight;
       }
 
       &:active {
-        color: #55C9C0;
+        color: $primaryActive;
       }
     }
 
     a.active {
-      color: #ff6701;
+      color: $secondaryActive;
     }
   }
 
@@ -65,7 +76,7 @@
         &:focus,
         &:active {
           outline: none;
-          border-color: #55C9C0;
+          border-color: $primaryActive;
           box-shadow: unset;
         }
       }
@@ -78,20 +89,20 @@
 
       .form-actions {    
         button {
-          background: #55C9C0;
+          background: $primary;
           color: white;
           border-radius: 3px;
           padding: .35rem 1.1rem;
           font-size: 14px;
     
           &:hover {
-            color: #555;
-            background: #5BD8CF;
+            color: $hoverButtonText;
+            background: $primaryLight;
           }
     
           &:active {
-            color: white;
-            background: #D1D70D;
+            color: $activeButtonText;
+            background: $primaryActive;
           }
         }
       }

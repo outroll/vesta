@@ -1,24 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import Container from '../Container/Container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useSelector } from 'react-redux';
 import './ListItem.scss';
 
-class ListItem extends Component {
-  state = {
-    starred: false
-  }
+const ListItem = (props) => {
+  const { i18n } = useSelector(state => state.session);
+  const [state, setState] = useState({ starred: false });
 
-  UNSAFE_componentWillMount() {
-    this.setState({ starred: this.props.starred === 1 });
-  }
+  useEffect(() => {
+    if (props.hasOwnProperty('starred')) {
+      setState({ ...state, starred: Boolean(props.starred) });
+    }
+  }, [props.starred]);
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    this.setState({
-      starred: nextProps.starred === 1
-    });
-  }
-
-  printDate = date => {
+  const printDate = date => {
     if (date) {
       let newDate = new Date(date);
       let day = newDate.getDate();
@@ -30,19 +26,18 @@ class ListItem extends Component {
     }
   }
 
-  toggleItem = () => {
-    this.props.checkItem();
+  const toggleItem = () => {
+    props.checkItem();
   }
 
-  starItem = () => {
-    this.setState({ starred: !this.state.starred }, () => {
-      this.props.toggleFav(this.state.starred);
-    });
+  const starItem = () => {
+    setState({ ...state, starred: !state.starred });
+    props.toggleFav(!state.starred);
   }
 
-  className = () => {
-    const { starred } = this.state;
-    const { checked, outdated, suspended, stopped, focused, sysInfo } = this.props;
+  const className = () => {
+    const { starred } = state;
+    const { checked, outdated, suspended, stopped, focused, sysInfo } = props;
     let className = 'list-item';
 
     if (checked) {
@@ -76,25 +71,23 @@ class ListItem extends Component {
     return className;
   }
 
-  render() {
-    return (
-      <div className={this.className()} id={this.props.id}>
-        <Container className="l-col w-14">
-          {this.printDate(this.props.date)}
-          <div className="text-status">
-            <div className="checkbox"><input type="checkbox" onChange={(e) => this.toggleItem(e)} checked={this.props.checked} /></div>
-            {this.props.leftNameText}
-          </div>
-          <div className="star">
-            <div className="checkbox"><input type="checkbox" onChange={(e) => this.toggleItem(e)} checked={this.props.checked} /></div>
-            <div onClick={this.starItem}><FontAwesomeIcon icon="star" /></div>
-          </div>
-          {this.props.suspended && <div className='suspended'>{window.GLOBAL.App.i18n.suspended}</div>}
-        </Container>
-        {this.props.children}
-      </div>
-    );
-  }
+  return (
+    <div className={className()} id={props.id}>
+      <Container className="l-col w-14">
+        {printDate(props.date)}
+        <div className="text-status">
+          <div className="checkbox"><input type="checkbox" onChange={toggleItem} checked={props.checked} /></div>
+          {props.leftNameText}
+        </div>
+        <div className="star">
+          <div className="checkbox"><input type="checkbox" onChange={toggleItem} checked={props.checked} /></div>
+          <div onClick={starItem}><FontAwesomeIcon icon="star" /></div>
+        </div>
+        {props.suspended && <div className='suspended'>{i18n.suspended}</div>}
+      </Container>
+      {props.children}
+    </div>
+  );
 }
 
 export default ListItem;

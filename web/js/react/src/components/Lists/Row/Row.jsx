@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faJs, faCss3, faPhp, faHtml5, faSass } from '@fortawesome/free-brands-svg-icons';
 import './Row.scss';
+import { connect } from 'react-redux';
 
 class Row extends Component {
   static propTypes = {
@@ -121,9 +122,8 @@ class Row extends Component {
 
     let date = new Date(fDate),
       months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      appMonths = window.GLOBAL.App.i18n,
       getDay = date.getDate(),
-      getMonth = appMonths[months[date.getMonth()]];
+      getMonth = this.props.session.i18n[months[date.getMonth()]];
     return (<span className="date">{getMonth} {getDay}</span>);
   }
 
@@ -188,4 +188,10 @@ class Row extends Component {
   }
 }
 
-export default withRouter(Row);
+function mapStateToProps(state) {
+  return {
+    session: state.session
+  }
+}
+
+export default connect(mapStateToProps)(withRouter(Row));

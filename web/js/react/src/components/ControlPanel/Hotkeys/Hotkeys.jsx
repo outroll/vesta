@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Hotkeys.scss';
+import { useSelector } from 'react-redux';
 
 const Hotkeys = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
 
   useEffect(() => {
     window.addEventListener("keyup", toggleShortcutsLit);

@@ -11,9 +11,10 @@ import axios from 'axios';
 import Spinner from '../../Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 const Editor = ({ close, name }) => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const [state, setState] = useState({
     code: '',
@@ -29,7 +30,7 @@ const Editor = ({ close, name }) => {
     checkFileType(path)
       .then(res => {
         if (res.data.result) {
-          axios.get(`${window.location.origin}/edit/file/?path=${encodePath(path)}`)
+          axios.get(`${window.location.origin}/api/v1/edit/file/?path=${encodePath(path)}`)
             .then(result => {
               if (result.data.error) {
                 return showToast(res.data.error);
@@ -71,7 +72,7 @@ const Editor = ({ close, name }) => {
     formData.append('contents', state.code);
 
     setState({ ...state, loading: true });
-    axios.post(`${window.location.origin}/edit/file/?path=${path}%2F${name}`, formData)
+    axios.post(`${window.location.origin}/api/v1/edit/file/?path=${path}%2F${name}`, formData)
       .then(res => {
         if (res.data.error) {
           showToast(res.data.error);

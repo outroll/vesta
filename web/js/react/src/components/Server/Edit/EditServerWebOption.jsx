@@ -2,9 +2,10 @@ import React from 'react';
 
 import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/TextInput';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const EditServerWebOption = ({ proxySystem, webSystem, webBackend, webBackendPool, visible = false }) => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
 
   return (
     <div className="server-web-option" style={{ display: `${visible ? 'block' : 'none'}` }}>

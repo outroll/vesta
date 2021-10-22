@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { daysRunCommandsOptions, hoursRunCommandsOptions, minutesRunCommandsOptions, monthlyRunCommandOptions, weeklyRunCommandOptions } from '../../../../ControlPanelService/GeneratorOptions';
+import { useSelector } from 'react-redux';
+import { generatorOptions } from '../../../../ControlPanelService/GeneratorOptions';
 
 const RunCommandSelect = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
 
   const [state, setState] = useState({
     activeTab: ''
@@ -13,6 +14,8 @@ const RunCommandSelect = props => {
   }, [props]);
 
   const renderOptions = () => {
+    const { daysRunCommandsOptions, hoursRunCommandsOptions, minutesRunCommandsOptions, monthlyRunCommandOptions, weeklyRunCommandOptions } = generatorOptions(i18n);
+
     switch (state.activeTab) {
       case '1': return minutesRunCommandsOptions.map(option => <option value={option.value}>{option.name}</option>);
       case '2': return hoursRunCommandsOptions.map(option => <option value={option.value}>{option.name}</option>);

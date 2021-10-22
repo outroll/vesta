@@ -1,11 +1,20 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$danger: #b00e5b;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 .panel-wrapper {
   .logo-img {
-    background-image: url("/images/sprite.png?1446554103");
-    background-position: -117px -57px;
-    background-repeat: no-repeat;
-    height: 22px;
-    width: 70px;
-    margin-left: -2px;
+    img {
+      width: 82%;
+    }
 
     &:hover {
       background-color: transparent;
@@ -24,28 +33,27 @@
     
     > div.nav-link {
       padding: 0;
-      width: fit-content;
     }
   }
 
   .profile-menu {
     > div:nth-child(1) a {
       &:hover {
-        color: #ffd62e;
+        color: $secondaryLight;
       }
 
       &:active {
-        color: #f79b44;
+        color: $secondaryActive;
       }
     }
 
     > div:nth-child(2) a {
       &:hover {
-        color: #C0E60E;
+        color: $secondaryActive;
       }
 
       &:active {
-        color: #ffd62e;
+        color: $secondaryActive;
       }
     }
 
@@ -54,11 +62,11 @@
       font-weight: 700;
     
       &:hover {
-        color: #ffd62e;
+        color: $secondaryLight;
       }
 
       &:active {
-        color: #f79b44;
+        color: $secondaryActive;
       }
     }
 
@@ -68,11 +76,11 @@
       font-weight: 100;
 
       &:hover {
-        color: #C0E60E;
+        color: $primaryLight;
       }
 
       &:active {
-        color: #ffd62e;
+        color: $secondaryActive;
       }
     }
   }

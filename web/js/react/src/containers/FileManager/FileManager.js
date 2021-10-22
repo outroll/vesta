@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import DirectoryList from '../../components/Lists/DirectoryList/DirectoryList';
 import ProgressBar from '../../components/ProgressBar/ProgressBar';
-import HotkeysButton from '../../components/Hotkeys/HotkeysButton';
 import { toast, ToastContainer } from 'react-toastify';
 import Hotkeys from '../../components/Hotkeys/Hotkeys';
 import Modal from '../../components/Modal/Modal';
@@ -9,27 +8,27 @@ import 'react-toastify/dist/ReactToastify.css';
 import { withRouter } from 'react-router-dom';
 import Menu from '../../components/Menu/Menu';
 import * as FM from '../../FileManagerHelper';
-import '../App/App.scss';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import 'src/containers/App/App.scss';
+import { connect } from 'react-redux';
 
 const server = window.location.origin + "/file_manager/fm_api.php?";
-const { i18n } = window.GLOBAL.App;
-
 class FileManager extends Component {
   constructor(props) {
     super(props);
     this.state = {
       leftList: {
-        path: window.GLOBAL.ROOT_DIR,
+        path: this.props.session.user.HOME,
         files: { listing: [] },
       },
       rightList: {
-        path: window.GLOBAL.ROOT_DIR,
+        path: this.props.session.user.HOME,
         files: { listing: [] },
       },
-      currentPath: window.GLOBAL.ROOT_DIR,
-      currentUser: window.GLOBAL.ROOT_DIR,
+      currentPath: this.props.session.user.HOME,
+      currentUser: this.props.session.user.HOME,
       activeWindow: "left",
       modalWindow: null,
       modalVisible: false,
@@ -40,20 +39,19 @@ class FileManager extends Component {
       itemsSelected: [],
       modalInputValue: "",
       uploadPercent: "0",
-      hotkeysPanel: "inactive",
       loading: false
     }
   }
 
   UNSAFE_componentWillMount = () => {
-    FM.cacheData(this.state.currentUser, this.props.history);
+    FM.cacheData(this.state.currentUser, this.props.history, this.props.session.user.HOME);
     let currentPath = FM.activeWindowPath();
     this.setState({ currentPath });
     this.changeDirectoryOnLoading();
   }
 
   componentDidMount = () => {
-    if (!localStorage.getItem("token")) {
+    if (!localStorage.getItem("token") || !this.props.session.userName) {
       this.props.history.push('/login/');
     }
 
@@ -422,7 +420,7 @@ class FileManager extends Component {
   }
 
   render() {
-    const { activeWindow, modalWindow, modalVisible, itemsSelected, itemName, loading, uploadPercent, hotkeysPanel, itemType } = this.state;
+    const { activeWindow, modalWindow, modalVisible, itemsSelected, itemName, loading, uploadPercent, itemType } = this.state;
     const DirectoryLists = ['left', 'right'].map((side) =>
       <DirectoryList
         changePathAfterToggle={this.changePathAfterToggle}
@@ -437,6 +435,7 @@ class FileManager extends Component {
         addToPath={this.addToPath}
         cursor={this.state.cursor}
         passData={this.passData}
+        rootDir={this.props.session.user.HOME}
         ref={el => this[`${side}List`] = el}
         download={this.download}
         moveBack={this.moveBack}
@@ -448,7 +447,7 @@ class FileManager extends Component {
     return (
       <div className="window">
         <Helmet>
-          <title>{i18n['File Manager']}</title>
+          <title>{this.props.session.i18n['File Manager']}</title>
         </Helmet>
         {uploadPercent !== "0" ? <ProgressBar progress={uploadPercent} /> : null}
         <ToastContainer />
@@ -464,8 +463,14 @@ class FileManager extends Component {
           name={itemName} />
         <div className="lists-container">
           {DirectoryLists}
-          <Hotkeys style={hotkeysPanel} close={this.hotkeys} />
-          <HotkeysButton open={this.hotkeys} />
+          <div className="fixed-buttons fm">
+            <div className="hotkey-button">
+              <button onClick={() => this.hotkeysList.classList.toggle('hide')}>
+                <FontAwesomeIcon icon="ellipsis-h" />
+              </button>
+            </div>
+          </div>
+          <Hotkeys reference={(inp) => this.hotkeysList = inp} toggleHotkeys={() => this.hotkeysList.classList.toggle('hide')} />
         </div>
         {modalVisible && modalWindow}
       </div>
@@ -473,4 +478,10 @@ class FileManager extends Component {
   }
 }
 
-export default withRouter(FileManager);
+function mapStateToProps(state) {
+  return {
+    session: state.session
+  }
+}
+
+export default connect(mapStateToProps)(withRouter(FileManager));

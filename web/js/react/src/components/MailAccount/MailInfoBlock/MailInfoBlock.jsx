@@ -5,7 +5,7 @@ import { mailInfoBlockSelectOptions } from 'src/ControlPanelService/Mail';
 import './MailInfoBlock.scss';
 
 export default function MailInfoBlock({ webMail, hostName, domain, password }) {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [selectedOption, setSelectedOption] = useState('');
   const { userName } = useSelector(state => state.session);
   const [state, setState] = useState({
@@ -40,7 +40,8 @@ export default function MailInfoBlock({ webMail, hostName, domain, password }) {
   }, [selectedOption]);
 
   const renderSelectOptions = () => {
-    return mailInfoBlockSelectOptions.map(option =>
+    const options = mailInfoBlockSelectOptions(i18n);
+    return options.map(option =>
       <option key={option.type} value={option.type}>{option.value}</option>
     );
   }

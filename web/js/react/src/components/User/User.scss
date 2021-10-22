@@ -1,3 +1,15 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$danger: #b00e5b;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 .checkbox {
   margin-bottom: 10px;
 }
@@ -19,8 +31,8 @@
     border-radius: 50%;
 
     &:hover {
-      background: #bfbfbf;
-      color: #ff6701;
+      background: #b4b4b478;
+      color: $primary;
     }
   }
 }
@@ -178,11 +190,11 @@ span.stat.email{
   }
 
   > div:nth-child(2) a:hover {
-    background: #9fbf0c;
+    background: $primary;
   }
 
   > div:nth-child(4) a:hover {
-    background: #ff3438;
+    background: $danger;
   }
 
   svg {
@@ -191,5 +203,5 @@ span.stat.email{
 }
 
 .list-item.focused .r-col .name {
-  color: #36b3a9;
+  color: $secondaryLight;
 }

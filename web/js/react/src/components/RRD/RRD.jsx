@@ -4,10 +4,11 @@ import { faFileDownload } from '@fortawesome/free-solid-svg-icons';
 import Container from '../ControlPanel/Container/Container';
 import { generateImagePath } from '../../ControlPanelService/RRD';
 import './RRD.scss';
+import { useSelector } from 'react-redux';
 
 const RRD = props => {
   const { data } = props;
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
 
   const printDate = date => {
     let newDate = new Date(date);

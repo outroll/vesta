@@ -3,10 +3,11 @@ import ListItem from '../ControlPanel/ListItem/ListItem';
 import Container from '../ControlPanel/Container/Container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Database = props => {
   const { data } = props;
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
 
   const toggleFav = (starred) => {
@@ -23,11 +24,11 @@ const Database = props => {
 
   const handleSuspend = () => {
     let suspendedStatus = data.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend' === 'yes' ? 'unsuspend' : 'suspend';
-    props.handleModal(data.suspend_conf, `/${suspendedStatus}/db/?database=${data.NAME}&token=${token}`);
+    props.handleModal(data.suspend_conf, `/api/v1/${suspendedStatus}/db/index.php?database=${data.NAME}`);
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/delete/db/?database=${data.NAME}&token=${token}`);
+    props.handleModal(data.delete_conf, `/api/v1/delete/db/index.php?database=${data.NAME}`);
   }
 
   return (

@@ -4,10 +4,11 @@ import Container from '../ControlPanel/Container/Container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './DomainNameSystem.scss';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const DomainNameSystem = props => {
   const { data } = props;
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
 
   const toggleFav = (starred) => {
@@ -24,11 +25,11 @@ const DomainNameSystem = props => {
 
   const handleSuspend = () => {
     let suspendedStatus = data.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend' === 'yes' ? 'unsuspend' : 'suspend';
-    props.handleModal(data.suspend_conf, `/${suspendedStatus}/dns?domain=${data.NAME}&token=${token}`);
+    props.handleModal(data.suspend_conf, `/api/v1/${suspendedStatus}/dns/index.php?domain=${data.NAME}`);
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/delete/dns?domain=${data.NAME}&token=${token}`);
+    props.handleModal(data.delete_conf, `/api/v1/delete/dns/index.php?domain=${data.NAME}`);
   }
 
   return (

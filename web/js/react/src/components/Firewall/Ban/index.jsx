@@ -2,9 +2,10 @@ import React from 'react';
 import ListItem from 'src/components/ControlPanel/ListItem/ListItem';
 import Container from 'src/components/ControlPanel/Container/Container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useSelector } from 'react-redux';
 
 const Ban = ({ data, ...props }) => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
 
   const checkItem = () => {
@@ -12,7 +13,7 @@ const Ban = ({ data, ...props }) => {
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/api/delete/firewall/banlist/?ip=${data.NAME}&chain=${data.CHAIN}&token=${token}`);
+    props.handleModal(data.delete_conf, `/api/v1/delete/firewall/banlist/?ip=${data.NAME}&chain=${data.CHAIN}`);
   }
 
   return (

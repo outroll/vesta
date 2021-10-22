@@ -12,7 +12,7 @@ import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import SslSupport from './SslSupport/SslSupport';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import QS from 'qs';
 
 import './EditWeb.scss';
@@ -21,7 +21,7 @@ import { Helmet } from 'react-helmet';
 
 const EditWeb = props => {
   const token = localStorage.getItem("token");
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
   const [state, setState] = useState({
@@ -30,7 +30,7 @@ const EditWeb = props => {
     webStat: '',
     sslSupport: false,
     letsEncrypt: false,
-    additionalFtp: true,
+    additionalFtp: false,
     statAuth: false,
     loading: false,
     errorMessage: '',
@@ -56,6 +56,8 @@ const EditWeb = props => {
             sslSupport: response.data.ssl === 'yes',
             letsEncrypt: response.data.letsencrypt === 'yes',
             data: response.data,
+            additionalFtp: !!response.data.ftp_user,
+            statAuth: response.data.stats_user,
             errorMessage: response.data['error_msg'],
             okMessage: response.data['ok_msg'],
             loading: false
@@ -233,8 +235,7 @@ const EditWeb = props => {
               id="stats" />
 
             {
-              state.webStat !== 'none'
-              && (
+              state.webStat !== 'none' && (
                 <div className="web-stat-additional">
                   <Checkbox
                     onChange={onChangeStatisticsAuth}
@@ -244,8 +245,7 @@ const EditWeb = props => {
                     title={i18n['Statistics Authorization']} />
 
                   {
-                    state.statAuth
-                    && (
+                    state.statAuth && (
                       <>
                         <TextInput id="domain" name="v_stats_user" title={i18n['Username']} value={state.data.stats_user} />
 
@@ -262,15 +262,14 @@ const EditWeb = props => {
               name="v_ftp"
               id="add-ftp"
               checked={state.additionalFtp}
-              defaultChecked={!!state.data.ftp_user}
               title={i18n['Additional FTP Account']} />
 
-            {
-              state.additionalFtp
-              && (
-                <AdditionalFtpWrapper prefixI18N={state.data.prefixI18N} ftps={state.data.ftp_users} unCheckAdditionalFtpBox={() => onChangeAdditionalFtp(false)} />
-              )
-            }
+            <AdditionalFtpWrapper
+              checked={state.additionalFtp}
+              prefixI18N={state.data.prefixI18N}
+              ftps={state.data.ftp_users}
+              ftpUserPrePath={state.data.ftp_user_prepath}
+              unCheckAdditionalFtpBox={() => onChangeAdditionalFtp(false)} />
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Save}</button>

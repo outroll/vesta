@@ -12,7 +12,7 @@ import Exclusion from 'src/components/Backup/Exclusion';
 import { getBackupExclusions } from 'src/ControlPanelService/Backup';
 
 const BackupExclusions = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();

@@ -1,13 +1,14 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { values } from '../../../../ControlPanelService/Select';
+import { useSelector } from 'react-redux';
 import './Select.scss';
 
-const { i18n } = window.GLOBAL.App;
-const listValues = values(i18n);
+const Select = props => {
+  const { i18n } = useSelector(state => state.session);
+  const listValues = values(i18n);
 
-class Select extends Component {
-  state = {
+  const [state, setState] = useState({
     usersList: listValues.usersList,
     webList: listValues.webList,
     dnsList: listValues.dnsList,
@@ -24,56 +25,54 @@ class Select extends Component {
     backupDetailList: listValues.backupDetailList,
     banList: listValues.banList,
     selected: '',
-  };
+  });
 
-  defaultValue = () => {
-    if (this.props.list === 'statisticsList') {
+  useEffect(() => {
+    const { list } = props;
+    setState({ ...state, list });
+  }, []);
+
+  const defaultValue = () => {
+    if (props.list === 'statisticsList') {
       return i18n['show per user'];
     }
 
     return i18n['apply to selected'];
   }
 
-  componentDidMount() {
-    const { list } = this.props;
-
-    this.setState({ list });
-  }
-
-  renderOptions = () => {
-    const { list } = this.props;
-    let activeList = this.state[list];
+  const renderOptions = () => {
+    const { list } = props;
+    let activeList = state[list];
 
     if (list === 'statisticsList') {
-      return this.props.users.map((item, index) => { return <option key={index} value={item}>{item}</option> });
+      return props.users.map((item, index) => { return <option key={index} value={item}>{item}</option> });
     } else {
       return activeList.map((item, index) => { return <option key={index} value={item.value}>{item.name}</option> });
     }
   }
 
-  handleSelect = event => {
-    this.setState({ selected: event.target.value });
+  const handleSelect = event => {
+    setState({ ...state, selected: event.target.value });
   }
 
-  bulkAction = () => {
-    this.props.bulkAction(this.state.selected);
+  const bulkAction = () => {
+    props.bulkAction(state.selected);
+    setState({ ...state, selected: '' });
   }
 
-  render() {
-    return (
-      <div className="select-wrapper">
-        <select className="custom-select" id="inputGroupSelect04" onChange={this.handleSelect}>
-          <option defaultValue={this.defaultValue()} value={this.defaultValue()}>{this.props.list === "statisticsList" ? i18n['show per user'] : i18n['apply to selected']}</option>
-          {this.renderOptions()}
-        </select>
-        <div className="input-group-append">
-          <button className="btn btn-outline-secondary" type="button" onClick={this.bulkAction}>
-            <FontAwesomeIcon icon="angle-right" />
-          </button>
-        </div>
+  return (
+    <div className="select-wrapper">
+      <select className="custom-select" id="inputGroupSelect04" onChange={handleSelect}>
+        <option defaultValue={defaultValue()} value={defaultValue()}>{props.list === "statisticsList" ? i18n['show per user'] : i18n['apply to selected']}</option>
+        {renderOptions()}
+      </select>
+      <div className="input-group-append">
+        <button className="btn btn-outline-secondary" type="button" onClick={bulkAction}>
+          <FontAwesomeIcon icon="angle-right" />
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default Select;

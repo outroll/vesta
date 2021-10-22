@@ -1,6 +1,18 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$danger: #b00e5b;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 .dns-records {
   div.subtitle {
-    color: #ff6701;
+    color: $primary;
     font-size: 12px;
     margin: 30px 0 18px 14.3%;
     text-transform: uppercase;

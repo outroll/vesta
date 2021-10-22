@@ -1,8 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const Password = ({ defaultValue, onChange = () => { }, id, name, title, showGenerationButton = true, ...props }) => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [state, setState] = useState({
     hidePassword: false,
     generatedPassword: ''
@@ -42,7 +43,7 @@ const Password = ({ defaultValue, onChange = () => { }, id, name, title, showGen
         {title ? title : i18n.Password}
         {
           showGenerationButton && (
-            <>/ <button type="button" className="generate-password" onClick={() => generatePassword()}>
+            <> / <button type="button" className="generate-password" onClick={() => generatePassword()}>
               {i18n.Generate}
             </button></>
           )

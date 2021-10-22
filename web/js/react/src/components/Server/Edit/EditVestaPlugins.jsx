@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import SelectInput from 'src/components/ControlPanel/AddItemLayout/Form/SelectInput/SelectInput';
 import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/TextInput';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const EditVestaPluginsOption = ({ data, visible }) => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [sftpOptions, setSftpOptions] = useState([]);
   const [fmOptions, setFmOptions] = useState([]);
   const [sftpDescription, setSftpDescription] = useState(false);
@@ -31,15 +32,15 @@ const EditVestaPluginsOption = ({ data, visible }) => {
     setSftpOptions(sftpOptionsArray);
     setFmOptions(fmOptionsArray);
 
-    if (data.lead === 'sftp' || data.sftpjail_key != '') {
+    if (data.lead === 'sftp' || data.sftpjail_key !== 'no') {
       setSftpDescription(true);
     }
 
-    if (data.lead === 'filemanager' || data.fm_key != '') {
+    if (data.lead === 'filemanager' || data.fm_key !== 'no') {
       setFmDescription(true);
     }
 
-    if (data.lead === 'softaculous' || data.softaculous != '') {
+    if (data.lead === 'softaculous' || data.softaculous !== 'no') {
       setSoftaculousDescription(true);
     }
   }, []);
@@ -199,10 +200,10 @@ const EditVestaPluginsOption = ({ data, visible }) => {
               </div>
 
               <div className="buy-license">
-                <a href={`https://vestacp.com/checkout/2co.php?product_id=7&referer=${data.http_host}`} target="_blank">
+                <a href={`https://vestacp.com/checkout/2co.php?product_id=7&referer=${data.http_host}`} target="_blank" rel="noopener noreferrer">
                   {i18n['Buy Licence']} 3$ {i18n['month']}
                 </a>
-                <a href={`https://vestacp.com/checkout/2co.php?product_id=8&referer=${data.http_host}`} target="_blank">
+                <a href={`https://vestacp.com/checkout/2co.php?product_id=8&referer=${data.http_host}`} target="_blank" rel="noopener noreferrer">
                   {i18n['Buy Lifetime License']} 28$
                 </a>
               </div>
@@ -223,10 +224,10 @@ const EditVestaPluginsOption = ({ data, visible }) => {
         id="softaculous" />
 
       {
-        softaculousDescription === 'yes' && (
+        softaculousDescription && (
           <div className="soft-module">
-            <div>{i18n['Browse, copy, edit, view, and retrieve all of your web domain files using fully featured File Manager.']}</div>
-            <div className="license-description">
+            <div>
+              <span style={{ fontWeight: 'bolder' }}>{i18n['* plugin installation will run in background']}</span>
               <span>
                 Softaculous is a great Auto Installer having 426 great scripts, 1115 PHP Classes
                 and we are still adding more. Softaculous is ideal for Web Hosting companies and
@@ -234,8 +235,11 @@ const EditVestaPluginsOption = ({ data, visible }) => {
                 uses a customer could ever have. We have covered a wide array of Categories so that
                 everyone could find the required script one would need to power their Web Site.
               </span>
-              <a href="https://www.softaculous.com/softaculous/" target="_blank">
-                {i18n['Get Premium License']}
+            </div>
+
+            <div className="buy-license">
+              <a href="https://www.softaculous.com/softaculous/" target="_blank" rel="noopener noreferrer">
+                {i18n['Get Premium License'] ?? 'Get Premium License'}
               </a>
             </div>
           </div>

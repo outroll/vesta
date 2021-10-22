@@ -1,11 +1,11 @@
 import axios from "axios";
+import { getAuthToken } from "src/utils/token";
 
-const token = localStorage.getItem("token");
 const BASE_URL = window.location.origin;
-const webApiUri = '/list/cron/cron.php';
-const cronAddApiUri = '/api/add/cron/index.php';
-const jobInfoUri = '/api/edit/cron/index.php';
-const updateCronJobUri = '/api/edit/cron/index.php';
+const webApiUri = '/api/v1/list/cron/index.php';
+const cronAddApiUri = '/api/v1/add/cron/index.php';
+const jobInfoUri = '/api/v1/edit/cron/index.php';
+const updateCronJobUri = '/api/v1/edit/cron/index.php';
 
 export const getCronList = () => {
   return axios.get(BASE_URL + webApiUri);
@@ -14,19 +14,21 @@ export const getCronList = () => {
 export const bulkAction = (action, domainNameSystems) => {
   const formData = new FormData();
   formData.append("action", action);
-  formData.append("token", token);
+  formData.append("token", getAuthToken());
 
   domainNameSystems.forEach(domainNameSystem => {
     formData.append("job[]", domainNameSystem);
-    formData.append("suspend_url", `/suspend/cron/?job=${domainNameSystem}&token=${token}`);
-    formData.append("delete_url", `/delete/cron/?job=${domainNameSystem}&token=${token}`);
   });
 
-  return axios.post(BASE_URL + '/bulk/cron/', formData);
+  return axios.post(BASE_URL + '/api/v1/bulk/cron/', formData);
 };
 
 export const handleAction = uri => {
-  return axios.get(BASE_URL + uri);
+  return axios.get(BASE_URL + uri, {
+    params: {
+      token: getAuthToken()
+    }
+  });
 }
 
 export const addCronJob = data => {
@@ -43,7 +45,7 @@ export const getCronJobInfo = job => {
   return axios.get(BASE_URL + jobInfoUri, {
     params: {
       job,
-      token
+      token: getAuthToken()
     }
   });
 }
@@ -58,7 +60,7 @@ export const updateCronJob = (data, job) => {
   return axios.post(BASE_URL + updateCronJobUri, formDataObject, {
     params: {
       job,
-      token
+      token: getAuthToken()
     }
   });
 }

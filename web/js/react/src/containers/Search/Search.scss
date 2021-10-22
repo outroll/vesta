@@ -1,9 +1,11 @@
+$secondary: #fcac04;
+
 .content {
   .toolbar {
     .search-toolbar-name {
       font-size: 12px;
       text-transform: uppercase;
-      color: #ff6701;
+      color: $secondary;
       font-weight: bold;
       margin-left: 14.3%;
       padding-left: 7px;

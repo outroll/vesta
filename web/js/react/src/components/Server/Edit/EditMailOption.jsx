@@ -4,9 +4,10 @@ import SelectInput from 'src/components/ControlPanel/AddItemLayout/Form/SelectIn
 import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/TextInput';
 import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const EditMailOption = ({ data, visible }) => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const [mailCertificateSystem, setMailCertificateSystem] = useState(false);
 
   useEffect(() => {

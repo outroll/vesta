@@ -37,7 +37,7 @@ class Photo extends Component {
     return gallery.map((item, i) => {
       const imageClasses = classNames({ 'control-photo': true, 'active': i === this.state.activeSlide });
       const result = (<div data-target="#photoGallery" data-slide-to={i} key={i} className="indicator">
-        <img src={`${window.location.origin}/view/file/${this.formatPath(this.props.path)}/${item}&raw=true`} alt={i} className={imageClasses} />
+        <img src={`${window.location.origin}/api/v1/view/file/${this.formatPath(this.props.path)}/${item}&raw=true`} alt={i} className={imageClasses} />
       </div>);
       return result;
     });
@@ -48,7 +48,7 @@ class Photo extends Component {
     return gallery.map((item, i) => (
       <div className={i === this.state.activeSlide ? 'carousel-item active' : 'carousel-item'} key={i}>
         <div className="d-flex align-items-center justify-content-center min-vh-100">
-          <img className={this.imgClass(item)} src={`${window.location.origin}/view/file/${this.formatPath(this.props.path)}/${item}&raw=true`} alt={i} />
+          <img className={this.imgClass(item)} src={`${window.location.origin}/api/v1/view/file/${this.formatPath(this.props.path)}/${item}&raw=true`} alt={i} />
         </div>
       </div>
     ));

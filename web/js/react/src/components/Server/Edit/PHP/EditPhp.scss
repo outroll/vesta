@@ -1,8 +1,12 @@
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$textColor: #555;
+
 .content .edit-template.edit-php {
   .toolbar {
     .search-toolbar-name {
       width: fit-content;
-      color: rgb(119, 119, 119);
+      color: $textColor;
     }
     
     .search-toolbar-name,
@@ -13,11 +17,11 @@
         text-decoration: none;
         font-size: 12px;
         text-transform: uppercase;
-        color: rgb(119, 119, 119);
+        color: $textColor;
         font-weight: 700;
 
         &:hover {
-          color: #ff6701;
+          color: $secondaryLight;
         }
       }
     }
@@ -26,10 +30,10 @@
       margin-left: 15px;
 
       a {
-        color: #ff6701;
+        color: $secondary;
 
         &:hover {
-          color: rgb(119, 119, 119);
+          color: $textColor;
         }
       }
     }

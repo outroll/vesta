@@ -6,16 +6,33 @@ import MobileTopNav from '../MainNav/Mobile/MobileTopNav';
 import Menu from '../MainNav/Stat-menu/Menu';
 import Panel from '../MainNav/Panel/Panel';
 import './MainNav.scss';
+import { useHistory } from 'react-router';
+import Spinner from '../Spinner/Spinner';
 
-const MainNav = props => {
+const MainNav = () => {
+  const history = useHistory();
+  const [loading, setLoading] = useState(true);
   const [state, setState] = useState({
     menuHeight: 135,
+    tabs: [],
     showTopNav: false
   });
 
-  const { activeElement, focusedElement, menuTabs } = useSelector(state => state.mainNavigation);
+  const { userName, user, session: { look } } = useSelector(state => state.session);
+  const { activeElement, focusedElement, adminMenuTabs, userMenuTabs } = useSelector(state => state.mainNavigation);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!userName || !Object.entries(user).length) {
+      return history.push('/login');
+    }
+
+    const tabs = look ? userMenuTabs : adminMenuTabs;
+    setState({ ...state, tabs });
+
+    setLoading(false);
+  }, [userName, user, history]);
 
   const controlFocusedTabWithCallback = useCallback(event => {
     let isSearchInputFocused = document.querySelector('input:focus') || document.querySelector('textarea:focus') || document.querySelector('textarea:focus');
@@ -32,9 +49,9 @@ const MainNav = props => {
 
       if (!focusedElement) {
         dispatch(addFocusedElement(activeElement));
-        currentActiveTabPositionInArray = menuTabs.indexOf(activeElement);
+        currentActiveTabPositionInArray = state.tabs.indexOf(activeElement);
       } else {
-        currentActiveTabPositionInArray = menuTabs.indexOf(focusedElement);
+        currentActiveTabPositionInArray = state.tabs.indexOf(focusedElement);
       }
     }
 
@@ -43,14 +60,14 @@ const MainNav = props => {
     }
 
     if (event.keyCode === 37) {
-      let newFocusedMenuTab = handleLeftArrowKey(menuTabs, currentActiveTabPositionInArray);
+      let newFocusedMenuTab = handleLeftArrowKey(state.tabs, currentActiveTabPositionInArray);
       dispatch(addFocusedElement(newFocusedMenuTab));
     } else if (event.keyCode === 39) {
-      let newFocusedMenuTab = handleRightArrowKey(menuTabs, currentActiveTabPositionInArray);
+      let newFocusedMenuTab = handleRightArrowKey(state.tabs, currentActiveTabPositionInArray);
       dispatch(addFocusedElement(newFocusedMenuTab));
     } else if (event.keyCode === 13) {
-      if (!controlPanelFocusedElement && focusedElement) {
-        props.history.push({ pathname: focusedElement });
+      if (!controlPanelFocusedElement && focusedElement && (focusedElement !== activeElement)) {
+        history.push({ pathname: focusedElement });
         dispatch(addActiveElement(focusedElement));
         dispatch(removeFocusedElement());
       }
@@ -74,7 +91,7 @@ const MainNav = props => {
   }, [activeElement]);
 
   useEffect(() => {
-    dispatch(addActiveElement(props.history.location.pathname));
+    dispatch(addActiveElement(history.location.pathname));
   }, []);
 
   const handleLeftArrowKey = (array, indexInArray) => {
@@ -149,8 +166,14 @@ const MainNav = props => {
 
   return (
     <div className="main-nav">
-      <Panel showTopNav={showTopNav} visibleNav={state.showTopNav} />
-      {topNavigation()}
+      {
+        loading
+          ? <Spinner />
+          : (<>
+            <Panel showTopNav={showTopNav} visibleNav={state.showTopNav} />
+            {topNavigation()}
+          </>)
+      }
     </div>
   );
 }

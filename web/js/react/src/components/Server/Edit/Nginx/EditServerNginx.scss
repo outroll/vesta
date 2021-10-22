@@ -1,3 +1,5 @@
+$secondaryLight: #f8b014;
+
 .content .edit-template.edit-nginx {
   .toolbar {
     .search-toolbar-name {
@@ -16,7 +18,7 @@
         font-weight: 700;
 
         &:hover {
-          color: #ff6701;
+          color: $secondaryLight;
         }
       }
     }

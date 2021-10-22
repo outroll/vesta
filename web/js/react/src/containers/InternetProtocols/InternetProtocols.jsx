@@ -18,8 +18,7 @@ import './InternetProtocols.scss';
 import { Helmet } from 'react-helmet';
 
 const InternetProtocols = props => {
-  const { i18n } = window.GLOBAL.App;
-  const token = localStorage.getItem("token");
+  const { i18n } = useSelector(state => state.session);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
@@ -150,7 +149,7 @@ const InternetProtocols = props => {
     const { internetProtocols } = state;
     let currentInternetProtocolData = internetProtocols.filter(pack => pack.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentInternetProtocolData.delete_conf, `/delete/ip/?ip=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentInternetProtocolData.delete_conf, `/api/v1/delete/ip/?ip=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
@@ -164,6 +163,7 @@ const InternetProtocols = props => {
           ipFav: result.data.ipFav,
           selection: [],
           totalAmount: result.data.totalAmount,
+          toggledAll: false,
           loading: false
         });
       })

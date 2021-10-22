@@ -1,29 +1,31 @@
-import { LOGIN, LOGOUT, LOGGED_OUT_AS, RESET_PASSWORD } from './sessionTypes';
+import { LOGIN, LOGOUT, LOGGED_OUT_AS, CHECK_AUTH, RESET_PASSWORD } from './sessionTypes';
 import { checkAuth, signIn, signInAs, signOut } from 'src/services/session';
-import { resetAuthToken, setAuthToken } from 'src/utils/token';
 import { resetPassword } from 'src/ControlPanelService/ResetPassword';
+import { resetAuthToken, setAuthToken } from 'src/utils/token';
 
 const LOGOUT_RESPONSE = 'logged_out';
 const LOGOUT_AS_RESPONSE = 'logged_out_as';
 
 export const login = (user, password) => dispatch => {
   return new Promise((resolve, reject) => {
-    signIn(user, password).then((response) => {
-      const { error, session, token, panel, data, user } = response.data;
+    signIn({ user, password }).then((response) => {
+      const { error, session, token, panel, data, user, i18n } = response.data;
+
       if (token) setAuthToken(token);
 
       dispatch({
         type: LOGIN,
         value: {
-          token: data ? token : '',
+          token: token || '',
           panel,
           session,
+          i18n: i18n || {},
           userName: user,
           user: data,
           error
         },
       });
-      resolve(response.data);
+      resolve(token);
     }, (error) => {
       reject(error);
     });
@@ -34,7 +36,6 @@ export const reset = ({ user = '', code = '', password = '', password_confirm = 
   return new Promise((resolve, reject) => {
     resetPassword(user, code, password, password_confirm).then((response) => {
       const { error, session, token, panel, user } = response.data;
-      if (token) setAuthToken(token);
 
       dispatch({
         type: RESET_PASSWORD,
@@ -47,7 +48,7 @@ export const reset = ({ user = '', code = '', password = '', password_confirm = 
           error
         },
       });
-      resolve(response.data);
+      resolve(token);
     }, (error) => {
       reject(error);
     });
@@ -57,22 +58,23 @@ export const reset = ({ user = '', code = '', password = '', password_confirm = 
 export const loginAs = username => dispatch => {
   return new Promise((resolve, reject) => {
     signInAs(username).then((response) => {
-      const { error, token, session, panel, data, user } = response.data;
+      const { error, token, session, panel, data, user, i18n } = response.data;
       if (token) setAuthToken(token);
 
       dispatch({
         type: LOGIN,
         value: {
-          token,
-          panel,
-          session,
           userName: user,
           user: data,
-          error,
-        },
+          i18n,
+          session,
+          panel,
+          token,
+          error
+        }
       });
 
-      resolve(response.data);
+      resolve(token);
     }, (error) => {
       console.error(error);
       reject();
@@ -83,7 +85,7 @@ export const loginAs = username => dispatch => {
 export const logout = () => (dispatch, getState) => {
   return new Promise((resolve, reject) => {
     signOut().then((response) => {
-      const { logout_response, panel, session, user, data, token } = response.data;
+      const { logout_response, error, userName, user, i18n, session, panel } = response.data;
 
       if (logout_response === LOGOUT_RESPONSE) {
         resetAuthToken();
@@ -91,27 +93,28 @@ export const logout = () => (dispatch, getState) => {
         dispatch({
           type: LOGOUT,
           value: {
-            userName: user,
+            userName: '',
             user: {},
-            token,
-            panel,
-            session,
-            error: ''
+            token: '',
+            panel: {},
+            session: {},
+            i18n: [],
+            error,
           },
         });
 
         resolve();
       } else if (logout_response === LOGOUT_AS_RESPONSE) {
-        const { token } = getState().session;
         dispatch({
           type: LOGGED_OUT_AS,
           value: {
-            userName: user,
-            user: data,
+            userName,
+            user,
             session,
             panel,
-            token,
-            error: ''
+            token: '',
+            i18n,
+            error,
           },
         });
 
@@ -126,17 +129,18 @@ export const logout = () => (dispatch, getState) => {
   });
 }
 
-export const setToken = (token) => (dispatch, getState) => {
+export const checkAuthHandler = () => (dispatch, getState) => {
   return new Promise((resolve, reject) => {
-    checkAuth(token)
+    checkAuth()
       .then(res => {
-        const { user, data, session, panel, error } = res.data;
+        const { user, data, session, panel, error, i18n, token } = res.data;
 
         dispatch({
-          type: LOGIN,
+          type: CHECK_AUTH,
           value: {
             userName: user,
             user: data,
+            i18n,
             session,
             panel,
             token,
@@ -144,7 +148,7 @@ export const setToken = (token) => (dispatch, getState) => {
           }
         });
 
-        resolve();
+        resolve(token);
       })
       .catch(err => {
         reject();

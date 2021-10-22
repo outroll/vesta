@@ -18,7 +18,7 @@ import './CronJobs.scss';
 import { Helmet } from 'react-helmet';
 
 const CronJobs = props => {
-  const { i18n } = window.GLOBAL.App;
+  const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
@@ -153,14 +153,14 @@ const CronJobs = props => {
     let currentCronJobData = cronJobs.filter(cronJob => cronJob.NAME === controlPanelFocusedElement)[0];
     let suspendedStatus = currentCronJobData.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend';
 
-    displayModal(currentCronJobData.suspend_conf, `/${suspendedStatus}/cron?job=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentCronJobData.suspend_conf, `/api/v1/${suspendedStatus}/cron/index.php?job=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {
     const { cronJobs } = state;
     let currentCronJobData = cronJobs.filter(cronJob => cronJob.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentCronJobData.delete_conf, `/delete/cron/?job=${controlPanelFocusedElement}&token=${token}`);
+    displayModal(currentCronJobData.delete_conf, `/api/v1/delete/cron/index.php?job=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
@@ -171,6 +171,8 @@ const CronJobs = props => {
           cronJobs: reformatData(result.data.data),
           cronReports: result.data.cron_reports,
           cronFav: result.data.cron_fav,
+          selection: [],
+          toggledAll: false,
           totalAmount: result.data.totalAmount,
           loading: false
         });
@@ -360,7 +362,7 @@ const CronJobs = props => {
 
   const handleCronNotifications = () => {
     const token = localStorage.getItem("token");
-    const url = `/api/${state.cronReports === 'yes' ? 'delete' : 'add'}/cron/reports/?token=${token}`;
+    const url = `/api/v1/${state.cronReports === 'yes' ? 'delete' : 'add'}/cron/reports/?token=${token}`;
 
     handleAction(url)
       .then(res => {
