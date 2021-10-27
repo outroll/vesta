@@ -20,15 +20,15 @@ class FileManager extends Component {
     super(props);
     this.state = {
       leftList: {
-        path: this.props.session.user.HOME,
+        path: this.props.menuCounters.user.HOME,
         files: { listing: [] },
       },
       rightList: {
-        path: this.props.session.user.HOME,
+        path: this.props.menuCounters.user.HOME,
         files: { listing: [] },
       },
-      currentPath: this.props.session.user.HOME,
-      currentUser: this.props.session.user.HOME,
+      currentPath: this.props.menuCounters.user.HOME,
+      currentUser: this.props.menuCounters.user.HOME,
       activeWindow: "left",
       modalWindow: null,
       modalVisible: false,
@@ -44,7 +44,7 @@ class FileManager extends Component {
   }
 
   UNSAFE_componentWillMount = () => {
-    FM.cacheData(this.state.currentUser, this.props.history, this.props.session.user.HOME);
+    FM.cacheData(this.state.currentUser, this.props.history, this.props.menuCounters.user.HOME);
     let currentPath = FM.activeWindowPath();
     this.setState({ currentPath });
     this.changeDirectoryOnLoading();
@@ -435,7 +435,7 @@ class FileManager extends Component {
         addToPath={this.addToPath}
         cursor={this.state.cursor}
         passData={this.passData}
-        rootDir={this.props.session.user.HOME}
+        rootDir={this.props.menuCounters.user.HOME}
         ref={el => this[`${side}List`] = el}
         download={this.download}
         moveBack={this.moveBack}
@@ -480,7 +480,8 @@ class FileManager extends Component {
 
 function mapStateToProps(state) {
   return {
-    session: state.session
+    session: state.session,
+    menuCounters: state.menuCounters
   }
 }
 

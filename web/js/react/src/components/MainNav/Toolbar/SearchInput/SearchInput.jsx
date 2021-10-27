@@ -20,6 +20,14 @@ const SearchInput = props => {
     return () => window.removeEventListener("keyup", focusInput);
   }, []);
 
+  const onSubmit = e => {
+    e.preventDefault();
+
+    if (searchTerm) {
+      handleClick();
+    }
+  }
+
   const focusInput = event => {
     if (event.keyCode === 70) {
       return inputElement.current.focus();
@@ -27,10 +35,12 @@ const SearchInput = props => {
   }
 
   return (
-    <div className="search-input-form">
-      <input type="text" className="form-control" onChange={e => setSearchTerm(e.target.value)} ref={inputElement} />
-      <button className="btn btn-outline-secondary" type="submit" onClick={() => handleClick()}><FontAwesomeIcon icon="search" /></button>
-    </div>
+    <form onSubmit={onSubmit}>
+      <div className="search-input-form">
+        <input type="text" className="form-control" onChange={e => setSearchTerm(e.target.value)} ref={inputElement} />
+        <button className="btn btn-outline-secondary" type="submit" onClick={() => handleClick()}><FontAwesomeIcon icon="search" /></button>
+      </div>
+    </form>
   );
 }
 

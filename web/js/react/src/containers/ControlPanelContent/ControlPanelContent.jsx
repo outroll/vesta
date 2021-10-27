@@ -66,10 +66,10 @@ const ControlPanelContent = props => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (userName) {
-      setLoading(false);
+    if (!userName) {
+      return history.push('/login');
     } else {
-      history.push('/login');
+      setLoading(false);
     }
 
     if (look) {
@@ -102,7 +102,6 @@ const ControlPanelContent = props => {
       return;
     }
 
-    console.log(event);
     switch (event.keyCode) {
       case 49: return history.push('/list/user/');
       case 50: return history.push('/list/web/');
@@ -200,7 +199,7 @@ const ControlPanelContent = props => {
                   })
                 }
 
-                <Route path="/list/user" component={props => <Users changeSearchTerm={handleSearchTerm} loading={loading} {...props} />} />
+                <Route path="/list/user" component={props => <Users changeSearchTerm={handleSearchTerm} {...props} />} />
                 <Route path="/add/user" component={() => <AddUser />} />
                 <Route path="/edit/user" component={() => <EditUser />} />
                 <Route path="/list/web" component={props => <Web {...props} changeSearchTerm={handleSearchTerm} />} />

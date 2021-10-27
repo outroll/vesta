@@ -18,7 +18,8 @@ const MainNav = () => {
     showTopNav: false
   });
 
-  const { userName, user, session: { look } } = useSelector(state => state.session);
+  const { userName, session: { look } } = useSelector(state => state.session);
+  const { user } = useSelector(state => state.menuCounters);
   const { activeElement, focusedElement, adminMenuTabs, userMenuTabs } = useSelector(state => state.mainNavigation);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const dispatch = useDispatch();

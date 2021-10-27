@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './EditHttpd.scss';
 import { Helmet } from 'react-helmet';
+import HtmlParser from 'react-html-parser';
 
 const EditHttpd = props => {
   const token = localStorage.getItem("token");
@@ -89,7 +90,7 @@ const EditHttpd = props => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

@@ -4,7 +4,7 @@ import { values } from '../../../../ControlPanelService/Select';
 import { useSelector } from 'react-redux';
 import './Select.scss';
 
-const Select = props => {
+const Select = ({ cronReports, ...props }) => {
   const { i18n } = useSelector(state => state.session);
   const listValues = values(i18n);
 
@@ -43,6 +43,14 @@ const Select = props => {
   const renderOptions = () => {
     const { list } = props;
     let activeList = state[list];
+
+    if (list === 'cronList') {
+      if (cronReports) {
+        activeList = activeList.filter((item, index) => index !== 0);
+      } else {
+        activeList = activeList.filter((item, index) => index !== 1);
+      }
+    }
 
     if (list === 'statisticsList') {
       return props.users.map((item, index) => { return <option key={index} value={item}>{item}</option> });

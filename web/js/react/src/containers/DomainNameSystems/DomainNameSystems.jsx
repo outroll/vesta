@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { addControlPanelContentFocusedElement, removeControlPanelContentFocusedElement } from '../../actions/ControlPanelContent/controlPanelContentActions';
 import { addActiveElement, removeFocusedElement } from '../../actions/MainNavigation/mainNavigationActions';
 import DropdownFilter from '../../components/MainNav/Toolbar/DropdownFilter/DropdownFilter';
-import { bulkAction, getDnsList, handleAction } from '../../ControlPanelService/Dns';
+import { bulkDomainAction, getDnsList, handleAction } from '../../ControlPanelService/Dns';
 import * as MainNavigation from '../../actions/MainNavigation/mainNavigationActions';
 import SearchInput from '../../components/MainNav/Toolbar/SearchInput/SearchInput';
 import DomainNameSystem from '../../components/DomainNameSystem/DomainNameSystem';
@@ -17,13 +17,14 @@ import './DomainNameSystems.scss';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const DomainNameSystems = props => {
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -32,7 +33,6 @@ const DomainNameSystems = props => {
   const [state, setState] = useState({
     domainNameSystems: [],
     dnsFav: [],
-    loading: false,
     toggledAll: false,
     sorting: i18n.Date,
     order: "descending",
@@ -44,7 +44,7 @@ const DomainNameSystems = props => {
     dispatch(addActiveElement('/list/dns/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -174,21 +174,22 @@ const DomainNameSystems = props => {
   }
 
   const fetchData = () => {
-    setState({ ...state, loading: true });
-
-    getDnsList()
-      .then(result => {
-        setState({
-          ...state,
-          domainNameSystems: reformatData(result.data.data),
-          dnsFav: result.data.dnsFav,
-          selection: [],
-          toggledAll: false,
-          totalAmount: result.data.totalAmount,
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getDnsList()
+        .then(result => {
+          setState({
+            ...state,
+            domainNameSystems: reformatData(result.data.data),
+            dnsFav: result.data.dnsFav,
+            selection: [],
+            toggledAll: false,
+            totalAmount: result.data.totalAmount
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const reformatData = data => {
@@ -341,12 +342,14 @@ const DomainNameSystems = props => {
     const { selection } = state;
 
     if (selection.length && action) {
-      setState({ loading: true });
-      bulkAction(action, selection)
+      setLoading(true);
+      bulkDomainAction(action, selection)
         .then(result => {
           if (result.status === 200) {
-            fetchData();
-            toggleAll(false);
+            fetchData().then(() => {
+              refreshMenuCounters();
+              toggleAll(false);
+            });
           }
         })
         .catch(err => console.error(err));
@@ -363,12 +366,25 @@ const DomainNameSystems = props => {
   }
 
   const modalConfirmHandler = () => {
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
+
+    modalCancelHandler();
+    setLoading(true);
     handleAction(modal.actionUrl)
-      .then(() => {
-        fetchData();
-        modalCancelHandler();
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
       })
-      .catch(err => console.error(err));
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -397,7 +413,7 @@ const DomainNameSystems = props => {
         </div>
       </Toolbar>
       <div className="dns-wrapper">
-        {state.loading ? <Spinner /> : dns()}
+        {loading ? <Spinner /> : dns()}
       </div>
       <div className="total">{state.totalAmount}</div>
       <Modal

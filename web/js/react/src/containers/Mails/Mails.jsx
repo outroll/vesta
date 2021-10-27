@@ -17,13 +17,14 @@ import './Mails.scss';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Mails = props => {
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -32,7 +33,6 @@ const Mails = props => {
   const [state, setState] = useState({
     mails: [],
     mailFav: [],
-    loading: false,
     toggledAll: false,
     webMail: '',
     sorting: i18n.Date,
@@ -45,7 +45,7 @@ const Mails = props => {
     dispatch(addActiveElement('/list/mail/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -175,22 +175,23 @@ const Mails = props => {
   }
 
   const fetchData = () => {
-    setState({ ...state, loading: true });
-
-    getMailList()
-      .then(result => {
-        setState({
-          ...state,
-          mails: reformatData(result.data.data),
-          webMail: result.data.webMail,
-          mailFav: result.data.mailFav,
-          selection: [],
-          toggledAll: false,
-          totalAmount: result.data.totalAmount,
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getMailList()
+        .then(result => {
+          setState({
+            ...state,
+            mails: reformatData(result.data.data),
+            webMail: result.data.webMail,
+            mailFav: result.data.mailFav,
+            selection: [],
+            toggledAll: false,
+            totalAmount: result.data.totalAmount
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const reformatData = data => {
@@ -332,12 +333,14 @@ const Mails = props => {
     const { selection } = state;
 
     if (selection.length && action) {
-      setState({ ...state, loading: true });
+      setLoading(true);
       bulkAction(action, selection)
         .then(result => {
           if (result.status === 200) {
-            fetchData();
-            toggleAll(false);
+            fetchData().then(() => {
+              refreshMenuCounters();
+              toggleAll(false);
+            });
           }
         })
         .catch(err => console.error(err));
@@ -354,12 +357,25 @@ const Mails = props => {
   }
 
   const modalConfirmHandler = () => {
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
+
+    modalCancelHandler();
+    setLoading(true);
     handleAction(modal.actionUrl)
-      .then(() => {
-        fetchData();
-        modalCancelHandler();
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
       })
-      .catch(err => console.error(err));
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -389,7 +405,7 @@ const Mails = props => {
         </div>
       </Toolbar>
       <div className="mails-wrapper">
-        {state.loading
+        {loading
           ? <Spinner />
           : (<>
             {mails()}

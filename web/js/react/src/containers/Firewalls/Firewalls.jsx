@@ -17,13 +17,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import './Firewalls.scss';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Firewalls = props => {
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -34,7 +35,6 @@ const Firewalls = props => {
     firewallFav: [],
     selection: [],
     firewallExtension: '',
-    loading: false,
     toggledAll: false,
     sorting: i18n.Action,
     order: "descending",
@@ -45,7 +45,7 @@ const Firewalls = props => {
     dispatch(addActiveElement('/list/firewall/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -165,22 +165,23 @@ const Firewalls = props => {
   }
 
   const fetchData = () => {
-    setState({ ...state, loading: true });
-
-    getFirewallList()
-      .then(result => {
-        setState({
-          ...state,
-          firewalls: reformatData(result.data.data),
-          firewallFav: result.data.firewallFav,
-          selection: [],
-          firewallExtension: result.data.firewallExtension,
-          totalAmount: result.data.totalAmount,
-          toggledAll: false,
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getFirewallList()
+        .then(result => {
+          setState({
+            ...state,
+            firewalls: reformatData(result.data.data),
+            firewallFav: result.data.firewallFav,
+            selection: [],
+            firewallExtension: result.data.firewallExtension,
+            totalAmount: result.data.totalAmount,
+            toggledAll: false
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const reformatData = data => {
@@ -319,11 +320,14 @@ const Firewalls = props => {
     const { selection } = state;
 
     if (selection.length && action) {
+      setLoading(true);
       bulkAction(action, selection)
         .then(result => {
           if (result.status === 200) {
-            fetchData();
-            toggleAll(false);
+            fetchData().then(() => {
+              refreshMenuCounters();
+              toggleAll(false);
+            });
           }
         })
         .catch(err => console.error(err));
@@ -335,12 +339,25 @@ const Firewalls = props => {
   }
 
   const modalConfirmHandler = () => {
-    modalCancelHandler();
-    setState({ ...state, loading: true });
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
 
-    handleAction(state.modalActionUrl)
-      .then(() => fetchData())
-      .catch(err => console.error(err));
+    modalCancelHandler();
+    setLoading(true);
+    handleAction(modal.actionUrl)
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
+      })
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -365,9 +382,13 @@ const Firewalls = props => {
         </div>
       </Toolbar>
       <div className="firewalls-wrapper">
-        {state.loading ? <Spinner /> : firewalls()}
+        {loading
+          ? <Spinner />
+          : (<>
+            {firewalls()}
+            <div className="total">{state.totalAmount}</div>
+          </>)}
       </div>
-      <div className="total">{state.totalAmount}</div>
       <Modal
         onSave={modalConfirmHandler}
         onCancel={modalCancelHandler}

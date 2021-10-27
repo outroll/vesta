@@ -2,7 +2,7 @@
   color: #686868;
 
   .toolbar {
-    padding-bottom: 5px;
+    padding: 6px 12.5%;
   }
 
   .l-col {
@@ -27,5 +27,11 @@
 
   .r-col .date {
     color: #5edad0;
+  }
+}
+
+@media (max-width: 1350px) {
+  .statistics-list .toolbar {
+    padding: 6px 9.5%;
   }
 }

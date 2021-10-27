@@ -13,6 +13,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './AddUser.scss';
 import { Helmet } from 'react-helmet';
+import { checkAuthHandler } from 'src/actions/Session/sessionActions';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import HtmlParser from 'react-html-parser';
 
 const AddUser = props => {
   const { i18n } = useSelector(state => state.session);
@@ -71,19 +74,23 @@ const AddUser = props => {
     }
 
     if (Object.keys(newUser).length !== 0 && newUser.constructor === Object) {
+      setState({ ...state, loading: true });
       addUser(newUser)
         .then(result => {
-          if (result.status === 200) {
-            const { error_msg, ok_msg } = result.data;
+          const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '' });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg });
-            }
+          if (errorMessage) {
+            setState({ ...state, errorMessage, okMessage, loading: false });
+          } else {
+            dispatch(refreshCounters()).then(() => {
+              setState({ ...state, okMessage, errorMessage: '', loading: false });
+            });
           }
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+          setState({ ...state, loading: false });
+          console.error(err);
+        });
     }
   }
 
@@ -133,7 +140,7 @@ const AddUser = props => {
         <div className="search-toolbar-name">{i18n['Adding User']}</div>
         <div className="error"><span className="error-message">{state.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}</span></div>
         <div className="success">
-          <span className="ok-message">{state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span> </span>
+          <span className="ok-message">{state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span> </span>
         </div>
       </Toolbar>
       <AddItemLayout>

@@ -13,6 +13,8 @@ import './AddDomainNameSystem.scss';
 import AdvancedOptions from './AdvancedOptions/AdvancedOptions';
 import { addDomainNameSystem } from '../../../ControlPanelService/Dns';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import HtmlParser from 'react-html-parser';
 
 const AddDomainNameSystem = props => {
   const { i18n } = useSelector(state => state.session);
@@ -33,7 +35,6 @@ const AddDomainNameSystem = props => {
     dispatch(removeFocusedElement());
 
     setState({ ...state, loading: true });
-
     getUserNS()
       .then(result => {
         if (result.data.length) {
@@ -53,18 +54,17 @@ const AddDomainNameSystem = props => {
 
     if (Object.keys(domainNameSystem).length !== 0 && domainNameSystem.constructor === Object) {
       setState({ ...state, loading: true });
-
       addDomainNameSystem(domainNameSystem)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg, ok_msg } = result.data;
+            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '', loading: false });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg, loading: false });
+            if (errorMessage) {
+              setState({ ...state, errorMessage, okMessage, loading: false });
             } else {
-              setState({ ...state, loading: false });
+              dispatch(refreshCounters()).then(() => {
+                setState({ ...state, okMessage, errorMessage: '', loading: false });
+              });
             }
           }
         })
@@ -98,7 +98,7 @@ const AddDomainNameSystem = props => {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

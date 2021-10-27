@@ -10,10 +10,9 @@ import './TopPanel.scss';
 const TopPanel = ({ menuItems = [], extraMenuItems = [] }) => {
   const mainNavigation = useSelector(state => state.mainNavigation);
   const [loading, setLoading] = useState(false);
-  const { i18n } = useSelector(state => state.session);
+  const { i18n, userName } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const history = useHistory();
-  const { userName } = useSelector(state => state.session);
 
   const className = cls => {
     let className = 'nav-link';

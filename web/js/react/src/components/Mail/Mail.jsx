@@ -62,7 +62,7 @@ const Mail = props => {
           </Container>
           <Container className="c-3">
             {printStat(i18n['AntiSpam Support'], data.ANTISPAM)}
-            <div>{i18n['Catchall email']}: <span className="stat">{data.CATCHALL}</span></div>
+            <div>{i18n['Catchall email']}: <span className="stat catchall-mail">{data.CATCHALL}</span></div>
           </Container>
         </div>
       </Container>

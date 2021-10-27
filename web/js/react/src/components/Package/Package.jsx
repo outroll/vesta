@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 const Package = props => {
   const { data } = props;
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
 
   const printNameServers = servers => {
     let serversArray = servers.split(',');
@@ -32,7 +31,7 @@ const Package = props => {
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/api/v1/delete/package?package=${data.NAME}`);
+    props.handleModal(data.delete_conf, `/api/v1/delete/package/index.php?package=${data.NAME}`);
   }
 
   return (

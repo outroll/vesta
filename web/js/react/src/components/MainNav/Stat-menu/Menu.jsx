@@ -27,7 +27,8 @@ const style = ({ menuHeight, mobile }) => {
 
 const Menu = props => {
   const { activeElement, focusedElement } = useSelector(state => state.mainNavigation);
-  const { user, i18n, session: { look } } = useSelector(state => state.session);
+  const { i18n, session: { look } } = useSelector(state => state.session);
+  const { user } = useSelector(state => state.menuCounters);
   const dispatch = useDispatch();
 
   useEffect(() => {

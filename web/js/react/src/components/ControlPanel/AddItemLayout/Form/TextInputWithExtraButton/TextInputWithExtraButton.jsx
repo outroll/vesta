@@ -7,11 +7,7 @@ const TextInputWithExtraButton = props => {
   });
 
   useEffect(() => {
-    if (props.value !== 'unlimited') {
-      setState({ ...state, value: state.previousValue });
-    } else {
-      setState({ ...state, value: props.value });
-    }
+    setState({ ...state, value: props.value });
   }, [props.value]);
 
   useEffect(() => {

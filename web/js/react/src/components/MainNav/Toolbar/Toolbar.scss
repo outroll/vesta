@@ -1,3 +1,16 @@
+$primary: #2c54ac;
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #d7dcef;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$danger: #b00e5b;
+$secondaryActive: #fdb51c;
+$hoverButtonText: #2c54ac;
+$activeButtonText: #fff;
+$textColor: #555;
+
 .toolbar {
   display: flex;
   flex-direction: row;
@@ -8,16 +21,17 @@
   left: 0;
   width: 100%;
   z-index: 1;
-  padding: 0 13%;
+  padding: 3px 10% 1px;
+  border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
-  padding-top: 5px;
 
   .r-menu {
     display: flex;
     justify-content: center;
     align-items: center;
 
-    a.button-extra, button.button-extra {
+    a.button-extra,
+    button.button-extra {
       background: none;
       border: none;
       padding: 0 0.75rem;
@@ -27,9 +41,17 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-right: 10px;
+      border-radius: 3px;
 
       &:hover {
-        color: rgb(78, 76, 76);
+        background: $primaryLight;
+        color: $hoverButtonText;
+      }
+
+      &:active {
+        background: $primaryActive;
+        color: $activeButtonText;
       }
     }
     
@@ -131,7 +153,7 @@
 
 @media (max-width: 1350px) {
   .toolbar {
-    padding: 5px 10% 0;
+    padding: 3px 10% 1px;
   }
 }
 

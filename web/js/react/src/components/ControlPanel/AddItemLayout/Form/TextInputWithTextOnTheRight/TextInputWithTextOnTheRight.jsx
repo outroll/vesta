@@ -27,7 +27,7 @@ const TextInputWithTextOnTheRight = ({ id, title, name, defaultValue = '', optio
           onChange={event => setInputValue(event.target.value)}
           disabled={disabled}
           name={name} />
-        <span><i>{`admin_${inputValue}`}</i></span>
+        <span><i>{`${inputValue}`}</i></span>
       </div>
     </div>
   );

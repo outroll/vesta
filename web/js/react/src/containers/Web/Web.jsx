@@ -16,13 +16,14 @@ import Modal from '../../components/ControlPanel/Modal/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import './Web.scss';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Web = props => {
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -31,7 +32,6 @@ const Web = props => {
   const [state, setState] = useState({
     webDomains: [],
     webFav: [],
-    loading: false,
     toggledAll: false,
     sorting: i18n.Date,
     order: "descending",
@@ -43,7 +43,7 @@ const Web = props => {
     dispatch(addActiveElement('/list/web/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -168,21 +168,22 @@ const Web = props => {
   }
 
   const fetchData = () => {
-    setState({ ...state, loading: true });
-
-    getWebList()
-      .then(result => {
-        setState({
-          ...state,
-          webDomains: reformatData(result.data.data),
-          webFav: result.data.webFav,
-          totalAmount: result.data.totalAmount,
-          toggledAll: false,
-          selection: [],
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getWebList()
+        .then(result => {
+          setState({
+            ...state,
+            webDomains: reformatData(result.data.data),
+            webFav: result.data.webFav,
+            totalAmount: result.data.totalAmount,
+            toggledAll: false,
+            selection: []
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const changeSorting = (sorting, order) => {
@@ -318,14 +319,13 @@ const Web = props => {
 
   const bulk = action => {
     if (state.selection.length && action) {
-      setState({ ...state, loading: true });
-
+      setLoading(true);
       bulkAction(action, state.selection)
         .then(result => {
-          if (result.status === 200) {
-            fetchData();
+          fetchData().then(() => {
+            refreshMenuCounters();
             toggleAll(false);
-          }
+          });
         })
         .catch(err => console.error(err));
     }
@@ -334,20 +334,32 @@ const Web = props => {
   const displayModal = (text, url) => {
     setModal({
       ...modal,
-      visible: !modal.visible,
+      visible: true,
       text,
       actionUrl: url
     });
   }
 
   const modalConfirmHandler = () => {
-    setState({ ...state, loading: true });
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
+
     modalCancelHandler();
+    setLoading(true);
     handleAction(modal.actionUrl)
-      .then(() => {
-        fetchData();
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
       })
-      .catch(err => console.error(err));
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -376,7 +388,7 @@ const Web = props => {
         </div>
       </Toolbar>
       <div className="web-domains-wrapper">
-        {state.loading
+        {loading
           ? <Spinner />
           : (
             <>

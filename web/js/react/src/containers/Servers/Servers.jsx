@@ -15,12 +15,14 @@ import Server from '../../components/Server/Server';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './Servers.scss';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Servers = props => {
   const { i18n } = useSelector(state => state.session);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -29,7 +31,6 @@ const Servers = props => {
   const [state, setState] = useState({
     servers: [],
     selection: [],
-    loading: false,
     toggledAll: false,
     sorting: i18n.Action,
     order: "descending",
@@ -39,7 +40,7 @@ const Servers = props => {
     dispatch(addActiveElement('/list/server/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -156,19 +157,20 @@ const Servers = props => {
   }
 
   const fetchData = () => {
-    setState({ ...state, loading: true });
-
-    getServersList()
-      .then(result => {
-        setState({
-          ...state,
-          selection: [],
-          toggledAll: false,
-          servers: reformatData(result.data.data, result.data.sys),
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getServersList()
+        .then(result => {
+          setState({
+            ...state,
+            selection: [],
+            toggledAll: false,
+            servers: reformatData(result.data.data, result.data.sys)
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const reformatData = (servers, sysInfo) => {
@@ -207,18 +209,17 @@ const Servers = props => {
   const onHandleAction = uri => {
     dispatch(removeControlPanelContentFocusedElement());
     if (uri) {
-      setState({ ...state, loading: true });
-
+      setLoading(true);
       handleAction(uri)
         .then(res => {
           if (res.data.error) {
             displayModal(res.data.error);
           }
 
-          setState({ ...state, loading: false });
+          setLoading(false);
         })
         .catch(err => {
-          setState({ ...state, loading: false });
+          setLoading(false);
           console.error(err)
         });
     }
@@ -258,8 +259,10 @@ const Servers = props => {
             displayModal(res.data.error);
           }
 
-          fetchData();
-          toggleAll(false);
+          fetchData().then(() => {
+            refreshMenuCounters();
+            toggleAll(false);
+          });
         })
         .catch(err => console.error(err));
     }
@@ -288,11 +291,25 @@ const Servers = props => {
   }
 
   const modalConfirmHandler = () => {
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
+
     modalCancelHandler();
-    setState({ ...state, loading: true });
+    setLoading(true);
     handleAction(modal.actionUrl)
-      .then(() => fetchData())
-      .catch(err => console.error(err));
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
+      })
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -315,7 +332,7 @@ const Servers = props => {
           </div>
         </div>
       </Toolbar>
-      {state.loading ? <Spinner /> : (
+      {loading ? <Spinner /> : (
         <div className="servers-wrapper">
           {servers()}
         </div>

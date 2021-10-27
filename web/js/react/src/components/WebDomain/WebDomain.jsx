@@ -93,10 +93,10 @@ export default function WebDomain(props) {
           </Link>
         </div>
         <div>
-          <a className="link-gray" href={`/list/web-log?domain=${data.NAME}&type=access`}>
+          <Link className="link-gray" to={`/list/web-log?domain=${data.NAME}&type=access`}>
             {i18n['view logs']}
             {data.FOCUSED ? <span className="shortcut-button">L</span> : <FontAwesomeIcon icon="list" />}
-          </a>
+          </Link>
         </div>
         {
           data.STATS && (

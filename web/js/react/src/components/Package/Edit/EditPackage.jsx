@@ -16,6 +16,9 @@ import QS from 'qs';
 
 import './EditPackage.scss';
 import { Helmet } from 'react-helmet';
+import { checkAuthHandler } from 'src/actions/Session/sessionActions';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import HtmlParser from 'react-html-parser';
 
 const EditPackage = props => {
   const token = localStorage.getItem("token");
@@ -70,9 +73,15 @@ const EditPackage = props => {
       updatePackage(updatedPackage, state.data.package)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg, ok_msg } = result.data;
-            setState({ ...state, errorMessage: error_msg || '', okMessage: ok_msg || '', loading: false });
-            history.push('/list/package/');
+            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
+
+            if (errorMessage) {
+              setState({ ...state, errorMessage, okMessage, loading: false });
+            } else {
+              dispatch(refreshCounters()).then(() => {
+                setState({ ...state, okMessage, errorMessage: '', loading: false });
+              });
+            }
           }
         })
         .catch(err => console.error(err));
@@ -113,7 +122,7 @@ const EditPackage = props => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

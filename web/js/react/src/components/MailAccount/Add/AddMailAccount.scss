@@ -21,10 +21,25 @@
             }
           }
         }
+
+        .form-group:nth-child(3) {
+          > div {
+            display: flex;
+
+            input {
+              width: 100%;
+            }
+
+            input + button {
+              padding-left: 10px;
+            }
+          }
+        }
       }
 
       .c-2 {
         width: 45%;
+        height: 100%;
         border: 1px solid #d9d9d9;
         padding: 0px 5px 12px 20px;
       }

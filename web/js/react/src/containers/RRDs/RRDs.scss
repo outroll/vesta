@@ -18,7 +18,7 @@ div.content {
   color: $textColor;
 
   .toolbar {
-    padding-bottom: 10px;
+    padding: 6px 12.5%;
   }
 
   .rrd-item {
@@ -88,5 +88,11 @@ div.content {
 
   > div.active {
     color: $secondaryActive;
+  }
+}
+
+@media (max-width: 1350px) {
+  .rrd-list .toolbar {
+    padding: 6px 9.5%;
   }
 }

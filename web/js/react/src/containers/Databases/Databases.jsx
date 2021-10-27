@@ -16,13 +16,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
 import './Databases.scss';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Databases = props => {
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -31,7 +32,6 @@ const Databases = props => {
   const [state, setState] = useState({
     databases: [],
     dbFav: [],
-    loading: true,
     toggledAll: false,
     dbAdmin: '',
     dbAdminLink: '',
@@ -45,7 +45,7 @@ const Databases = props => {
     dispatch(addActiveElement('/list/db/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -165,21 +165,24 @@ const Databases = props => {
   }
 
   const fetchData = () => {
-    getDatabaseList()
-      .then(result => {
-        setState({
-          ...state,
-          databases: reformatData(result.data.data),
-          dbAdmin: result.data.db_admin,
-          dbAdminLink: result.data.db_admin_link,
-          dbFav: result.data.dbFav,
-          selection: [],
-          toggledAll: false,
-          totalAmount: result.data.totalAmount,
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getDatabaseList()
+        .then(result => {
+          setState({
+            ...state,
+            databases: reformatData(result.data.data),
+            dbAdmin: result.data.db_admin,
+            dbAdminLink: result.data.db_admin_link,
+            dbFav: result.data.dbFav,
+            selection: [],
+            toggledAll: false,
+            totalAmount: result.data.totalAmount
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const reformatData = data => {
@@ -323,12 +326,14 @@ const Databases = props => {
     const { selection } = state;
 
     if (selection.length && action) {
-      setState({ ...state, loading: true });
+      setLoading(true);
       bulkAction(action, selection)
         .then(result => {
           if (result.status === 200) {
-            fetchData();
-            toggleAll(false);
+            fetchData().then(() => {
+              refreshMenuCounters();
+              toggleAll(false);
+            });
           }
         })
         .catch(err => console.error(err));
@@ -345,13 +350,25 @@ const Databases = props => {
   }
 
   const modalConfirmHandler = () => {
-    setState({ ...state, loading: true });
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
+
+    modalCancelHandler();
+    setLoading(true);
     handleAction(modal.actionUrl)
-      .then(() => {
-        fetchData();
-        modalCancelHandler();
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
       })
-      .catch(err => console.error(err));
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -381,7 +398,7 @@ const Databases = props => {
         </div>
       </Toolbar>
       <div className="mails-wrapper">
-        {state.loading
+        {loading
           ? <Spinner />
           : (<>
             {databases()}

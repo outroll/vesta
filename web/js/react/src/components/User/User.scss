@@ -39,6 +39,7 @@ $textColor: #555;
 
 span.stat.email{
   display: block;
+  width: max-content;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;

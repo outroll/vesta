@@ -1,34 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import AdditionalFtp from '../AdditionalFtp/AdditionalFtp';
 import AdditionalFtpForEditing from '../AdditionalFtpForEditing/AdditionalFtpForEditing';
+import './AdditionalFtpWrapper.scss';
 
-const AdditionalFtpWrapper = props => {
+const AdditionalFtpWrapper = ({ checked, ftps, unCheckAdditionalFtpBox, prefixI18N, ftpUserPrePath, domain, ...props }) => {
   const { i18n } = useSelector(state => state.session);
   const [state, setState] = useState({
     additionalFtp: []
   });
 
   useEffect(() => {
-    if (props.ftps) {
-      const data = props.ftps.map((item, index) => {
-        item['deleted'] = false;
+    if (ftps) {
+      const data = ftps.map((item, index) => {
+        item['deleted'] = !checked;
         item['id'] = index;
         return item;
       });
+
       setState({ ...state, additionalFtp: data });
     }
-  }, [props.ftps]);
+  }, [checked, ftps]);
 
   const renderAdditionalFtps = () => {
     return state.additionalFtp.map(ftp => {
       return <AdditionalFtpForEditing
         key={ftp.id}
-        prefixI18N={props.prefixI18N}
+        prefixI18N={prefixI18N}
         data={ftp}
-        checked={props.checked}
-        prePath={props.ftpUserPrePath}
-        domain={props.domain}
+        checked={checked}
+        prePath={ftpUserPrePath}
+        domain={domain}
         onDeleteAdditionalFtp={id => onDeleteFtp(id)} />;
     });
   }
@@ -45,7 +46,7 @@ const AdditionalFtpWrapper = props => {
     });
 
     if (!updatedAdditionalFtps.length) {
-      props.unCheckAdditionalFtpBox();
+      unCheckAdditionalFtpBox();
     }
 
     setState({ ...state, additionalFtp: updatedAdditionalFtps });
@@ -64,7 +65,7 @@ const AdditionalFtpWrapper = props => {
     <div>
       {renderAdditionalFtps()}
 
-      {props.checked && (
+      {checked && (
         <button type="button" onClick={() => addAdditionalFtp()}>
           {i18n['Add one more FTP Account'] ?? 'Add'}
         </button>)}

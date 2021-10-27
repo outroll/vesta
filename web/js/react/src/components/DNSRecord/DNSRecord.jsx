@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 
 export default function DnsRecord({ data, domain, handleModal, ...props }) {
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
 
   const toggleFav = (starred) => {
     if (starred) {
@@ -23,6 +22,10 @@ export default function DnsRecord({ data, domain, handleModal, ...props }) {
 
   const handleDelete = () => {
     handleModal(data.delete_conf, `/api/v1/delete/dns/?domain=${domain}&record_id=${data.ID}`);
+  }
+
+  const handleSuspend = () => {
+    handleModal(data.suspend_conf, `/api/v1/${data.suspend_action}/dns/?domain=${domain}&record_id=${data.ID}`);
   }
 
   return (
@@ -60,6 +63,15 @@ export default function DnsRecord({ data, domain, handleModal, ...props }) {
             {i18n.edit}
             {data.FOCUSED ? <span className="shortcut-button html-unicode">&#8617;</span> : <FontAwesomeIcon icon="pen" />}
           </Link>
+        </div>
+
+        <div>
+          <button
+            className="link-gray"
+            onClick={handleSuspend}>
+            {data.suspend_action}
+            {data.FOCUSED ? <span className="shortcut-button">S</span> : <FontAwesomeIcon icon={data.SUSPENDED === 'yes' ? 'unlock' : 'lock'} />}
+          </button>
         </div>
 
         <div>

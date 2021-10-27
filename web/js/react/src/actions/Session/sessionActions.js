@@ -2,6 +2,7 @@ import { LOGIN, LOGOUT, LOGGED_OUT_AS, CHECK_AUTH, RESET_PASSWORD } from './sess
 import { checkAuth, signIn, signInAs, signOut } from 'src/services/session';
 import { resetPassword } from 'src/ControlPanelService/ResetPassword';
 import { resetAuthToken, setAuthToken } from 'src/utils/token';
+import { REFRESH_COUNTERS } from '../MenuCounters/menuCounterTypes';
 
 const LOGOUT_RESPONSE = 'logged_out';
 const LOGOUT_AS_RESPONSE = 'logged_out_as';
@@ -21,9 +22,14 @@ export const login = (user, password) => dispatch => {
           session,
           i18n: i18n || {},
           userName: user,
-          user: data,
           error
         },
+      });
+      dispatch({
+        type: REFRESH_COUNTERS,
+        value: {
+          user: data,
+        }
       });
       resolve(token);
     }, (error) => {
@@ -44,9 +50,14 @@ export const reset = ({ user = '', code = '', password = '', password_confirm = 
           panel,
           session,
           userName: user,
-          user: {},
           error
         },
+      });
+      dispatch({
+        type: REFRESH_COUNTERS,
+        value: {
+          user: {},
+        }
       });
       resolve(token);
     }, (error) => {
@@ -65,12 +76,17 @@ export const loginAs = username => dispatch => {
         type: LOGIN,
         value: {
           userName: user,
-          user: data,
           i18n,
           session,
           panel,
           token,
           error
+        }
+      });
+      dispatch({
+        type: REFRESH_COUNTERS,
+        value: {
+          user: data,
         }
       });
 
@@ -94,13 +110,18 @@ export const logout = () => (dispatch, getState) => {
           type: LOGOUT,
           value: {
             userName: '',
-            user: {},
             token: '',
             panel: {},
             session: {},
             i18n: [],
             error,
           },
+        });
+        dispatch({
+          type: REFRESH_COUNTERS,
+          value: {
+            user: {},
+          }
         });
 
         resolve();
@@ -109,13 +130,18 @@ export const logout = () => (dispatch, getState) => {
           type: LOGGED_OUT_AS,
           value: {
             userName,
-            user,
             session,
             panel,
             token: '',
             i18n,
             error,
           },
+        });
+        dispatch({
+          type: REFRESH_COUNTERS,
+          value: {
+            user,
+          }
         });
 
         resolve();
@@ -135,16 +161,23 @@ export const checkAuthHandler = () => (dispatch, getState) => {
       .then(res => {
         const { user, data, session, panel, error, i18n, token } = res.data;
 
+        if (token) setAuthToken(token);
+
         dispatch({
           type: CHECK_AUTH,
           value: {
             userName: user,
-            user: data,
             i18n,
             session,
             panel,
             token,
             error
+          }
+        });
+        dispatch({
+          type: REFRESH_COUNTERS,
+          value: {
+            user: data,
           }
         });
 

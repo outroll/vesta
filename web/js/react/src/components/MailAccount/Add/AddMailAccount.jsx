@@ -17,6 +17,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './AddMailAccount.scss';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import HtmlParser from 'react-html-parser';
 
 export default function AddMailAccount(props) {
   const { i18n } = useSelector(state => state.session);
@@ -26,6 +28,7 @@ export default function AddMailAccount(props) {
   const [state, setState] = useState({
     data: {},
     advancedOptions: false,
+    autoreplyChecked: false,
     quotaValue: '',
     loading: false,
     password: '',
@@ -54,15 +57,18 @@ export default function AddMailAccount(props) {
     newMailDomain['Password'] = newMailDomain['v_password'];
 
     if (Object.keys(newMailDomain).length !== 0 && newMailDomain.constructor === Object) {
+      setState({ ...state, loading: true });
       addMailAccount(newMailDomain, props.domain)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg, ok_msg } = result.data;
+            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '' });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg });
+            if (errorMessage) {
+              setState({ ...state, errorMessage, okMessage, loading: false });
+            } else {
+              dispatch(refreshCounters()).then(() => {
+                setState({ ...state, okMessage, errorMessage: '', loading: false });
+              });
             }
           }
         })
@@ -114,7 +120,7 @@ export default function AddMailAccount(props) {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

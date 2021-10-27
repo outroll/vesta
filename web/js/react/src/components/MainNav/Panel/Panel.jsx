@@ -56,7 +56,6 @@ const Panel = props => {
 
     dispatch(logout())
       .then(() => {
-        history.push('/login/');
         setLoading(false);
       },
         error => {
@@ -69,7 +68,7 @@ const Panel = props => {
     <div className="panel-wrapper">
       {loading && <Spinner />}
 
-      <div className={`top-panel ${user ? 'long-profile' : ''}`}>
+      <div className={`top-panel ${look ? 'long-profile' : ''}`}>
         <div className="container left-menu">
           <div className="logo">
             <Link to="/list/user/" onClick={() => dispatch(addActiveElement('/list/user/'))}>
@@ -103,7 +102,7 @@ const Panel = props => {
               <Link to="/list/firewall/" onClick={event => handleState("/list/firewall/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Firewall}</Link>
             </div>}
           </>)}
-          {session.session.FILEMANAGER_KEY && <div className={className("/list/directory/", "fm")}>
+          {session.session.FILEMANAGER_KEY && <div className={className("/list/directory/")}>
             <Link to="/list/directory/">{i18n['File Manager']}</Link>
           </div>}
           {session.session.SOFTACULOUS === "yes" && <div className={className("/softaculous/")}><a href="/softaculous/">{i18n.Apps ?? 'Apps'}</a>

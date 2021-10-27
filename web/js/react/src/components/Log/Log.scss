@@ -1,4 +1,8 @@
 .logs-list {
+  .toolbar {
+    padding: 6px 12.5%;
+  }
+
   .statistic-item {
     .l-col {
       font-size: 13px;
@@ -24,5 +28,11 @@
     div.name {
       color: #5edad0;
     }
+  }
+}
+
+@media (max-width: 1350px) {
+  .logs-list .toolbar {
+    padding: 6px 9.5%;
   }
 }
