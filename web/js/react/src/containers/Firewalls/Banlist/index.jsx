@@ -16,6 +16,7 @@ import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router';
 
 import './styles.scss';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const BanLists = props => {
   const { i18n } = useSelector(state => state.session);
@@ -23,6 +24,7 @@ const BanLists = props => {
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -31,7 +33,6 @@ const BanLists = props => {
   const [state, setState] = useState({
     banIps: [],
     selection: [],
-    loading: false,
     toggledAll: false,
     sorting: i18n.Action,
     order: "descending",
@@ -42,7 +43,7 @@ const BanLists = props => {
     dispatch(addActiveElement('/list/firewall/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -148,20 +149,21 @@ const BanLists = props => {
   }
 
   const fetchData = () => {
-    setState({ ...state, loading: true });
-
-    getBanList()
-      .then(result => {
-        setState({
-          ...state,
-          banIps: reformatData(result.data.data),
-          totalAmount: result.data.total_amount,
-          toggledAll: false,
-          selection: [],
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getBanList()
+        .then(result => {
+          setState({
+            ...state,
+            banIps: reformatData(result.data.data),
+            totalAmount: result.data.total_amount,
+            toggledAll: false,
+            selection: []
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const reformatData = data => {
@@ -231,11 +233,11 @@ const BanLists = props => {
     const { selection } = state;
 
     if (selection.length && action) {
-      bulkAction(action, selection)
+      bulkAction(action, selection, state.banIps)
         .then(result => {
           if (result.status === 200) {
-            fetchData();
             toggleAll(false);
+            fetchData();
           }
         })
         .catch(err => console.error(err));
@@ -247,12 +249,21 @@ const BanLists = props => {
   }
 
   const modalConfirmHandler = () => {
-    modalCancelHandler();
-    setState({ ...state, loading: true });
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
 
-    handleAction(state.modalActionUrl)
-      .then(() => fetchData())
-      .catch(err => console.error(err));
+    modalCancelHandler();
+    setLoading(true);
+    handleAction(modal.actionUrl)
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData();
+      })
+      .catch(err => { setLoading(false); console.error(err); });
   }
 
   const modalCancelHandler = () => {
@@ -274,18 +285,18 @@ const BanLists = props => {
           </div>
         </div>
       </Toolbar>
-      <div className="banlist-wrapper">
-        {state.loading
-          ? <Spinner />
-          : (<>
+      {loading
+        ? <Spinner />
+        : (<>
+          <div className="banlist-wrapper">
             {banIps()}
             <div className="buttons-wrapper">
               <div className="total">{state.totalAmount}</div>
               <button type="button" className="back" onClick={() => history.push('/list/firewall/')}>{i18n.Back}</button>
             </div>
-          </>)
-        }
-      </div>
+          </div>
+        </>)
+      }
       <Modal
         onSave={modalConfirmHandler}
         onCancel={modalCancelHandler}

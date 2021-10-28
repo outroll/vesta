@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './EditPhp.scss';
 import { Helmet } from 'react-helmet';
+import HtmlParser from 'react-html-parser';
 
 const EditPhp = ({ serviceName = '' }) => {
   const token = localStorage.getItem("token");
@@ -104,7 +105,7 @@ const EditPhp = ({ serviceName = '' }) => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

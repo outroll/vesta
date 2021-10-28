@@ -7,18 +7,20 @@ import Toolbar from '../../components/MainNav/Toolbar/Toolbar';
 import Modal from '../../components/ControlPanel/Modal/Modal';
 import Spinner from '../../components/Spinner/Spinner';
 import './Search.scss';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Search = props => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [state, setState] = useState({
     searchResults: [],
     totalAmount: '',
     sorting: i18n.Date,
     order: "descending",
-    loading: false,
     total: 0
   });
   const [modal, setModal] = useState({
@@ -34,29 +36,31 @@ const Search = props => {
       let searchTerm = search.split('=')[1];
 
       if (searchTerm !== '') {
-        fetchData(searchTerm);
+        fetchData(searchTerm).then(() => setLoading(false));
       } else {
         return history.push({ pathname: '/list/user/', search: '' });
       }
     } else if (props.searchTerm !== '') {
-      fetchData(props.searchTerm);
+      fetchData(props.searchTerm).then(() => setLoading(false));
     } else {
       return history.push({ pathname: '/list/user/', search: '' });
     }
   }, []);
 
   const fetchData = searchTerm => {
-    setState({ ...state, loading: true });
-    getSearchResultsList(searchTerm)
-      .then(result => {
-        setState({
-          ...state,
-          searchResults: result.data.data,
-          totalAmount: result.data.total_amount,
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getSearchResultsList(searchTerm)
+        .then(result => {
+          setState({
+            ...state,
+            searchResults: result.data.data,
+            totalAmount: result.data.total
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const searchResults = () => {
@@ -99,7 +103,6 @@ const Search = props => {
     switch (sorting) {
       case Date: return 'DATE';
       case Name: return 'RESULT';
-      case Starred: return 'STARRED';
       default: break;
     }
   }
@@ -114,12 +117,25 @@ const Search = props => {
   }
 
   const modalConfirmHandler = () => {
-    handleAction(state.modalActionUrl)
-      .then(() => {
-        fetchData();
-        modalCancelHandler();
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
+
+    modalCancelHandler();
+    setLoading(true);
+    handleAction(modal.actionUrl)
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
       })
-      .catch(err => console.error(err));
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -141,9 +157,13 @@ const Search = props => {
         </div>
       </Toolbar>
       <div className="statistics-wrapper">
-        {state.loading ? <Spinner /> : searchResults()}
+        {loading
+          ? <Spinner />
+          : (<>
+            {searchResults()}
+            <div className="total">{state.totalAmount}</div>
+          </>)}
       </div>
-      <div className="total">{state.totalAmount}</div>
       <Modal
         onSave={modalConfirmHandler}
         onCancel={modalCancelHandler}

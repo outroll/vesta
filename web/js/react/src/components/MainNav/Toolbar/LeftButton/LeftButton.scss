@@ -81,12 +81,6 @@ $textColor: #555;
 .servers-list,
 .exclusions-list {
   .l-menu {
-    &.server-icon {
-      a, span.add {
-        background: $primary;
-      }
-    }
-
     &.backup-details-icon {
       transform: translateX(2px);
     }

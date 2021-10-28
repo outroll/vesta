@@ -11,6 +11,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './AddMail.scss'
 import { Helmet } from 'react-helmet';
+import { checkAuthHandler } from 'src/actions/Session/sessionActions';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import HtmlParser from 'react-html-parser';
 
 const AddMail = props => {
   const { i18n } = useSelector(state => state.session);
@@ -40,15 +43,18 @@ const AddMail = props => {
     }
 
     if (Object.keys(newMailDomain).length !== 0 && newMailDomain.constructor === Object) {
+      setState({ ...state, loading: true });
       addMail(newMailDomain)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg, ok_msg } = result.data;
+            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '' });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg });
+            if (errorMessage) {
+              setState({ ...state, errorMessage, okMessage, loading: false });
+            } else {
+              dispatch(refreshCounters()).then(() => {
+                setState({ ...state, okMessage, errorMessage: '', loading: false });
+              });
             }
           }
         })
@@ -72,7 +78,7 @@ const AddMail = props => {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

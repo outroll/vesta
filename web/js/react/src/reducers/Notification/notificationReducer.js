@@ -1,7 +1,7 @@
 import { ADD_NOTIFICATIONS, REMOVE_NOTIFICATIONS } from 'src/actions/Notification/notificationTypes';
 
 const INITIAL_STATE = {
-  notifications: []
+  notifications: null
 };
 
 const notificationReducer = (state = INITIAL_STATE, action) => {

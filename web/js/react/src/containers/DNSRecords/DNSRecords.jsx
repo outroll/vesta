@@ -17,14 +17,15 @@ import QueryString from 'qs';
 
 import './DNSRecords.scss';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 export default function DnsRecords(props) {
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem('token');
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -34,7 +35,6 @@ export default function DnsRecords(props) {
     dnsRecords: [],
     dnsRecordFav: [],
     domain: '',
-    loading: true,
     toggledAll: false,
     sorting: i18n.Date,
     order: "descending",
@@ -44,7 +44,7 @@ export default function DnsRecords(props) {
 
   useEffect(() => {
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -156,23 +156,23 @@ export default function DnsRecords(props) {
 
   const fetchData = () => {
     let parsedQueryString = QueryString.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    setState({ ...state, loading: true });
-
-    getDNSRecordsList(parsedQueryString.domain || '')
-      .then(result => {
-        setState({
-          ...state,
-          dnsRecords: reformatData(result.data.data),
-          dnsRecordFav: result.data.dnsRecordsFav,
-          totalAmount: result.data.totalAmount,
-          domain: parsedQueryString.domain,
-          toggledAll: false,
-          selection: [],
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getDNSRecordsList(parsedQueryString.domain || '')
+        .then(result => {
+          setState({
+            ...state,
+            dnsRecords: reformatData(result.data.data),
+            dnsRecordFav: result.data.dnsRecordsFav,
+            totalAmount: result.data.totalAmount,
+            domain: parsedQueryString.domain,
+            toggledAll: false,
+            selection: []
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const reformatData = data => {
@@ -281,11 +281,12 @@ export default function DnsRecords(props) {
     const { selection } = state;
 
     if (selection.length && action) {
-      bulkAction(action, selection)
+      setLoading(true);
+      bulkAction(action, selection, state.domain)
         .then(result => {
           if (result.status === 200) {
-            fetchData();
             toggleAll(false);
+            fetchData().then(() => refreshMenuCounters());
           }
         })
         .catch(err => console.error(err));
@@ -302,12 +303,25 @@ export default function DnsRecords(props) {
   }
 
   const modalConfirmHandler = () => {
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
+
+    modalCancelHandler();
+    setLoading(true);
     handleAction(modal.actionUrl)
-      .then(() => {
-        fetchData();
-        modalCancelHandler();
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
       })
-      .catch(err => console.error(err));
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -334,7 +348,7 @@ export default function DnsRecords(props) {
           </div>
         </div>
       </Toolbar>
-      {state.loading
+      {loading
         ? <Spinner />
         : (
           <>

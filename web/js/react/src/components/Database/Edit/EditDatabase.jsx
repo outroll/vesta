@@ -14,15 +14,18 @@ import QS from 'qs';
 
 import './EditDatabase.scss';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import HtmlParser from 'react-html-parser';
 
 const EditDatabase = props => {
   const token = localStorage.getItem("token");
-  const { i18n } = useSelector(state => state.session);
+  const { i18n, userName } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
   const [state, setState] = useState({
     data: {},
     loading: false,
+    databaseUserInputValue: '',
     errorMessage: '',
     okMessage: ''
   });
@@ -42,6 +45,7 @@ const EditDatabase = props => {
           setState({
             ...state,
             data: response.data,
+            databaseUserInputValue: response.data.dbuser.split('_').splice(1).join('_'),
             errorMessage: response.data['error_msg'],
             okMessage: response.data['ok_msg'],
             loading: false
@@ -60,6 +64,7 @@ const EditDatabase = props => {
     }
 
     updatedDatabase['v_database'] = state.data.database;
+    updatedDatabase['v_dbuser'] = `${userName}_${state.databaseUserInputValue}`;
 
     if (Object.keys(updatedDatabase).length !== 0 && updatedDatabase.constructor === Object) {
       setState({ ...state, loading: true });
@@ -67,19 +72,23 @@ const EditDatabase = props => {
       updateDatabase(updatedDatabase, state.data.database)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg, ok_msg } = result.data;
+            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '', loading: false });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg, loading: false });
+            if (errorMessage) {
+              setState({ ...state, errorMessage, okMessage, loading: false });
             } else {
-              setState({ ...state, loading: false });
+              dispatch(refreshCounters()).then(() => {
+                setState({ ...state, okMessage, errorMessage: '', loading: false });
+              });
             }
           }
         })
         .catch(err => console.error(err));
     }
+  }
+
+  const databaseUserInputHandler = value => {
+    setState({ ...state, databaseUserInputValue: value });
   }
 
   return (
@@ -97,7 +106,7 @@ const EditDatabase = props => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>
@@ -109,7 +118,21 @@ const EditDatabase = props => {
 
             <TextInputWithTextOnTheRight id="database" name="v_database" title={i18n['Database']} defaultValue={state.data.database} disabled />
 
-            <TextInputWithTextOnTheRight id="username" name="v_dbuser" title={i18n['User']} defaultValue={state.data.dbuser} />
+            <div className="form-group">
+              <div className="label-wrapper">
+                <label htmlFor="user">{i18n.User}</label>
+              </div>
+              <div className="input-wrapper">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="user"
+                  value={state.databaseUserInputValue}
+                  onChange={event => databaseUserInputHandler(event.target.value)}
+                  name="v_dbuser" />
+                <span className="italic"><i>{`${userName}_${state.databaseUserInputValue}`}</i></span>
+              </div>
+            </div>
 
             <Password name="v_password" defaultValue={state.data.password} />
 

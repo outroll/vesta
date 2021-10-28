@@ -1,3 +1,5 @@
+$primary: #2c54ac;
+
 .mail-info-block {
   .select-group {
     select {
@@ -5,7 +7,7 @@
       margin-top: 5px;
       padding: 0;
       border: none;
-      color: #2c9491;
+      color: $primary;
       text-transform: uppercase;
       font-size: 11px;
       font-weight: bold;

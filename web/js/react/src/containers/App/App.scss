@@ -10,6 +10,10 @@ $hoverButtonText: #2c54ac;
 $activeButtonText: #fff;
 $textColor: #555;
 
+html {
+  overflow-y: scroll;
+}
+
 .App {
   font-size: 25px;
   font-family: Arial;

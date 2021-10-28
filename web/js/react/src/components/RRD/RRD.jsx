@@ -17,7 +17,7 @@ const RRD = props => {
     let year = newDate.getFullYear();
     let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    return <div className="date">{day} &nbsp; {months[month - 1]} &nbsp; {year}</div>;
+    return <div className="date">{day} &nbsp; {months[month]} &nbsp; {year}</div>;
   }
 
   return (

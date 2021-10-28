@@ -16,12 +16,14 @@ import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import './Packages.scss';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Packages = props => {
   const { i18n } = useSelector(state => state.session);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -30,7 +32,6 @@ const Packages = props => {
   const [state, setState] = useState({
     packages: [],
     packagesFav: [],
-    loading: true,
     toggledAll: false,
     sorting: i18n.Date,
     order: "descending",
@@ -42,7 +43,7 @@ const Packages = props => {
     dispatch(addActiveElement('/list/package/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -149,23 +150,26 @@ const Packages = props => {
     const { packages } = state;
     let currentPackageData = packages.filter(pack => pack.NAME === controlPanelFocusedElement)[0];
 
-    displayModal(currentPackageData.delete_conf, `/api/v1/delete/package/?package=${controlPanelFocusedElement}`);
+    displayModal(currentPackageData.delete_conf, `/api/v1/delete/package/index.php?package=${controlPanelFocusedElement}`);
   }
 
   const fetchData = () => {
-    getPackageList()
-      .then(result => {
-        setState({
-          ...state,
-          packages: reformatData(result.data.data),
-          packagesFav: result.data.packagesFav,
-          totalAmount: result.data.totalAmount,
-          selection: [],
-          toggledAll: false,
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getPackageList()
+        .then(result => {
+          setState({
+            ...state,
+            packages: reformatData(result.data.data),
+            packagesFav: result.data.packagesFav,
+            totalAmount: result.data.totalAmount,
+            selection: [],
+            toggledAll: false
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const reformatData = data => {
@@ -306,13 +310,12 @@ const Packages = props => {
     const { selection } = state;
 
     if (selection.length && action) {
-      setState({ ...state, loading: true });
-
+      setLoading(true);
       bulkAction(action, selection)
         .then(result => {
           if (result.status === 200) {
-            fetchData();
             toggleAll(false);
+            fetchData().then(() => refreshMenuCounters());
           }
         })
         .catch(err => console.error(err));
@@ -324,12 +327,25 @@ const Packages = props => {
   }
 
   const modalConfirmHandler = () => {
-    modalCancelHandler();
-    setState({ ...state, loading: true });
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
 
+    modalCancelHandler();
+    setLoading(true);
     handleAction(modal.actionUrl)
-      .then(() => fetchData())
-      .catch(err => console.error(err));
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
+      })
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -354,7 +370,7 @@ const Packages = props => {
       </Toolbar>
       <div className="packages-wrapper">
         {
-          state.loading
+          loading
             ? <Spinner />
             : (<>
               {packages()}

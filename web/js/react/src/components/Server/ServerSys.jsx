@@ -9,13 +9,6 @@ import { useSelector } from 'react-redux';
 const Server = props => {
   const { data } = props;
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
-
-  const printTime = seconds => {
-    let hours = seconds / 60;
-    let days = Math.floor(hours / 24);
-    return days;
-  }
 
   const checkItem = () => {
     props.checkItem(props.data.HOSTNAME);
@@ -39,7 +32,7 @@ const Server = props => {
             <div>{i18n['Load Average']}: <span><span className="stat">{data.LOADAVERAGE}</span></span></div>
           </Container>
           <Container className="c-3">
-            <div><span>{i18n.Uptime}: <span className="stat">{printTime(data.UPTIME)} {i18n.days}</span></span></div>
+            <div><span>{i18n.Uptime}: <span className="stat">{data.UPTIME}</span></span></div>
           </Container>
         </div>
       </Container>

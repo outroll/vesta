@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 
 import './style.scss';
+import HtmlParser from 'react-html-parser';
 
 const EditBackupExclusions = () => {
   const token = localStorage.getItem("token");
@@ -90,7 +91,7 @@ const EditBackupExclusions = () => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

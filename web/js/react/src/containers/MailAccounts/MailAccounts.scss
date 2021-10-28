@@ -17,6 +17,7 @@ $primary: #2c54ac;
     div.list-item {
       .r-col {
         .stat.email {
+            width: max-content;
             text-transform: none;
         }
       }
@@ -27,6 +28,7 @@ $primary: #2c54ac;
     display: flex;
     align-items: center;
     margin-top: 2rem;
+    padding-bottom: 1.5rem;
 
     .total {
       margin: 0 3.5rem 0 14.3%;

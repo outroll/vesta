@@ -2,7 +2,6 @@ import { LOGGED_OUT_AS, LOGIN, LOGOUT, CHECK_AUTH } from '../../actions/Session/
 
 const INITIAL_STATE = {
   token: '',
-  user: {},
   error: '',
   session: {},
   i18n: {},
@@ -16,7 +15,6 @@ const sessionReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         token: action.value.token,
-        user: action.value.user,
         session: action.value.session,
         userName: action.value.userName,
         i18n: action.value.i18n || {},
@@ -28,7 +26,6 @@ const sessionReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         token: action.value.token,
-        user: action.value.user,
         session: action.value.session,
         userName: action.value.userName,
         i18n: action.value.i18n || {},
@@ -40,7 +37,6 @@ const sessionReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         token: action.value.token,
-        user: action.value.user,
         session: action.value.session,
         userName: action.value.userName,
         i18n: action.value.i18n || {},
@@ -51,7 +47,6 @@ const sessionReducer = (state = INITIAL_STATE, action) => {
     case CHECK_AUTH: return {
       ...state,
       token: action.value.token,
-      user: action.value.user,
       session: action.value.session,
       userName: action.value.userName,
       i18n: action.value.i18n || {},

@@ -71,10 +71,6 @@ const App = () => {
   useEffect(() => {
     if (!Object.entries(session.i18n).length) {
       dispatch(checkAuthHandler()).then(token => {
-        if (token) {
-          setAuthToken(token);
-        }
-
         setLoading(false);
       });
     }

@@ -13,6 +13,7 @@ import QS from 'qs';
 
 import './EditFirewall.scss';
 import { Helmet } from 'react-helmet';
+import HtmlParser from 'react-html-parser';
 
 const EditFirewall = props => {
   const token = localStorage.getItem("token");
@@ -34,21 +35,25 @@ const EditFirewall = props => {
     dispatch(removeFocusedElement());
 
     if (rule) {
-      setState({ ...state, loading: true });
-
-      getFirewallInfo(rule)
-        .then(response => {
-          setState({
-            ...state,
-            data: response.data,
-            errorMessage: response.data['error_msg'],
-            okMessage: response.data['ok_msg'],
-            loading: false
-          });
-        })
-        .catch(err => console.error(err));
+      fetchData(rule);
     }
   }, []);
+
+  const fetchData = rule => {
+    setState({ ...state, loading: true });
+
+    getFirewallInfo(rule)
+      .then(response => {
+        setState({
+          ...state,
+          data: response.data,
+          errorMessage: response.data['error_msg'],
+          okMessage: response.data['ok_msg'],
+          loading: false
+        });
+      })
+      .catch(err => console.error(err));
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -61,20 +66,19 @@ const EditFirewall = props => {
     if (Object.keys(updatedDomain).length !== 0 && updatedDomain.constructor === Object) {
       setState({ ...state, loading: true });
 
-      updateFirewall(updatedDomain, state.data.domain)
+      updateFirewall(updatedDomain, state.data.rule)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg, ok_msg } = result.data;
+            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '', loading: false });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg, loading: false });
+            if (errorMessage) {
+              setState({ ...state, errorMessage, okMessage, loading: false });
             } else {
-              setState({ ...state, loading: false });
+              setState({ ...state, okMessage, errorMessage: '', loading: false });
             }
           }
         })
+        .then(() => fetchData(state.data.rule))
         .catch(err => console.error(err));
     }
   }
@@ -94,7 +98,7 @@ const EditFirewall = props => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

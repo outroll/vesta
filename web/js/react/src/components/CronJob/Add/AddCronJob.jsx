@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './AddCronJob.scss';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import HtmlParser from 'react-html-parser';
 
 const AddCronJob = props => {
   const { i18n } = useSelector(state => state.session);
@@ -46,18 +48,17 @@ const AddCronJob = props => {
 
     if (Object.keys(newCronJob).length !== 0 && newCronJob.constructor === Object) {
       setState({ ...state, loading: true });
-
       addCronJob(newCronJob)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg, ok_msg } = result.data;
+            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '', loading: false });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg, loading: false });
+            if (errorMessage) {
+              setState({ ...state, errorMessage, okMessage, loading: false });
             } else {
-              setState({ ...state, loading: false })
+              dispatch(refreshCounters()).then(() => {
+                setState({ ...state, okMessage, errorMessage: '', loading: false });
+              });
             }
           }
         })
@@ -100,7 +101,7 @@ const AddCronJob = props => {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

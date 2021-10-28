@@ -1,8 +1,19 @@
 .banlist-wrapper {
   display: flex;
+  flex-direction: column;
 
   > div {
     margin-right: 15px;
+  }
+
+  .list-item {
+    .l-col {
+      div.star  {
+        .checkbox + div {
+          display: none;
+        }
+      }
+    }
   }
 
   .buttons-wrapper {

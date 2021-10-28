@@ -52,7 +52,7 @@ $textColor: #555;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 0 5px;
+        padding: 0 10px !important;
         width: 100%;
         height: 100%;
         text-decoration: none;
@@ -93,14 +93,15 @@ $textColor: #555;
   }
 
   .left-menu {
-    width: 80%;
+    width: 75%;
     padding-left: 0;
+    margin-left: 0;
+    justify-content: space-between;
 
     div {
-      width: 7rem;
+      flex: 1 1 auto;
       height: 100%;
       transform: translateX(-5px);
-      padding-right: 5px;
 
       &:hover {
         background: $secondaryLight;
@@ -108,8 +109,19 @@ $textColor: #555;
     }
 
     div.logo {
-      img {
-        width: 90%;
+      width: 7rem;
+      padding-left: 0;
+
+      a {
+        div {
+          padding: 0;
+          width: 6rem;
+          flex: none;
+
+          img {
+            width: 90%;
+          }
+        }
       }
 
       &:hover {
@@ -129,7 +141,7 @@ $textColor: #555;
   }
 
   .profile-menu {
-    width: 20%;
+    width: auto;
 
     div {
       width: 4rem;
@@ -189,11 +201,24 @@ $textColor: #555;
 
 .top-panel.long-profile {
   .left-menu {
-    width: 75%;
+    justify-content: start;
+
+    > div {
+      width: max-content;
+      flex: unset;
+      padding: 0 1rem;
+    }
+
+    .logo {
+      width: 7rem;
+      padding: 0;
+      margin-right: 1rem;
+    }
   }
 
   .profile-menu {
-    width: 25%;
+    justify-content: space-between;
+    align-items: center;
 
     > div + div {
       width: max-content;

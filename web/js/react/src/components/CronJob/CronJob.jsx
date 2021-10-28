@@ -25,11 +25,11 @@ const CronJob = props => {
 
   const handleSuspend = () => {
     let suspendedStatus = data.SUSPENDED === 'yes' ? 'unsuspend' : 'suspend' === 'yes' ? 'unsuspend' : 'suspend';
-    props.handleModal(data.suspend_conf, `/${suspendedStatus}/cron/index.php?job=${data.NAME}`);
+    props.handleModal(data.suspend_conf, `/api/v1/${suspendedStatus}/cron/index.php?job=${data.NAME}`);
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/delete/cron/index.php?job=${data.NAME}`);
+    props.handleModal(data.delete_conf, `/api/v1/delete/cron/index.php?job=${data.NAME}`);
   }
 
   return (

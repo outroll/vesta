@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import { addActiveElement, removeFocusedElement } from "../../../actions/MainNavigation/mainNavigationActions";
 import { dbCharsets, addDatabase, getDbOptionalInfo } from '../../../ControlPanelService/Db';
@@ -9,11 +9,12 @@ import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import { useHistory } from 'react-router-dom';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-
-import './AddDatabase.scss'
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import HtmlParser from 'react-html-parser';
+import './AddDatabase.scss'
 
-const AddDatabase = props => {
+const AddDatabase = memo(props => {
   const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
@@ -91,23 +92,22 @@ const AddDatabase = props => {
       newDatabase[name] = value;
     }
 
-    newDatabase['v_database'] = `${state.user}_${state.databaseInputValue}`;
-    newDatabase['v_dbuser'] = `${state.user}_${state.databaseUserInputValue}`;
+    newDatabase['v_database'] = state.databaseInputValue;
+    newDatabase['v_dbuser'] = state.databaseUserInputValue;
 
     if (Object.keys(newDatabase).length !== 0 && newDatabase.constructor === Object) {
       setState({ ...state, loading: true });
-
       addDatabase(newDatabase)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg, ok_msg } = result.data;
+            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '', loading: false });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg, loading: false });
+            if (errorMessage) {
+              setState({ ...state, errorMessage, okMessage: '', loading: false });
             } else {
-              setState({ ...state, loading: false })
+              dispatch(refreshCounters()).then(() => {
+                setState({ ...state, okMessage, errorMessage: '', loading: false });
+              });
             }
           }
         })
@@ -131,7 +131,7 @@ const AddDatabase = props => {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span dangerouslySetInnerHTML={{ __html: state.okMessage }}></span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>
@@ -141,7 +141,7 @@ const AddDatabase = props => {
             <input type="hidden" name="ok" value="add" />
             <input type="hidden" name="token" value={token} />
 
-            <span className="prefix" dangerouslySetInnerHTML={{ __html: state.prefixI18N }}></span>
+            <span className="prefix">{HtmlParser(state.prefixI18N)}</span>
 
             <div className="form-group database">
               <label htmlFor="database">{i18n.Database}</label>
@@ -215,6 +215,6 @@ const AddDatabase = props => {
       </AddItemLayout>
     </div>
   );
-}
+});
 
 export default AddDatabase;

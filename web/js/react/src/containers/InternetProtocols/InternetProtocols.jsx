@@ -16,12 +16,14 @@ import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import './InternetProtocols.scss';
 import { Helmet } from 'react-helmet';
+import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const InternetProtocols = props => {
   const { i18n } = useSelector(state => state.session);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
     visible: false,
@@ -30,7 +32,6 @@ const InternetProtocols = props => {
   const [state, setState] = useState({
     internetProtocols: [],
     ipFav: [],
-    loading: false,
     toggledAll: false,
     sorting: i18n.Date,
     order: "descending",
@@ -42,7 +43,7 @@ const InternetProtocols = props => {
     dispatch(addActiveElement('/list/ip/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());
-    fetchData();
+    fetchData().then(() => setLoading(false));
 
     return () => {
       dispatch(removeControlPanelContentFocusedElement());
@@ -153,21 +154,22 @@ const InternetProtocols = props => {
   }
 
   const fetchData = () => {
-    setState({ ...state, loading: true });
-
-    getIpList()
-      .then(result => {
-        setState({
-          ...state,
-          internetProtocols: reformatData(result.data.data),
-          ipFav: result.data.ipFav,
-          selection: [],
-          totalAmount: result.data.totalAmount,
-          toggledAll: false,
-          loading: false
-        });
-      })
-      .catch(err => console.error(err));
+    setLoading(true);
+    return new Promise((resolve, reject) => {
+      getIpList()
+        .then(result => {
+          setState({
+            ...state,
+            internetProtocols: reformatData(result.data.data),
+            ipFav: result.data.ipFav,
+            selection: [],
+            totalAmount: result.data.totalAmount,
+            toggledAll: false
+          });
+          resolve();
+        })
+        .catch(err => console.error(err));
+    });
   }
 
   const reformatData = data => {
@@ -312,13 +314,12 @@ const InternetProtocols = props => {
     const { selection } = state;
 
     if (selection.length && action) {
-      setState({ ...state, loading: true });
-
+      setLoading(true);
       bulkAction(action, selection)
         .then(result => {
           if (result.status === 200) {
-            fetchData();
             toggleAll(false);
+            fetchData().then(() => refreshMenuCounters());
           }
         })
         .catch(err => console.error(err));
@@ -330,12 +331,25 @@ const InternetProtocols = props => {
   }
 
   const modalConfirmHandler = () => {
-    modalCancelHandler();
-    setState({ ...state, loading: true });
+    if (!modal.actionUrl) {
+      return modalCancelHandler();
+    }
 
+    modalCancelHandler();
+    setLoading(true);
     handleAction(modal.actionUrl)
-      .then(() => fetchData())
-      .catch(err => console.error(err));
+      .then(res => {
+        if (res.data.error) {
+          setLoading(false);
+          return displayModal(res.data.error, '');
+        }
+        fetchData().then(() => refreshMenuCounters())
+      })
+      .catch(err => { setLoading(false); console.error(err); });
+  }
+
+  const refreshMenuCounters = () => {
+    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -359,9 +373,13 @@ const InternetProtocols = props => {
         </div>
       </Toolbar>
       <div className="ip-wrapper">
-        {state.loading ? <Spinner /> : internetProtocols()}
+        {loading
+          ? <Spinner />
+          : (<>
+            {internetProtocols()}
+            <div className="total">{state.totalAmount}</div>
+          </>)}
       </div>
-      <div className="total">{state.totalAmount}</div>
       <Modal
         onSave={modalConfirmHandler}
         onCancel={modalCancelHandler}
