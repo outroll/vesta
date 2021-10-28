@@ -322,10 +322,8 @@ const Web = props => {
       setLoading(true);
       bulkAction(action, state.selection)
         .then(result => {
-          fetchData().then(() => {
-            refreshMenuCounters();
-            toggleAll(false);
-          });
+          toggleAll(false);
+          fetchData().then(() => refreshMenuCounters());
         })
         .catch(err => console.error(err));
     }

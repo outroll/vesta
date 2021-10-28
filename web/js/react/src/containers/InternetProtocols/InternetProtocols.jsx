@@ -318,10 +318,8 @@ const InternetProtocols = props => {
       bulkAction(action, selection)
         .then(result => {
           if (result.status === 200) {
-            fetchData().then(() => {
-              refreshMenuCounters();
-              toggleAll(false);
-            });
+            toggleAll(false);
+            fetchData().then(() => refreshMenuCounters());
           }
         })
         .catch(err => console.error(err));

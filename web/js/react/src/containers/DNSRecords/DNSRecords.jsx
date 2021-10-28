@@ -285,10 +285,8 @@ export default function DnsRecords(props) {
       bulkAction(action, selection, state.domain)
         .then(result => {
           if (result.status === 200) {
-            fetchData().then(() => {
-              refreshMenuCounters();
-              toggleAll(false);
-            });
+            toggleAll(false);
+            fetchData().then(() => refreshMenuCounters());
           }
         })
         .catch(err => console.error(err));

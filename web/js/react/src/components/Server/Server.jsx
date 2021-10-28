@@ -10,12 +10,6 @@ const Server = props => {
   const { data } = props;
   const { i18n } = useSelector(state => state.session);
 
-  const printTime = seconds => {
-    let hours = seconds / 60;
-    let days = Math.floor(hours / 24);
-    return days;
-  }
-
   const checkItem = () => {
     props.checkItem(data.NAME);
   }
@@ -41,7 +35,7 @@ const Server = props => {
             <div><span>{i18n.Memory}: <span className="stat">{data.MEM} {i18n.mb}</span></span></div>
           </Container>
           <Container className="c-3">
-            <div><span>{i18n.Uptime}: <span className="stat">{printTime(data.RTIME)} {i18n.days}</span></span></div>
+            <div><span>{i18n.Uptime}: <span className="stat">{data.RTIME}</span></span></div>
           </Container>
           <Container className="c-1" />
         </div>

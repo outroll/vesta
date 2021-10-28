@@ -259,10 +259,8 @@ const Servers = props => {
             displayModal(res.data.error);
           }
 
-          fetchData().then(() => {
-            refreshMenuCounters();
-            toggleAll(false);
-          });
+          toggleAll(false);
+          fetchData().then(() => refreshMenuCounters());
         })
         .catch(err => console.error(err));
     }

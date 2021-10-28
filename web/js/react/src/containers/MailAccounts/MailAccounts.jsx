@@ -324,10 +324,8 @@ export default function MailAccounts(props) {
       bulkMailAccountAction(action, props.domain, selection)
         .then(result => {
           if (result.status === 200) {
-            fetchData().then(() => {
-              refreshMenuCounters();
-              toggleAll(false);
-            });
+            toggleAll(false);
+            fetchData().then(() => refreshMenuCounters());
           }
         })
         .catch(err => console.error(err));
