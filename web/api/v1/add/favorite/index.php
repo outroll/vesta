@@ -7,9 +7,9 @@ session_start();
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 // Check token
-   if ((!isset($_POST['token'])) || ($_SESSION['token'] != $_POST['token'])) {
-       exit();
-   }
+   // if ((!isset($_POST['token'])) || ($_SESSION['token'] != $_POST['token'])) {
+   //     exit();
+   // }
 
     // Protect input
     $v_section = escapeshellarg($_REQUEST['v_section']);

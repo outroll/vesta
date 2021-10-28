@@ -84,6 +84,17 @@ foreach ($data as $key => $value) {
 	} else {
 		$data[$key]['action_url'] = '/start/service/?srv='.$key;
 	}
+
+	$data[$key]['SYSTEM'] = __($data[$key]['SYSTEM']);
+	$data[$key]['RTIME'] = humanize_time($data[$key]['RTIME']);
+
+	$cpu = $data[$key]['CPU'] / 10;
+    $data[$key]['CPU'] = number_format($cpu, 1);
+    if ($cpu == '0.0')  $data[$key]['CPU'] = 0;
+}
+
+foreach ($sys as $key => $value) {
+	$sys[$key]['UPTIME'] = humanize_time($sys[$key]['UPTIME']);
 }
 
 // Render page
