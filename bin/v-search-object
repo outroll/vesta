@@ -84,6 +84,22 @@ OLD_IFS=$IFS
 IFS=$'\n'
 
 # User loop
+search_user=$(ls -1 $VESTA/data/users |grep $object)
+for user in $search_user; do
+    if [ -e "$VESTA/data/users/$user/user.conf" ]; then
+        source $VESTA/data/users/$user/user.conf
+        ((i ++))
+        type=$(echo $type|cut -f1 -d \.)
+        str="ID='$i' USER='$user' TYPE='user' KEY='$user'"
+        str="$str RESULT='$user' ALIAS=''"
+        str="$str LINK='$user' PARENT=''"
+        str="$str SUSPENDED='$SUSPENDED' TIME='$TIME'"
+        str="$str DATE='$DATE'"
+        echo $str >> $conf
+    fi
+done
+
+# User data loop
 for user in $(ls $VESTA/data/users/); do
     # Search query
     search=$(grep "$object" \
@@ -94,7 +110,7 @@ for user in $(ls $VESTA/data/users/); do
         $VESTA/data/users/$user/mail/*.conf \
         $VESTA/data/users/$user/db.conf \
         $VESTA/data/users/$user/cron.conf 2> /dev/null)
-    
+
     for row in $search; do
         # Initialise variable
         key=''
@@ -154,12 +170,13 @@ for user in $(ls $VESTA/data/users/); do
 
         # DNS Records
         if [ "$type" = 'dns' ]; then
-            if [ -n "$(echo $RECORD |grep $object)" ]; then
+            if [ -n "$(echo $RECORD $VALUE |grep $object)" ]; then
+                dom="$(echo $row|cut -f 1 -d :|cut -f 9 -d /|sed 's/.conf//')"
                 key="RECORD"
-                result="$RECORD.$DOMAIN"
+                result="$RECORD.$dom"
                 suspended=$SUSPENDED
                 object_link=$ID
-                object_parent=$DOMAIN
+                object_parent=$dom
                 object_time=$TIME
                 object_date=$DATE
                 ((i ++))
