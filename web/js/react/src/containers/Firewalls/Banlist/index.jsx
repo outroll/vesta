@@ -233,11 +233,11 @@ const BanLists = props => {
     const { selection } = state;
 
     if (selection.length && action) {
-      bulkAction(action, selection)
+      bulkAction(action, selection, state.banIps)
         .then(result => {
           if (result.status === 200) {
             toggleAll(false);
-            fetchData().then(() => refreshMenuCounters());
+            fetchData();
           }
         })
         .catch(err => console.error(err));
@@ -261,13 +261,9 @@ const BanLists = props => {
           setLoading(false);
           return displayModal(res.data.error, '');
         }
-        fetchData().then(() => refreshMenuCounters())
+        fetchData();
       })
       .catch(err => { setLoading(false); console.error(err); });
-  }
-
-  const refreshMenuCounters = () => {
-    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {
@@ -289,18 +285,18 @@ const BanLists = props => {
           </div>
         </div>
       </Toolbar>
-      <div className="banlist-wrapper">
-        {loading
-          ? <Spinner />
-          : (<>
+      {loading
+        ? <Spinner />
+        : (<>
+          <div className="banlist-wrapper">
             {banIps()}
             <div className="buttons-wrapper">
               <div className="total">{state.totalAmount}</div>
               <button type="button" className="back" onClick={() => history.push('/list/firewall/')}>{i18n.Back}</button>
             </div>
-          </>)
-        }
-      </div>
+          </div>
+        </>)
+      }
       <Modal
         onSave={modalConfirmHandler}
         onCancel={modalCancelHandler}

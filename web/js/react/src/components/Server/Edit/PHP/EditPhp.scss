@@ -5,13 +5,13 @@ $textColor: #555;
 .content .edit-template.edit-php {
   .toolbar {
     .search-toolbar-name {
-      width: fit-content;
+      width: max-content;
       color: $textColor;
     }
     
     .search-toolbar-name,
     .link {
-      width: fit-content;
+      width: max-content;
 
       a {
         text-decoration: none;

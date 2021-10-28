@@ -6,14 +6,13 @@ import { useSelector } from 'react-redux';
 
 const Ban = ({ data, ...props }) => {
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
 
   const checkItem = () => {
     props.checkItem(data.NAME);
   }
 
   const handleDelete = () => {
-    props.handleModal(data.delete_conf, `/api/v1/delete/firewall/banlist/?ip=${data.NAME}&chain=${data.CHAIN}`);
+    props.handleModal(data.delete_confirmation, `/api/v1/delete/firewall/banlist/?ip=${data.NAME}&chain=${data.CHAIN}`);
   }
 
   return (
@@ -32,10 +31,10 @@ const Ban = ({ data, ...props }) => {
             <div></div>
           </Container>
           <Container className="c-2 w-30">
-            <div>{data.CHAIN}</div>
+            <div><b>{data.CHAIN}</b></div>
           </Container>
           <Container className="c-2 w-30">
-            <div>{data.NAME}</div>
+            <div><b>{data.NAME}</b></div>
           </Container>
         </div>
       </Container>

@@ -17,16 +17,17 @@ export const getBanList = () => {
   return axios.get(BASE_URL + banListUri);
 }
 
-export const bulkAction = (action, firewalls) => {
+export const bulkAction = (action, ips, banIps) => {
   const formData = new FormData();
   formData.append("action", action);
   formData.append("token", getAuthToken());
 
-  firewalls.forEach(firewall => {
-    formData.append("rule[]", firewall);
+  ips.forEach(ip => {
+    const banIp = banIps.find(banIp => banIp.NAME === ip);
+    formData.append("ipchain[]", `${ip}:${banIp['CHAIN']}`);
   });
 
-  return axios.post(BASE_URL + '/api/v1/bulk/firewall/', formData);
+  return axios.post(BASE_URL + '/api/v1/bulk/firewall/banlist/', formData);
 };
 
 export const handleAction = uri => {
@@ -54,11 +55,13 @@ export const getBanIps = data => {
 export const addBanIp = (data) => {
   let formDataObject = new FormData();
 
+  formDataObject.append('token', getAuthToken());
+
   for (let key in data) {
     formDataObject.append(key, data[key]);
   }
 
-  return axios.get(BASE_URL + addBanIpsUri, {
+  return axios.post(BASE_URL + addBanIpsUri, formDataObject, {
     params: {
       token: getAuthToken()
     }

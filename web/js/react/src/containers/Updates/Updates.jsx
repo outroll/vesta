@@ -5,6 +5,7 @@ import { bulkAction, getUpdatesList, enableAutoUpdate, disableAutoUpdate } from 
 import * as MainNavigation from '../../actions/MainNavigation/mainNavigationActions';
 import SearchInput from '../../components/MainNav/Toolbar/SearchInput/SearchInput';
 import LeftButton from '../../components/MainNav/Toolbar/LeftButton/LeftButton';
+import Modal from 'src/components/ControlPanel/Modal/Modal';
 import Checkbox from '../../components/MainNav/Toolbar/Checkbox/Checkbox';
 import Select from '../../components/MainNav/Toolbar/Select/Select';
 import Toolbar from '../../components/MainNav/Toolbar/Toolbar';
@@ -26,6 +27,11 @@ const Updates = props => {
     token: '',
     loading: false,
     toggledAll: false
+  });
+  const [modal, setModal] = useState({
+    text: '',
+    visible: false,
+    actionUrl: ''
   });
 
   useEffect(() => {
@@ -126,7 +132,7 @@ const Updates = props => {
           ...state,
           selection: [],
           updates: reformatData(result.data.data),
-          autoUpdate: result.data.totalAmount,
+          autoUpdate: result.data.autoUpdate,
           loading: false
         });
       })
@@ -202,10 +208,16 @@ const Updates = props => {
 
     if (selection.length && action !== 'apply to selected') {
       bulkAction(action, selection)
-        .then(result => {
-          if (result.status === 200) {
+        .then(res => {
+          toggleAll(false);
+          if (res.status === 200) {
+            if (res.data.error) {
+              setState({ ...state, loading: false });
+              return displayModal(res.data.error, '');
+            }
+
+            displayModal(res.data.message, '');
             fetchData();
-            toggleAll(false);
           }
         })
         .catch(err => console.error(err));
@@ -215,13 +227,54 @@ const Updates = props => {
   const handleAutoUpdate = () => {
     if (state.autoUpdate === 'Enabled') {
       disableAutoUpdate()
-        .then(() => fetchData())
-        .catch(err => console.error(err));
+        .then(res => {
+          if (res.data.error) {
+            setState({ ...state, loading: false });
+            return displayModal(res.data.error, '');
+          }
+
+          displayModal(res.data.message, '');
+          fetchData();
+        })
+        .catch(err => {
+          setState({ ...state, loading: false });
+          console.error(err);
+        });
     } else {
       enableAutoUpdate()
-        .then(() => fetchData())
-        .catch(err => console.error(err));
+        .then(res => {
+          if (res.data.error) {
+            setState({ ...state, loading: false });
+            return displayModal(res.data.error, '');
+          }
+
+          displayModal(res.data.message, '');
+          fetchData();
+        })
+        .catch(err => {
+          setState({ ...state, loading: false });
+          console.error(err);
+        });
     }
+  }
+
+  const displayModal = (text, url) => {
+    setState({ ...state, loading: true });
+    setModal({
+      ...modal,
+      visible: true,
+      text: text,
+      actionUrl: url
+    });
+  }
+
+  const modalCancelHandler = () => {
+    setModal({
+      ...modal,
+      visible: false,
+      text: '',
+      actionUrl: ''
+    });
   }
 
   const printAutoUpdateButtonName = () => {
@@ -249,6 +302,11 @@ const Updates = props => {
         </div>
       </Toolbar>
       {state.loading ? <Spinner /> : updates()}
+      <Modal
+        onSave={modalCancelHandler}
+        onCancel={modalCancelHandler}
+        show={modal.visible}
+        text={modal.text} />
     </div>
   );
 }

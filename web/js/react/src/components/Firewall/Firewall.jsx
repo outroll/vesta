@@ -7,19 +7,18 @@ import './Firewall.scss';
 import { useSelector } from 'react-redux';
 
 const Firewall = ({ data, ...props }) => {
-  const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
 
   const toggleFav = (starred) => {
     if (starred) {
-      props.toggleFav(props.data.NAME, 'add');
+      props.toggleFav(data.NAME, 'add');
     } else {
-      props.toggleFav(props.data.NAME, 'delete');
+      props.toggleFav(data.NAME, 'delete');
     }
   }
 
   const checkItem = () => {
-    props.checkItem(props.data.NAME);
+    props.checkItem(data.NAME);
   }
 
   const handleSuspend = () => {

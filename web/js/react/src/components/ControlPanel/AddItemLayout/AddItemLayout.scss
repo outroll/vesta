@@ -207,7 +207,7 @@ $errorColor: #BE5ABF;
     label.label-wrapper {
       display: flex;
       align-items: flex-end;
-      width: fit-content;
+      width: max-content;
 
       span {
         font-weight: normal;

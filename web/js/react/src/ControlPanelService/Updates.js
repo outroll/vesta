@@ -1,8 +1,8 @@
 import axios from "axios";
 import { getAuthToken } from "src/utils/token";
 
-const deleteAutoUpdateUri = '/delete/cron/autoupdate/';
-const addAutoUpdateUri = '/add/cron/autoupdate/';
+const deleteAutoUpdateUri = '/api/v1/delete/cron/autoupdate/';
+const addAutoUpdateUri = '/api/v1/add/cron/autoupdate/';
 const webApiUri = '/api/v1/list/updates/index.php';
 const BASE_URL = window.location.origin;
 

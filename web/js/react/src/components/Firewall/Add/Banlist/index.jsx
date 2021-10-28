@@ -43,15 +43,18 @@ const AddBanIP = () => {
     }
 
     if (Object.keys(newUser).length !== 0 && newUser.constructor === Object) {
+      setState({ ...state, loading: true });
       addBanIp(newUser)
         .then(result => {
           if (result.status === 200) {
             const { error_msg, ok_msg } = result.data;
 
             if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '' });
+              setState({ ...state, errorMessage: error_msg, okMessage: '', loading: false });
             } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg });
+              setState({ ...state, errorMessage: '', okMessage: ok_msg, loading: false });
+            } else {
+              setState({ ...state, loading: false });
             }
           }
         })
@@ -81,6 +84,8 @@ const AddBanIP = () => {
       <AddItemLayout>
         {state.loading ? <Spinner /> :
           <form onSubmit={event => submitFormHandler(event)} id="add-user">
+            <input type="hidden" name="ok" value="add" />
+
             <div class="form-group">
               <label htmlFor="chain">{i18n.Banlist}</label>
               <select class="form-control" id="chain" name="v_chain">
