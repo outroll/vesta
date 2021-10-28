@@ -11,7 +11,7 @@ $error = '';
 
 // Check token
 if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
-	exit();
+	$error = 'Unathenticated';
 }
 
 exec (VESTA_CMD."v-delete-cron-reports ".$user, $output, $return_var);

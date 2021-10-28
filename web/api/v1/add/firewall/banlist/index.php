@@ -61,6 +61,8 @@ $result = array(
     'ok_msg' => $_SESSION['ok_msg']
 );
 
+echo json_encode($result);
+
 // Flush session messages
 unset($_SESSION['error_msg']);
 unset($_SESSION['ok_msg']);

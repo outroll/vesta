@@ -11,7 +11,7 @@ $error = '';
 
 // Check token
 if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
-	exit();
+	$error = 'Unauthenticated';
 }
 
 if ($_SESSION['user'] == 'admin') {

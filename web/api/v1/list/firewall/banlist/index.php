@@ -9,7 +9,6 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 // Check user
 if ($_SESSION['user'] != 'admin') {
-    header("Location: /list/user");
     exit;
 }
 
@@ -18,9 +17,10 @@ exec (VESTA_CMD."v-list-firewall-ban json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 $data = array_reverse($data, true);
 unset($output);
-$i = 0;
 
 foreach ($data as $key => $value) {
+	++$i;
+
     if ($data[$key]['SUSPENDED'] == 'yes') {
 	    $data[$key]['status'] = 'suspended';
 	    $data[$key]['suspend_action'] = 'unsuspend' ;
@@ -32,21 +32,18 @@ foreach ($data as $key => $value) {
 	}
 
 	$data[$key]['delete_url'] = '/delete/firewall/banlist/?ip='.$data[$key]['ip'].'&chain='.$data[$key]['CHAIN'].'&token='.$_SESSION['token'];
+	$data[$key]['delete_confirmation'] = __('DELETE_IP_CONFIRMATION',$key);
 
 	if ( $i == 1) {
 	    $total_amount = __('1 rule');
 	} else {
 	    $total_amount = __('%s rules',$i);
 	}
-	++$i;
 }
 
 if ($i == 0) {
 	$total_amount = __('There are no currently banned IP');
 }
-
-// Render page
-// render_page($user, $TAB, 'list_firewall_banlist');
 
 // Back uri
 $_SESSION['back'] = $_SERVER['REQUEST_URI'];
