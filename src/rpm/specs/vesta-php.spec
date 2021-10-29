@@ -22,7 +22,7 @@ This package contains php-cgi for Vesta Control Panel web interface.
 %build
 ./configure --prefix=/usr/local/vesta/php --with-zlib --enable-zip --enable-fpm --with-fpm-user=admin --with-fpm-group=admin --with-mysql --with-mysqli --with-curl --enable-mbstring
 
-make
+make ZEND_EXTRA_LIBS='-lresolv'
 
 %install
 make install INSTALL_ROOT=%{buildroot} INSTALLDIRS=vendor
