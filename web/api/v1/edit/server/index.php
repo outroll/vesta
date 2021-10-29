@@ -607,10 +607,6 @@ foreach ($sys_arr as $key => $value) {
     $_SESSION[$key] = $value;
 }
 
-
-// Render page
-// render_page($user, $TAB, 'edit_server');
-
 $result = array(
     'hostname' => $v_hostname,
     'timezones' => $v_timezones,

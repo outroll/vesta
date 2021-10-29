@@ -132,44 +132,6 @@ function check_return_code($return_var,$output) {
     }
 }
 
-function render_page($user, $TAB, $page) {
-    $__template_dir = dirname(__DIR__) . '/templates/';
-    $__pages_js_dir = dirname(__DIR__) . '/js/pages/';
-
-    // Header
-    include($__template_dir . 'header.html');
-
-    // Panel
-    top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
-
-    // Extarct global variables
-    // I think those variables should be passed via arguments
-    //*
-    extract($GLOBALS, EXTR_SKIP);
-    /*/
-    $variables = array_filter($GLOBALS, function($key){return preg_match('/^(v_|[a-z])[a-z\d]+$/', $key);}, ARRAY_FILTER_USE_KEY);
-    extract($variables, EXTR_OVERWRITE);
-    //*/
-
-    // Body
-    if (($_SESSION['user'] !== 'admin') && (@include($__template_dir . "user/$page.html"))) {
-        // User page loaded
-    } else {
-        // Not admin or user page doesn't exist
-        // Load admin page
-        @include($__template_dir . "admin/$page.html");
-    }
-
-    // Including common js files
-    @include_once(dirname(__DIR__) . '/templates/scripts.html');
-    // Including page specific js file
-    if(file_exists($__pages_js_dir.$page.'.js'))
-       echo '<script type="text/javascript" src="/js/pages/'.$page.'.js?'.JS_LATEST_UPDATE.'"></script>';
-
-    // Footer
-    include($__template_dir . 'footer.html');
-}
-
 function top_panel($user, $TAB) {
     global $panel;
     $command = VESTA_CMD."v-list-user '".$user."' 'json'";
@@ -193,13 +155,6 @@ function top_panel($user, $TAB) {
         }
     }
     unset($output);
-
-
-    if ( $user == 'admin' ) {
-        include(dirname(__FILE__).'/../templates/admin/panel.html');
-    } else {
-        include(dirname(__FILE__).'/../templates/user/panel.html');
-    }
 }
 
 function translate_date($date){

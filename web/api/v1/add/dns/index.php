@@ -165,13 +165,8 @@ if (empty($_GET['domain'])) {
         $v_ns8 = str_replace("'", "", $nameservers[7]);
         unset($output);
     }
-
-    // render_page($user, $TAB, 'add_dns');
 } else {
-    // Display body for dns record
-
     $v_domain = $_GET['domain'];
-    // render_page($user, $TAB, 'add_dns_rec');
 }
 
 $result = array(

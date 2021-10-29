@@ -14,9 +14,6 @@ $data = json_decode(implode('', $output), true);
 $data = array_reverse($data,true);
 unset($output);
 
-// Render page
-// render_page($user, $TAB, 'list_cron');
-
 if($panel[$user]['CRON_REPORTS'] == 'yes') {
   $cron_reports = __('turn off notifications');
 } else {

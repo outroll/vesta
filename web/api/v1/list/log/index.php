@@ -24,9 +24,6 @@ foreach ($data as $key => $value) {
   }  
 }
 
-// Render page
-// render_page($user, $TAB, 'list_log');
-
 $object = (object)[];
 $object->data = $data;
 $object->user = $user;
