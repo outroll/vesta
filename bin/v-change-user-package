@@ -16,16 +16,12 @@ force=$3
 
 # Includes
 source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
 is_package_avalable() {
 
-    usr_data=$(cat $USER_DATA/user.conf)
-    IFS=$'\n'
-    for key in $usr_data; do
-        eval ${key%%=*}=${key#*=}
-    done
-
+    source $USER_DATA/user.conf
     WEB_DOMAINS='0'
     DATABASES='0'
     MAIL_DOMAINS='0'
@@ -33,9 +29,13 @@ is_package_avalable() {
     DISK_QUOTA='0'
     BANDWIDTH='0'
 
-    pkg_data=$(cat $VESTA/data/packages/$package.pkg |grep -v TIME |\
-        grep -v DATE)
-    eval $pkg_data
+    pkg_data=$(cat $VESTA/data/packages/$package.pkg| egrep -v "TIME|DATE")
+    IFS=$'\n'
+    for str in $pkg_data; do
+        key=$(echo $str |cut -f 1 -d =)
+        value=$(echo $str |cut -f 2 -d \')
+        eval $key="$value"
+    done
 
     # Checking usage agains package limits
     if [ "$WEB_DOMAINS" != 'unlimited' ]; then
@@ -73,16 +73,26 @@ is_package_avalable() {
             check_result $E_LIMIT "Package doesn't cover BANDWIDTH usage"
         fi
     fi
+
+    # Checking templates
+    is_web_template_valid $WEB_TEMPLATE
+    is_dns_template_valid $DNS_TEMPLATE
+    is_proxy_template_valid $PROXY_TEMPLATE
 }
 
 change_user_package() {
-    eval $(cat $USER_DATA/user.conf)
-    eval $(cat $VESTA/data/packages/$package.pkg |egrep -v "TIME|DATE")
+    source $USER_DATA/user.conf
+    pkg_data=$(cat $VESTA/data/packages/$package.pkg| egrep -v "TIME|DATE")
+    IFS=$'\n'
+    for str in $pkg_data; do
+        key=$(echo $str |cut -f 1 -d =)
+        value=$(echo $str |cut -f 2 -d \')
+        eval $key="$value"
+    done
     echo "FNAME='$FNAME'
 LNAME='$LNAME'
 PACKAGE='$package'
 WEB_TEMPLATE='$WEB_TEMPLATE'
-BACKEND_TEMPLATE='$BACKEND_TEMPLATE'
 PROXY_TEMPLATE='$PROXY_TEMPLATE'
 DNS_TEMPLATE='$DNS_TEMPLATE'
 WEB_DOMAINS='$WEB_DOMAINS'
@@ -157,7 +167,7 @@ fi
 change_user_package
 
 # Update user shell
-shell_conf=$(echo "$pkg_data" | grep 'SHELL' | cut -f 2 -d \')
+shell_conf=$(echo "$pkg_data" |grep 'SHELL' |cut -f 2 -d \')
 shell=$(grep -w "$shell_conf" /etc/shells |head -n1)
 /usr/bin/chsh -s "$shell" "$user" &>/dev/null
 
