@@ -11,7 +11,6 @@ import ControlPanelContent from '../ControlPanelContent/ControlPanelContent';
 import WebLogs from '../WebLogs/WebLogs';
 import LoginForm from 'src/components/Login/LoginForm';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAuthToken } from 'src/utils/token';
 import { checkAuthHandler } from 'src/actions/Session/sessionActions';
 import ServiceInfo from 'src/containers/ServiceInfo';
 import ForgotPassword from 'src/components/ForgotPassword';
@@ -70,9 +69,13 @@ const App = () => {
 
   useEffect(() => {
     if (!Object.entries(session.i18n).length) {
-      dispatch(checkAuthHandler()).then(token => {
-        setLoading(false);
-      });
+      dispatch(checkAuthHandler())
+        .then(token => {
+          setLoading(false);
+        }, (error) => {
+          console.error(error);
+          return history.push('/login');
+        });
     }
   }, [dispatch, history, session]);
 

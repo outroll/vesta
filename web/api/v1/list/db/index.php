@@ -15,9 +15,6 @@ unset($output);
 
 top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
 
-// Render page
-// render_page($user, $TAB, 'list_db');
-
 // Back uri
 $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 

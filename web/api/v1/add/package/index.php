@@ -200,9 +200,6 @@ if (empty($v_bandwidth)) $v_bandwidth = "'1000'";
 if (empty($v_ns1)) $v_ns1 = 'ns1.example.ltd';
 if (empty($v_ns2)) $v_ns2 = 'ns2.example.ltd';
 
-// Render page
-// render_page($user, $TAB, 'add_package');
-
 $result = array(
 	'web_system' => $_SESSION['WEB_SYSTEM'],
 	'web_templates' => $web_templates,

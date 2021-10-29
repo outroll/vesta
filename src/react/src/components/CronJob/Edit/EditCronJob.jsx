@@ -13,7 +13,6 @@ import QS from 'qs';
 
 import './EditCronJob.scss';
 import { Helmet } from 'react-helmet';
-import { checkAuthHandler } from 'src/actions/Session/sessionActions';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 import HtmlParser from 'react-html-parser';
 

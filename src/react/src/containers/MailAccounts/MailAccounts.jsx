@@ -17,7 +17,6 @@ import { Link } from 'react-router-dom';
 
 import './MailAccounts.scss';
 import { Helmet } from 'react-helmet';
-import { checkAuthHandler } from 'src/actions/Session/sessionActions';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 export default function MailAccounts(props) {

@@ -63,8 +63,6 @@ if (!empty($_POST['ok'])) {
     }
 }
 
-// Render
-// render_page($user, $TAB, 'add_firewall');
 $result = array(
     'ok_msg' => $_SESSION['ok_msg'],
     'error_msg' => $_SESSION['error_msg']

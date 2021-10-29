@@ -83,9 +83,6 @@ if (!empty($_POST['save'])) {
     }
 }
 
-// Render page
-// render_page($user, $TAB, 'edit_db');
-
 $result = array(
     'username' => $user,
     'database' => $_GET['database'],

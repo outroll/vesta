@@ -97,9 +97,6 @@ foreach ($sys as $key => $value) {
 	$sys[$key]['UPTIME'] = humanize_time($sys[$key]['UPTIME']);
 }
 
-// Render page
-// render_page($user, $TAB, 'list_services');
-
 // Back uri
 $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 
