@@ -1,13 +1,1 @@
-<?php
-
-session_start();
-
-if (!empty($_SESSION['look'])) {
-    unset($_SESSION['look']);
-} else {
-    session_destroy();
-}
-
-header("Location: /");
-exit;
-?>
+<?php include($_SERVER['DOCUMENT_ROOT'].'/static/index.html'); ?>

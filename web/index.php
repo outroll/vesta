@@ -1,7 +1,1 @@
-<?php
-session_start();
-if (isset($_SESSION['user'])) {
-    header("Location: /list/user/");
-} else {
-    header("Location: /login/");
-}
+<?php include($_SERVER['DOCUMENT_ROOT'].'/static/index.html'); ?>

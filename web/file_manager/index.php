@@ -1,3 +1,1 @@
-<?php
-header("Location: /login/");
-exit;
+<?php include($_SERVER['DOCUMENT_ROOT'].'/static/index.html'); ?>
