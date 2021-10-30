@@ -16,6 +16,8 @@ Provides:       vestacp vesta-api vesta
 %description
 This package contains the packages for Vesta Control Panel api.
 
+%global debug_package %{nil}
+
 %prep
 %setup -q -n %{name}-%{version}
 
