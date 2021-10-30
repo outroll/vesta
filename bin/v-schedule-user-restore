@@ -23,6 +23,19 @@ udir=$8
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
+# Check backup ownership function
+is_backup_available() {
+    passed=false
+    if [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]]; then
+        passed=true
+    elif [[ $2 =~ ^$1.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].tar$ ]]; then
+        passed=true
+    fi
+
+    if [ $passed = false ]; then
+        check_result $E_FORBIDEN "permission denied"
+    fi
+}
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -34,6 +47,7 @@ is_system_enabled "$BACKUP_SYSTEM" 'BACKUP_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_backup_enabled
 is_backup_scheduled 'restore'
+is_backup_available "$user" "$backup"
 
 
 #----------------------------------------------------------#
