@@ -16,6 +16,8 @@ Provides:       vesta-softaculous
 %description
 This package contains Softaculous apps for Vesta Control Panel web interface.
 
+%global debug_package %{nil}
+
 %prep
 %setup -q -n %{name}-%{version}
 
