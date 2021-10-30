@@ -56,8 +56,8 @@ const SslSupport = props => {
         title={i18n['SSL Key']} />
 
       <TextArea
-        id="ssl-key"
-        name="v_ssl_key"
+        id="ssl-ca"
+        name="v_ssl_ca"
         disabled={letsEncrypt}
         defaultValue={props.sslCertificateAuthority}
         title={i18n['SSL Certificate Authority / Intermediate']}
