@@ -202,7 +202,7 @@ const EditWeb = props => {
 
             <Checkbox
               onChange={onChangeSslSupport}
-              name="v_shared"
+              name="v_ssl"
               id="ssl-support"
               title={i18n['SSL Support'] ?? 'SSL Support'}
               defaultChecked={state.sslSupport} />
