@@ -260,7 +260,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Add proxy support
-    if ((!empty($_SESSION['PROXY_SYSTEM'])) && (empty($v_proxy)) && (!empty($_POST['v_proxy'])) && (empty($_SESSION['error_msg']))) {
+    if ((!empty($_SESSION['PROXY_SYSTEM'])) && (empty($v_proxy)) && (!empty($_POST['v_proxy_template'])) && (empty($_SESSION['error_msg']))) {
         $v_proxy_template = $_POST['v_proxy_template'];
         if (!empty($_POST['v_proxy_ext'])) {
             $ext = preg_replace("/\n/", " ", $_POST['v_proxy_ext']);
