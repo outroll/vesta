@@ -158,7 +158,7 @@ const EditWeb = props => {
               id="proxy-aliases"
               name="v_aliases"
               title={i18n['Aliases']}
-              value={state.data.aliases} />
+              defaultValue={state.data.aliases} />
 
             <SelectInput
               options={state.data.templates}
@@ -219,8 +219,8 @@ const EditWeb = props => {
                   sslPubKey={state.data.ssl_pub_key}
                   sslIssuer={state.data.ssl_issuer}
                   sslCertificate={state.data.ssl_crt}
-                  sslKey={state.data.key}
-                  sslCertificateAuthority={state.data.ca}
+                  sslKey={state.data.ssl_key}
+                  sslCertificateAuthority={state.data.ssl_ca}
                   domain={state.domain}
                   sslHome={state.data.ssl_home}
                   letsEncrypt={state.letsEncrypt}
