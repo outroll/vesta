@@ -16,6 +16,8 @@ Provides:       vesta-ioncube
 %description
 This package contains ionCube loader for Vesta
 
+%global debug_package %{nil}
+
 %prep
 %setup -q -n %{name}-%{version}
 
