@@ -14,6 +14,8 @@ if (empty($_GET['domain'])){
     unset($output);
 
     $favorites = $_SESSION['favourites']['MAIL'];
+
+    // render_page($user, $TAB, 'list_mail');
 } else {
     exec (VESTA_CMD."v-list-mail-accounts ".$user." ".escapeshellarg($_GET['domain'])." json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
@@ -21,6 +23,8 @@ if (empty($_GET['domain'])){
     unset($output);
 
     $favorites = $_SESSION['favourites']['MAIL_ACC'];
+
+    // render_page($user, $TAB, 'list_mail_acc');
 }
 
 $uname_arr=posix_uname();

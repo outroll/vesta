@@ -607,6 +607,10 @@ foreach ($sys_arr as $key => $value) {
     $_SESSION[$key] = $value;
 }
 
+
+// Render page
+// render_page($user, $TAB, 'edit_server');
+
 $result = array(
     'hostname' => $v_hostname,
     'timezones' => $v_timezones,
@@ -636,6 +640,9 @@ $result = array(
     'web_backend_pool' => $_SESSION['WEB_BACKEND_POOL'],
     'sftpjail_key' => $_SESSION['SFTPJAIL_KEY'],
     'lead' => $_GET['lead'] == 'sftp',
+    'softaculous_lead' => $_GET['lead'] == 'softaculous',
+    'fm_lead' => $_GET['lead'] == 'filemanager',
+    'sftp_licence_key' => $_GET['sftp_licence_key'],
     'licence_key' => $_GET['sftp_licence_key'] != '' ? $_GET['sftp_licence_key'] : $_SESSION['SFTPJAIL_KEY'],
     'fm_licence_key_option' => $_GET['filemanager_licence_key'] != '' ? $_GET['filemanager_licence_key'] : $_SESSION['FILEMANAGER_KEY'],
     'vesta_certificate' => $_SESSION['VESTA_CERTIFICATE'],

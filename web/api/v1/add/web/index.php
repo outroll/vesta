@@ -360,6 +360,12 @@ $stats = json_decode(implode('', $output), true);
 unset($output);
 
 $result = array(
+  'prefix' => __('Prefix will be automaticaly added to username',$user."_"),
+  'ftp_pre_path' => $v_ftp_user_prepath,
+  'ftp_email' => $v_ftp_email,
+  'stats' => $stats,
+  'proxy_ext' => 'jpeg, jpg, png, gif, bmp, ico, svg, tif, tiff, css, js, htm, html, ttf, otf, webp, woff, txt, csv, rtf, doc, docx, xls, xlsx, ppt, pptx, odf, odp, ods, odt, pdf, psd, ai, eot, eps, ps, zip, tar, tgz, gz, rar, bz2, 7z, aac, m4a, mp3, mp4, ogg, wav, wma, 3gp, avi, flv, m4v, mkv, mov, mp4, mpeg, mpg, wmv, exe, iso, dmg, swf',
+  'ips' => $ips,
   'error_msg' => $_SESSION['error_msg'],
   'ok_msg' => $_SESSION['ok_msg']
 );

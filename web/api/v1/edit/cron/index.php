@@ -75,6 +75,9 @@ if (!empty($_POST['save'])) {
     }
 }
 
+// Render page
+// render_page($user, $TAB, 'edit_cron');
+
 $result = array(
     'username' => $user,
     'job' => $_GET['job'],

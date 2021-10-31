@@ -195,6 +195,18 @@ if (!empty($_POST['ok_acc'])) {
     }
 }
 
+// Render page
+if (empty($_GET['domain'])) {
+    // Display body for mail domain
+
+    // render_page($user, $TAB, 'add_mail');
+} else {
+    // Display body for mail account
+
+    $v_domain = $_GET['domain'];
+    // render_page($user, $TAB, 'add_mail_acc');
+}
+
 $result = array(
   'error_msg' => $_SESSION['error_msg'],
   'ok_msg' => $_SESSION['ok_msg']
