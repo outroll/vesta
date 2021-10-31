@@ -111,10 +111,10 @@ const EditVestaPluginsOption = ({ data, visible }) => {
       <SelectInput
         title={i18n['SFTP Chroot']}
         selected={data.lead === 'sftp' || data.sftpjail_key != '' ? i18n['yes'] : ''}
-        name="v_backup_manager"
+        name="v_sftp"
         options={sftpOptions}
         onChange={onChangeSftpChroot}
-        id="backup_manager" />
+        id="module-sftp" />
 
       {
         sftpDescription
@@ -124,10 +124,10 @@ const EditVestaPluginsOption = ({ data, visible }) => {
               <div className="license-description">
                 <span>{i18n['Licence Key']}:</span>
                 <TextInput
-                  title={i18n['Version']}
-                  value={data.version}
-                  name="v_version"
-                  id="version" />
+                  title={i18n['Licence Key']}
+                  value={data.sftpjail_key}
+                  name="v_sftp_licence"
+                  id="sftp_licence" />
               </div>
             </div>
           )
@@ -140,7 +140,7 @@ const EditVestaPluginsOption = ({ data, visible }) => {
               <div className="license-description">
                 <span>{i18n['Enter License Key']}:</span>
                 <TextInput
-                  title={i18n['Version']}
+                  title={i18n['Licence Key']}
                   name="v_sftp_licence"
                   id="sftp_licence" />
               </div>
@@ -196,7 +196,7 @@ const EditVestaPluginsOption = ({ data, visible }) => {
                   title={i18n['Version']}
                   value=""
                   name="v_filemanager_licence"
-                  id="sftp_licence" />
+                  id="filemanager_licence" />
               </div>
 
               <div className="buy-license">
