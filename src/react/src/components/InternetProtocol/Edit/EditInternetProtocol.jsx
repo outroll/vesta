@@ -23,12 +23,12 @@ const EditInternetProtocol = () => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
     loading: false,
-    dedicated: false,
-    errorMessage: '',
-    okMessage: ''
+    dedicated: false
   });
 
   useEffect(() => {
@@ -40,21 +40,25 @@ const EditInternetProtocol = () => {
 
     if (ip) {
       setState({ ...state, loading: true });
-
-      getInternetProtocolInfo(ip)
-        .then(response => {
-          setState({
-            ...state,
-            data: response.data,
-            dedicated: !response.data.dedicated,
-            errorMessage: response.data['error_msg'],
-            okMessage: response.data['ok_msg'],
-            loading: false
-          });
-        })
-        .catch(err => console.error(err));
+      fetchData(ip);
     }
   }, []);
+
+  const fetchData = ip => {
+    getInternetProtocolInfo(ip)
+      .then(response => {
+        setState({
+          ...state,
+          data: response.data,
+          dedicated: !response.data.dedicated,
+          loading: false
+        });
+      })
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err)
+      });
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -74,17 +78,20 @@ const EditInternetProtocol = () => {
       updateInternetProtocol(updatedIP, state.data.ip)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
+            const { error_msg, ok_msg } = result.data;
 
-            if (errorMessage) {
-              setState({ ...state, errorMessage, okMessage, loading: false });
+            if (error_msg) {
+              setErrorMessage(error_msg);
+              setOkMessage('');
             } else {
               dispatch(refreshCounters()).then(() => {
-                setState({ ...state, okMessage, errorMessage: '', loading: false });
+                setErrorMessage('');
+                setOkMessage(ok_msg);
               });
             }
           }
         })
+        .then(() => fetchData(state.data.ip))
         .catch(err => console.error(err));
     }
   }
@@ -103,12 +110,12 @@ const EditInternetProtocol = () => {
         <div className="search-toolbar-name">{i18n['Editing IP Address']}</div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

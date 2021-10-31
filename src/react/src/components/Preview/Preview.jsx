@@ -6,11 +6,11 @@ import Photo from './Photo/Photo';
 import Video from './Video/Video';
 
 const Preview = (props) => {
-  const session = useSelector(state => state.session);
+  const {userName} = useSelector(state => state.session);
   const history = useHistory();
 
   useEffect(() => {
-    if (!session.userName) history.push('/login');
+    if (!userName) history.push('/login');
 
     document.addEventListener("keydown", hotkeys);
 

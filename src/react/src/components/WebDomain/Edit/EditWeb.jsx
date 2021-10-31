@@ -26,6 +26,8 @@ const EditWeb = props => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
     domain: '',
@@ -33,10 +35,9 @@ const EditWeb = props => {
     sslSupport: false,
     letsEncrypt: false,
     additionalFtp: false,
+    proxySupport: false,
     statAuth: false,
-    loading: false,
-    errorMessage: '',
-    okMessage: ''
+    loading: false
   });
 
   useEffect(() => {
@@ -48,26 +49,28 @@ const EditWeb = props => {
 
     if (domain) {
       setState({ ...state, loading: true });
-
-      getDomainInfo(domain)
-        .then(response => {
-          setState({
-            ...state,
-            domain,
-            webStat: response.data.v_stats ? response.data.v_stats : 'none',
-            sslSupport: response.data.ssl === 'yes',
-            letsEncrypt: response.data.letsencrypt === 'yes',
-            data: response.data,
-            additionalFtp: !!response.data.ftp_user,
-            statAuth: response.data.stats_user,
-            errorMessage: response.data['error_msg'],
-            okMessage: response.data['ok_msg'],
-            loading: false
-          });
-        })
-        .catch(err => console.error(err));
+      fetchData(domain);
     }
   }, []);
+
+  const fetchData = domain => {
+    getDomainInfo(domain)
+      .then(response => {
+        setState({
+          ...state,
+          domain,
+          webStat: response.data.v_stats ? response.data.v_stats : 'none',
+          sslSupport: response.data.ssl === 'yes',
+          letsEncrypt: response.data.letsencrypt === 'yes',
+          proxySupport: !!response.data.proxy,
+          data: response.data,
+          additionalFtp: !!response.data.ftp_user,
+          statAuth: response.data.stats_user,
+          loading: false
+        });
+      })
+      .catch(err => console.error(err));
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -79,19 +82,27 @@ const EditWeb = props => {
 
     updatedDomain['v_domain'] = state.domain;
 
+    if (updatedDomain['v_ssl'] === 'on') {
+      updatedDomain['v_ssl'] = 'yes';
+    }
+
     if (Object.keys(updatedDomain).length !== 0 && updatedDomain.constructor === Object) {
       setState({ ...state, loading: true });
 
       updateWebDomain(updatedDomain, state.domain)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
+            const { error_msg, ok_msg } = result.data;
 
-            if (errorMessage) {
-              setState({ ...state, errorMessage, okMessage, loading: false });
+            if (error_msg) {
+              setErrorMessage(error_msg);
+              setOkMessage('');
+              setState({ ...state, loading: false });
             } else {
               dispatch(refreshCounters()).then(() => {
-                setState({ ...state, okMessage, errorMessage: '', loading: false });
+                setErrorMessage('');
+                setOkMessage(ok_msg);
+                fetchData(state.domain);
               });
             }
           }
@@ -114,6 +125,10 @@ const EditWeb = props => {
     setState({ ...state, sslSupport: checked });
   }
 
+  const onChangeProxySupport = checked => {
+    setState({ ...state, proxySupport: checked });
+  }
+
   const onChangeWebStats = webStat => {
     setState({ ...state, webStat });
   }
@@ -134,9 +149,9 @@ const EditWeb = props => {
       <Toolbar mobile={false}>
         <div></div>
         <div className="search-toolbar-name">{i18n['Editing Domain']}</div>
-        <div className="error"><span className="error-message">{state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}</span></div>
+        <div className="error"><span className="error-message">{errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}</span></div>
         <div className="success">
-          <span className="ok-message">{state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span> </span>
+          <span className="ok-message">{okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span> </span>
         </div>
       </Toolbar>
       <AddItemLayout date={state.data.date} time={state.data.time} status={state.data.status}>
@@ -169,8 +184,7 @@ const EditWeb = props => {
               title={i18n['Web Template']} />
 
             {
-              state.data.web_backend
-              && (
+              state.data.WEB_BACKEND && (
                 <SelectInput
                   options={state.data.backend_templates}
                   selected={state.data.backend_template || 'default'}
@@ -182,23 +196,35 @@ const EditWeb = props => {
             }
 
             {
-              state.data.proxy_system
-              && (
-                <SelectInput
-                  options={state.data.proxy_templates}
-                  selected={state.data.proxy_template || 'default'}
-                  optionalTitle={state.data.proxy_system}
-                  name="v_proxy_template"
-                  id="proxy_template"
-                  title={i18n['Proxy Template']} />
+              state.data.proxy_system && (
+                <>
+                  <Checkbox
+                    onChange={onChangeProxySupport}
+                    name="v_proxy"
+                    id="proxy"
+                    title={i18n['Proxy Support'] ?? 'Proxy Support'}
+                    defaultChecked={state.proxySupport} />
+
+                  {
+                    state.proxySupport && (<div style={{ transform: 'translateX(3rem)' }}>
+                      <SelectInput
+                        options={state.data.proxy_templates}
+                        selected={state.data.proxy_template || 'default'}
+                        optionalTitle={state.data.proxy_system}
+                        name="v_proxy_template"
+                        id="proxy_template"
+                        title={i18n['Proxy Template']} />
+
+                      <TextArea
+                        id="proxy-extensions"
+                        name="v_proxy_ext"
+                        title={i18n['Proxy Extensions']}
+                        defaultValue={state.data.proxy_ext} />
+                    </div>)
+                  }
+                </>
               )
             }
-
-            <TextArea
-              id="proxy-extensions"
-              name="v_proxy_ext"
-              title={i18n['Proxy Extensions']}
-              defaultValue={state.data.proxy_ext} />
 
             <Checkbox
               onChange={onChangeSslSupport}
@@ -208,8 +234,7 @@ const EditWeb = props => {
               defaultChecked={state.sslSupport} />
 
             {
-              state.sslSupport
-              && (
+              state.sslSupport && (
                 <SslSupport
                   sslSubject={state.data.ssl_subject}
                   sslAliases={state.data.ssl_aliases}

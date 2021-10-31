@@ -18,11 +18,11 @@ const EditBackupExclusions = () => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
-    loading: false,
-    errorMessage: '',
-    okMessage: ''
+    loading: false
   });
 
   useEffect(() => {
@@ -30,19 +30,20 @@ const EditBackupExclusions = () => {
     dispatch(removeFocusedElement());
 
     setState({ ...state, loading: true });
+    fetchData();
+  }, []);
 
+  const fetchData = () => {
     getBackupExclusionsInfo()
       .then(response => {
         setState({
           ...state,
           data: response.data,
-          errorMessage: response.data['error_msg'],
-          okMessage: response.data['ok_msg'],
           loading: false
         });
       })
       .catch(err => console.error(err));
-  }, []);
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -61,17 +62,13 @@ const EditBackupExclusions = () => {
       updateBackupExclusions(updatedExclusions)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
+            const { error_msg, ok_msg } = result.data;
 
-            if (errorMessage) {
-              setState({ ...state, errorMessage, okMessage: '', loading: false });
-            } else if (okMessage) {
-              setState({ ...state, errorMessage: '', okMessage, loading: false });
-            } else {
-              setState({ ...state, loading: false });
-            }
+            setErrorMessage(error_msg || '');
+            setOkMessage(ok_msg || '');
           }
         })
+        .then(() => fetchData())
         .catch(err => console.error(err));
     }
   }
@@ -86,12 +83,12 @@ const EditBackupExclusions = () => {
         <div className="search-toolbar-name">{i18n['Editing Backup Exclusions']}</div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

@@ -22,12 +22,12 @@ const EditDatabase = props => {
   const { i18n, userName } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
     loading: false,
-    databaseUserInputValue: '',
-    errorMessage: '',
-    okMessage: ''
+    databaseUserInputValue: ''
   });
 
   useEffect(() => {
@@ -39,21 +39,25 @@ const EditDatabase = props => {
 
     if (database) {
       setState({ ...state, loading: true });
-
-      getDatabaseInfo(database)
-        .then(response => {
-          setState({
-            ...state,
-            data: response.data,
-            databaseUserInputValue: response.data.dbuser.split('_').splice(1).join('_'),
-            errorMessage: response.data['error_msg'],
-            okMessage: response.data['ok_msg'],
-            loading: false
-          });
-        })
-        .catch(err => console.error(err));
+      fetchData(database);
     }
   }, []);
+
+  const fetchData = database => {
+    getDatabaseInfo(database)
+      .then(response => {
+        setState({
+          ...state,
+          data: response.data,
+          databaseUserInputValue: response.data.dbuser.split('_').splice(1).join('_'),
+          loading: false
+        });
+      })
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err);
+      });
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -72,17 +76,20 @@ const EditDatabase = props => {
       updateDatabase(updatedDatabase, state.data.database)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
+            const { error_msg, ok_msg } = result.data;
 
-            if (errorMessage) {
-              setState({ ...state, errorMessage, okMessage, loading: false });
+            if (error_msg) {
+              setOkMessage('');
+              setErrorMessage(error_msg);
             } else {
               dispatch(refreshCounters()).then(() => {
-                setState({ ...state, okMessage, errorMessage: '', loading: false });
+                setOkMessage(ok_msg);
+                setErrorMessage('');
               });
             }
           }
         })
+        .then(() => fetchData(state.data.database))
         .catch(err => console.error(err));
     }
   }
@@ -101,12 +108,12 @@ const EditDatabase = props => {
         <div className="search-toolbar-name">{i18n['Editing Database']}</div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

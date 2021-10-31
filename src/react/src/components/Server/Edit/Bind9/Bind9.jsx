@@ -19,11 +19,11 @@ const Bind9 = () => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
-    loading: false,
-    errorMessage: '',
-    okMessage: ''
+    loading: false
   });
 
   useEffect(() => {
@@ -31,23 +31,23 @@ const Bind9 = () => {
     dispatch(removeFocusedElement());
 
     setState({ ...state, loading: true });
+    fetchData();
+  }, []);
 
+  const fetchData = () => {
     getServiceInfo('bind9')
       .then(response => {
         if (response.data.config.includes('Error')) {
           history.push('/list/server');
         }
 
-        setState({
-          ...state,
-          data: response.data,
-          errorMessage: response.data['error_msg'],
-          okMessage: response.data['ok_msg'],
-          loading: false
-        });
+        setState({ ...state, data: response.data, loading: false });
       })
-      .catch(err => console.error(err));
-  }, []);
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err);
+      });
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -65,15 +65,11 @@ const Bind9 = () => {
           if (result.status === 200) {
             const { error_msg, ok_msg } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '', loading: false });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg, loading: false });
-            } else {
-              setState({ ...state, loading: false });
-            }
+            setErrorMessage(error_msg || '');
+            setOkMessage(ok_msg || '');
           }
         })
+        .then(() => fetchData())
         .catch(err => console.error(err));
     }
   }
@@ -90,12 +86,12 @@ const Bind9 = () => {
         </div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

@@ -182,7 +182,7 @@ class FileManager extends Component {
     const { cursor, currentPath, itemName } = this.state;
 
     if (cursor !== 0) {
-      window.open('/download/file/?path=' + currentPath + '/' + itemName);
+      window.open('/api/v1/download/file/?path=' + currentPath + '/' + itemName);
     }
   }
 
@@ -218,7 +218,7 @@ class FileManager extends Component {
     }
 
     this.setState({ loading: true }, () => {
-      axios.post(`${window.location.origin}/upload/?dir=${this.state.currentPath}`, formData, {
+      axios.post(`${window.location.origin}/api/v1/upload/?dir=${this.state.currentPath}`, formData, {
         onUploadProgress: progressEvent => {
           let uploadPercent = Math.round(progressEvent.loaded / progressEvent.total * 100);
           this.setState({ uploadPercent });

@@ -18,6 +18,7 @@ import HtmlParser from 'react-html-parser';
 
 const AddUser = props => {
   const { i18n } = useSelector(state => state.session);
+  const { session } = useSelector(state => state.userSession);
   const userLanguage = localStorage.getItem("language");
   const history = useHistory();
   const dispatch = useDispatch();
@@ -101,7 +102,7 @@ const AddUser = props => {
 
   const renderLanguageOptions = () => {
     return state.languages.map((language, index) => (
-      <option key={index} selected={userLanguage === language} value={language}>{language}</option>
+      <option key={index} selected={session.LANGUAGE === language} value={language}>{language}</option>
     ));
   }
 

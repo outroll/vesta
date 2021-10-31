@@ -11,24 +11,22 @@ import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import QS from 'qs';
-
-import './EditUser.scss';
 import { Helmet } from 'react-helmet';
-import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 import HtmlParser from 'react-html-parser';
+import QS from 'qs';
+import './EditUser.scss';
 
 const EditUser = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
     loading: false,
-    username: '',
-    errorMessage: '',
-    okMessage: ''
+    username: ''
   });
 
   useEffect(() => {
@@ -40,19 +38,25 @@ const EditUser = props => {
 
     if (user) {
       setState({ ...state, loading: true });
-
-      getUserInfo(user)
-        .then(response => {
-          setState({
-            ...state,
-            username: user,
-            data: response.data, errorMessage: response.data['error_msg'], okMessage: response.data['ok_msg'],
-            loading: false
-          });
-        })
-        .catch(err => console.error(err));
+      fetchData(user);
     }
   }, []);
+
+  const fetchData = user => {
+    getUserInfo(user)
+      .then(response => {
+        setState({
+          ...state,
+          username: user,
+          data: response.data,
+          loading: false
+        });
+      })
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err);
+      });
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -73,14 +77,15 @@ const EditUser = props => {
             const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
 
             if (errorMessage) {
-              setState({ ...state, errorMessage, okMessage, loading: false });
+              setErrorMessage(errorMessage);
+              setOkMessage('');
             } else {
-              dispatch(refreshCounters()).then(() => {
-                setState({ ...state, okMessage, errorMessage: '', loading: false });
-              });
+              setErrorMessage('');
+              setOkMessage(okMessage);
             }
           }
         })
+        .then(() => fetchData(state.username))
         .catch(err => console.error(err));
     }
   }
@@ -103,9 +108,9 @@ const EditUser = props => {
       <Toolbar mobile={false}>
         <div></div>
         <div className="search-toolbar-name">{i18n['Editing User']}</div>
-        <div className="error"><span className="error-message">{state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}</span></div>
+        <div className="error"><span className="error-message">{errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}</span></div>
         <div className="success">
-          <span className="ok-message">{state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span> </span>
+          <span className="ok-message">{okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span> </span>
         </div>
       </Toolbar>
       <AddItemLayout date={state.data.date} time={state.data.time} status={state.data.status}>

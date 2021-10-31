@@ -20,13 +20,14 @@ const EditPhp = ({ serviceName = '' }) => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
+  const [restart, setRestart] = useState(true);
   const [state, setState] = useState({
     data: {},
     loading: false,
     basicOptions: true,
-    advancedOptions: false,
-    errorMessage: '',
-    okMessage: ''
+    advancedOptions: false
   });
 
   useEffect(() => {
@@ -38,19 +39,23 @@ const EditPhp = ({ serviceName = '' }) => {
     }
 
     setState({ ...state, loading: true });
+    fetchData();
+  }, []);
 
+  const fetchData = () => {
     getServiceInfo(serviceName)
       .then(response => {
         setState({
           ...state,
           data: response.data,
-          errorMessage: response.data['error_msg'],
-          okMessage: response.data['ok_msg'],
           loading: false
         });
       })
-      .catch(err => console.error(err));
-  }, []);
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err);
+      });
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -63,20 +68,19 @@ const EditPhp = ({ serviceName = '' }) => {
     if (Object.keys(updatedService).length !== 0 && updatedService.constructor === Object) {
       setState({ ...state, loading: true });
 
+      updatedService['v_config'] = state.data.config;
+      updatedService['v_restart'] = restart ? 'yes' : 'no';
+
       updateService(updatedService, `/${serviceName}`)
         .then(result => {
           if (result.status === 200) {
             const { error_msg, ok_msg } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '', loading: false });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg, loading: false });
-            } else {
-              setState({ ...state, loading: false });
-            }
+            setErrorMessage(error_msg || '');
+            setOkMessage(ok_msg || '');
           }
         })
+        .then(() => fetchData())
         .catch(err => console.error(err));
     }
   }
@@ -87,6 +91,14 @@ const EditPhp = ({ serviceName = '' }) => {
       advancedOptions: !state.advancedOptions,
       basicOptions: !state.basicOptions
     });
+  }
+
+  const onUpdateConfig = ({ id, value }) => {
+    if (!value) return;
+
+    var regexp = new RegExp(`(${id})(.+)(${state.data[id]})`, 'gm');
+    const updatedConfig = state.data.config.replace(regexp, `$1$2${value}`);
+    setState({ ...state, data: { ...state.data, config: updatedConfig, [id]: value } });
   }
 
   return (
@@ -100,12 +112,12 @@ const EditPhp = ({ serviceName = '' }) => {
         <div className="link"><Link to="/edit/server/php">{i18n['Configure']} php.ini</Link></div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>
@@ -131,42 +143,49 @@ const EditPhp = ({ serviceName = '' }) => {
                     id="max_execution_time"
                     title="max_execution_time"
                     name="v_max_execution_time"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={parseInt(state.data.max_execution_time)} />
 
                   <TextInput
                     id="worker_connections"
                     title="worker_connections"
                     name="v_worker_connections"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={parseInt(state.data.max_input_time)} />
 
                   <TextInput
                     id="memory_limit"
                     title="memory_limit"
                     name="v_memory_limit"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={parseInt(state.data.memory_limit)} />
 
                   <TextInput
                     id="error_reporting"
                     title="error_reporting"
                     name="v_error_reporting"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={state.data.error_reporting} />
 
                   <TextInput
                     id="display_errors"
                     title="display_errors"
                     name="v_display_errors"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={state.data.display_errors} />
 
                   <TextInput
                     id="post_max_size"
                     title="post_max_size"
                     name="v_post_max_size"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={state.data.post_max_size} />
 
                   <TextInput
                     id="upload_max_filesize"
                     title="upload_max_filesize"
                     name="v_upload_max_filesize"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={state.data.upload_max_filesize} />
                 </>
               )
@@ -188,6 +207,7 @@ const EditPhp = ({ serviceName = '' }) => {
               state.advancedOptions && (
                 <>
                   <TextArea
+                    onChange={e => setState({ ...state, data: { ...state.data, config: e.target.value } })}
                     defaultValue={state.data.config}
                     title={state.data.config_path}
                     name="v_config"
@@ -199,6 +219,7 @@ const EditPhp = ({ serviceName = '' }) => {
                   <Checkbox
                     title={i18n['restart']}
                     defaultChecked={true}
+                    onChange={checked => setRestart(checked)}
                     name="v_restart"
                     id="restart" />
                 </>

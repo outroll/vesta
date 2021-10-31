@@ -19,8 +19,7 @@ import HtmlParser from 'react-html-parser';
 
 const AddInternetProtocol = props => {
   const token = localStorage.getItem("token");
-  const { i18n } = useSelector(state => state.session);
-  const session = useSelector(state => state.session);
+  const { i18n, userName } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const history = useHistory();
   const [state, setState] = useState({
@@ -105,7 +104,7 @@ const AddInternetProtocol = props => {
         {state.loading ? <Spinner /> : (
           <form onSubmit={event => submitFormHandler(event)}>
             <input type="hidden" name="ok" value="add" />
-            <input type="hidden" name="v_owner" value={session.userName} />
+            <input type="hidden" name="v_owner" value={userName} />
             <input type="hidden" name="token" value={token} />
 
             <TextInput name="v_ip" id="ipAddress" title={i18n['IP address']} />

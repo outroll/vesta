@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { mailInfoBlockSelectOptions } from 'src/ControlPanelService/Mail';
 
 import './MailInfoBlock.scss';
 
-export default function MailInfoBlock({ webMail, hostName, domain, password }) {
+export default function MailInfoBlock({ webMail, hostName, domain, userName = '', password }) {
   const { i18n } = useSelector(state => state.session);
   const [selectedOption, setSelectedOption] = useState('');
-  const { userName } = useSelector(state => state.session);
   const [state, setState] = useState({
     imapHostName: hostName,
     smtpHostName: hostName,
@@ -106,7 +106,7 @@ export default function MailInfoBlock({ webMail, hostName, domain, password }) {
 
           <div>
             <span>{i18n['Webmail URL']}:</span>
-            <span><a href={webMail}>{webMail}</a></span>
+            <span><Link to={{ pathname: `${window.location.protocol}//${window.location.hostname}${state.webMail}` }}>{webMail}</Link></span>
           </div>
 
           <input type="hidden" name={i18n['Username']} value={`@${domain}`} />

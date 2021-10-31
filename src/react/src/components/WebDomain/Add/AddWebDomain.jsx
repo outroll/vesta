@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 import { addActiveElement, removeFocusedElement } from "../../../actions/MainNavigation/mainNavigationActions";
 import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
-import { addWeb, getWebStats } from '../../../ControlPanelService/Web';
+import { addWeb, getWebDomainInfo } from '../../../ControlPanelService/Web';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AdvancedOptions from './AdvancedOptions/AdvancedOptions';
-import { getIpList } from '../../../ControlPanelService/Ip';
+import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
+import SelectInput from 'src/components/ControlPanel/AddItemLayout/Form/SelectInput/SelectInput';
+import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/TextArea';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import { useHistory } from 'react-router-dom';
 import Spinner from '../../Spinner/Spinner';
@@ -17,7 +19,8 @@ import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 import HtmlParser from 'react-html-parser';
 
 const AddWebDomain = props => {
-  const { i18n } = useSelector(state => state.session);
+  const { i18n, panel, userName } = useSelector(state => state.session);
+  const { session } = useSelector(state => state.userSession);
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const history = useHistory();
@@ -25,12 +28,15 @@ const AddWebDomain = props => {
     loading: false,
     dnsSupport: true,
     mailSupport: true,
+    proxySupport: true,
     showAdvancedOptions: false,
     okMessage: '',
     domain: '',
     errorMessage: '',
     webStats: [],
     prefixI18N: '',
+    prePath: '',
+    proxy_ext: '',
     internetProtocols: []
   });
 
@@ -39,19 +45,22 @@ const AddWebDomain = props => {
     dispatch(removeFocusedElement());
 
     setState({ ...state, loading: true });
-    Promise.all([getWebStats(), getIpList()])
-      .then(result => {
-        const [webStats, internetProtocols] = result;
-        let internetProtocolNames = getInternetProtocolNames(internetProtocols.data.data);
-
+    getWebDomainInfo()
+      .then(res => {
         setState({
           ...state,
-          webStats: webStats.data.data,
-          internetProtocols: internetProtocolNames,
-          prefixI18N: webStats.data.prefixI18N,
+          internetProtocols: getInternetProtocolNames(res.data.ips),
+          webStats: res.data.stats,
+          prefixI18N: res.data.prefix,
+          proxy_ext: res.data.proxy_ext,
+          prePath: res.data.ftp_pre_path,
           loading: false
         });
-      });
+      })
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err);
+      })
   }, []);
 
   const getInternetProtocolNames = internetProtocols => {
@@ -74,12 +83,16 @@ const AddWebDomain = props => {
 
   const renderAdvancedOptions = () => {
     if (state.showAdvancedOptions) {
-      return <AdvancedOptions prefixI18N={state.prefixI18N} domain={state.domain} webStats={state.webStats} />;
+      return <AdvancedOptions prefixI18N={state.prefixI18N} domain={state.domain} webStats={state.webStats} prePath={state.prePath} />;
     }
   }
 
   const onBlurChangeAliases = value => {
     setState({ ...state, domain: value });
+  }
+
+  const checkboxHandler = (input, checked) => {
+    setState({ ...state, [input]: checked });
   }
 
   const submitFormHandler = event => {
@@ -154,19 +167,61 @@ const AddWebDomain = props => {
               </select>
             </div>
 
-            <div className="form-group">
-              <div className="checkbox-wrapper">
-                <input type="checkbox" name="v_dns" id="dns-support" checked={state.dnsSupport} />
-                <label htmlFor="dns-support">{i18n['DNS Support']}</label>
-              </div>
+            <div class="form-group">
+              <label htmlFor="aliases">{i18n.Aliases}</label>
+              <textarea
+                class="form-control"
+                id="aliases"
+                rows="3"
+                name="v_aliases"
+                defaultValue={state.aliases}
+              ></textarea>
             </div>
 
-            <div className="form-group">
-              <div className="checkbox-wrapper">
-                <input type="checkbox" name="v_mail" id="mail-support" checked={state.mailSupport} />
-                <label htmlFor="mail-support">{i18n['Mail Support']}</label>
-              </div>
-            </div>
+            {
+              panel[userName]['DNS_DOMAINS'] !== '0' && (
+                <Checkbox
+                  onChange={checked => checkboxHandler('dnsSupport', checked)}
+                  name="v_dns"
+                  id="dns-support"
+                  title={i18n['DNS Support'] ?? 'DNS Support'}
+                  defaultChecked={state.dnsSupport} />
+              )
+            }
+
+            {
+              panel[userName]['MAIL_DOMAINS'] !== '0' && (
+                <Checkbox
+                  onChange={checked => checkboxHandler('mailSupport', checked)}
+                  name="v_mail"
+                  id="mail-support"
+                  title={i18n['Mail Support'] ?? 'Mail Support'}
+                  defaultChecked={state.mailSupport} />
+              )
+            }
+
+            {
+              session.PROXY_SYSTEM && (
+                <>
+                  <Checkbox
+                    onChange={checked => checkboxHandler('proxySupport', checked)}
+                    name="v_proxy"
+                    id="proxy"
+                    title={i18n['Proxy Support'] ?? 'Proxy Support'}
+                    defaultChecked={state.proxySupport} />
+
+                  {
+                    state.proxySupport && (<div style={{ transform: 'translateX(3rem)' }}>
+                      <TextArea
+                        id="proxy-extensions"
+                        name="v_proxy_ext"
+                        title={i18n['Proxy Extensions']}
+                        defaultValue={state.proxy_ext} />
+                    </div>)
+                  }
+                </>
+              )
+            }
 
             <div className="form-group advanced-options-button">
               <button type="button" onClick={() => showAdvancedOption()}>
@@ -184,7 +239,7 @@ const AddWebDomain = props => {
           </form>
         )}
       </AddItemLayout>
-    </div>
+    </div >
   );
 }
 

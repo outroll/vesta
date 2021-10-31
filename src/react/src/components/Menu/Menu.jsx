@@ -118,9 +118,9 @@ const Menu = (props) => {
   }
 
   const hotKeys = (e) => {
-    if (props.modalVisible) {
-      return;
-    }
+    let isSearchInputFocused = document.querySelector('input:focus') || document.querySelector('textarea:focus');
+
+    if (props.modalVisible || isSearchInputFocused) return;
 
     if (e.shiftKey && e.keyCode === 117) {
       rename();

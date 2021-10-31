@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 export default function WebDomain(props) {
   const { data } = props;
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
 
   const printStat = (stat, text) => {
     if (text === 'no' || text === '') {
@@ -29,6 +28,26 @@ export default function WebDomain(props) {
 
   const checkItem = () => {
     props.checkItem(data.NAME);
+  }
+
+  const renderProxySupport = () => {
+    if (!data.PROXY_SYSTEM) return;
+
+    if (data.PROXY_SUPPORT === 'no') {
+      printStat(i18n['Proxy Support'], '');
+    } else {
+      printStat(i18n['Proxy Support'], data.PROXY_SUPPORT);
+    }
+  }
+
+  const renderBackedSupport = () => {
+    if (!data.WEB_BACKEND) return;
+
+    if (data.BACKEND_SUPPORT === 'no') {
+      printStat(i18n['Backend Support'] ?? 'Backend Support', '');
+    } else {
+      printStat(i18n['Backend Support'] ?? 'Backend Support', data.BACKEND_SUPPORT);
+    }
   }
 
   const handleSuspend = () => {
@@ -58,29 +77,21 @@ export default function WebDomain(props) {
         <div>{data.IP}</div>
         <div className="stats">
           <Container className="c-1 w-25">
-            <div className="bandwidth">{i18n.Bandwidth} <span><span className="stat">{data.U_BANDWIDTH}</span>{i18n.mb}</span></div>
-            <div className="disk">{i18n.Disk}: <span><span className="stat">{data.U_DISK}</span>{i18n.mb}</span></div>
+            <div className="bandwidth">{i18n.Bandwidth} <span><span className="stat">{data.U_BANDWIDTH_SIZE}</span>{data.U_BANDWIDTH_MEASURE}</span></div>
+            <div className="disk">{i18n.Disk}: <span><span className="stat">{data.U_DISK_SIZE}</span>{data.U_DISK_MEASURE}</span></div>
           </Container>
           <Container className="c-2 w-45">
             <div>{i18n['Web Template']}: <span className="stat">{data.TPL}</span></div>
-            {data.LETSENCRYPT === 'yes'
-              ? printStat(i18n['SSL Support'], i18n['Lets Encrypt'])
-              : printStat(i18n['SSL Support'], data.SSL)}
+            {data.SSL === 'no'
+              ? printStat(i18n['SSL Support'], '')
+              : printStat(i18n['SSL Support'], data.LETSENCRYPT === 'yes' ? i18n['Lets Encrypt'] : i18n[data.SSL])}
             {printStat(i18n['Web Statistics'], data.WEB_STATS)}
           </Container>
           <Container className="c-3 w-35">
-            {data.PROXY_SYSTEM !== 'no'
-              ? printStat(i18n['Proxy Support'], data.PROXY_SUPPORT)
-              : printStat(i18n['Proxy Support'], '')}
-            {data.PROXY_SYSTEM !== 'no'
-              ? printStat(i18n['Proxy Template'], data.PROXY)
-              : printStat(i18n['Proxy Template'], '')}
-            {data.BACKEND_SYSTEM !== 'no'
-              ? printStat(i18n['Backend Support'] ?? 'Backend Support', data.BACKEND_SUPPORT)
-              : printStat(i18n['Backend Support'] ?? 'Backend Support', '')}
-            {data.BACKEND_SYSTEM !== 'no'
-              ? printStat(i18n['Backend Template'] ?? 'Backend Template', data.BACKEND)
-              : printStat(i18n['Backend Template'] ?? 'Backend Template', '')}
+            {renderProxySupport()}
+            {data.PROXY_SYSTEM && printStat(i18n['Proxy Template'] ?? 'Proxy Template', data.PROXY)}
+            {renderBackedSupport()}
+            {data.WEB_BACKEND && printStat(i18n['Backend Template'] ?? 'Backend Template', data.BACKEND)}
             {printStat(i18n['Additional FTP Account'], data.FTP)}
           </Container>
         </div>

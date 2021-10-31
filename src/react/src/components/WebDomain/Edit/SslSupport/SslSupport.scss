@@ -16,6 +16,7 @@ $textColor: #555;
       span {
         &:nth-child(1) {
           width: 120px;
+          display: inline-block;
         }
 
         &:nth-child(2) {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TextArea = ({ id, name, defaultValue = '', title, optionalTitle = '', rows = '3', disabled = false }) => {
+const TextArea = ({ id, name, defaultValue = '', title, optionalTitle = '', rows = '3', disabled = false, ...rest }) => {
   return (
     <div className="form-group">
       <label className="label-wrapper" htmlFor={id}>
@@ -13,7 +13,9 @@ const TextArea = ({ id, name, defaultValue = '', title, optionalTitle = '', rows
         rows={rows}
         name={name}
         disabled={disabled}
-        defaultValue={defaultValue}>
+        defaultValue={defaultValue}
+        {...rest}
+      >
       </textarea>
     </div>
   );

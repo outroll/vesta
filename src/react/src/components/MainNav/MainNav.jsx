@@ -18,7 +18,8 @@ const MainNav = () => {
     showTopNav: false
   });
 
-  const { userName, session: { look } } = useSelector(state => state.session);
+  const { userName } = useSelector(state => state.session);
+  const { session: { look } } = useSelector(state => state.userSession);
   const { user } = useSelector(state => state.menuCounters);
   const { activeElement, focusedElement, adminMenuTabs, userMenuTabs } = useSelector(state => state.mainNavigation);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
@@ -29,11 +30,22 @@ const MainNav = () => {
       return history.push('/login');
     }
 
+    if (look) {
+      const commonUserRoutes = ['package', 'ip', 'rrd', 'updates', 'firewall', 'server'];
+      const splitPath = history.location.pathname.split('/')[2];
+
+      if (history.location.pathname === '/add/user/') return history.push('/');
+
+      if (commonUserRoutes.includes(splitPath)) {
+        return history.push('/');
+      }
+    }
+
     const tabs = look ? userMenuTabs : adminMenuTabs;
     setState({ ...state, tabs });
 
     setLoading(false);
-  }, [userName, user, history]);
+  }, [userName, user, history, look]);
 
   const controlFocusedTabWithCallback = useCallback(event => {
     let isSearchInputFocused = document.querySelector('input:focus') || document.querySelector('textarea:focus') || document.querySelector('textarea:focus');

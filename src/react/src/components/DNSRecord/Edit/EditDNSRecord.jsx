@@ -19,6 +19,8 @@ export default function EditDNSRecord(props) {
   const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
     selectOptions: [
@@ -37,9 +39,7 @@ export default function EditDNSRecord(props) {
       'TLSA',
       'CAA'
     ],
-    loading: false,
-    errorMessage: '',
-    okMessage: ''
+    loading: false
   });
 
   useEffect(() => {
@@ -48,22 +48,23 @@ export default function EditDNSRecord(props) {
     dispatch(addActiveElement('/list/dns/'));
     dispatch(removeFocusedElement());
 
-    if (domain) {
+    if (domain && record_id) {
       setState({ ...state, loading: true });
-
-      getDNSRecordInfo(domain, record_id)
-        .then(response => {
-          setState({
-            ...state,
-            data: response.data,
-            errorMessage: response.data['error_msg'],
-            okMessage: response.data['ok_msg'],
-            loading: false
-          });
-        })
-        .catch(err => console.error(err));
+      fetchData(domain, record_id);
     }
   }, []);
+
+  const fetchData = (domain, record_id) => {
+    getDNSRecordInfo(domain, record_id)
+      .then(response => {
+        setState({
+          ...state,
+          data: response.data,
+          loading: false
+        });
+      })
+      .catch(err => console.error(err));
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -83,17 +84,20 @@ export default function EditDNSRecord(props) {
       updateDNS(updatedRecord, props.domain, props.record_id)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
+            const { error_msg, ok_msg } = result.data;
 
-            if (errorMessage) {
-              setState({ ...state, errorMessage, okMessage, loading: false });
+            if (error_msg) {
+              setOkMessage('');
+              setErrorMessage(error_msg);
             } else {
               dispatch(refreshCounters()).then(() => {
-                setState({ ...state, okMessage, errorMessage: '', loading: false });
+                setOkMessage(ok_msg);
+                setErrorMessage('');
               });
             }
           }
         })
+        .then(() => fetchData(props.domain, props.record_id))
         .catch(err => console.error(err));
     }
   }
@@ -108,12 +112,12 @@ export default function EditDNSRecord(props) {
         <div className="search-toolbar-name">{i18n['Editing DNS Record']}</div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

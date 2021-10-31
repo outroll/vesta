@@ -21,10 +21,10 @@ const EditMail = props => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
-    errorMessage: '',
-    okMessage: '',
     loading: false,
     generatedCronJob: {
       h_min: '*',
@@ -44,28 +44,32 @@ const EditMail = props => {
 
     if (job) {
       setState({ ...state, loading: true });
-
-      getCronJobInfo(job)
-        .then(response => {
-          setState({
-            ...state,
-            generatedCronJob: {
-              ...state.generatedCronJob,
-              h_min: response.data.min,
-              h_hour: response.data.hour,
-              h_day: response.data.day,
-              h_wday: response.data.wday,
-              h_month: response.data.month
-            },
-            data: response.data,
-            errorMessage: response.data['error_msg'],
-            okMessage: response.data['ok_msg'],
-            loading: false
-          });
-        })
-        .catch(err => console.error(err));
+      fetchData(job)
     }
   }, []);
+
+  const fetchData = job => {
+    getCronJobInfo(job)
+      .then(response => {
+        setState({
+          ...state,
+          generatedCronJob: {
+            ...state.generatedCronJob,
+            h_min: response.data.min,
+            h_hour: response.data.hour,
+            h_day: response.data.day,
+            h_wday: response.data.wday,
+            h_month: response.data.month
+          },
+          data: response.data,
+          loading: false
+        });
+      })
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err);
+      });
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -81,17 +85,20 @@ const EditMail = props => {
       updateCronJob(updatedJob, state.data.job)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
+            const { error_msg, ok_msg } = result.data;
 
-            if (errorMessage) {
-              setState({ ...state, errorMessage, okMessage, loading: false });
+            if (error_msg) {
+              setOkMessage('');
+              setErrorMessage(error_msg);
             } else {
               dispatch(refreshCounters()).then(() => {
-                setState({ ...state, okMessage, errorMessage: '', loading: false });
+                setOkMessage(ok_msg);
+                setErrorMessage('');
               });
             }
           }
         })
+        .then(() => fetchData(state.data.job))
         .catch(err => console.error(err));
     }
   }
@@ -125,12 +132,12 @@ const EditMail = props => {
         <div className="search-toolbar-name">{i18n['Editing Cron Job']}</div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

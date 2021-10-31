@@ -20,11 +20,11 @@ const EditFirewall = props => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
-    loading: false,
-    errorMessage: '',
-    okMessage: ''
+    loading: false
   });
 
   useEffect(() => {
@@ -35,24 +35,24 @@ const EditFirewall = props => {
     dispatch(removeFocusedElement());
 
     if (rule) {
+      setState({ ...state, loading: true });
       fetchData(rule);
     }
   }, []);
 
   const fetchData = rule => {
-    setState({ ...state, loading: true });
-
     getFirewallInfo(rule)
       .then(response => {
         setState({
           ...state,
           data: response.data,
-          errorMessage: response.data['error_msg'],
-          okMessage: response.data['ok_msg'],
           loading: false
         });
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err);
+      });
   }
 
   const submitFormHandler = event => {
@@ -69,13 +69,10 @@ const EditFirewall = props => {
       updateFirewall(updatedDomain, state.data.rule)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
+            const { error_msg, ok_msg } = result.data;
 
-            if (errorMessage) {
-              setState({ ...state, errorMessage, okMessage, loading: false });
-            } else {
-              setState({ ...state, okMessage, errorMessage: '', loading: false });
-            }
+            setErrorMessage(error_msg || '');
+            setOkMessage(ok_msg || '');
           }
         })
         .then(() => fetchData(state.data.rule))
@@ -93,12 +90,12 @@ const EditFirewall = props => {
         <div className="search-toolbar-name">{i18n['Editing Firewall Rule']}</div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>
@@ -108,19 +105,26 @@ const EditFirewall = props => {
             <input type="hidden" name="save" value="save" />
             <input type="hidden" name="token" value={token} />
 
-            <SelectInput
-              options={state.data.actions}
-              selected={state.data.action}
-              title={i18n['Action']}
-              name="v_action"
-              id="action" />
+            <div className="form-group select-group">
+              <label className="label-wrapper" htmlFor="action">
+                {i18n['Action']}
+              </label>
+              <select className="form-control" id="action" name="v_action">
+                <option selected={state.data.action === 'DROP'} value="DROP">DROP</option>
+                <option selected={state.data.action === 'ACCEPT'} value="ACCEPT">ACCEPT</option>
+              </select>
+            </div>
 
-            <SelectInput
-              options={state.data.protocols}
-              selected={state.data.protocol}
-              title={i18n['Protocol']}
-              name="v_protocol"
-              id="protocol" />
+            <div className="form-group select-group">
+              <label className="label-wrapper" htmlFor="protocol">
+                {i18n['Protocol']}
+              </label>
+              <select className="form-control" id="protocol" name="v_protocol">
+                <option selected={state.data.protocol === 'TCP'} value="TCP">{i18n['TCP']}</option>
+                <option selected={state.data.protocol === 'UDP'} value="UDP">{i18n['UDP']}</option>
+                <option selected={state.data.protocol === 'ICMP'} value="ICMP">{i18n['ICMP']}</option>
+              </select>
+            </div>
 
             <TextInput
               optionalTitle={i18n['ranges are acceptable']}

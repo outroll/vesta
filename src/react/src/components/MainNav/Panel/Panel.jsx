@@ -5,15 +5,14 @@ import { logout } from 'src/actions/Session/sessionActions';
 import Notifications from './Notifications/Notifications';
 import { useSelector, useDispatch } from "react-redux";
 import Spinner from 'src/components/Spinner/Spinner';
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import './Panel.scss';
 
 const Panel = props => {
-  const { i18n, userName, session: { look, user } } = useSelector(state => state.session);
-  const session = useSelector(state => state.session);
+  const { i18n, userName } = useSelector(state => state.session);
+  const { session: { look, user, FIREWALL_SYSTEM, FILEMANAGER_KEY, SOFTACULOUS } } = useSelector(state => state.userSession);
   const { activeElement, focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
-  const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState({
     smallNavigationClass: 'small-navigation hidden'
@@ -98,14 +97,14 @@ const Panel = props => {
             <div className={className("/list/updates/")}>
               <Link to="/list/updates/" onClick={event => handleState("/list/updates/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Updates}</Link>
             </div>
-            {session.session.FIREWALL_SYSTEM && <div className={className("/list/firewall/")}>
+            {FIREWALL_SYSTEM && <div className={className("/list/firewall/")}>
               <Link to="/list/firewall/" onClick={event => handleState("/list/firewall/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Firewall}</Link>
             </div>}
           </>)}
-          {session.session.FILEMANAGER_KEY && <div className={className("/list/directory/")}>
+          {FILEMANAGER_KEY && <div className={className("/list/directory/")}>
             <Link to="/list/directory/">{i18n['File Manager']}</Link>
           </div>}
-          {session.session.SOFTACULOUS === "yes" && <div className={className("/softaculous/")}><a href="/softaculous/">{i18n.Apps ?? 'Apps'}</a>
+          {SOFTACULOUS === "yes" && <div className={className("/softaculous/")}><Link to="/softaculous/" target="_blank">{i18n.Apps ?? 'Apps'}</Link>
           </div>}
           {userName === 'admin' && (
             <div className={className("/list/server/")}>
@@ -116,14 +115,14 @@ const Panel = props => {
         <div className="container profile-menu">
           <Notifications />
           <div>
-            <Link to={`/edit/user?user=${session.userName}`}>
+            <Link to={`/edit/user?user=${userName}`}>
               {look
                 ? <div className="long-username">
                   <span>{user}</span>
                   <FontAwesomeIcon icon="long-arrow-alt-right" />
                   <span>{look}</span>
                 </div>
-                : session.userName
+                : userName
               }
             </Link>
           </div>
@@ -144,7 +143,7 @@ const Panel = props => {
           <div className="bell">
             <FontAwesomeIcon icon="bell" />
           </div>
-          <div><Link to={`/edit/user?user=${session.userName}`}>{session.userName}</Link></div>
+          <div><Link to={`/edit/user?user=${userName}`}>{userName}</Link></div>
           <div><button onClick={signOut}>{i18n['Log out']}</button></div>
         </div>
       </div>
