@@ -67,7 +67,14 @@ if (!empty($_POST['save'])) {
     check_return_code($return_var,$output);
     unset($output);
 
-    $v_cmd = $_POST['v_cmd'];
+    // Fetch updated cron
+    exec (VESTA_CMD."v-list-cron-job ".$user." ".$v_job." json", $output, $return_var);
+    check_return_code($return_var,$output);
+
+    $data = json_decode(implode('', $output), true);
+    unset($output);
+
+    $v_job = $_GET['job'];
 
     // Set success message
     if (empty($_SESSION['error_msg'])) {

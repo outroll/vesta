@@ -87,7 +87,21 @@ const EditMail = props => {
               setState({ ...state, errorMessage, okMessage, loading: false });
             } else {
               dispatch(refreshCounters()).then(() => {
-                setState({ ...state, okMessage, errorMessage: '', loading: false });
+                setState({ 
+                  ...state, 
+                  generatedCronJob: {
+                    ...state.generatedCronJob,
+                    h_min: result.data.min,
+                    h_hour: result.data.hour,
+                    h_day: result.data.day,
+                    h_wday: result.data.wday,
+                    h_month: result.data.month
+                  },
+                  data: result.data,
+                  okMessage, 
+                  errorMessage: '', 
+                  loading: false
+                 });
               });
             }
           }
