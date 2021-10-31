@@ -327,7 +327,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
 }
 
 list($http_host, $port) = explode(':', $_SERVER["HTTP_HOST"].":");
-$webmail = "http://".$http_host."/webmail/";
+$webmail = "/webmail/";
 if (!empty($_SESSION['MAIL_URL'])) $webmail = $_SESSION['MAIL_URL'];
 
 if (empty($hostname)) {

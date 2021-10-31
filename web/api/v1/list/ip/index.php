@@ -31,6 +31,9 @@ foreach ($data as $key => $value) {
   $data[$key]['delete_conf'] = __('DELETE_IP_CONFIRMATION', $key);
 }
 
+// Render page
+// render_page($user, $TAB, 'list_ip');
+
 // Back uri
 $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 

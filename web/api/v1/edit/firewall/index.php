@@ -90,8 +90,6 @@ $result = array(
 	'time' => $data[$v_rule]['TIME'],
 	'suspended' => $data[$v_rule]['SUSPENDED'],
     'status' => $v_status,
-    'actions' => [ __('DROP'), __('ACCEPT') ],
-    'protocols' => [ __('TCP'), __('UDP'), __('ICMP') ],
     'error_msg' => $_SESSION['error_msg'],
     'ok_msg' => $_SESSION['ok_msg']
 );

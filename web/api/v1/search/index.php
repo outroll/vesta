@@ -30,6 +30,10 @@ $command = $_SESSION['user'] == 'admin'
 exec (VESTA_CMD . $command, $output, $return_var);
 $data = json_decode(implode('', $output), true);
 
+
+// Render page
+// render_page($user, $TAB, 'list_search');
+
 foreach ($data as $key => $value) {
     ++$i;
 

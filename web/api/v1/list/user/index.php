@@ -14,7 +14,9 @@ if ($user == 'admin') {
 }
 $data = json_decode(implode('', $output), true);
 $data = array_reverse($data,true);
+// Render page
 top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
+// render_page($user, $TAB, 'list_user');
 
 $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 

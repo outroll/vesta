@@ -27,5 +27,5 @@ if ($_SESSION['user'] == 'admin') {
     unset($output);
 }
 
-echo json_encode(array('error' => $_SESSION['error_msg']));
+echo json_encode(array('error' => $_SESSION['error_srv'], 'ok' => $_SESSION['ok_msg']));
 unset($_SESSION['error_msg']);

@@ -1,10 +1,4 @@
 <?php
-
-header('Access-Control-Allow-Origin : http://localhost:3000');
-header('Access-Control-Allow-Credentials : true');
-header('Access-Control-Allow-Methods : GET, POST, OPTIONS');
-header("Access-Control-Allow-Headers : Origin, Content-Type, Accept");
-
 error_reporting(NULL);
 ob_start();
 unset($_SESSION['error_msg']);
@@ -260,7 +254,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Add proxy support
-    if ((!empty($_SESSION['PROXY_SYSTEM'])) && (empty($v_proxy)) && (!empty($_POST['v_proxy_template'])) && (empty($_SESSION['error_msg']))) {
+    if ((!empty($_SESSION['PROXY_SYSTEM'])) && (empty($v_proxy)) && (!empty($_POST['v_proxy'])) && (empty($_SESSION['error_msg']))) {
         $v_proxy_template = $_POST['v_proxy_template'];
         if (!empty($_POST['v_proxy_ext'])) {
             $ext = preg_replace("/\n/", " ", $_POST['v_proxy_ext']);
@@ -777,7 +771,7 @@ $result = array(
     'backend_template' => $v_backend_template,
     'proxy' => $v_proxy,
     'proxy_template' => $v_proxy_template,
-    'proxy_ext' => $v_proxy_ext,
+    'proxy_ext' => !empty($v_proxy_ext) ? $v_proxy_ext : 'jpg, jpeg, gif, png, ico, svg, css, zip, tgz, gz, rar, bz2, exe, pdf, doc, xls, ppt, txt, odt, ods, odp, odf, tar, bmp, rtf, js, mp3, avi, mpeg, flv, html, htm',
     'v_stats' => $v_stats,
     'stats_user' => $v_stats_user,
     'ftp_user' => $v_ftp_user,

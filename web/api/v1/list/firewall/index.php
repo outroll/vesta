@@ -41,6 +41,9 @@ foreach ($data as $key => $value) {
   }
 }
 
+// Render page
+// render_page($user, $TAB, 'list_firewall');
+
 // Back uri
 $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 

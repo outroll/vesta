@@ -123,13 +123,13 @@ unset($output);
 unset($db_hosts_tmp1);
 unset($db_hosts_tmp2);
 
-$prefixI18N = __('Prefix will be automaticaly added to database name and database user', "<b>".$_SESSION['user']."_</b>");
+$prefixI18N = __('Prefix will be automaticaly added to database name and database user', "<b>".$user."_</b>");
 $maxCharLength = __('maximum characters length, including prefix', 16);
 
 $result = array(
   'dbHosts' => $db_hosts,
   'dbTypes' => $db_types,
-  'user' => $_SESSION['user'],
+  'user' => $user,
   'prefixI18N' => $prefixI18N,
   'maxCharLength' => $maxCharLength,
   'error_msg' => $_SESSION['error_msg'],

@@ -13,7 +13,9 @@ $data = json_decode(implode('', $output), true);
 $data = array_reverse($data,true);
 $ips = json_decode(shell_exec(VESTA_CMD.'v-list-sys-ips json'), true);
 
+// Render page
 top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
+// render_page($user, $TAB, 'list_web');
 
 // Back uri
 $_SESSION['back'] = $_SERVER['REQUEST_URI'];
@@ -77,15 +79,23 @@ foreach ($data as $key => $value) {
     $data[$key]['FTP'] = $data[$key]['FTP_USER'];
   }
 
+  $data[$key]['PROXY_SYSTEM'] = !empty($_SESSION['PROXY_SYSTEM']);
+  $data[$key]['PROXY_SUPPORT'] = 'no';
+  if (!empty($data[$key]['PROXY'])) {
+    $data[$key]['PROXY_SUPPORT'] = 'yes';
+  }
+
+  $data[$key]['WEB_BACKEND'] = !empty($_SESSION['WEB_BACKEND']);
   $data[$key]['BACKEND_SUPPORT'] = 'no';
   if (!empty($data[$key]['BACKEND'])) {
     $data[$key]['BACKEND_SUPPORT'] = 'yes';
   }
 
-  $data[$key]['PROXY_SUPPORT'] = 'no';
-  if (!empty($data[$key]['PROXY'])) {
-      $data[$key]['PROXY_SUPPORT'] = 'yes';
-  }
+  $data[$key]['U_BANDWIDTH_SIZE'] = humanize_usage_size($data[$key]['U_BANDWIDTH']);
+  $data[$key]['U_BANDWIDTH_MEASURE'] = humanize_usage_measure($data[$key]['U_BANDWIDTH']);
+
+  $data[$key]['U_DISK_SIZE'] = humanize_usage_size($data[$key]['U_DISK']);
+  $data[$key]['U_DISK_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK']);
 
   $data[$key]['delete_confirmation'] = __('DELETE_DOMAIN_CONFIRMATION', $key);
 
