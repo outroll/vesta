@@ -9,7 +9,7 @@ const AdditionalFtpForEditing = ({ domain, data = {}, onDeleteAdditionalFtp, pre
   const { i18n, userName } = useSelector(state => state.session);
   const [state, setState] = useState({
     username: data.v_ftp_user || '',
-    path: ''
+    path: data.v_ftp_path || ''
   });
 
   const renderForm = () => {
