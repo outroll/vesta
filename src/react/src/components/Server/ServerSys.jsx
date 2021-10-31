@@ -46,7 +46,7 @@ const Server = props => {
         </div>
 
         <div>
-          <button className="link-download restart" onClick={() => props.handleAction(`/api/v1/restart/service?srv=${data.NAME}`)}>
+          <button className="link-download restart" onClick={() => props.handleAction(`/api/v1/restart/system/?hostname=${data.NAME}`)}>
             {i18n.restart}
             {
               data.FOCUSED

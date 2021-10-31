@@ -24,6 +24,7 @@ import HtmlParser from 'react-html-parser';
 const EditWeb = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
+  const { session } = useSelector(state => state.userSession);
   const history = useHistory();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
@@ -184,7 +185,7 @@ const EditWeb = props => {
               title={i18n['Web Template']} />
 
             {
-              state.data.WEB_BACKEND && (
+              session.WEB_BACKEND && (
                 <SelectInput
                   options={state.data.backend_templates}
                   selected={state.data.backend_template || 'default'}
