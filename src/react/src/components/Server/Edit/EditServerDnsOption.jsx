@@ -9,7 +9,7 @@ const EditServerDnsOption = ({ dnsSystem, selected, dnsCluster, visible }) => {
   const { i18n } = useSelector(state => state.session);
 
   const printHosts = () => {
-    return dnsCluster.map((cluster, index) => (
+    return Object.keys(dnsCluster).map((cluster, index) => (
       <TextInput
         title={`${i18n['DNS Server']} #${index + 1}`}
         name="v_dns_remote_host"

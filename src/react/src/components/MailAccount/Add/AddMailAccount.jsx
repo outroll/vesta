@@ -32,6 +32,7 @@ export default function AddMailAccount(props) {
     quotaValue: '',
     loading: false,
     password: '',
+    userName: '',
     okMessage: '',
     errorMessage: '',
   });
@@ -138,6 +139,7 @@ export default function AddMailAccount(props) {
 
                 <TextInput
                   title={i18n['Account']}
+                  onChange={e => setState({ ...state, username: e.target.value })}
                   name="v_account"
                   id="account" />
 
@@ -148,6 +150,7 @@ export default function AddMailAccount(props) {
                 <MailInfoBlock
                   webMail={state.data.webmail}
                   hostName={state.data.hostname}
+                  userName={state.userName}
                   password={state.password}
                   domain={props.domain} />
               </div>

@@ -20,13 +20,14 @@ const Mysql = ({ serviceName = '' }) => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
+  const [restart, setRestart] = useState(true);
   const [state, setState] = useState({
     data: {},
     loading: false,
     basicOptions: true,
-    advancedOptions: false,
-    errorMessage: '',
-    okMessage: ''
+    advancedOptions: false
   });
 
   useEffect(() => {
@@ -38,23 +39,23 @@ const Mysql = ({ serviceName = '' }) => {
     }
 
     setState({ ...state, loading: true });
+    fetchData();
+  }, []);
 
+  const fetchData = () => {
     getServiceInfo('mysql')
       .then(response => {
         if (response.data.config.includes('Error')) {
           history.push('/list/server');
         }
 
-        setState({
-          ...state,
-          data: response.data,
-          errorMessage: response.data['error_msg'],
-          okMessage: response.data['ok_msg'],
-          loading: false
-        });
+        setState({ ...state, data: response.data, loading: false });
       })
-      .catch(err => console.error(err));
-  }, []);
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err);
+      });
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -67,20 +68,19 @@ const Mysql = ({ serviceName = '' }) => {
     if (Object.keys(updatedService).length !== 0 && updatedService.constructor === Object) {
       setState({ ...state, loading: true });
 
+      updatedService['v_config'] = state.data.config;
+      updatedService['v_restart'] = restart ? 'yes' : 'no';
+
       updateService(updatedService, `/${serviceName}`)
         .then(result => {
           if (result.status === 200) {
             const { error_msg, ok_msg } = result.data;
 
-            if (error_msg) {
-              setState({ ...state, errorMessage: error_msg, okMessage: '', loading: false });
-            } else if (ok_msg) {
-              setState({ ...state, errorMessage: '', okMessage: ok_msg, loading: false });
-            } else {
-              setState({ ...state, loading: false });
-            }
+            setErrorMessage(error_msg || '');
+            setOkMessage(ok_msg || '');
           }
         })
+        .then(() => fetchData())
         .catch(err => console.error(err));
     }
   }
@@ -93,6 +93,14 @@ const Mysql = ({ serviceName = '' }) => {
     });
   }
 
+  const onUpdateConfig = ({ id, value }) => {
+    if (!value) return;
+
+    var regexp = new RegExp(`(${id})(.+)(${state.data[id]})`, 'gm');
+    const updatedConfig = state.data.config.replace(regexp, `$1$2${value}`);
+    setState({ ...state, data: { ...state.data, config: updatedConfig, [id]: value } });
+  }
+
   return (
     <div className="edit-template edit-mysql">
       <Helmet>
@@ -103,12 +111,12 @@ const Mysql = ({ serviceName = '' }) => {
         <div className="search-toolbar-name">{i18n['Configuring Server']} / {state.data.service_name}</div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>
@@ -134,30 +142,35 @@ const Mysql = ({ serviceName = '' }) => {
                     id="max_connections"
                     title="max_connections"
                     name="v_max_connections"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={state.data.max_connections} />
 
                   <TextInput
-                    id="v_max_user_connections"
+                    id="max_user_connections"
                     title="v_max_user_connections"
                     name="v_max_user_connections"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={state.data.max_user_connections} />
 
                   <TextInput
-                    id="v_wait_timeout"
+                    id="wait_timeout"
                     title="v_wait_timeout"
                     name="v_wait_timeout"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={state.data.wait_timeout} />
 
                   <TextInput
-                    id="v_interactive_timeout"
+                    id="interactive_timeout"
                     title="v_interactive_timeout"
                     name="v_interactive_timeout"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={state.data.interactive_timeout} />
 
                   <TextInput
-                    id="v_display_errors"
+                    id="display_errors"
                     title="v_display_errors"
                     name="v_display_errors"
+                    onChange={event => onUpdateConfig(event.target)}
                     value={state.data.max_allowed_packet} />
                 </>
               )
@@ -181,6 +194,7 @@ const Mysql = ({ serviceName = '' }) => {
                   <TextArea
                     defaultValue={state.data.config}
                     title={state.data.config_path}
+                    onChange={e => setState({ ...state, data: { ...state.data, config: e.target.value } })}
                     name="v_config"
                     id="v_config"
                     rows="25" />
@@ -190,6 +204,7 @@ const Mysql = ({ serviceName = '' }) => {
                   <Checkbox
                     title={i18n['restart']}
                     defaultChecked={true}
+                    onChange={checked => setRestart(checked)}
                     name="v_restart"
                     id="restart" />
                 </>

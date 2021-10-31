@@ -21,11 +21,11 @@ const EditMail = props => {
   const { i18n } = useSelector(state => state.session);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
-    loading: false,
-    errorMessage: '',
-    okMessage: ''
+    loading: false
   });
 
   useEffect(() => {
@@ -37,20 +37,24 @@ const EditMail = props => {
 
     if (domain) {
       setState({ ...state, loading: true });
-
-      getMailInfo(domain)
-        .then(response => {
-          setState({
-            ...state,
-            data: response.data,
-            errorMessage: response.data['error_msg'],
-            okMessage: response.data['ok_msg'],
-            loading: false
-          });
-        })
-        .catch(err => console.error(err));
+      fetchData(domain);
     }
   }, []);
+
+  const fetchData = domain => {
+    getMailInfo(domain)
+      .then(response => {
+        setState({
+          ...state,
+          data: response.data,
+          loading: false
+        });
+      })
+      .catch(err => {
+        setState({ ...state, loading: false });
+        console.error(err);
+      });
+  }
 
   const submitFormHandler = event => {
     event.preventDefault();
@@ -68,17 +72,20 @@ const EditMail = props => {
       updateMail(updatedDomain, state.data.domain)
         .then(result => {
           if (result.status === 200) {
-            const { error_msg: errorMessage, ok_msg: okMessage } = result.data;
+            const { error_msg, ok_msg } = result.data;
 
-            if (errorMessage) {
-              setState({ ...state, errorMessage, okMessage, loading: false });
+            if (error_msg) {
+              setErrorMessage(error_msg);
+              setOkMessage('');
             } else {
               dispatch(refreshCounters()).then(() => {
-                setState({ ...state, okMessage, errorMessage: '', loading: false });
+                setErrorMessage('');
+                setOkMessage(ok_msg);
               });
             }
           }
         })
+        .then(() => fetchData(state.data.domain))
         .catch(err => console.error(err));
     }
   }
@@ -93,12 +100,12 @@ const EditMail = props => {
         <div className="search-toolbar-name">{i18n['Editing Mail Domain']}</div>
         <div className="error">
           <span className="error-message">
-            {state.data.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}
+            {errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}
           </span>
         </div>
         <div className="success">
           <span className="ok-message">
-            {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

@@ -17,12 +17,15 @@ import User from '../../components/User/User';
 import { Helmet } from 'react-helmet';
 import './Users.scss';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import { useHistory } from 'react-router';
 
 const Users = props => {
-  const { userName, i18n, session: { look } } = useSelector(state => state.session);
+  const { userName, i18n } = useSelector(state => state.session);
+  const { session: { look } } = useSelector(state => state.userSession);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
@@ -53,12 +56,29 @@ const Users = props => {
   useEffect(() => {
     window.addEventListener("keydown", handleContentSelection);
     window.addEventListener("keydown", handleFocusedElementShortcuts);
+    window.addEventListener("keyup", addNewObject);
 
     return () => {
       window.removeEventListener("keydown", handleContentSelection);
       window.removeEventListener("keydown", handleFocusedElementShortcuts);
+      window.removeEventListener("keyup", addNewObject);
     };
   }, [controlPanelFocusedElement, focusedElement, state.users]);
+
+  const addNewObject = event => {
+    let isSearchInputFocused = document.querySelector('input:focus') || document.querySelector('textarea:focus');
+
+    if (isSearchInputFocused) {
+      return;
+    }
+
+    if (event.keyCode === 65) {
+      switch (history.location.pathname) {
+        case '/list/user/': return look ? history.push('/add/web/') : history.push('/add/user/');
+        default: break;
+      }
+    }
+  }
 
   const fetchData = () => {
     setLoading(true);

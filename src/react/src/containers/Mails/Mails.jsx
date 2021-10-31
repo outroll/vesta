@@ -18,6 +18,7 @@ import './Mails.scss';
 import { useSelector, useDispatch } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import { Link } from 'react-router-dom';
 
 const Mails = props => {
   const { i18n } = useSelector(state => state.session);
@@ -34,7 +35,7 @@ const Mails = props => {
     mails: [],
     mailFav: [],
     toggledAll: false,
-    webMail: '',
+    webmail: '',
     sorting: i18n.Date,
     order: "descending",
     selection: [],
@@ -182,7 +183,7 @@ const Mails = props => {
           setState({
             ...state,
             mails: reformatData(result.data.data),
-            webMail: result.data.webMail,
+            webmail: result.data.webmail,
             mailFav: result.data.mailFav,
             selection: [],
             toggledAll: false,
@@ -394,7 +395,13 @@ const Mails = props => {
         <LeftButton name="Add Mail Domain" href="/add/mail" showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
-            <a href={state.webMail} className="button-extra" type="submit">{i18n['open webMail']}</a>
+            <Link
+              to={{ pathname: `${window.location.protocol}//${window.location.hostname}${state.webmail}` }}
+              target="_blank"
+              className="button-extra"
+              type="submit">
+              {i18n['open webmail']}
+            </Link>
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />
             <Select list='mailList' bulkAction={bulk} />
             <DropdownFilter changeSorting={changeSorting} sorting={state.sorting} order={state.order} list="mailList" />

@@ -10,7 +10,6 @@ import './User.scss';
 
 const User = ({ data, toggleFav, handleModal, checkItem }) => {
   const { i18n, userName } = useSelector(state => state.session);
-  const session = useSelector(state => state.session);
   const dispatch = useDispatch();
 
   const printNameServers = servers => {
@@ -30,7 +29,7 @@ const User = ({ data, toggleFav, handleModal, checkItem }) => {
   }
 
   const printLoginActionButton = user => {
-    let currentUser = session.userName;
+    let currentUser = userName;
     if (currentUser === user) {
       return (
         <div>

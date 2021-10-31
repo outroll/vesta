@@ -3,7 +3,7 @@ import { getAuthToken } from "src/utils/token";
 
 const BASE_URL = window.location.origin;
 const webApiUri = '/api/v1/list/backup/index.php';
-const scheduleBackupUri = '/api/v1/schedule/restore/';
+const scheduleBackupUri = '/api/v1/schedule/backup/';
 const backupDetailsUri = '/api/v1/list/backup/index.php';
 const backupExclusionsUri = '/api/v1/list/backup/exclusions/index.php';
 const backupExclusionsInfoUri = '/api/v1/edit/backup/exclusions/index.php';

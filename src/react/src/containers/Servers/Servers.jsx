@@ -301,7 +301,8 @@ const Servers = props => {
           setLoading(false);
           return displayModal(res.data.error, '');
         }
-        fetchData().then(() => refreshMenuCounters())
+
+        fetchData().then(() => refreshMenuCounters());
       })
       .catch(err => { setLoading(false); console.error(err); });
   }
@@ -339,7 +340,7 @@ const Servers = props => {
       <Modal
         onSave={modalConfirmHandler}
         onCancel={modalCancelHandler}
-        showSaveButton={false}
+        showCancelButton={false}
         show={modal.visible}
         text={modal.text} />
     </div>

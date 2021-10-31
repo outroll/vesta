@@ -2,18 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Password from '../../../../components/ControlPanel/AddItemLayout/Form/Password/Password';
 import AdditionalFtpWrapper from '../AdditionalFtpWrapper/AdditionalFtpWrapper';
+import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
 import SslSupport from '../SslSupport/SslSupport';
 
 import './AdvancedOptions.scss';
 
-const AdvancedOptions = props => {
+const AdvancedOptions = ({ prefixI18N, prePath, ...props }) => {
   const { i18n } = useSelector(state => state.session);
   const [state, setState] = useState({
     sslSupport: false,
     additionalFtp: false,
     statisticsAuthCheckbox: false,
     statisticsAuth: false,
-    aliases: ''
   });
 
   useEffect(() => {
@@ -24,12 +24,6 @@ const AdvancedOptions = props => {
   const renderSslSupport = () => {
     if (state.sslSupport) {
       return <SslSupport />;
-    }
-  }
-
-  const renderAdditionalFtp = () => {
-    if (state.additionalFtp) {
-      return <AdditionalFtpWrapper prefixI18N={props.prefixI18N} domain={props.domain} unCheckAdditionalFtpBox={() => setState({ ...state, additionalFtp: false })} />;
     }
   }
 
@@ -45,24 +39,8 @@ const AdvancedOptions = props => {
     }
   }
 
-  const onChangeAliases = value => {
-    setState({ ...state, aliases: value });
-  }
-
   return (
-    <div>
-      <div class="form-group">
-        <label htmlFor="aliases">{i18n.Aliases}</label>
-        <textarea
-          class="form-control"
-          id="aliases"
-          rows="3"
-          name="v_aliases"
-          onChange={event => onChangeAliases(event.target.value)}
-          value={state.aliases}
-        ></textarea>
-      </div>
-
+    <div style={{ transform: 'translateX(3rem)' }}>
       <div className="form-group">
         <div className="checkbox-wrapper">
           <input
@@ -105,19 +83,19 @@ const AdvancedOptions = props => {
         <Password name='v_stats_password' />
       </div>
 
-      <div className="form-group">
-        <div className="checkbox-wrapper">
-          <input
-            type="checkbox"
-            name="v_ftp"
-            id="additional-ftp"
-            checked={state.additionalFtp}
-            onChange={() => setState({ ...state, additionalFtp: !state.additionalFtp })} />
-          <label htmlFor="additional-ftp">{i18n['Additional FTP Account']}</label>
-        </div>
-      </div>
+      <Checkbox
+        onChange={checked => setState({ ...state, additionalFtp: checked })}
+        name="v_ftp"
+        id="add-ftp"
+        checked={state.additionalFtp}
+        title={i18n['Additional FTP Account']} />
 
-      {renderAdditionalFtp()}
+      <AdditionalFtpWrapper
+        checked={state.additionalFtp}
+        prefixI18N={prefixI18N}
+        ftps={[{ id: 1, deleted: false, is_new: 1 }]}
+        ftpUserPrePath={prePath}
+        unCheckAdditionalFtpBox={() => setState({ ...state, additionalFtp: false })} />
     </div>
   );
 }

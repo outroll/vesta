@@ -25,7 +25,6 @@ const TextInput = ({ id, name, title, optionalTitle = '', type = 'text', onChang
         name={name}
         id={id}
         onChange={changeCheckbox}
-        // disabled={disabled}
         readOnly={disabled}
         value={inputValue}
         className="form-control" />
