@@ -23,7 +23,7 @@ const AdvancedOptions = ({ prefixI18N, prePath, ...props }) => {
 
   const renderSslSupport = () => {
     if (state.sslSupport) {
-      return <SslSupport />;
+      return <SslSupport sslCertificate={props.sslCertificate} sslKey={props.sslKey} setModalVisible={bool => props.setModalVisible(bool)} />;
     }
   }
 

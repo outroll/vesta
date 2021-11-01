@@ -2,4 +2,28 @@
   .web-stat-additional {
     transform: translateX(3rem);
   }
+
+  #c-panel-modal {
+    padding: 2rem;
+
+    form .form-group input[type="text"] {
+      width: 90% !important;
+    }
+
+    label {
+      color: white;
+    }
+
+    .form-group {
+      padding-left: 1.5rem;
+
+      textarea {
+        width: 90% !important;
+      }
+    }
+
+    .l-col {
+      display: none;
+    }
+  }
 }

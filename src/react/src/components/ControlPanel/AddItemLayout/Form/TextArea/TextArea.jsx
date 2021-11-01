@@ -12,7 +12,7 @@ const TextArea = ({ id, name, defaultValue = '', title, optionalTitle = '', rows
         id={id}
         rows={rows}
         name={name}
-        disabled={disabled}
+        readOnly={disabled}
         defaultValue={defaultValue}
         {...rest}
       >

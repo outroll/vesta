@@ -19,7 +19,6 @@ import HtmlParser from 'react-html-parser';
 const AddUser = props => {
   const { i18n } = useSelector(state => state.session);
   const { session } = useSelector(state => state.userSession);
-  const userLanguage = localStorage.getItem("language");
   const history = useHistory();
   const dispatch = useDispatch();
   const [state, setState] = useState({

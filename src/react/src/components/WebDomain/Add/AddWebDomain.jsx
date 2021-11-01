@@ -6,7 +6,6 @@ import { addWeb, getWebDomainInfo } from '../../../ControlPanelService/Web';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AdvancedOptions from './AdvancedOptions/AdvancedOptions';
 import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
-import SelectInput from 'src/components/ControlPanel/AddItemLayout/Form/SelectInput/SelectInput';
 import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/TextArea';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import { useHistory } from 'react-router-dom';
@@ -14,6 +13,8 @@ import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddWebDomain.scss';
+import GenerateSSL from 'src/containers/GenerateCSR';
+import 'src/components/Modal/Modal.scss';
 import { Helmet } from 'react-helmet';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 import HtmlParser from 'react-html-parser';
@@ -23,6 +24,7 @@ const AddWebDomain = props => {
   const { session } = useSelector(state => state.userSession);
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
+  const [modalVisible, setModalVisible] = useState(false);
   const history = useHistory();
   const [state, setState] = useState({
     loading: false,
@@ -31,6 +33,8 @@ const AddWebDomain = props => {
     proxySupport: true,
     showAdvancedOptions: false,
     okMessage: '',
+    ssl_crt: '',
+    ssl_key: '',
     domain: '',
     errorMessage: '',
     webStats: [],
@@ -83,7 +87,14 @@ const AddWebDomain = props => {
 
   const renderAdvancedOptions = () => {
     if (state.showAdvancedOptions) {
-      return <AdvancedOptions prefixI18N={state.prefixI18N} domain={state.domain} webStats={state.webStats} prePath={state.prePath} />;
+      return <AdvancedOptions
+        prefixI18N={state.prefixI18N}
+        setModalVisible={bool => setModalVisible(bool)}
+        sslCertificate={state.ssl_crt}
+        sslKey={state.ssl_key}
+        domain={state.domain}
+        webStats={state.webStats}
+        prePath={state.prePath} />;
     }
   }
 
@@ -239,6 +250,25 @@ const AddWebDomain = props => {
           </form>
         )}
       </AddItemLayout>
+      <div className={`modal fade ${modalVisible ? 'show' : ''}`} id="c-panel-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: modalVisible ? 'block' : 'none' }}>
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5>{i18n['Generating CSR']}</h5>
+              <button type="button" onClick={() => setModalVisible(false)} className="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <GenerateSSL
+              domain={state.domain}
+              closeModal={() => setModalVisible(false)}
+              prePopulateInputs={({ crt, key }) => {
+                setState({ ...state, ssl_crt: crt, ssl_key: key });
+                setModalVisible(false);
+              }} />
+          </div>
+        </div>
+      </div>
     </div >
   );
 }

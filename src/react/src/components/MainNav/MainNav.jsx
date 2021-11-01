@@ -19,18 +19,18 @@ const MainNav = () => {
   });
 
   const { userName } = useSelector(state => state.session);
-  const { session: { look } } = useSelector(state => state.userSession);
+  const { session } = useSelector(state => state.userSession);
   const { user } = useSelector(state => state.menuCounters);
   const { activeElement, focusedElement, adminMenuTabs, userMenuTabs } = useSelector(state => state.mainNavigation);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!userName || !Object.entries(user).length) {
+    if (!userName || !Object.entries(user).length || !Object.entries(session).length) {
       return history.push('/login');
     }
 
-    if (look) {
+    if (session.look) {
       const commonUserRoutes = ['package', 'ip', 'rrd', 'updates', 'firewall', 'server'];
       const splitPath = history.location.pathname.split('/')[2];
 
@@ -41,11 +41,11 @@ const MainNav = () => {
       }
     }
 
-    const tabs = look ? userMenuTabs : adminMenuTabs;
+    const tabs = session.look ? userMenuTabs : adminMenuTabs;
     setState({ ...state, tabs });
 
     setLoading(false);
-  }, [userName, user, history, look]);
+  }, [userName, user, history, session]);
 
   const controlFocusedTabWithCallback = useCallback(event => {
     let isSearchInputFocused = document.querySelector('input:focus') || document.querySelector('textarea:focus') || document.querySelector('textarea:focus');

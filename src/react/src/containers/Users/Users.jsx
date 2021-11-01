@@ -21,7 +21,7 @@ import { useHistory } from 'react-router';
 
 const Users = props => {
   const { userName, i18n } = useSelector(state => state.session);
-  const { session: { look } } = useSelector(state => state.userSession);
+  const { session } = useSelector(state => state.userSession);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
@@ -74,7 +74,7 @@ const Users = props => {
 
     if (event.keyCode === 65) {
       switch (history.location.pathname) {
-        case '/list/user/': return look ? history.push('/add/web/') : history.push('/add/user/');
+        case '/list/user/': return session.look ? history.push('/add/web/') : history.push('/add/user/');
         default: break;
       }
     }
@@ -403,8 +403,8 @@ const Users = props => {
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton
-          name={look ? i18n['Add Web Domain'] : i18n['Add User']}
-          href={look ? "/add/web/" : "/add/user/"}
+          name={session.look ? i18n['Add Web Domain'] : i18n['Add User']}
+          href={session.look ? "/add/web/" : "/add/user/"}
           showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
