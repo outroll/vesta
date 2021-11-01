@@ -10,7 +10,7 @@ import './Panel.scss';
 
 const Panel = props => {
   const { i18n, userName } = useSelector(state => state.session);
-  const { session: { look, user, FIREWALL_SYSTEM, FILEMANAGER_KEY, SOFTACULOUS } } = useSelector(state => state.userSession);
+  const { session } = useSelector(state => state.userSession);
   const { activeElement, focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -67,7 +67,7 @@ const Panel = props => {
     <div className="panel-wrapper">
       {loading && <Spinner />}
 
-      <div className={`top-panel ${look ? 'long-profile' : ''}`}>
+      <div className={`top-panel ${session.look ? 'long-profile' : ''}`}>
         <div className="container left-menu">
           <div className="logo">
             <Link to="/list/user/" onClick={() => dispatch(addActiveElement('/list/user/'))}>
@@ -97,14 +97,14 @@ const Panel = props => {
             <div className={className("/list/updates/")}>
               <Link to="/list/updates/" onClick={event => handleState("/list/updates/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Updates}</Link>
             </div>
-            {FIREWALL_SYSTEM && <div className={className("/list/firewall/")}>
+            {session.FIREWALL_SYSTEM && <div className={className("/list/firewall/")}>
               <Link to="/list/firewall/" onClick={event => handleState("/list/firewall/", event)} onKeyPress={event => event.preventDefault()}>{i18n.Firewall}</Link>
             </div>}
           </>)}
-          {FILEMANAGER_KEY && <div className={className("/list/directory/")}>
+          {session.FILEMANAGER_KEY && <div className={className("/list/directory/")}>
             <Link to="/list/directory/">{i18n['File Manager']}</Link>
           </div>}
-          {SOFTACULOUS === "yes" && <div className={className("/softaculous/")}><Link to="/softaculous/" target="_blank">{i18n.Apps ?? 'Apps'}</Link>
+          {session.SOFTACULOUS === "yes" && <div className={className("/softaculous/")}><Link to="/softaculous/" target="_blank">{i18n.Apps ?? 'Apps'}</Link>
           </div>}
           {userName === 'admin' && (
             <div className={className("/list/server/")}>
@@ -116,11 +116,11 @@ const Panel = props => {
           <Notifications />
           <div>
             <Link to={`/edit/user?user=${userName}`}>
-              {look
+              {session.look
                 ? <div className="long-username">
-                  <span>{user}</span>
+                  <span>{session.user}</span>
                   <FontAwesomeIcon icon="long-arrow-alt-right" />
-                  <span>{look}</span>
+                  <span>{session.look}</span>
                 </div>
                 : userName
               }

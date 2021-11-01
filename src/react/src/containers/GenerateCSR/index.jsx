@@ -3,15 +3,11 @@ import { addActiveElement, removeFocusedElement } from "src/actions/MainNavigati
 import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/TextInput';
 import AddItemLayout from 'src/components/ControlPanel/AddItemLayout/AddItemLayout';
 import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/TextArea';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Toolbar from 'src/components/MainNav/Toolbar/Toolbar';
 import { generateCSR, getCsrInitialData } from 'src/ControlPanelService/Web';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
 import HtmlParser from 'react-html-parser';
-import { Helmet } from 'react-helmet';
-import QS from 'qs';
 
 const GenerateSSL = props => {
   const token = localStorage.getItem("token");
@@ -28,8 +24,7 @@ const GenerateSSL = props => {
   });
 
   useEffect(() => {
-    let queryParams = QS.parse(history.location.search, { ignoreQueryPrefix: true });
-    const { domain } = queryParams;
+    const { domain } = props;
 
     dispatch(addActiveElement('/list/web/'));
     dispatch(removeFocusedElement());
@@ -94,17 +89,6 @@ const GenerateSSL = props => {
 
   return (
     <div className="edit-template edit-user">
-      <Helmet>
-        <title>{`Vesta - ${i18n.WEB}`}</title>
-      </Helmet>
-      <Toolbar mobile={false}>
-        <div></div>
-        <div className="search-toolbar-name">{i18n['Generating CSR']}</div>
-        <div className="error"><span className="error-message">{errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}</span></div>
-        <div className="success">
-          <span className="ok-message">{okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span> </span>
-        </div>
-      </Toolbar>
       <AddItemLayout date={state.data.date} time={state.data.time} status={state.data.status}>
         {state.loading ? <Spinner /> :
           <form onSubmit={event => submitFormHandler(event)} id="add-user">
@@ -132,7 +116,8 @@ const GenerateSSL = props => {
                     defaultValue={state.generatedData.key} />
 
                   <div className="buttons-wrapper">
-                    <button type="button" className="back" onClick={() => history.push(`/edit/web/?domain=${state.domain}`)}>{i18n.Back}</button>
+                    <button type="button" className="add" onClick={() => props.prePopulateInputs(state.generatedData)}>{i18n.Add}</button>
+                    <button type="button" className="back" onClick={props.closeModal}>{i18n.Back}</button>
                   </div>
                 </>)
                 : (<>
@@ -149,12 +134,16 @@ const GenerateSSL = props => {
                   <TextInput id="org" name="v_org" title={i18n['Organization']} value={state.data.org} />
 
                   <div className="buttons-wrapper">
-                    <button type="submit" className="add">{i18n.Save}</button>
-                    <button type="button" className="back" onClick={() => history.push(`/edit/web/?domain=${state.domain}`)}>{i18n.Back}</button>
+                    <button type="submit" className="add">{i18n.Generate}</button>
+                    <button type="button" className="back" onClick={props.closeModal}>{i18n.Back}</button>
                   </div>
                 </>)
             }
 
+            <div className="error"><span className="error-message">{errorMessage}</span></div>
+            <div className="success">
+              <span className="ok-message"><span>{HtmlParser(okMessage)}</span> </span>
+            </div>
           </form>
         }
       </AddItemLayout>

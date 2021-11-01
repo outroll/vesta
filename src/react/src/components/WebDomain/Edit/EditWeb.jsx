@@ -13,6 +13,8 @@ import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import SslSupport from './SslSupport/SslSupport';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import GenerateSSL from 'src/containers/GenerateCSR';
+import 'src/components/Modal/Modal.scss';
 import QS from 'qs';
 
 import './EditWeb.scss';
@@ -28,6 +30,7 @@ const EditWeb = props => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
   const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
     data: {},
@@ -85,6 +88,26 @@ const EditWeb = props => {
 
     if (updatedDomain['v_ssl'] === 'on') {
       updatedDomain['v_ssl'] = 'yes';
+    } else {
+      delete updatedDomain['v_ssl'];
+    }
+
+    if (updatedDomain['v_letsencrypt'] === 'on') {
+      updatedDomain['v_letsencrypt'] = 'yes';
+    } else {
+      delete updatedDomain['v_letsencrypt'];
+    }
+
+    if (!updatedDomain['v_ssl_ca']) {
+      delete updatedDomain['v_ssl_ca'];
+    }
+
+    if (!updatedDomain['v_ssl_crt']) {
+      delete updatedDomain['v_ssl_crt'];
+    }
+
+    if (!updatedDomain['v_ssl_key']) {
+      delete updatedDomain['v_ssl_key'];
     }
 
     if (Object.keys(updatedDomain).length !== 0 && updatedDomain.constructor === Object) {
@@ -246,6 +269,7 @@ const EditWeb = props => {
                   sslIssuer={state.data.ssl_issuer}
                   sslCertificate={state.data.ssl_crt}
                   sslKey={state.data.ssl_key}
+                  setModalVisible={bool => setModalVisible(bool)}
                   sslCertificateAuthority={state.data.ssl_ca}
                   domain={state.domain}
                   sslHome={state.data.ssl_home}
@@ -307,6 +331,26 @@ const EditWeb = props => {
           </form>
         }
       </AddItemLayout>
+
+      <div className={`modal fade ${modalVisible ? 'show' : ''}`} id="c-panel-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: modalVisible ? 'block' : 'none' }}>
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5>{i18n['Generating CSR']}</h5>
+              <button type="button" onClick={() => setModalVisible(false)} className="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <GenerateSSL
+              domain={state.domain}
+              closeModal={() => setModalVisible(false)}
+              prePopulateInputs={({ crt, key }) => {
+                setState({ ...state, data: { ...state.data, ssl_crt: crt, ssl_key: key } });
+                setModalVisible(false);
+              }} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

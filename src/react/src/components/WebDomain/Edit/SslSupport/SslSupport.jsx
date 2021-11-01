@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import Checkbox from '../../../ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
-import SelectInput from '../../../ControlPanel/AddItemLayout/Form/SelectInput/SelectInput';
 import TextArea from '../../../ControlPanel/AddItemLayout/Form/TextArea/TextArea';
 
 import './SslSupport.scss';
 
 const SslSupport = props => {
   const { i18n } = useSelector(state => state.session);
-  const [letsEncrypt, setLetsEncrypt] = useState(false);
-  const [sslHomeOptions, setSslHomeOptions] = useState(['public_html', 'public_shtml']);
+  const [letsEncrypt, setLetsEncrypt] = useState(props.letsEncrypt);
 
   useEffect(() => {
     setLetsEncrypt(props.letsEncrypt);
@@ -22,19 +19,18 @@ const SslSupport = props => {
 
   return (
     <div className="ssl-support">
-      <Checkbox
-        onChange={onChangeLetsEncrypt}
-        name="v_letsencrypt"
-        id="lets-encrypt"
-        title={i18n['Lets Encrypt Support']}
-        defaultChecked={letsEncrypt} />
+      <>
+        <Checkbox
+          onChange={onChangeLetsEncrypt}
+          name="v_letsencrypt"
+          id="lets-encrypt"
+          title={i18n['Lets Encrypt Support']}
+          defaultChecked={letsEncrypt} />
 
-      <SelectInput
-        options={sslHomeOptions}
-        selected={props.sslHome === 'same' ? 'public_html' : 'public_shtml'}
-        name="v_ssl_home"
-        id="ssl_home"
-        title={i18n['SSL Home Directory']} />
+        {!props.letsEncrypt && <span className="lets-encrypt-span">{letsEncrypt ? i18n['Your certificate will be automatically issued in 5 minutes'] : null}</span>}
+      </>
+
+      <input type="hidden" value="same" name="v_ssl_home" />
 
       <TextArea
         id="ssl-certificate"
@@ -42,11 +38,7 @@ const SslSupport = props => {
         title={i18n['SSL Certificate']}
         defaultValue={props.sslCertificate}
         disabled={letsEncrypt}
-        optionalTitle={
-          !letsEncrypt
-            ? (<>/ <Link className="generate-csr" target="_blank" to={`/generate/ssl/?domain=${props.domain}`}>{i18n['Generate CSR']}</Link></>)
-            : ''
-        } />
+        optionalTitle={<>/ <button type="button" onClick={() => props.setModalVisible(true)} className="generate-csr">{i18n['Generate CSR']}</button></>} />
 
       <TextArea
         id="ssl-key"

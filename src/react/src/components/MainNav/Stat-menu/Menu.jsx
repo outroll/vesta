@@ -28,7 +28,7 @@ const style = ({ menuHeight, mobile }) => {
 const Menu = props => {
   const { activeElement, focusedElement } = useSelector(state => state.mainNavigation);
   const { i18n } = useSelector(state => state.session);
-  const { session: { look } } = useSelector(state => state.userSession);
+  const { session } = useSelector(state => state.userSession);
   const { user } = useSelector(state => state.menuCounters);
   const dispatch = useDispatch();
 
@@ -72,7 +72,7 @@ const Menu = props => {
             <h3>{i18n.USER}</h3>
             <div className="stats">
               {
-                look
+                session.look
                   ? (<>
                     <div><span>{i18n.Disk}:</span> <span>{sizeFormatter(user.U_DISK)}</span></div>
                     <div><span>{i18n.Bandwidth}:</span> <span>{sizeFormatter(user.U_BANDWIDTH)}</span></div>

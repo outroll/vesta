@@ -52,7 +52,6 @@ import Users from '../../containers/Users/Users';
 import RRDs from '../../containers/RRDs/RRDs';
 import BanList from '../Firewalls/Banlist';
 import Web from '../../containers/Web/Web';
-import GenerateCSR from '../GenerateCSR';
 import Search from '../Search/Search';
 import Logs from '../Logs/Logs';
 
@@ -190,7 +189,6 @@ const ControlPanelContent = props => {
 
                 <Route path="/list/user" component={props => <Users changeSearchTerm={handleSearchTerm} {...props} />} />
                 <Route path="/add/user" component={() => <AddUser />} />
-                <Route path="/generate/ssl" component={GenerateCSR} />
                 <Route path="/edit/user" component={() => <EditUser />} />
                 <Route path="/list/web" component={props => <Web {...props} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/add/web" component={() => <AddWebDomain />} />
