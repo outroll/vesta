@@ -70,16 +70,16 @@ fi
 %config(noreplace) %{_vestadir}/web/css/uploadify.css
 
 %changelog
-* Mon  Sep 30 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-4
+* Mon  Nov 30 1 Serghey Rodin <builder@vestacp.com> - 1.0.0-4
 - Merge pull request #2128 to fix LE related issues in UI
 
-* Sun Sep 31 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-3
+* Sun Oct 31 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-3
 - Merge pull request #2108 and #2109
 
-* Sat Sep 30 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-2
+* Sat Oct 30 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-2
 - Merge pull request #2074 from mix5003/fix-fi
 
-* Sat Sep 30 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-1
+* Sat Oct 30 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-1
 - Modern Web UI based on React
 - Bugfixes
 
