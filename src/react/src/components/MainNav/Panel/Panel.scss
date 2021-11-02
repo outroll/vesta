@@ -47,7 +47,7 @@ $textColor: #555;
       display: flex;
       justify-content: center;
       align-items: center;
-      
+
       a, button {
         display: flex;
         justify-content: center;
@@ -71,7 +71,7 @@ $textColor: #555;
 
     div.active {
       background: white;
-      
+
       a, button {
         color: $secondary;
         font-weight: bold;
@@ -144,7 +144,6 @@ $textColor: #555;
     width: auto;
 
     div {
-      width: 4rem;
       height: 100%;
     }
 
@@ -172,7 +171,7 @@ $textColor: #555;
     div + div a {
       color: #a4abad;
       font-weight: 700;
-    
+
       &:hover {
         color: $secondaryLight;
       }
