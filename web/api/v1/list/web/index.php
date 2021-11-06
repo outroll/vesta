@@ -48,15 +48,7 @@ foreach ($data as $key => $value) {
     $ftp_user=$data[$key]['FTP_USER'];
   }
 
-  if (strlen($ftp_user) > 24 ) {
-    $data[$key]['FTP_USER'] = str_replace(':', ', ', $ftp_user);
-    $data[$key]['FTP_USER'] = substr($ftp_user, 0, 24);
-    $data[$key]['FTP_USER'] = trim($ftp_user, ":");
-    $data[$key]['FTP_USER'] = str_replace(':', ', ', $ftp_user);
-    $data[$key]['FTP_USER'] = $ftp_user.", ...";
-  } else {
-    $data[$key]['FTP_USER'] = str_replace(':', ', ', $ftp_user);
-  }
+  $data[$key]['FTP_USER'] = str_replace(':', ', ', $ftp_user);
 
   if (strlen($data[$key]['PROXY_EXT']) > 24 ) {
     $data[$key]['PROXY_EXT'] = str_replace(',', ', ', $data[$key]['PROXY_EXT']);

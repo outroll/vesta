@@ -157,6 +157,12 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n/'.$_SESSION['language'].'.php'
 $v_user = empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'];
 top_panel($v_user, $TAB);
 
+$panel[$v_user]['U_BANDWIDTH'] = humanize_usage_size($panel[$v_user]['U_BANDWIDTH']);
+$panel[$v_user]['U_BANDWIDTH_MEASURE'] = humanize_usage_measure($panel[$v_user]['U_BANDWIDTH_MEASURE']);
+
+$panel[$v_user]['U_DISK'] = humanize_usage_size($panel[$v_user]['U_DISK']);
+$panel[$v_user]['U_DISK_MEASURE'] = humanize_usage_measure($panel[$v_user]['U_DISK_MEASURE']);
+
 $result = array(
     'token' => $_SESSION['token'],
     'panel' => $panel,
