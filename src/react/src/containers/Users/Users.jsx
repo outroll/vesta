@@ -18,6 +18,7 @@ import { Helmet } from 'react-helmet';
 import './Users.scss';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 import { useHistory } from 'react-router';
+import { loginAs, logout } from 'src/actions/Session/sessionActions';
 
 const Users = props => {
   const { userName, i18n } = useSelector(state => state.session);
@@ -248,8 +249,18 @@ const Users = props => {
     let sortedResult = sortArray(users);
 
     return sortedResult.map((item, index) => {
-      return <User data={item} key={index} toggleFav={toggleFav} checkItem={checkItem} handleModal={displayModal} />;
+      return <User data={item} key={index} toggleFav={toggleFav} checkItem={checkItem} handleModal={displayModal} logOut={logOutHandler} logInAs={logInAsHandler} />;
     });
+  }
+
+  const logOutHandler = () => {
+    setLoading(true);
+    dispatch(logout()).then(() => setLoading(false));
+  }
+
+  const logInAsHandler = username => {
+    setLoading(true);
+    dispatch(loginAs(username)).then(() => setLoading(false));
   }
 
   const checkItem = name => {

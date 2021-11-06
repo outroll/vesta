@@ -1,13 +1,16 @@
-.spinner-wrapper .progress {
-  position: absolute;
-  top: 0;
-  z-index: 5;
+.progress.upload {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  z-index: 9999;
+  height: 5px;
+  position: fixed;
   width: 100%;
   margin: 0;
-  height: 6px;
   display: inline-table;
+  background: transparent;
 
   .progress-bar {
-    height: 10px;
+    height: 5px;
   }
 }

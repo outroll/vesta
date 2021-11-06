@@ -396,7 +396,7 @@ const Mails = props => {
         <div className="r-menu">
           <div className="input-group input-group-sm">
             <Link
-              to={{ pathname: `${window.location.protocol}//${window.location.hostname}${state.webmail}` }}
+              to={{ pathname: `http://${window.location.hostname}${state.webmail}` }}
               target="_blank"
               className="button-extra"
               type="submit">

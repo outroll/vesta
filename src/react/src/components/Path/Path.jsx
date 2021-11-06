@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
 
 import Dropdown from './Dropdown/Dropdown';
 import './Path.scss';
 
 const Path = ({ path, isActive, className, openDirectory, changeSorting, sorting, order }) => {
   const { user } = useSelector(state => state.menuCounters);
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!user) return history.push('/login');
+  }, [user]);
 
   const clickablePath = () => {
     let splitPath = path.split('/');

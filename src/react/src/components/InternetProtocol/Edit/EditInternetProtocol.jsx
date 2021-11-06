@@ -70,7 +70,7 @@ const EditInternetProtocol = () => {
 
     updatedIP['token'] = token;
     updatedIP['save'] = 'save';
-    updatedIP['v_ip'] = state.data.database;
+    updatedIP['v_ip'] = state.data.ip;
 
     if (Object.keys(updatedIP).length !== 0 && updatedIP.constructor === Object) {
       setState({ ...state, loading: true });

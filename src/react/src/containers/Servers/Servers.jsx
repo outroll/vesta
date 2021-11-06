@@ -15,7 +15,6 @@ import Server from '../../components/Server/Server';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './Servers.scss';
-import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Servers = props => {
   const { i18n } = useSelector(state => state.session);
@@ -216,7 +215,7 @@ const Servers = props => {
             displayModal(res.data.error);
           }
 
-          setLoading(false);
+          fetchData().then(() => setLoading(false));
         })
         .catch(err => {
           setLoading(false);
@@ -260,7 +259,7 @@ const Servers = props => {
           }
 
           toggleAll(false);
-          fetchData().then(() => refreshMenuCounters());
+          fetchData().then(() => setLoading(false));
         })
         .catch(err => console.error(err));
     }
@@ -302,13 +301,9 @@ const Servers = props => {
           return displayModal(res.data.error, '');
         }
 
-        fetchData().then(() => refreshMenuCounters());
+        fetchData().then(() => setLoading(false));
       })
       .catch(err => { setLoading(false); console.error(err); });
-  }
-
-  const refreshMenuCounters = () => {
-    dispatch(refreshCounters()).then(() => setLoading(false));
   }
 
   const modalCancelHandler = () => {

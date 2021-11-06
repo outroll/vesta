@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import './Panel.scss';
 
 const Panel = props => {
-  const { i18n, userName } = useSelector(state => state.session);
+  const { i18n, userName, panel } = useSelector(state => state.session);
   const { session } = useSelector(state => state.userSession);
   const { activeElement, focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
@@ -113,8 +113,8 @@ const Panel = props => {
           )}
         </div>
         <div className="container profile-menu">
-          <Notifications />
-          <div>
+          {panel[userName]['NOTIFICATIONS'] === 'yes' && <Notifications />}
+          <div className="edit-user">
             <Link to={`/edit/user?user=${userName}`}>
               {session.look
                 ? <div className="long-username">
@@ -126,7 +126,7 @@ const Panel = props => {
               }
             </Link>
           </div>
-          <div><button onClick={signOut}>{i18n['Log out']}</button></div>
+          <div className="logout-button"><button onClick={signOut}>{i18n['Log out']}</button></div>
         </div>
       </div>
 

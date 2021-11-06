@@ -169,8 +169,20 @@ li.inactive {
   background: rgb(220, 220, 220);
 }
 
-@media (max-width: 1320px){
+@media (max-width: 1400px){
   .fPermissions, .fOwner {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px){
+  .fDate {
+    display: none;
+  }
+}
+
+@media (max-width: 970px){
+  .fTime {
     display: none;
   }
 }

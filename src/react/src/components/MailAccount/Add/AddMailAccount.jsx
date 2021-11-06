@@ -139,7 +139,7 @@ export default function AddMailAccount(props) {
 
                 <TextInput
                   title={i18n['Account']}
-                  onChange={e => setState({ ...state, username: e.target.value })}
+                  onChange={e => setState({ ...state, userName: e.target.value })}
                   name="v_account"
                   id="account" />
 

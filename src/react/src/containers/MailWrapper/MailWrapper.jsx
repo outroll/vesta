@@ -28,8 +28,8 @@ export default function MailWrapper(props) {
       </Helmet>
       {
         mailDomain
-          ? <MailAccounts {...props} domain={mailDomain} changeSearchTerm={props.handleSearchTerm} />
-          : <Mails {...props} changeSearchTerm={props.handleSearchTerm} />
+          ? <MailAccounts {...props} domain={mailDomain} changeSearchTerm={props.changeSearchTerm} />
+          : <Mails {...props} changeSearchTerm={props.changeSearchTerm} />
       }
     </>
   );

@@ -174,7 +174,7 @@ class Row extends Component {
   render() {
     const { data: { name, owner, permissions, size, date, time } } = this.props;
     return (
-      <li className={this.className()} onClick={this.selectRow} >
+      <li className={this.className()} onClick={this.selectRow} id={name}>
         <span className="marker"></span>
         {this.glyph()}
         <span className="fName"><span className="name" onClick={(e) => this.openItem(e)}>{this.props.cursor === 0 ? ".." : name}</span></span>

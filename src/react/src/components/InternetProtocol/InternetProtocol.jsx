@@ -1,15 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ListItem from '../ControlPanel/ListItem/ListItem';
 import Container from '../ControlPanel/Container/Container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import './InternetProtocol.scss';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import './InternetProtocol.scss';
 
 const InternetProtocol = props => {
   const { data } = props;
   const { i18n } = useSelector(state => state.session);
-  const token = localStorage.getItem("token");
 
   const toggleFav = (starred) => {
     if (starred) {
@@ -38,7 +37,7 @@ const InternetProtocol = props => {
       checkItem={checkItem}>
 
       <Container className="r-col w-85">
-        <div className="name">{data.NAME}</div>
+        <div className="name">{data.NAT ? <>{data.NAT} <FontAwesomeIcon icon="long-arrow-alt-right" /> {data.NAME}</> : data.NAME}</div>
         <br />
         <div className="stats">
           <Container className="c-1 w-35">
@@ -51,7 +50,7 @@ const InternetProtocol = props => {
           </Container>
           <Container className="c-3 w-35">
             <div>{i18n.Owner}: <span className="stat">{data.OWNER}</span></div>
-            <div>{i18n.Users}: <span className="stat">{data.U_SYS_USERS.replace(',', ', ')}</span></div>
+            <div>{i18n.Users}: <span className="stat">{data.U_SYS_USERS.replaceAll(',', ', ')}</span></div>
           </Container>
         </div>
       </Container>

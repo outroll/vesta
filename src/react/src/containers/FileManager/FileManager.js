@@ -20,15 +20,15 @@ class FileManager extends Component {
     super(props);
     this.state = {
       leftList: {
-        path: this.props.menuCounters.user.HOME,
+        path: '',
         files: { listing: [] },
       },
       rightList: {
-        path: this.props.menuCounters.user.HOME,
+        path: '',
         files: { listing: [] },
       },
-      currentPath: this.props.menuCounters.user.HOME,
-      currentUser: this.props.menuCounters.user.HOME,
+      currentPath: '',
+      currentUser: '',
       activeWindow: "left",
       modalWindow: null,
       modalVisible: false,
@@ -44,17 +44,20 @@ class FileManager extends Component {
   }
 
   UNSAFE_componentWillMount = () => {
+    if (!this.props.session.userName) return this.props.history.push('/login');
+
     FM.cacheData(this.state.currentUser, this.props.history, this.props.menuCounters.user.HOME);
     let currentPath = FM.activeWindowPath();
-    this.setState({ currentPath });
+    this.setState({
+      currentPath,
+      currentUser: this.props.menuCounters.user.HOME,
+      leftList: { ...this.state.leftList, path: this.props.menuCounters.user.HOME },
+      rightList: { ...this.state.rightList, path: this.props.menuCounters.user.HOME }
+    });
     this.changeDirectoryOnLoading();
   }
 
   componentDidMount = () => {
-    if (!localStorage.getItem("token") || !this.props.session.userName) {
-      this.props.history.push('/login/');
-    }
-
     window.addEventListener("keydown", this.switchActiveList);
     window.addEventListener("keydown", this.toggleActiveListOnTab);
     document.addEventListener("keydown", this.hotkeysListener);
@@ -90,22 +93,17 @@ class FileManager extends Component {
   }
 
   changeDirectory = () => {
-    const { activeWindow, currentPath } = this.state;
-    FM.changeDirectory(server, currentPath)
+    const { leftList, rightList } = this.state;
+    Promise.all([FM.changeDirectory(server, leftList.path), FM.changeDirectory(server, rightList.path)])
       .then(result => {
-        let listing = result.data.listing;
+        const [leftListResponse, rightListResponse] = result;
+        let leftListing = leftListResponse.data.listing;
+        let rightListing = rightListResponse.data.listing;
 
-        if (this.state.leftList.path === this.state.rightList.path) {
-          this.setState({ leftList: { files: { listing }, path: currentPath }, rightList: { files: { listing }, path: currentPath }, loading: false });
-          this.leftList.resetData();
-          this.rightList.resetData();
-        } else if (activeWindow === "left") {
-          this.setState({ leftList: { files: { listing }, path: currentPath }, loading: false });
-          this.leftList.resetData();
-        } else {
-          this.setState({ rightList: { files: { listing }, path: currentPath }, loading: false });
-          this.rightList.resetData();
-        }
+        this.setState({ leftList: { ...leftList, files: { listing: leftListing } }, rightList: { ...rightList, files: { listing: rightListing } }, loading: false });
+
+        this.leftList.resetData();
+        this.rightList.resetData();
       });
   }
 
@@ -235,6 +233,7 @@ class FileManager extends Component {
     if (itemsSelected.length > 0) {
       await this.setStateAsync({ loading: true });
       await FM.deleteItems(server, FM.encodePath(currentPath), itemsSelected);
+      await this.setStateAsync({ itemsSelected: [] });
       this.changeDirectory();
     } else {
       this.validateAction(`${server}item=${FM.encodePath(currentPath)}%2F${itemName}&dir=${FM.encodePath(currentPath)}&action=delete_files`);
@@ -421,35 +420,12 @@ class FileManager extends Component {
 
   render() {
     const { activeWindow, modalWindow, modalVisible, itemsSelected, itemName, loading, uploadPercent, itemType } = this.state;
-    const DirectoryLists = ['left', 'right'].map((side) =>
-      <DirectoryList
-        changePathAfterToggle={this.changePathAfterToggle}
-        openCertainDirectory={this.openCertainDirectory}
-        isActive={activeWindow === side}
-        openDirectory={this.openDirectory}
-        passSelection={this.passSelection}
-        data={this.state[`${side}List`].files}
-        onClick={this.toggleActiveList}
-        changePath={this.changePath}
-        modalVisible={modalVisible}
-        addToPath={this.addToPath}
-        cursor={this.state.cursor}
-        passData={this.passData}
-        rootDir={this.props.menuCounters.user.HOME}
-        ref={el => this[`${side}List`] = el}
-        download={this.download}
-        moveBack={this.moveBack}
-        path={this.state[`${side}List`].path}
-        history={this.props.history}
-        loading={loading}
-        list={side} />
-    )
     return (
       <div className="window">
         <Helmet>
           <title>{this.props.session.i18n['File Manager']}</title>
         </Helmet>
-        {uploadPercent !== "0" ? <ProgressBar progress={uploadPercent} /> : null}
+        {uploadPercent !== "0" && <ProgressBar progress={uploadPercent} />}
         <ToastContainer />
         <Menu
           onDelete={this.onDeleteFileHandler}
@@ -462,7 +438,29 @@ class FileManager extends Component {
           cursor={this.state.cursor}
           name={itemName} />
         <div className="lists-container">
-          {DirectoryLists}
+          {this.props.session.userName && ['left', 'right'].map((side) =>
+            <DirectoryList
+              changePathAfterToggle={this.changePathAfterToggle}
+              openCertainDirectory={this.openCertainDirectory}
+              isActive={activeWindow === side}
+              openDirectory={this.openDirectory}
+              passSelection={this.passSelection}
+              data={this.state[`${side}List`].files}
+              onClick={this.toggleActiveList}
+              changePath={this.changePath}
+              modalVisible={modalVisible}
+              addToPath={this.addToPath}
+              cursor={this.state.cursor}
+              passData={this.passData}
+              rootDir={this.props.menuCounters.user.HOME}
+              ref={el => this[`${side}List`] = el}
+              download={this.download}
+              moveBack={this.moveBack}
+              path={this.state[`${side}List`].path}
+              history={this.props.history}
+              loading={loading}
+              list={side} />
+          )}
           <div className="fixed-buttons fm">
             <div className="hotkey-button">
               <button onClick={() => this.hotkeysList.classList.toggle('hide')}>
