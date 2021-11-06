@@ -15,6 +15,9 @@ if ($_SESSION['user'] != 'admin') {
 // Get server hostname
 $v_hostname = exec('hostname');
 
+// Get server port
+$port = $_SERVER['SERVER_PORT'];
+
 // List available timezones and get current one
 $v_timezones = list_timezones();
 exec (VESTA_CMD."v-get-sys-timezone", $output, $return_var);
@@ -58,6 +61,7 @@ $v_pgsql = count($v_pgsql_hosts) ? 'yes' : 'no';
 unset($db_hosts);
 
 // List backup settings
+$v_backup_remote_adv="yes";
 $v_backup_dir = "/backup";
 if (!empty($_SESSION['BACKUP'])) $v_backup_dir = $_SESSION['BACKUP'];
 $v_backup_gzip = '5';
@@ -595,6 +599,14 @@ if (!empty($_POST['save'])) {
         }
     }
 
+    // Change port
+     if ((!empty($_POST['port'])) && ($port != $_POST['port'])) {
+        exec (VESTA_CMD."v-change-vesta-port ".escapeshellarg($_POST['port']), $output, $return_var);
+        check_return_code($return_var,$output);
+        unset($output);
+        $port = $_POST['port'];
+    }
+
 }
 
 // Check system configuration
@@ -615,6 +627,7 @@ $result = array(
     'hostname' => $v_hostname,
     'timezones' => $v_timezones,
     'timezone' => $v_timezone,
+    'port' => $port,
     'languages' => $languages,
     'backup_adv' => $v_backup_adv,
     'backup_remote_adv' => $v_backup_remote_adv,
