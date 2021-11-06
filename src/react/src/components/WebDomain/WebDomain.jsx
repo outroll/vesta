@@ -72,7 +72,7 @@ export default function WebDomain(props) {
       <Container className="r-col w-85">
         <div className="name">
           <div>{data.NAME}</div>
-          <div><span className="dns-name-span">{data.ALIAS}</span></div>
+          <div><span className="dns-name-span">{data.ALIAS.replaceAll(',', ', ')}</span></div>
         </div>
         <div>{data.IP}</div>
         <div className="stats">

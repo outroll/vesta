@@ -156,14 +156,14 @@ const EditVestaPluginsOption = ({ data, visible }) => {
 
       <SelectInput
         title={i18n['Reseller Role']}
-        options={[i18n['yes']]}
+        options={[i18n['no']]}
         name="v_reseller"
         id="reseller"
         disabled />
 
       <SelectInput
         title={i18n['Backup Migration Manager']}
-        options={[i18n['yes']]}
+        options={[i18n['no']]}
         name="v_backup_manager"
         id="backup_manager"
         disabled />

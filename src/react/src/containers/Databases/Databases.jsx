@@ -17,6 +17,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import './Databases.scss';
 import { Helmet } from 'react-helmet';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import { Link } from 'react-router-dom';
 
 const Databases = props => {
   const { i18n } = useSelector(state => state.session);
@@ -35,6 +36,8 @@ const Databases = props => {
     toggledAll: false,
     dbAdmin: '',
     dbAdminLink: '',
+    db_myadmin_link: '',
+    db_pgadmin_link: '',
     sorting: i18n.Date,
     order: "descending",
     selection: [],
@@ -174,6 +177,8 @@ const Databases = props => {
             databases: reformatData(result.data.data),
             dbAdmin: result.data.db_admin,
             dbAdminLink: result.data.db_admin_link,
+            db_myadmin_link: result.data.db_myadmin_link,
+            db_pgadmin_link: result.data.db_pgadmin_link,
             dbFav: result.data.dbFav,
             selection: [],
             toggledAll: false,
@@ -387,7 +392,8 @@ const Databases = props => {
         <LeftButton name="Add Database" href="/add/db" showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
-            <a href={state.dbAdminLink} className="button-extra" type="submit" target="_blank" rel="noopener noreferrer">{state.dbAdmin}</a>
+            {state.db_myadmin_link && <Link to={{ pathname: state.db_myadmin_link }} className="button-extra" type="submit" target="_blank">phpMyAdmin</Link>}
+            {state.db_pgadmin_link && <Link to={{ pathname: state.db_pgadmin_link }} className="button-extra" type="submit" target="_blank">phpPgAdmin</Link>}
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />
             <Select list='dbList' bulkAction={bulk} />
             <DropdownFilter changeSorting={changeSorting} sorting={state.sorting} order={state.order} list="dbList" />

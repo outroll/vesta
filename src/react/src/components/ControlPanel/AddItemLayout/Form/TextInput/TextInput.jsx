@@ -9,7 +9,7 @@ const TextInput = ({ id, name, title, optionalTitle = '', type = 'text', onChang
     }
   }, [value]);
 
-  const changeCheckbox = event => {
+  const changeInputHandler = event => {
     setInputValue(event.target.value);
     onChange(event);
   }
@@ -24,7 +24,7 @@ const TextInput = ({ id, name, title, optionalTitle = '', type = 'text', onChang
         type={type}
         name={name}
         id={id}
-        onChange={changeCheckbox}
+        onChange={changeInputHandler}
         readOnly={disabled}
         value={inputValue}
         className="form-control" />

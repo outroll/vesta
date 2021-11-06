@@ -9,7 +9,7 @@ const AdditionalFtpForEditing = ({ domain, data = {}, onDeleteAdditionalFtp, pre
   const { i18n, userName } = useSelector(state => state.session);
   const [state, setState] = useState({
     username: data.v_ftp_user || '',
-    path: ''
+    path: data.v_ftp_path || '',
   });
 
   const renderForm = () => {
@@ -32,8 +32,9 @@ const AdditionalFtpForEditing = ({ domain, data = {}, onDeleteAdditionalFtp, pre
       return (
         <div className="additional-ftp">
           <div className="title">
+            <input type="hidden" name={`v_ftp_user[${data.id}][v_ftp_user]`} value={data.v_ftp_user} />
             <input type="hidden" name={`v_ftp_user[${data.id}][delete]`} value="0" />
-            <input type="hidden" name={`v_ftp_user[${data.id}][is_new]`} value="1" />
+            <input type="hidden" name={`v_ftp_user[${data.id}][is_new]`} value={data.is_new} />
 
             <span className="data.indexed-name">{i18n.FTP} #{data.id + 1}</span>
             <span>
@@ -67,17 +68,17 @@ const AdditionalFtpForEditing = ({ domain, data = {}, onDeleteAdditionalFtp, pre
 
             <div className="form-group">
               <input type="hidden" name="v_ftp_pre_path" value={prePath} />
-              <input type="hidden" name={`v_ftp_user[${data.id}][v_ftp_path_prev]`} value={data.v_ftp_path !== '/' ? '/' : ''} />
+              <input type="hidden" name={`v_ftp_user[${data.id}][v_ftp_path_prev]`} value={data.v_ftp_path} />
 
               <label htmlFor={`path${data.id}`}>{i18n.Path}</label>
               <input
                 type="text"
                 value={state.path}
-                onChange={event => setState({ ...state, path: event.target.value })}
+                onChange={event => setState({ ...state, path: event.target.value.indexOf('/') !== 0 ? `/${event.target.value}` : event.target.value })}
                 className="form-control"
                 id={`path${data.id}`}
                 name={`v_ftp_user[${data.id}][v_ftp_path]`} />
-              <span className="path-note">{prePath}</span>
+              <span className="path-note">{prePath}{state.path}</span>
             </div>
 
             {

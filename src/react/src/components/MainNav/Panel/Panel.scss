@@ -144,7 +144,6 @@ $textColor: #555;
     width: auto;
 
     div {
-      width: 4rem;
       height: 100%;
     }
 
@@ -169,7 +168,7 @@ $textColor: #555;
       }
     }
 
-    div + div a {
+    .edit-user a {
       color: #a4abad;
       font-weight: 700;
     
@@ -182,8 +181,8 @@ $textColor: #555;
       }
     }
 
-    div + div + div a,
-    div + div + div button {
+    .logout-button a,
+    .logout-button button {
       color: white;
       cursor: pointer;
       font-weight: 100;
@@ -220,7 +219,7 @@ $textColor: #555;
     justify-content: space-between;
     align-items: center;
 
-    > div + div {
+    > .edit-user {
       width: max-content;
     }
 

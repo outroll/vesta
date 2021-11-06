@@ -106,7 +106,7 @@ export default function MailInfoBlock({ webMail, hostName, domain, userName = ''
 
           <div>
             <span>{i18n['Webmail URL']}:</span>
-            <span><Link to={{ pathname: `${window.location.protocol}//${window.location.hostname}${state.webMail}` }}>{webMail}</Link></span>
+            <span><Link to={{ pathname: `http://${window.location.hostname}${webMail}` }} target="_blank">{webMail}</Link></span>
           </div>
 
           <input type="hidden" name={i18n['Username']} value={`@${domain}`} />

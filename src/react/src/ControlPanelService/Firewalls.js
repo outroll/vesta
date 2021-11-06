@@ -17,6 +17,18 @@ export const getBanList = () => {
   return axios.get(BASE_URL + banListUri);
 }
 
+export const bulkFirewallAction = (action, ips) => {
+  const formData = new FormData();
+  formData.append("action", action);
+  formData.append("token", getAuthToken());
+
+  ips.forEach(ip => {
+    formData.append("rule[]", ip);
+  });
+
+  return axios.post(BASE_URL + '/api/v1/bulk/firewall/', formData);
+};
+
 export const bulkAction = (action, ips, banIps) => {
   const formData = new FormData();
   formData.append("action", action);

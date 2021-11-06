@@ -52,12 +52,8 @@ const ListItem = (props) => {
       className += ' outdated';
     }
 
-    if (suspended) {
+    if (suspended || stopped) {
       className += ' suspended';
-    }
-
-    if (stopped) {
-      className += ' stopped';
     }
 
     if (focused) {
@@ -84,6 +80,7 @@ const ListItem = (props) => {
           <div onClick={starItem}><FontAwesomeIcon icon="star" /></div>
         </div>
         {props.suspended && <div className='suspended'>{i18n.suspended}</div>}
+        {props.stopped && <div className='stopped'>{i18n.stopped}</div>}
       </Container>
       {props.children}
     </div>

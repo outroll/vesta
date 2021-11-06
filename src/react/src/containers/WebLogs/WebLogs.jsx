@@ -10,6 +10,7 @@ import './WebLogs.scss';
 import { getWebLogs } from 'src/ControlPanelService/WebLogs';
 import Spinner from 'src/components/Spinner/Spinner';
 import { Helmet } from 'react-helmet';
+import HtmlParser from 'react-html-parser';
 
 export default function WebLogs() {
   const { i18n, userName } = useSelector(state => state.session);
@@ -19,6 +20,7 @@ export default function WebLogs() {
   const [domain, setDomain] = useState();
   const [state, setState] = useState({
     data: "",
+    prefix: "",
     loading: false
   });
 
@@ -40,7 +42,7 @@ export default function WebLogs() {
     let uri = `/list/web-log/?domain=${domain}&type=${type}`;
     fetchData(uri);
 
-    dispatch(addActiveElement(`/list/web-log/${type}`));
+    dispatch(addActiveElement(`/list/web-log/?domain=${domain}&type=${type}`));
   }, [mainNavigation.activeElement]);
 
   const fetchData = uri => {
@@ -52,7 +54,7 @@ export default function WebLogs() {
     getWebLogs(uri)
       .then(result => {
         if (result.data) {
-          setState({ ...state, data: result.data.data, loading: false });
+          setState({ ...state, data: result.data.data, prefix: result.data.prefix, loading: false });
         }
       })
       .catch(error => {
@@ -92,12 +94,14 @@ export default function WebLogs() {
       </Helmet>
       <TopPanel menuItems={menuItems} extraMenuItems={extraMenuItems} />
       <div className="content">
+        <h6>{state.prefix}</h6>
+        <br />
         {
           state.loading
             ? <Spinner />
             : (
               <pre>
-                {state.data}
+                {HtmlParser(state.data)}
               </pre>
             )
         }

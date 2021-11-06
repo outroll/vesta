@@ -23,13 +23,13 @@ const AddFirewall = props => {
   const [state, setState] = useState({
     loading: false,
     actions: [
-      i18n['DROP'],
-      i18n['ACCEPT']
+      'DROP',
+      'ACCEPT'
     ],
     protocols: [
-      i18n['TCP'],
-      i18n['UDP'],
-      i18n['ICMP']
+      'TCP',
+      'UDP',
+      'ICMP'
     ],
     okMessage: '',
     errorMessage: ''

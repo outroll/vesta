@@ -40,6 +40,7 @@ const AddWebDomain = props => {
     webStats: [],
     prefixI18N: '',
     prePath: '',
+    aliases: '',
     proxy_ext: '',
     internetProtocols: []
   });
@@ -99,7 +100,7 @@ const AddWebDomain = props => {
   }
 
   const onBlurChangeAliases = value => {
-    setState({ ...state, domain: value });
+    setState({ ...state, aliases: `www.${value}`});
   }
 
   const checkboxHandler = (input, checked) => {

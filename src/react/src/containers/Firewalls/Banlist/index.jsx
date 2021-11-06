@@ -16,7 +16,6 @@ import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router';
 
 import './styles.scss';
-import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const BanLists = props => {
   const { i18n } = useSelector(state => state.session);
@@ -237,7 +236,7 @@ const BanLists = props => {
         .then(result => {
           if (result.status === 200) {
             toggleAll(false);
-            fetchData();
+            fetchData().then(() => setLoading(false));
           }
         })
         .catch(err => console.error(err));
@@ -261,7 +260,7 @@ const BanLists = props => {
           setLoading(false);
           return displayModal(res.data.error, '');
         }
-        fetchData();
+        fetchData().then(() => setLoading(false));
       })
       .catch(err => { setLoading(false); console.error(err); });
   }

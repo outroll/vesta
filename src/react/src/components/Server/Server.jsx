@@ -19,6 +19,7 @@ const Server = props => {
       id={data.NAME}
       focused={data.FOCUSED}
       checked={data.isChecked}
+      stopped={data.STATE === 'stopped'}
       checkItem={checkItem}>
 
       <Container className="r-col w-85">
