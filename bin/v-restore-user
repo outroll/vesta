@@ -459,7 +459,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
     if [ -z "$dns" ] || [ "$dns" = '*' ]; then
         domains="$backup_domains"
     else
-        echo "$dns" |tr ',' '\n' > $tmpdir/selected.txt
+        echo "$dns" | tr ',' '\n' | sed -e "s/^/^/" > $tmpdir/selected.txt
         domains=$(echo "$backup_domains" |egrep -f $tmpdir/selected.txt)
     fi
 
@@ -539,7 +539,7 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
     if [ -z "$mail" ] || [ "$mail" = '*' ]; then
         domains="$backup_domains"
     else
-        echo "$mail" |tr ',' '\n' > $tmpdir/selected.txt
+        echo "$mail" | tr ',' '\n' | sed -e "s/^/^/" > $tmpdir/selected.txt
         domains=$(echo "$backup_domains" |egrep -f $tmpdir/selected.txt)
     fi
 
@@ -636,7 +636,7 @@ if [ "$db" != 'no' ] && [ ! -z "$DB_SYSTEM" ]; then
     if [ -z "$db" ] || [ "$db" = '*' ]; then
         databases="$backup_databases"
     else
-        echo "$db" |tr ',' '\n' > $tmpdir/selected.txt
+        echo "$db" |tr ',' '\n' | sed -e "s/$/$/" > $tmpdir/selected.txt
         databases=$(echo "$backup_databases" |egrep -f $tmpdir/selected.txt)
     fi
 
