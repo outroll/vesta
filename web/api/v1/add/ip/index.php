@@ -7,6 +7,8 @@ $TAB = 'IP';
 header('Content-Type: application/json');
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
+// var_dump($_SESSION['user']);
+
 // Check user
 if ($_SESSION['user'] != 'admin') {
     exit;

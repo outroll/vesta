@@ -28,6 +28,9 @@ foreach ($data as $key => $value) {
     $total_amount = __('%s accounts', $i);
   }
 
+  $data[$key]['U_BANDWIDTH_PERCENT'] = get_percentage($data[$key]['U_BANDWIDTH'],$data[$key]['BANDWIDTH']);
+  $data[$key]['U_DISK_PERCENT'] = get_percentage($data[$key]['U_DISK'],$data[$key]['DISK_QUOTA']);
+
   $data[$key]['U_BANDWIDTH'] = humanize_usage_size($data[$key]['U_BANDWIDTH']);
   $data[$key]['U_BANDWIDTH_MEASURE'] = humanize_usage_measure($data[$key]['U_BANDWIDTH_MEASURE']);
 

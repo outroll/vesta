@@ -35,6 +35,9 @@ if ($user == 'admin') {
 foreach ($data as $key => $value) {
   ++$i;
 
+  $data[$key]['U_BANDWIDTH_PERCENT'] = get_percentage($data[$key]['U_BANDWIDTH'],$data[$key]['BANDWIDTH']);
+  $data[$key]['U_DISK_PERCENT'] = get_percentage($data[$key]['U_DISK'],$data[$key]['DISK_QUOTA']);
+
   if ( $i == 1) {
     $total_amount = __('1 month');
   } else {
