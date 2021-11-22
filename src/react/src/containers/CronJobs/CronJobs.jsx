@@ -175,7 +175,7 @@ const CronJobs = props => {
             cronFav: result.data.cron_fav,
             selection: [],
             toggledAll: false,
-            totalAmount: result.data.totalAmount
+            totalAmount: result.data.totalAmount,
           });
           resolve();
         })
@@ -385,7 +385,7 @@ const CronJobs = props => {
     handleAction(url)
       .then(res => {
         displayModal(res.data.message, '');
-        fetchData();
+        fetchData().then(() => setLoading(false));
       })
       .catch(err => console.error(err));
   }

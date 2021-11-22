@@ -54,7 +54,11 @@ const Mail = props => {
         <div className="name">{data.NAME}</div>
         <div className="stats">
           <Container className="c-1">
-            <div className="bandwidth">{i18n.Disk} <span><span className="stat">{data.U_DISK}</span>{i18n.mb}</span></div>
+            <div className="bandwidth">
+              {i18n.Disk}
+              <span><span className="stat">{data.U_DISK}</span>{i18n.mb}</span>
+              <div className="percent" style={{ width: `${data.U_DISK_PERCENT}%` || '0%' }}></div>
+            </div>
           </Container>
           <Container className="c-2">
             {printStat(i18n['AntiVirus Support'], data.ANTIVIRUS)}

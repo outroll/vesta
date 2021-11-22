@@ -132,7 +132,13 @@ const Panel = props => {
 
       <div className="top-panel small-device">
         <div className="container left-menu">
-          <div className="logo">LOGO</div>
+          <div className="logo">
+            <Link to="/list/user/" onClick={() => dispatch(addActiveElement('/list/user/'))}>
+              <div>
+                <img src="/images/white_logo.png" alt="Logo" />
+              </div>
+            </Link>
+          </div>
         </div>
         <div className="container hamburger" onClick={toggleNavigation}>
           <span className="bar"></span>
@@ -140,9 +146,7 @@ const Panel = props => {
           <span className="bar"></span>
         </div>
         <div className="container profile-menu">
-          <div className="bell">
-            <FontAwesomeIcon icon="bell" />
-          </div>
+          {panel[userName]['NOTIFICATIONS'] === 'yes' && <Notifications />}
           <div><Link to={`/edit/user?user=${userName}`}>{userName}</Link></div>
           <div><button onClick={signOut}>{i18n['Log out']}</button></div>
         </div>

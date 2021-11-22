@@ -35,8 +35,15 @@ const Statistic = props => {
         <div className="name">{printName(data.DATE)}</div>
         <div className="stats">
           <Container className="c-1">
-            <div className="bandwidth">{i18n.Bandwidth} <span><span className="stat">{data.U_BANDWIDTH}</span>{i18n.mb}</span></div>
-            <div className="disk">{i18n.Disk}: <span><span className="stat">{data.U_DISK}</span>{i18n.mb}</span></div>
+            <div className="bandwidth">
+              {i18n.Bandwidth}
+              <span><span className="stat">{data.U_BANDWIDTH}</span>{i18n.mb}</span>
+              <div className="percent" style={{ width: `${data.U_BANDWIDTH_PERCENT}%` || '0%' }}></div>
+            </div>
+            <div className="disk">
+              {i18n.Disk}: <span><span className="stat">{data.U_DISK}</span>{i18n.mb}</span>
+              <div className="percent" style={{ width: `${data.U_DISK_PERCENT}%` || '0%' }}></div>
+            </div>
             <div className="sub-disk-stats">
               <div>
                 <div>{i18n.Web}: <span><span className="stat">{data.U_DISK_WEB}</span>{i18n.mb}</span></div>

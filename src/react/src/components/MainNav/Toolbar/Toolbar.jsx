@@ -1,70 +1,62 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Toolbar.scss';
 
-class Toolbar extends Component {
-  state = {
-    toolbarHeight: 205
-  }
+const Toolbar = props => {
+  const [toolbarHeight, setToolbarHeight] = useState(185);
 
-  componentDidMount() {
-    window.addEventListener("resize", this.handleToolbar);
-    document.addEventListener("scroll", this.changeToolbarHeight);
-  }
+  useEffect(() => {
+    window.addEventListener("resize", handleToolbar);
+    document.addEventListener("scroll", changeToolbarHeight);
 
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.handleToolbar);
-    document.removeEventListener("scroll", this.changeToolbarHeight);
-  }
+    return () => {
+      window.removeEventListener("resize", handleToolbar);
+      document.removeEventListener("scroll", changeToolbarHeight);
+    }
+  }, []);
 
-  handleToolbar = () => {
+  const handleToolbar = () => {
     if (document.documentElement.clientWidth < 900) {
-      this.setState({
-        toolbarHeight: 115
-      });
+      setToolbarHeight(95);
     } else {
-      this.setState({
-        toolbarHeight: 205
-      });
+      setToolbarHeight(185);
     }
   }
 
-  changeToolbarHeight = () => {
+  const changeToolbarHeight = () => {
     if (document.documentElement.clientWidth > 900) {
       let scrollTop = window.scrollY;
-      let toolbarHeight = Math.max(115, 205 - scrollTop);
-      this.setState({ toolbarHeight });
+      let newToolbarHeight = Math.max(95, 185 - scrollTop);
+      setToolbarHeight(newToolbarHeight);
     }
   }
 
-  className = () => {
-    const { className } = this.props;
+  const className = () => {
+    const { className } = props;
 
     if (className === "justify-right") {
-      return this.state.toolbarHeight === 115 ? "toolbar t-shadow " + className : "toolbar " + className;
+      return toolbarHeight === 95 ? "toolbar t-shadow " + className : "toolbar " + className;
     }
 
-    return this.state.toolbarHeight === 115 ? "toolbar t-shadow" : "toolbar";
+    return toolbarHeight === 95 ? "toolbar t-shadow" : "toolbar";
   }
 
-  style = () => {
-    if (this.props.mobile) {
+  const style = () => {
+    if (props.mobile) {
       return;
     }
 
     if (document.documentElement.clientWidth > 900) {
-      return { marginTop: this.state.toolbarHeight };
+      return { marginTop: toolbarHeight };
     } else {
-      return { marginTop: 145 };
+      return { marginTop: 33 };
     }
   }
 
-  render() {
-    return (
-      <div className={this.className()} style={this.style()}>
-        {this.props.children}
-      </div>
-    );
-  }
+  return (
+    <div className={className()} style={style()} id="v-toolbar">
+      {props.children}
+    </div>
+  );
 }
 
 export default Toolbar;

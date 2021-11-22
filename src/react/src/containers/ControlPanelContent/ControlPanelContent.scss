@@ -1,14 +1,4 @@
-$whiteBackground: #ececec;
-$primary: #2c54ac;
-$primaryLight: #d7dcef;
-$primaryActive: #1e5cb2;
-$secondary: #fcac04;
-$secondaryLight: #f8b014;
-$danger: #b00e5b;
-$secondaryActive: #fdb51c;
-$hoverButtonText: #2c54ac;
-$activeButtonText: #fff;
-$textColor: #555;
+@import 'src/utils/scss/variables';
 
 .content {
   padding: 0 13%;
@@ -29,9 +19,15 @@ $textColor: #555;
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1066px) {
   .content {
-    padding: 5%;
+    padding: 5% 10%;
+  }
+}
+
+@media (max-width: 900px) {
+  .content {
+    margin-top: 40px;
   }
 }
 
@@ -112,5 +108,17 @@ $textColor: #555;
         color: #c3c3c3;
       }
     }
+  }
+}
+
+@media screen and (max-width: 1066px) {
+  .fixed-buttons > div:first-child {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .content {
+    padding: 5% 1%;
   }
 }

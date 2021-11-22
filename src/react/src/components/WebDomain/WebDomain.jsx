@@ -77,8 +77,15 @@ export default function WebDomain(props) {
         <div>{data.IP}</div>
         <div className="stats">
           <Container className="c-1 w-25">
-            <div className="bandwidth">{i18n.Bandwidth} <span><span className="stat">{data.U_BANDWIDTH_SIZE}</span>{data.U_BANDWIDTH_MEASURE}</span></div>
-            <div className="disk">{i18n.Disk}: <span><span className="stat">{data.U_DISK_SIZE}</span>{data.U_DISK_MEASURE}</span></div>
+            <div className="bandwidth">
+              {i18n.Bandwidth}
+              <span><span className="stat">{data.U_BANDWIDTH_SIZE}</span>{data.U_BANDWIDTH_MEASURE}</span>
+              <div className="percent" style={{ width: `${data.U_BANDWIDTH_PERCENT}%` || '0%' }}></div>
+            </div>
+            <div className="disk">
+              {i18n.Disk}: <span><span className="stat">{data.U_DISK_SIZE}</span>{data.U_DISK_MEASURE}</span>
+              <div className="percent" style={{ width: `${data.U_DISK_PERCENT}%` || '0%' }}></div>
+            </div>
           </Container>
           <Container className="c-2 w-45">
             <div>{i18n['Web Template']}: <span className="stat">{data.TPL}</span></div>

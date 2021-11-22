@@ -165,8 +165,9 @@ const MainNav = () => {
       return "mobile-top-nav-wrapper hide";
     }
   }
+
   const topNavigation = () => {
-    if (document.documentElement.clientWidth > 900) {
+    if (window.innerWidth > 900) {
       return (
         <div className={topNavClassName()}>
           <Menu menuHeight={state.menuHeight} mobile={false} />

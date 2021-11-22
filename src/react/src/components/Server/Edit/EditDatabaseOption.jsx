@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import SelectInput from 'src/components/ControlPanel/AddItemLayout/Form/SelectInput/SelectInput';
 import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/TextInput';
-import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
@@ -86,7 +85,7 @@ const EditDatabaseOption = ({ data, visible }) => {
           <>
             <TextInput
               title={i18n['phpMyAdmin URL']}
-              value={data.db_pma_url}
+              value={data.mail_url}
               name="v_mysql_url"
               id="mysql_url" />
 

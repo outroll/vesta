@@ -1,14 +1,4 @@
-$whiteBackground: #ececec;
-$primary: #2c54ac;
-$primaryLight: #d7dcef;
-$primaryActive: #1e5cb2;
-$secondary: #fcac04;
-$secondaryLight: #f8b014;
-$danger: #b00e5b;
-$secondaryActive: #fdb51c;
-$hoverButtonText: #2c54ac;
-$activeButtonText: #fff;
-$textColor: #555;
+@import 'src/utils/scss/variables';
 
 html {
   overflow-y: scroll;
@@ -77,6 +67,25 @@ html {
       font-weight: bolder;
       background: #dfdedd;
       border: none;
+    }
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .actions {
+    background: unset !important;
+    flex-wrap: wrap;
+    justify-content: flex-end !important;
+
+    div {
+      height: 30px !important;
+
+      a,button {
+        background: #dfdedd !important;
+        padding: 0px 10px !important;
+        height: 100% !important;
+        font-size: 10px !important;
+      }
     }
   }
 }
@@ -173,6 +182,69 @@ button {
       svg {
         color: $activeButtonText;
       }
+    }
+  }
+}
+
+@media (min-width: 1067px) {
+  .App div.content {
+    padding-top: 0 !important;
+    margin-top: -20px !important;
+  }
+}
+
+@media (max-width: 1066px) {
+  .App div.content {
+    padding-top: 0 !important;
+    margin-top: -20px !important;
+  }
+
+  .content > div {
+    .l-col {
+      margin-top: 2rem;
+      padding-left: 5px;
+    }
+
+    .r-col {
+      margin-top: 1rem;
+      .name {
+        margin-top: 2rem;
+      }
+
+      .stats {
+        flex-wrap: wrap;
+
+        > div {
+          margin: 1rem 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .App div.content {
+    padding-top: 77px !important;
+    margin-top: 0 !important;
+  }
+
+  .content > div {
+    .l-col {
+      padding-left: 5px;
+    }
+
+    .r-col {
+      padding-left: 2rem;
+    }
+  }
+}
+
+@media (max-width: 725px) {
+  .content {
+    .r-col {
+      padding-left: 3.5rem;
     }
   }
 }
