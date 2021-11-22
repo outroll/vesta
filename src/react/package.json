@@ -16,6 +16,7 @@
     "dayjs": "^1.10.7",
     "jquery": "^3.5.1",
     "node-sass": "^4.14.1",
+    "perfect-scrollbar": "^1.5.3",
     "popper.js": "^1.15.0",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",

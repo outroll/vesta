@@ -395,13 +395,13 @@ const Mails = props => {
         <LeftButton name="Add Mail Domain" href="/add/mail" showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
-            <Link
+            {state.webmail && <Link
               to={{ pathname: `http://${window.location.hostname}${state.webmail}` }}
               target="_blank"
               className="button-extra"
               type="submit">
               {i18n['open webmail']}
-            </Link>
+            </Link>}
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />
             <Select list='mailList' bulkAction={bulk} />
             <DropdownFilter changeSorting={changeSorting} sorting={state.sorting} order={state.order} list="mailList" />

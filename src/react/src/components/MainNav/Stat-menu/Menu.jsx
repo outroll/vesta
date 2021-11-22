@@ -50,20 +50,6 @@ const Menu = props => {
     return `stat ${activeName === activeElement && 'l-active'} ${activeName === focusedElement && 'focus'}`;
   }
 
-  const sizeFormatter = (bytes, decimals) => {
-    if (!bytes) return null;
-
-    if (bytes === "0") {
-      return <span className="value">0 <span className="unit">b</span></span>;
-    }
-
-    let k = 1024,
-      dm = decimals <= 0 ? 0 : decimals || 2,
-      sizes = ['b', 'kb', 'Mb', 'GB'],
-      i = Math.floor(Math.log(bytes) / Math.log(k));
-    return (<span className="value">{parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} <span className="unit">{sizes[i]}</span></span>);
-  }
-
   return (
     <div className="menu-wrapper">
       <div className={className(props.menuHeight)} style={{ height: style(props) }}>

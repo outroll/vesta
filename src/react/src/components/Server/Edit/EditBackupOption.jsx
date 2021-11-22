@@ -12,7 +12,7 @@ const EditBackupOption = ({ data, visible }) => {
   return (
     <div className="server-dns-option" style={{ display: `${visible ? 'block' : 'none'}` }}>
       <SelectInput
-        options={[i18n['no'], i18n['yes']]}
+        options={['no', 'yes']}
         title={i18n['Local backup']}
         selected={data.backup}
         name="v_backup"

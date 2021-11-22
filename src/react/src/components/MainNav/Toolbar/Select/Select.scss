@@ -1,6 +1,10 @@
 .select-wrapper {
   display: flex;
 
+  select {
+    width: auto;
+  }
+
   select, button {
     border-radius: 0;
   }

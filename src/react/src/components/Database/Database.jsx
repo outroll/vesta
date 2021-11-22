@@ -47,7 +47,10 @@ const Database = props => {
         <br />
         <div className="stats">
           <Container className="c-1">
-            <div className="disk">{i18n.Disk}: <span><span className="stat">{data.U_DISK}</span>{i18n.mb}</span></div>
+            <div className="disk">
+              {i18n.Disk}: <span><span className="stat">{data.U_DISK}</span>{i18n.mb}</span>
+              <div className="percent" style={{ width: `${data.U_DISK_PERCENT}%` || '0%' }}></div>
+            </div>
           </Container>
           <Container className="c-2">
             <div>{i18n.User}: <span className="stat">{data.DBUSER}</span></div>

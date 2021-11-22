@@ -73,6 +73,10 @@ const EditServer = props => {
       updatedServer[name] = value;
     }
 
+    if (updatedServer['v_backup_type']) {
+      updatedServer['v_backup_type'] = updatedServer['v_backup_type'].toLowerCase();
+    }
+
     updatedServer['save'] = 'save';
     updatedServer['token'] = token;
 

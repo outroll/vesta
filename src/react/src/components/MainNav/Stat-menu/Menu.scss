@@ -1,13 +1,4 @@
-$whiteBackground: #ececec;
-$primary: #2c54ac;
-$primaryLight: #d7dcef;
-$primaryActive: #1e5cb2;
-$secondary: #fcac04;
-$secondaryLight: #f8b014;
-$secondaryActive: #fdb51c;
-$hoverButtonText: #2c54ac;
-$activeButtonText: #fff;
-$textColor: #555;
+@import 'src/utils/scss/variables';
 
 .menu-wrapper {
   position: fixed;
@@ -18,7 +9,7 @@ $textColor: #555;
   .menu-stat {
     display: flex;
     flex-direction: row;
-    margin-top: 70px;
+    margin-top: 50px;
     min-height: 45px;
     max-height: 135px;
     height: 145px;
@@ -152,13 +143,24 @@ $textColor: #555;
   }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1066px) {
   .menu-wrapper {
-    padding: 0 10%;
+    .menu-stat {
+      padding: 0 10%;
+      margin-top: 40px;
+    }
   }
 }
 
-@media (max-width: 900px) {
+@media screen and (max-width: 1024px) {
+  .menu-wrapper {
+    .menu-stat {
+      padding: 0 10%;
+    }
+  }
+}
+
+@media (max-width: 1066px) {
   .menu-wrapper {
     padding: 1%;
 
@@ -167,54 +169,8 @@ $textColor: #555;
       min-height: auto;
 
       .stat {
-        flex-grow: 1;
-        height: 30px;
-        padding-left: 5px;
-        min-width: 14%;
-        text-align: left;
-
         h3 {
           padding: 0;
-        }
-
-        .stats {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 450px) {
-  .main-nav .mobile-top-nav-wrapper.show .mobile-stat-menu {
-    border: 1px solid black;
-    border-width: 1px 0;
-    margin-top: 15px;
-
-    .menu-wrapper {
-      height: 100%;
-      padding: 0;
-
-      .menu-stat {
-        flex-wrap: wrap;
-        max-height: 100%;
-        min-height: 100%;
-
-        .stat {
-          display: flex;
-          align-items: center;
-          border: none;
-          padding: 5px 5px 5px 15px;
-          min-width: 50%;
-          height: auto;
-
-          h3 {
-            margin: 0;
-          }
-        }
-
-        .stat.l-active {
-          background: #fdac020d;
         }
       }
     }

@@ -76,8 +76,15 @@ const User = ({ data, toggleFav, handleModal, checkItem, logOut, logInAs }) => {
         <div>{data.FNAME} {data.LNAME}</div>
         <div className="stats">
           <Container className="c-1">
-            <div className="bandwidth">{i18n.Bandwidth} <span><span className="stat">{data.U_BANDWIDTH}</span> {data.U_BANDWIDTH_MEASURE}</span></div>
-            <div className="disk">{i18n.Disk}: <span><span className="stat">{data.U_DISK}</span> {data.U_DISK_MEASURE}</span></div>
+            <div className="bandwidth">
+              {i18n.Bandwidth}
+              <span><span className="stat">{data.U_BANDWIDTH}</span> {data.U_BANDWIDTH_MEASURE}</span>
+              <div className="percent" style={{ width: `${data.U_BANDWIDTH_PERCENT}%` || '0%' }}></div>
+            </div>
+            <div className="disk">
+              {i18n.Disk}: <span><span className="stat">{data.U_DISK}</span> {data.U_DISK_MEASURE}</span>
+              <div className="percent" style={{ width: `${data.U_DISK_PERCENT}%` || '0%' }}></div>
+            </div>
             <div className="sub-disk-stats">
               <div>
                 <div><span>{i18n.Web}:</span> <span><b>{data.U_DISK_WEB}</b> {data.U_DISK_WEB_MEASURE}</span></div>

@@ -1,13 +1,5 @@
-$whiteBackground: #ececec;
-$primary: #2c54ac;
-$primaryLight: #d7dcef;
-$primaryActive: #1e5cb2;
-$secondary: #fcac04;
-$secondaryLight: #f8b014;
-$secondaryActive: #fdb51c;
-$hoverButtonText: #2c54ac;
-$activeButtonText: #fff;
-$textColor: #555;
+@import 'src/utils/scss/variables';
+@import 'src/utils/scss/breakpoints';
 
 .top-panel.small-device {
   display: none;
@@ -24,6 +16,7 @@ $textColor: #555;
   background: #222e44;
   height: 34px;
   align-items: center;
+  justify-content: space-between;
   padding: 0 13%;
   z-index: 2;
 
@@ -53,7 +46,7 @@ $textColor: #555;
         justify-content: center;
         align-items: center;
         padding: 0 10px !important;
-        width: 100%;
+        width: max-content;
         height: 100%;
         text-decoration: none;
         color: white;
@@ -94,8 +87,8 @@ $textColor: #555;
 
   .left-menu {
     width: 75%;
-    padding-left: 0;
-    margin-left: 0;
+    margin: 0;
+    padding: 0;
     justify-content: space-between;
 
     div {
@@ -141,7 +134,10 @@ $textColor: #555;
   }
 
   .profile-menu {
-    width: auto;
+    width: 25%;
+    margin: 0;
+    padding: 0;
+    justify-content: flex-end;
 
     div {
       height: 100%;
@@ -240,36 +236,37 @@ $textColor: #555;
   }
 }
 
-@media screen and (max-width: 1350px) {
+@media screen and (min-width: $desktopMax) {
   .top-panel {
     padding: 0 10%;
   }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: $desktopMin) {
   .top-panel {
-    padding: 0 5%;
+    padding: 0 8%;
   }
 }
 
-//Small Devices
-@media (max-width: 900px) {
+@media screen and (max-width: 1200px) {
+  .top-panel {
+    padding: 0 10%;
+  }
+}
+
+@media (max-width: 1065px) {
   .top-panel {
     display: none;
   }
 
   .top-panel.small-device {
     display: flex;
-    padding: 0;
+    justify-content: space-between;
+    padding: 0 10%;
 
     > .container {
-      justify-content: center;
       align-items: center;
-      width: 30%;
-    }
-
-    .profile-menu {
-      padding-left: 10%;
+      width: auto;
     }
 
     .hamburger {
@@ -287,35 +284,18 @@ $textColor: #555;
       }
     }
   }
-
-  @keyframes toggleNav {
-    from {
-      transform: translateY(-20px);
-    }
-
-    to {
-      transform: translateY(50px);
-    }
-  }
 }
 
-@media (max-width: 420px) {
+@media (max-width: $phoneMax) {
   .top-panel.small-device {
-    .profile-menu {
-      padding: 0;
-      margin-right: 5px;
+    padding: 0;
+  }
 
-      .bell {
-        width: 20%;
-      }
+  .top-panel .left-menu div.logo {
+    width: unset;
 
-      .bell + div {
-        width: 40%;
-      }
-
-      .bell + div + div {
-        width: 40%;
-      }
+    a div {
+      width: 5rem;
     }
   }
 }

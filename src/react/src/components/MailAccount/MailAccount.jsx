@@ -53,7 +53,11 @@ export default function MailAccount(props) {
         <div className="name">{`${data.NAME}@${domain}`}</div>
         <div className="stats">
           <Container className="c-1">
-            <div className="bandwidth">{i18n.Disk} <span><span className="stat">{data.U_DISK}</span>&nbsp;{i18n.mb}</span></div>
+            <div className="bandwidth">
+              {i18n.Disk}
+              <span><span className="stat">{data.U_DISK}</span>&nbsp;{i18n.mb}</span>
+              <div className="percent" style={{ width: `${data.U_DISK_PERCENT}%` || '0%' }}></div>
+            </div>
           </Container>
           <Container className="c-2">
             <div>{i18n['Quota']}: <span><span className="stat">{data.QUOTA}</span>&nbsp; {i18n.mb}</span></div>

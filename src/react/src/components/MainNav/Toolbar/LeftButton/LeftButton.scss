@@ -1,13 +1,4 @@
-$whiteBackground: #ececec;
-$primary: #2c54ac;
-$primaryLight: #d7dcef;
-$primaryActive: #1e5cb2;
-$secondary: #fcac04;
-$secondaryLight: #f8b014;
-$secondaryActive: #fdb51c;
-$hoverButtonText: #2c54ac;
-$activeButtonText: #fff;
-$textColor: #555;
+@import 'src/utils/scss/variables';
 
 .l-menu {
   transform: translate(35px, 50%);
@@ -36,6 +27,12 @@ $textColor: #555;
 
       svg {
         color: $hoverButtonText;
+      }
+    }
+
+    @media screen and (max-width: 900px) {
+      span.add {
+        display: none !important;
       }
     }
 
@@ -71,6 +68,10 @@ $textColor: #555;
       width: 31px;
       height: 21px;
     }
+  }
+
+  @media screen and (max-width: 900px) {
+    transform: unset;
   }
 }
 

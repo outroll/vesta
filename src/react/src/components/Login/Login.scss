@@ -1,13 +1,5 @@
-$whiteBackground: #ececec;
-$primary: #2c54ac;
-$primaryLight: #d7dcef;
-$primaryActive: #1e5cb2;
-$secondary: #fcac04;
-$secondaryLight: #f8b014;
-$secondaryActive: #fdb51c;
-$hoverButtonText: #2c54ac;
-$activeButtonText: #fff;
-$textColor: #555;
+@import 'src/utils/scss/variables';
+@import 'src/utils/scss/breakpoints';
 
 .login-page {
   display: flex;
@@ -78,7 +70,7 @@ $textColor: #555;
           background-color: $primary;
           border: 1px solid $primary;
           padding: 1px 16px 3px;
-          font-size: 13px;;
+          font-size: 13px;
           height: 35px;
           color: #fafafa;
           border-radius: 3px;
@@ -103,6 +95,44 @@ $textColor: #555;
         div.error-message {
           margin-top: 1rem;
           color: #BE5ABF;
+        }
+      }
+    }
+  }
+
+  @media (max-width: $tabletMax) {
+    .login-form-wrapper {
+      margin: 2rem;
+
+      .login-layout {
+        form {
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+
+          .c1 {
+            width: 100%;
+            margin-bottom: 1.5rem;
+
+            a {
+              text-align: center;
+
+              img {
+                width: 75%;
+              }
+            }
+          }
+
+          .c2 {
+            margin: 0;
+            width: 100%;
+          }
+
+          .buttons-wrapper {
+            .add {
+              margin-bottom: 10px;
+            }
+          }
         }
       }
     }
