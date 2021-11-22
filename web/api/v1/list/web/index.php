@@ -23,6 +23,9 @@ $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 foreach ($data as $key => $value) {
   ++$i;
 
+  $data[$key]['U_BANDWIDTH_PERCENT'] = get_percentage($data[$key]['U_BANDWIDTH'],$panel[$user]['BANDWIDTH']);
+  $data[$key]['U_DISK_PERCENT'] = get_percentage($data[$key]['U_DISK'],$data[$key]['DISK_QUOTA']);
+
   if ($data[$key]['SUSPENDED'] == 'yes') {
     $data[$key]['status'] = 'suspended';
     $data[$key]['spnd_action'] = 'unsuspend' ;

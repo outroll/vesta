@@ -25,6 +25,8 @@ list($http_host, $port) = explode(':', $_SERVER["HTTP_HOST"].":");
 foreach ($data as $key => $value) {
   ++$i;
 
+  $data[$key]['U_DISK_PERCENT'] = get_percentage($data[$key]['U_DISK'],$panel[$user]['DISK_QUOTA']);
+
   if ( $i == 1) {
     $total_amount = __('1 database');
   } else {

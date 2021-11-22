@@ -35,6 +35,12 @@ top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB
 foreach ($data as $key => $value) {
   ++$i;
 
+  if (empty($_GET['domain'])){
+    $data[$key]['U_DISK_PERCENT'] = get_percentage($data[$key]['U_DISK'], $data[$key]['QUOTA']);
+  } else {
+    $data[$key]['U_DISK_PERCENT'] = get_percentage($data[$key]['U_DISK'], $panel[$user]['DISK_QUOTA']);
+  }
+
   list($http_host, $port) = explode(':', $_SERVER["HTTP_HOST"].":");
   $webmail = "/webmail/";
   if (!empty($_SESSION['MAIL_URL'])) $webmail = $_SESSION['MAIL_URL'];
