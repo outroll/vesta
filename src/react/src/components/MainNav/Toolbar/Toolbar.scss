@@ -17,7 +17,6 @@
   .r-menu {
     display: flex;
     align-items: center;
-    overflow-x: scroll;
 
     > div {
       display: flex;
@@ -156,16 +155,19 @@
 @media (max-width: 900px) {
   .toolbar {
     .r-menu {
-      // overflow: scroll;
+      overflow: scroll;
 
       > div {
         margin-left: 3rem;
-        // overflow: scroll;
         position: relative;
         display: flex;
         flex-wrap: unset;
         width: 100%;
         align-items: center;
+      }
+
+      .select-wrapper + div {
+        display: none;
       }
     }
   }
