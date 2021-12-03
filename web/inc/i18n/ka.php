@@ -195,7 +195,7 @@ $LANG['ka'] = array(
     'SSL Home Directory'  => 'SSL მთავარი დირექტორია',
     'Lets Encrypt Support'  => 'Lets Encrypt-ის მხარდაჭერა',
     'Lets Encrypt'  => 'Lets Encrypt',
-    'Your certificate will be automatically issued in 5 minutes' => 'თქვენი სერტიფიკატები ავტომატურად დამზადდებს 5 წუთში',
+    'Your certificate will be automatically issued in 5 minutes' => 'თქვენი სერტიფიკატები ავტომატურად დამზადდება 5 წუთში',
     'Proxy Support'  => 'პროქსის მხარდაჭერა',
     'Proxy Extensions'  => 'პროქსის გაფართოებები',
     'Web Statistics'  => 'ვებ სტატისტიკა',
@@ -751,7 +751,7 @@ $LANG['ka'] = array(
     'Use SSL / TLS' => 'SSL / TLS-ის გამოყენება',
     'No encryption' => 'დაშიფრვის გარეშე',
     'Do not use encryption' => 'არ გამოიყენო დაშიფრვა',
-        
+
     'maximum characters length, including prefix' => 'დასაშვებია მაქსიმუმ %s სიმბოლო, პრეფიქსის ჩათვლით',
 
     'Email Credentials' => 'რეკვიზიტების ელ-ფოსტით გაგზავნა',
