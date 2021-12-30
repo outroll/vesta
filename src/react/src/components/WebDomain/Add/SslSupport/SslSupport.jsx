@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/TextArea';
 
 import './SslSupport.scss';
@@ -30,7 +29,6 @@ const SslSupport = props => {
         id="ssl-certificate"
         name="v_ssl_crt"
         title={i18n['SSL Certificate']}
-        value={props.sslCertificate}
         disabled={letsEncrypt}
         optionalTitle={<>/ <button type="button" onClick={() => props.setModalVisible(true)} className="generate-csr">{i18n['Generate CSR']}</button></>} />
 

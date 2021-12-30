@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const EditDatabaseOption = ({ data, visible }) => {
+  const { DB_PMA_URL, DB_PGA_URL } = useSelector(state => state.userSession.session);
   const { i18n } = useSelector(state => state.session);
 
   const printPhpMyAdminHosts = () => {
@@ -85,7 +86,7 @@ const EditDatabaseOption = ({ data, visible }) => {
           <>
             <TextInput
               title={i18n['phpMyAdmin URL']}
-              value={data.mail_url}
+              value={DB_PMA_URL}
               name="v_mysql_url"
               id="mysql_url" />
 
@@ -108,7 +109,7 @@ const EditDatabaseOption = ({ data, visible }) => {
           <>
             <TextInput
               title={i18n['phpPgAdmin URL']}
-              value={data.pgsql_url}
+              value={DB_PGA_URL}
               name="v_pgsql_url"
               id="pgsql_url" />
 

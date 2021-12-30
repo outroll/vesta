@@ -14,7 +14,8 @@ const Notifications = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!notifications) {
+    if (!notifications.length) {
+      console.log(notifications);
       fetchData();
     }
   }, [notifications]);
@@ -47,7 +48,7 @@ const Notifications = () => {
   }
 
   const renderOptions = () => {
-    if (notifications && notifications.length) {
+    if (notifications.length) {
       return notifications.map(item => {
         return (
           <>
@@ -74,7 +75,7 @@ const Notifications = () => {
       <button type="button" className="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <div className="bell">
           {
-            notifications && notifications.length
+            notifications.length
               ? <BellUnread />
               : <Bell />
           }

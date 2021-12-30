@@ -16,6 +16,24 @@
   }
 
   .left-menu {
+    justify-content: unset;
+
+    .logo {
+      width: fit-content;
+      flex: unset;
+    }
+
+    .scrollbar-container {
+      &:hover {
+        background: none;
+      }
+
+      .nav-link {
+        flex: unset;
+        padding: 0 5px;
+      }
+    }
+
     a, button {
       padding: 0 !important;
       outline: none;

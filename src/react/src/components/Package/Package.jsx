@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 const Package = props => {
   const { data } = props;
   const { i18n } = useSelector(state => state.session);
+  const { session } = useSelector(state => state.userSession);
 
   const printNameServers = servers => {
     let serversArray = servers.split(',');
@@ -50,7 +51,7 @@ const Package = props => {
         <div className="stats">
           <Container className="c-1 w-30">
             <div>{i18n['Web Template']}: <span><span className="stat">{data.WEB_TEMPLATE}</span></span></div>
-            <div>{i18n['Proxy Template']}: <span><span className="stat">{data.PROXY_TEMPLATE}</span></span></div>
+            {session.PROXY_SYSTEM && <div>{i18n['Proxy Template']}: <span><span className="stat">{data.PROXY_TEMPLATE}</span></span></div>}
             <div>{i18n['DNS Template']}: <span><span className="stat">{data.DNS_TEMPLATE}</span></span></div>
             <div>{i18n['SSH Access']}: <span><span className="stat">{data.SHELL}</span></span></div>
             <div>{i18n['Web Domains']}: <span><span className="stat">{data.WEB_DOMAINS}</span></span></div>

@@ -29,7 +29,7 @@
 
 span.stat.email{
   display: block;
-  width: max-content;
+  width: fit-content;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -208,7 +208,7 @@ span.stat.email{
 
   @media (max-width: 850px) {
     > div {
-      width: max-content;
+      width: fit-content;
 
       a, button {
         width: 100%;

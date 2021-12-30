@@ -167,12 +167,6 @@ const EditServer = props => {
               name="v_language"
               id="language" />
 
-            {/* <TextInput
-              value={state.data.port}
-              title={i18n['Default Port'] ?? 'Default Port'}
-              name="port"
-              id="port" /> */}
-
             <div className="modules">
               <button type="button" onClick={() => toggleOption('webOption')}>
                 {i18n['WEB']}

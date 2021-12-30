@@ -1,12 +1,30 @@
-.web-logs {
+.App .web-logs {
+  .top-panel {
+    .left-menu {
+      .logo {
+        justify-content: start;
+        margin: 0;
+        
+        a {
+          padding: 0 !important;
+        }
+      }
+    }
+  }
+
   .content {
     font-size: 14px;
     color: #555;
     padding-top: 4rem;
-  }
 
-  .nav-link:nth-child(3),
-  .nav-link:nth-child(4) {
-    width: 9rem;
+    @media screen and (min-width: 1067px) {
+      padding-top: 5rem !important;
+      margin-top: 0px !important;
+    }
+
+    @media screen and (max-width: 1066px) {
+      padding-top: 5rem !important;
+      margin-top: 0px !important;
+    }
   }
 }

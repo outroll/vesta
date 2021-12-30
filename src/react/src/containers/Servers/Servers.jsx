@@ -319,7 +319,7 @@ const Servers = props => {
         <LeftButton href="/edit/server/" list="server" name={i18n.configure} showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
-            <Link to="/list/server/cpu" className="button-extra">{i18n['show: CPU / MEM / NET / DISK']}</Link>
+            <Link to="/list/server/service/?srv=cpu" className="button-extra">{i18n['show: CPU / MEM / NET / DISK']}</Link>
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />
             <Select list='serverList' bulkAction={bulk} />
             <SearchInput handleSearchTerm={term => props.changeSearchTerm(term)} />

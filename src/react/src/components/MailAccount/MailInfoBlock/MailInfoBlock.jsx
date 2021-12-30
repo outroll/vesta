@@ -46,6 +46,24 @@ export default function MailInfoBlock({ webMail, hostName, domain, userName = ''
     );
   }
 
+  const getCredentials = () => {
+    let result = '';
+
+    result += `${i18n['Username']}:${userName}@${domain}\n`;
+    result += `${i18n['Password']}:${password}\n`;
+    result += `${i18n['IMAP hostname']}:${state.imapHostName}\n`;
+    result += `${i18n['IMAP port']}:${state.imapPort}\n`;
+    result += `${i18n['IMAP security']}:${state.imapEncryption}\n`;
+    result += `${i18n['IMAP auth method']}:${i18n['Normal password']}\n`;
+    result += `${i18n['SMTP hostname']}:${state.smtpHostName}\n`;
+    result += `${i18n['SMTP port']}:${state.smtpPort}\n`;
+    result += `${i18n['SMTP security']}:${state.smtpEncryption}\n`;
+    result += `${i18n['SMTP auth method']}:${i18n['Normal password']}\n`;
+    result += `${i18n['Webmail URL']}:${`http://${window.location.hostname}${webMail}`}\n`;
+
+    return result;
+  }
+
   return (
     <div className="mail-info-block">
       <div class="form-group select-group">
@@ -109,15 +127,7 @@ export default function MailInfoBlock({ webMail, hostName, domain, userName = ''
             <span><Link to={{ pathname: `http://${window.location.hostname}${webMail}` }} target="_blank">{webMail}</Link></span>
           </div>
 
-          <input type="hidden" name={i18n['Username']} value={`@${domain}`} />
-          <input type="hidden" name={i18n['IMAP hostname']} value={state.imapHostName} />
-          <input type="hidden" name={i18n['SMTP hostname']} value={state.smtpHostName} />
-          <input type="hidden" name={i18n['IMAP port']} value={state.imapPort} />
-          <input type="hidden" name={i18n['SMTP port']} value={state.smtpPort} />
-          <input type="hidden" name={i18n['IMAP security']} value={state.imapEncryption} />
-          <input type="hidden" name={i18n['SMTP security']} value={state.smtpEncryption} />
-          <input type="hidden" name={i18n['IMAP auth method']} value={i18n['Normal password']} />
-          <input type="hidden" name={i18n['SMTP auth method']} value={i18n['Normal password']} />
+          <input type="hidden" name="v_credentials" value={getCredentials()} />
         </div>
       </div>
     </div>

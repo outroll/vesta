@@ -94,7 +94,7 @@ export default function WebLogs() {
       </Helmet>
       <TopPanel menuItems={menuItems} extraMenuItems={extraMenuItems} />
       <div className="content">
-        <h6>{state.prefix}</h6>
+        <h6><b>{state.prefix}</b></h6>
         <br />
         {
           state.loading

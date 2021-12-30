@@ -50,7 +50,7 @@ const InternetProtocol = props => {
           </Container>
           <Container className="c-3 w-35">
             <div>{i18n.Owner}: <span className="stat">{data.OWNER}</span></div>
-            <div>{i18n.Users}: <span className="stat">{data.U_SYS_USERS.replaceAll(',', ', ')}</span></div>
+            <div>{i18n.Users}: <span className="stat">{data.U_SYS_USERS.replace(/,/g, ', ')}</span></div>
           </Container>
         </div>
       </Container>

@@ -46,7 +46,7 @@
         justify-content: center;
         align-items: center;
         padding: 0 10px !important;
-        width: max-content;
+        width: fit-content;
         height: 100%;
         text-decoration: none;
         color: white;
@@ -91,7 +91,8 @@
     padding: 0;
     justify-content: space-between;
 
-    div {
+    div.top-link,
+    div.nav-link {
       flex: 1 1 auto;
       height: 100%;
       transform: translateX(-5px);
@@ -150,8 +151,8 @@
 
       svg {
         border-radius: 30px;
-        width: 100%;
-        height: 100%;
+        width: 40px;
+        height: 30px;
         padding: 3px;
 
         &:hover {
@@ -199,7 +200,7 @@
     justify-content: start;
 
     > div {
-      width: max-content;
+      width: fit-content;
       flex: unset;
       padding: 0 1rem;
     }
@@ -212,11 +213,10 @@
   }
 
   .profile-menu {
-    justify-content: space-between;
     align-items: center;
 
     > .edit-user {
-      width: max-content;
+      width: fit-content;
     }
 
     .long-username {
@@ -236,7 +236,7 @@
   }
 }
 
-@media screen and (min-width: $desktopMax) {
+@media screen and (max-width: 1350px) {
   .top-panel {
     padding: 0 10%;
   }
@@ -248,13 +248,7 @@
   }
 }
 
-@media screen and (max-width: 1200px) {
-  .top-panel {
-    padding: 0 10%;
-  }
-}
-
-@media (max-width: 1065px) {
+@media (max-width: 900px) {
   .top-panel {
     display: none;
   }

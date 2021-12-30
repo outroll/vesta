@@ -1,0 +1,1 @@
+export const REFRESH_PANEL = 'REFRESH_PANEL';

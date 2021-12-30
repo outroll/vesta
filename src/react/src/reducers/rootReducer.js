@@ -5,6 +5,7 @@ import notificationReducer from './Notification/notificationReducer';
 import menuCounterReducer from './MenuCounters/menuCounterReducer';
 import userSessionReducer from './UserSession/userSessionReducer';
 import sessionReducer from './Session/sessionReducer';
+import panelReducer from './Panel/panel';
 
 export default combineReducers({
   mainNavigation: mainNavigationReducer,
@@ -13,4 +14,5 @@ export default combineReducers({
   menuCounters: menuCounterReducer,
   userSession: userSessionReducer,
   session: sessionReducer,
+  panel: panelReducer,
 });
