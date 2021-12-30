@@ -106,7 +106,7 @@ const App = () => {
                 exact
                 component={Preview} />
               <AuthenticatedRoute
-                path="/list/server/:service"
+                path="/list/server/service/"
                 authenticated={session.userName}
                 component={ServiceInfo} />
               <AuthenticatedRoute

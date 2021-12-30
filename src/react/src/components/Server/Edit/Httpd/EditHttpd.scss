@@ -4,7 +4,7 @@ $secondaryLight: #f8b014;
 .content .edit-template.edit-httpd {
   .toolbar {
     .search-toolbar-name {
-      width: max-content;
+      width: fit-content;
 
       a {
         color: $secondary;
@@ -17,7 +17,7 @@ $secondaryLight: #f8b014;
     }
 
     .link {
-      width: max-content;
+      width: fit-content;
       margin-left: 15px;
 
       a {

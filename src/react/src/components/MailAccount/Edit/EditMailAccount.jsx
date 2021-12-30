@@ -63,10 +63,12 @@ export default function EditMailAccount(props) {
             if (error_msg) {
               setErrorMessage(error_msg);
               setOkMessage('');
+              setState({ ...state, loading: false });
             } else {
               dispatch(refreshCounters()).then(() => {
                 setErrorMessage('');
                 setOkMessage(ok_msg);
+                setState({ ...state, loading: false });
               });
             }
           }
@@ -200,7 +202,7 @@ export default function EditMailAccount(props) {
             </div>
 
             <div className="buttons-wrapper">
-              <button type="submit" className="add">{i18n.Add}</button>
+              <button type="submit" className="add">{i18n.Save}</button>
               <button type="button" className="back" onClick={goBack}>{i18n.Back}</button>
             </div>
           </form>

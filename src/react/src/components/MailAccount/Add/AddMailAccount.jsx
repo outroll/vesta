@@ -48,14 +48,18 @@ export default function AddMailAccount(props) {
     event.preventDefault();
     let newMailDomain = {};
 
-    for (var [name, value] of (new FormData(event.target)).entries()) {
+    for (var [name, value] of (new FormData(event.target)).entries()) {      
       newMailDomain[name] = value;
     }
 
     newMailDomain['ok_acc'] = 'add';
     newMailDomain['token'] = token;
     newMailDomain['v_domain'] = props.domain;
-    newMailDomain['Password'] = newMailDomain['v_password'];
+    newMailDomain['v_password'] = state.password;
+
+    if (!newMailDomain['v_quota']) newMailDomain['v_quota'] = '';
+    if (!newMailDomain['v_aliases']) newMailDomain['v_aliases'] = '';
+    if (!newMailDomain['v_fwd']) newMailDomain['v_fwd'] = '';
 
     if (Object.keys(newMailDomain).length !== 0 && newMailDomain.constructor === Object) {
       setState({ ...state, loading: true });
@@ -195,8 +199,8 @@ export default function AddMailAccount(props) {
 
               <TextInput
                 title={i18n['Send login credentials to email address']}
-                name="v_credentials"
-                id="credentials" />
+                name="v_send_email"
+                id="send_email" />
             </div>
 
             <div className="buttons-wrapper">

@@ -23,18 +23,23 @@
       flex-wrap: unset;
       width: 100%;
       align-items: center;
+      justify-content: flex-end;
     }
 
     a.button-extra,
     button.button-extra {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      justify-content: flex-start;
+      padding: 5px 10px;
       background: none;
       border: none;
-      padding: 0 0.75rem;
       text-decoration: none;
       color: rgb(129, 125, 125);
       font-size: 14px;
       display: flex;
-      justify-content: center;
       align-items: center;
       margin-right: 10px;
       border-radius: 3px;
@@ -152,10 +157,27 @@
   }
 }
 
+@media (max-width: 1250px) {
+  .toolbar {
+    .r-menu {
+      a.button-extra,
+      button.button-extra {
+        max-width: 30%;
+      }
+    }
+  }
+}
+
 @media (max-width: 900px) {
   .toolbar {
     .r-menu {
       overflow: scroll;
+
+      a.button-extra,
+      button.button-extra {
+        overflow: unset;
+        max-width: 100%;
+      }
 
       > div {
         margin-left: 3rem;
@@ -164,6 +186,7 @@
         flex-wrap: unset;
         width: 100%;
         align-items: center;
+        justify-content: flex-start;
       }
 
       .select-wrapper + div {

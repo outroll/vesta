@@ -380,7 +380,7 @@ export default function MailAccounts(props) {
         <LeftButton name={i18n['Add Mail Account']} href={`/add/mail/?domain=${props.domain}`} showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
-            <a href={state.webMail} className="button-extra" type="submit">{i18n['open webmail']}</a>
+            {state.webMail && <a href={state.webMail} className="button-extra" type="submit">{i18n['open webmail']}</a>}
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />
             <Select list='mailList' bulkAction={bulk} />
             <DropdownFilter changeSorting={changeSorting} sorting={state.sorting} order={state.order} list="mailAccountList" />

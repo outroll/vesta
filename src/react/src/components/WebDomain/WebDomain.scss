@@ -19,10 +19,14 @@
 
   .name {
     display: flex;
-    align-items: center;
 
     > div:nth-child(1) {
       margin-right: 2rem;
+    }
+
+    > div + div {
+      line-height: 10px;
+      margin-top: .75rem;
     }
 
     .dns-name-span {

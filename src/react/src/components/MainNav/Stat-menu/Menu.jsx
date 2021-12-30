@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 import './Menu.scss';
+import Spinner from 'src/components/Spinner/Spinner';
 
 const className = height => {
   if (height === 35) {
@@ -27,7 +28,8 @@ const style = ({ menuHeight, mobile }) => {
 
 const Menu = props => {
   const { activeElement, focusedElement } = useSelector(state => state.mainNavigation);
-  const { i18n, panel, userName } = useSelector(state => state.session);
+  const { i18n, userName } = useSelector(state => state.session);
+  const { panel } = useSelector(state => state.panel);
   const { session } = useSelector(state => state.userSession);
   const { user } = useSelector(state => state.menuCounters);
   const dispatch = useDispatch();
@@ -50,6 +52,8 @@ const Menu = props => {
     return `stat ${activeName === activeElement && 'l-active'} ${activeName === focusedElement && 'focus'}`;
   }
 
+  if (!panel[userName]) return <Spinner />;
+
   return (
     <div className="menu-wrapper">
       <div className={className(props.menuHeight)} style={{ height: style(props) }}>
@@ -62,11 +66,21 @@ const Menu = props => {
                   ? (<>
                     <div>
                       <span>{i18n.Disk}:</span>
-                      <span><span className="value">{user.U_DISK} <span className="unit">{panel[session.look]['U_DISK_MEASURE']}</span></span></span>
+                      <span>
+                        <span className="value">
+                          {panel[session.look]['U_DISK']}
+                          <span className="unit">{panel[session.look]['U_DISK_MEASURE']}</span>
+                        </span>
+                      </span>
                     </div>
                     <div>
                       <span>{i18n.Bandwidth}:</span>
-                      <span><span className="value">{user.U_BANDWIDTH} <span className="unit">{panel[session.look]['U_BANDWIDTH_MEASURE']}</span></span></span>
+                      <span>
+                        <span className="value">
+                          {panel[session.look]['U_BANDWIDTH']}
+                          <span className="unit">{panel[session.look]['U_BANDWIDTH_MEASURE']}</span>
+                        </span>
+                      </span>
                     </div>
                   </>)
                   : (<>

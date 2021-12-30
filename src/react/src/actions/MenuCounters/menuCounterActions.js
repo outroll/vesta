@@ -1,12 +1,13 @@
 import { REFRESH_COUNTERS } from './menuCounterTypes';
 import { checkAuth } from 'src/services/session';
 import { setAuthToken } from 'src/utils/token';
+import { REFRESH_PANEL } from '../Panel/panelTypes';
 
 export const refreshCounters = () => (dispatch, getState) => {
   return new Promise((resolve, reject) => {
     checkAuth()
       .then(res => {
-        const { data, token } = res.data;
+        const { data, token, panel } = res.data;
 
         if (token) setAuthToken(token);
 
@@ -14,6 +15,13 @@ export const refreshCounters = () => (dispatch, getState) => {
           type: REFRESH_COUNTERS,
           value: {
             user: data
+          }
+        });
+
+        dispatch({
+          type: REFRESH_PANEL,
+          value: {
+            panel
           }
         });
 

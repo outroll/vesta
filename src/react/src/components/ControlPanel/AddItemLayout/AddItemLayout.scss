@@ -23,7 +23,7 @@ $errorColor: #BE5ABF;
   
     div.error,
     div.success {
-      width: max-content !important;
+      width: fit-content !important;
   
       span {
         font-weight: bold;
@@ -58,6 +58,7 @@ $errorColor: #BE5ABF;
       width: auto !important;
       padding: 10px 0;
       margin-left: 0;
+      margin-right: 10px;
     }
   }
 }
@@ -211,7 +212,7 @@ $errorColor: #BE5ABF;
     label.label-wrapper {
       display: flex;
       align-items: flex-end;
-      width: max-content;
+      width: fit-content;
 
       span {
         font-weight: normal;

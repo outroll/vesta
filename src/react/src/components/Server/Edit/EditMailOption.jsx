@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const EditMailOption = ({ data, visible }) => {
+  const { MAIL_URL } = useSelector(state => state.userSession.session);
   const { i18n } = useSelector(state => state.session);
   const [mailCertificateSystem, setMailCertificateSystem] = useState(false);
 
@@ -58,7 +59,7 @@ const EditMailOption = ({ data, visible }) => {
       <TextInput
         title={i18n['Webmail URL']}
         name="v_mail_url"
-        value={data.mail_url}
+        value={MAIL_URL}
         id="mail-url" />
 
       <br /><br />

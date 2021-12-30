@@ -4,6 +4,7 @@ import { logout } from 'src/actions/Session/sessionActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import Spinner from '../Spinner/Spinner';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import './TopPanel.scss';
 
@@ -82,9 +83,10 @@ const TopPanel = ({ menuItems = [], extraMenuItems = [] }) => {
             </Link>
           </div>
 
-          {renderMenuItems()}
-
-          {renderExtraMenuItems()}
+          <PerfectScrollbar>
+            {renderMenuItems()}
+            {renderExtraMenuItems()}
+          </PerfectScrollbar>
         </div>
 
         <div className="container profile-menu">

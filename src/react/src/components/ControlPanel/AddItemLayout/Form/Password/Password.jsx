@@ -30,6 +30,7 @@ const Password = ({ defaultValue, onChange = () => { }, id, name, title, showGen
     }
 
     setState({ ...state, generatedPassword: result });
+    onChange(result);
   }
 
   const passwordInputHandler = value => {

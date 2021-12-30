@@ -17,12 +17,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import './Web.scss';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import { useHistory } from 'react-router-dom';
 
 const Web = props => {
   const { i18n } = useSelector(state => state.session);
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
+  const { panel } = useSelector(state => state.panel);
+  const { userName } = useSelector(state => state.session);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
@@ -40,6 +44,10 @@ const Web = props => {
   });
 
   useEffect(() => {
+    if (panel[userName]['WEB_DOMAINS'] === '0') {
+      return history.push('/');
+    }
+
     dispatch(addActiveElement('/list/web/'));
     dispatch(removeFocusedElement());
     dispatch(removeControlPanelContentFocusedElement());

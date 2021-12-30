@@ -3,11 +3,11 @@ $secondaryLight: #f8b014;
 .content .edit-template.edit-nginx {
   .toolbar {
     .search-toolbar-name {
-      width: max-content;
+      width: fit-content;
     }
 
     .link {
-      width: max-content;
+      width: fit-content;
       margin-left: 15px;
 
       a {
