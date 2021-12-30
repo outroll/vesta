@@ -17,57 +17,52 @@ if ($_SESSION['user'] != 'admin') {
 if (isset($_GET['cpu'])) {
     $TAB = 'CPU';
     exec (VESTA_CMD.'v-list-sys-cpu-status', $output, $return_var);
-    $service_log = $output;
 }
 
 // Memory info
 if (isset($_GET['mem'])) {
     $TAB = 'MEMORY';
     exec (VESTA_CMD.'v-list-sys-memory-status', $output, $return_var);
-    $service_log = $output;
 }
 
 // Disk info
 if (isset($_GET['disk'])) {
     $TAB = 'DISK';
     exec (VESTA_CMD.'v-list-sys-disk-status', $output, $return_var);
-    $service_log = $output;
 }
 
 // Network info
 if (isset($_GET['net'])) {
     $TAB = 'NETWORK';
     exec (VESTA_CMD.'v-list-sys-network-status', $output, $return_var);
-    $service_log = $output;
 }
 
 // Web info
 if (isset($_GET['web'])) {
     $TAB = 'WEB';
     exec (VESTA_CMD.'v-list-sys-web-status', $output, $return_var);
-    $service_log = $output;
 }
-
 
 // DNS info
 if (isset($_GET['dns'])) {
     $TAB = 'DNS';
     exec (VESTA_CMD.'v-list-sys-dns-status', $output, $return_var);
-    $service_log = $output;
 }
 
 // Mail info
 if (isset($_GET['mail'])) {
     $TAB = 'MAIL';
     exec (VESTA_CMD.'v-list-sys-mail-status', $output, $return_var);
-    $service_log = $output;
 }
 
 // DB info
 if (isset($_GET['db'])) {
     $TAB = 'DB';
     exec (VESTA_CMD.'v-list-sys-db-status', $output, $return_var);
-    $service_log = $output;
+}
+
+foreach($output as $file) {
+    $service_log .= $file . "\n";
 }
 
 // Data

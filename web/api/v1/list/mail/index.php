@@ -60,13 +60,21 @@ foreach ($data as $key => $value) {
   }
 
   if (empty($_GET['domain'])){
-  	$total_amount = $i === 1 ? __('1 domain') : __('%s domains', $i);
+  	$total_amount = $i == 1 ? __('1 domain') : __('%s domains', $i);
   } else {
-  	$total_amount = $i === 1 ?  __('1 mail account') : __('%s mail account', $i);
+  	$total_amount = $i == 1 ?  __('1 mail account') : __('%s mail account', $i);
   }
 
   $data[$key]['list_accounts_button'] = __('list accounts', $data[$key]['ACCOUNTS']);
   $data[$key]['delete_conf'] = __('DELETE_DOMAIN_CONFIRMATION', $key);
+}
+
+if (count($data) == 0) {
+  if (empty($_GET['domain'])){
+    $total_amount = __('%s domains', 0);
+  } else {
+    $total_amount = __('%s mail account', 0);
+  }
 }
 
 // Back uri
