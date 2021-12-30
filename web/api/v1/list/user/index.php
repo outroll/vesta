@@ -31,23 +31,23 @@ foreach ($data as $key => $value) {
   $data[$key]['U_BANDWIDTH_PERCENT'] = get_percentage($data[$key]['U_BANDWIDTH'],$data[$key]['BANDWIDTH']);
   $data[$key]['U_DISK_PERCENT'] = get_percentage($data[$key]['U_DISK'],$data[$key]['DISK_QUOTA']);
 
+  $data[$key]['U_BANDWIDTH_MEASURE'] = humanize_usage_measure($data[$key]['U_BANDWIDTH']);
   $data[$key]['U_BANDWIDTH'] = humanize_usage_size($data[$key]['U_BANDWIDTH']);
-  $data[$key]['U_BANDWIDTH_MEASURE'] = humanize_usage_measure($data[$key]['U_BANDWIDTH_MEASURE']);
 
+  $data[$key]['U_DISK_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK']);
   $data[$key]['U_DISK'] = humanize_usage_size($data[$key]['U_DISK']);
-  $data[$key]['U_DISK_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK_MEASURE']);
 
+  $data[$key]['U_DISK_WEB_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK_WEB']);
   $data[$key]['U_DISK_WEB'] = humanize_usage_size($data[$key]['U_DISK_WEB']);
-  $data[$key]['U_DISK_WEB_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK_WEB_MEASURE']);
 
+  $data[$key]['U_DISK_DB_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK_DB']);
   $data[$key]['U_DISK_DB'] = humanize_usage_size($data[$key]['U_DISK_DB']);
-  $data[$key]['U_DISK_DB_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK_DB_MEASURE']);
 
+  $data[$key]['U_DISK_MAIL_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK_MAIL']);
   $data[$key]['U_DISK_MAIL'] = humanize_usage_size($data[$key]['U_DISK_MAIL']);
-  $data[$key]['U_DISK_MAIL_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK_MAIL_MEASURE']);
 
+  $data[$key]['U_DISK_DIRS_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK_DIRS']);
   $data[$key]['U_DISK_DIRS'] = humanize_usage_size($data[$key]['U_DISK_DIRS']);
-  $data[$key]['U_DISK_DIRS_MEASURE'] = humanize_usage_measure($data[$key]['U_DISK_DIRS_MEASURE']);
   
   if ($data[$key]['SUSPENDED'] == 'yes') {
     $spnd_action = 'unsuspend' ;

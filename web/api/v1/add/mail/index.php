@@ -172,6 +172,7 @@ if (!empty($_POST['ok_acc'])) {
         if (!empty($_SESSION['MAIL_URL'])) $webmail = $_SESSION['MAIL_URL'];
     }
 
+
     // Email login credentials
     if ((!empty($v_send_email)) && (empty($_SESSION['error_msg']))) {
         $to = $v_send_email;

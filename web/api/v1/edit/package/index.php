@@ -260,7 +260,9 @@ $result = array(
     'web_system' => $_SESSION['WEB_SYSTEM'],
     'web_backend' => $_SESSION['WEB_BACKEND'],
     'proxy_system' => $_SESSION['PROXY_SYSTEM'],
-    'dns_system' => $_SESSION['DNS_SYSTEM']
+    'dns_system' => $_SESSION['DNS_SYSTEM'],
+    'error_msg' => $_SESSION['error_msg'],
+    'ok_msg' => $_SESSION['ok_msg']
 );
 
 echo json_encode($result);
