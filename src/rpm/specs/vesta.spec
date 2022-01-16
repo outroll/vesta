@@ -1,6 +1,6 @@
 Name:           vesta
 Version:        1.0.0
-Release:        5
+Release:        6
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPL
@@ -70,6 +70,9 @@ fi
 %config(noreplace) %{_vestadir}/web/css/uploadify.css
 
 %changelog
+* Mon Jan 17 2022 Serghey Rodin <builder@vestacp.com> - 1.0.0-6
+- Bugfixes
+
 * Mon Nov 22 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-5
 - Bugfixes
 
