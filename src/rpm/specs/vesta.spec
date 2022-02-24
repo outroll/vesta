@@ -70,8 +70,8 @@ fi
 %config(noreplace) %{_vestadir}/web/css/uploadify.css
 
 %changelog
-* Mon Jan 17 2022 Serghey Rodin <builder@vestacp.com> - 1.0.0-6
-- Bugfixes
+* Fri Feb 25 2022 Serghey Rodin <builder@vestacp.com> - 1.0.0-6
+- Frontend bugfixes
 
 * Mon Nov 22 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-5
 - Bugfixes
