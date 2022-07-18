@@ -831,6 +831,23 @@ is_format_valid_shell() {
         exit $E_INVALID	
     fi	
 }
+
+format_no_quotes() {
+    exclude="['|\"]"
+    if [[ "$1" =~ $exclude ]]; then
+       check_result "$E_INVALID" "Invalid $2 contains qoutes (\" or ') :: $1"
+    fi
+    is_no_new_line_format "$1"
+}
+
+is_no_new_line_format() {
+    test=$(echo "$1" | head -n1 );
+    if [[ "$test" != "$1" ]]; then
+      check_result "$E_INVALID" "invalid value :: $1"
+    fi
+}
+
+
 # Format validation controller
 is_format_valid() {
     for arg_name in $*; do
@@ -839,6 +856,7 @@ is_format_valid() {
             case $arg_name in
                 account)        is_user_format_valid "$arg" "$arg_name";;
                 action)         is_fw_action_format_valid "$arg";;
+                alias)          is_alias_format_valid "$arg" ;;
                 aliases)        is_alias_format_valid "$arg" ;;
                 antispam)       is_boolean_format_valid "$arg" 'antispam' ;;
                 antivirus)      is_boolean_format_valid "$arg" 'antivirus' ;;
