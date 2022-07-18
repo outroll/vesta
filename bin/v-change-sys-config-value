@@ -28,6 +28,7 @@ PATH="$PATH:/usr/local/sbin:/sbin:/usr/sbin:/root/bin"
 check_args '2' "$#" 'KEY VALUE'
 is_format_valid 'key'
 
+format_no_quotes "$value" 'value'
 
 #----------------------------------------------------------#
 #                       Action                             #
