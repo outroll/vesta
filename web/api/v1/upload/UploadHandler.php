@@ -1193,7 +1193,7 @@ class UploadHandler
             }
             if(!headers_sent()){
                 // this is the most likely/expected path.
-                header("Content-Type: text/javascript; charset=UTF-8");
+                header("Content-Type: application/json");
             } else {
                 // html-encode json to prevent xss...
                 $json = htmlentities($json, ENT_QUOTES | ENT_SUBSTITUTE | ENT_DISALLOWED | ENT_HTML401);
