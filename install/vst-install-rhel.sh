@@ -479,6 +479,7 @@ if [ "$remi" = 'yes' ] && [ ! -e "/etc/yum.repos.d/remi.repo" ]; then
     rpm -Uvh http://rpms.remirepo.net/enterprise/remi-release-$release.rpm
     check_result $? "Can't install REMI repository"
     sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/remi.repo
+    sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/remi-php81.repo
 fi
 
 # Installing Nginx repository
