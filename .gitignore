@@ -6,3 +6,4 @@
 .DS_Store
 src/react/node_modules
 src/react/build
+/.idea
