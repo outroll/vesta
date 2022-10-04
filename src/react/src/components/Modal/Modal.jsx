@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import AddFile from './AddFile';
 import AddDirectory from './AddDirectory';
 import Rename from './Rename';
@@ -9,86 +9,83 @@ import Move from './Move';
 import Archive from './Archive';
 import Extract from './Extract';
 import Copy from './Copy';
-import './Modal.scss';
 import Replace from './Replace';
+import './Modal.scss';
 
-class Modal extends Component {
+const Modal = (props) => {
+  useEffect(() => {
+    window.addEventListener("click", closeOutside);
+    document.addEventListener("keydown", hotkeys);
 
-  componentDidMount = () => {
-    window.addEventListener("click", this.closeOutside);
-    document.addEventListener("keydown", this.hotkeys);
-  }
+    return () => {
+      window.removeEventListener("click", closeOutside);
+      document.removeEventListener("keydown", hotkeys);
+    }
+  }, [])
 
-  componentWillUnmount = () => {
-    window.removeEventListener("click", this.closeOutside);
-    document.removeEventListener("keydown", this.hotkeys);
-  }
-
-  hotkeys = (e) => {
+  const hotkeys = (e) => {
     if (e.keyCode === 27) {
-      this.closeModal();
+      closeModal();
     } else if (e.keyCode === 13) {
-      this.saveAndClose();
+      saveAndClose();
     }
   }
 
-  saveAndClose = () => {
-    this.props.onClick();
-    this.props.onClose();
+  const saveAndClose = () => {
+    props.onClick();
+    props.onClose();
   }
 
-  changePermissions = (permissions) => {
-    this.props.onChangePermissions(permissions);
+  const changePermissions = (permissions) => {
+    props.onChangePermissions(permissions);
   }
 
-  replace = (file) => {
-    this.props.onClick(file);
-    this.props.onClose();
+  const replace = (file) => {
+    props.onClick(file);
+    props.onClose();
   }
 
-  onChange = (e) => {
-    this.props.onChangeValue(e.target.value);
+  const onChange = (e) => {
+    props.onChangeValue(e.target.value);
   }
 
-  closeModal = () => {
-    this.props.onClose();
+  const closeModal = () => {
+    props.onClose();
   }
 
-  closeOutside = (e) => {
+  const closeOutside = (e) => {
     let modal = document.getElementById("modal");
     if (e.target === modal) {
-      this.props.onClose();
+      props.onClose();
     }
   }
 
-  content = () => {
-    const { type, reference, fName, permissions, items, path, files, notAvailable } = this.props;
+  const content = () => {
+    const { type, reference, fName, permissions, items, path, files, notAvailable } = props;
     switch (type) {
-      case 'Copy': return <Copy close={this.closeModal} save={this.saveAndClose} reference={reference} onChange={this.onChange} name={type} fName={fName} items={items} path={path} />;
-      case 'Move': return <Move close={this.closeModal} save={this.saveAndClose} reference={reference} onChange={this.onChange} name={type} fName={fName} items={items} path={path} />;
-      case 'Permissions': return <Permissions close={this.closeModal} save={this.saveAndClose} changePermissions={this.changePermissions} fName={fName} permissions={permissions} />;
-      case 'Extract': return <Extract close={this.closeModal} save={this.saveAndClose} reference={reference} onChange={this.onChange} name={type} fName={fName} path={path} />;
-      case 'Archive': return <Archive close={this.closeModal} save={this.saveAndClose} reference={reference} onChange={this.onChange} items={items} name={type} fName={fName} path={path} />;
-      case 'Rename': return <Rename close={this.closeModal} save={this.saveAndClose} reference={reference} onChange={this.onChange} name={type} fName={fName} />;
-      case 'Add directory': return <AddDirectory close={this.closeModal} save={this.saveAndClose} reference={reference} />;
-      case 'Delete': return <Delete close={this.closeModal} save={this.saveAndClose} fName={fName} items={items} />;
-      case 'Add file': return <AddFile close={this.closeModal} save={this.saveAndClose} reference={reference} />;
-      case 'Replace': return <Replace close={this.closeModal} replace={(files) => this.replace(files)} files={files} />
-      case 'Nothing selected': return <NothingSelected close={this.closeModal} notAvailable={notAvailable} />;
+      case 'Copy': return <Copy close={closeModal} save={saveAndClose} reference={reference} onChange={onChange} name={type} fName={fName} items={items} path={path} />;
+      case 'Move': return <Move close={closeModal} save={saveAndClose} reference={reference} onChange={onChange} name={type} fName={fName} items={items} path={path} />;
+      case 'Permissions': return <Permissions close={closeModal} save={saveAndClose} changePermissions={changePermissions} fName={fName} permissions={permissions} />;
+      case 'Extract': return <Extract close={closeModal} save={saveAndClose} reference={reference} onChange={onChange} name={type} fName={fName} path={path} />;
+      case 'Archive': return <Archive close={closeModal} save={saveAndClose} reference={reference} onChange={onChange} items={items} name={type} fName={fName} path={path} />;
+      case 'Rename': return <Rename close={closeModal} save={saveAndClose} reference={reference} onChange={onChange} name={type} fName={fName} />;
+      case 'Add directory': return <AddDirectory close={closeModal} save={saveAndClose} reference={reference} />;
+      case 'Delete': return <Delete close={closeModal} save={saveAndClose} fName={fName} items={items} />;
+      case 'Add file': return <AddFile close={closeModal} save={saveAndClose} reference={reference} />;
+      case 'Replace': return <Replace close={closeModal} replace={(files) => replace(files)} files={files} />
+      case 'Nothing selected': return <NothingSelected close={closeModal} notAvailable={notAvailable} />;
       default:
         break;
     }
   }
 
-  render() {
-    return (
-      <div>
-        <div className="modal" id="modal">
-          {this.content()}
-        </div>
+  return (
+    <div>
+      <div className="modal" id="modal">
+        {content()}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default Modal;

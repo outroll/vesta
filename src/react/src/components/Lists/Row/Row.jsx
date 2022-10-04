@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faJs, faCss3, faPhp, faHtml5, faSass } from '@fortawesome/free-brands-svg-icons';
 import './Row.scss';
 import { connect } from 'react-redux';
+import dayjs from 'dayjs'
 
 class Row extends Component {
   static propTypes = {
@@ -127,6 +128,13 @@ class Row extends Component {
     return (<span className="date">{getMonth} {getDay}</span>);
   }
 
+  timeFormatter = (date = new Date(), time) => {
+    const year = dayjs(date).year()
+    const currentYear = dayjs().year()
+    if (year === currentYear) return time
+    return year
+  }
+
   glyph = () => {
     const { data: { type, name } } = this.props;
 
@@ -182,7 +190,7 @@ class Row extends Component {
         <span className="fOwner">{owner}</span>
         <span className="fSize">{this.sizeFormatter(size)}</span>
         <span className="fDate">{this.dateFormatter(date)}</span>
-        <span className="fTime">{time}</span>
+        <span className="fTime">{this.timeFormatter(date, time)}</span>
       </li>
     );
   }

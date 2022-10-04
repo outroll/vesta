@@ -87,11 +87,11 @@
     margin-left: 5px;
     line-height: 34px;
     font-size: 15px;
-    white-space: nowrap; 
-    transition: all ease-out .3s;
-  
+    white-space: nowrap;
+    transition: all ease-out 0.3s;
+
     &:hover {
-      transition: all ease-out .2s;
+      transition: all ease-out 0.2s;
       background: rgb(201, 199, 199);
       border-radius: 4px;
       cursor: pointer;
@@ -100,7 +100,7 @@
 }
 
 .list .list-container ul li.active .fName .name:hover {
-  background: #F0B607;
+  background: #f0b607;
   color: black;
 }
 
@@ -160,20 +160,22 @@ li.inactive {
   background: rgb(220, 220, 220);
 }
 
-@media (max-width: 1400px){
-  .fPermissions, .fOwner {
-    display: none;
-  }
-}
-
-@media (max-width: 1100px){
-  .fDate {
-    display: none;
-  }
-}
-
-@media (max-width: 970px){
-  .fTime {
-    display: none;
+@media (max-width: 1320px) {
+  .list .list-container ul li {
+    .fName {
+      width: 210px;
+    }
+    .fSize {
+      width: 75px;
+    }
+    .fDate {
+      width: 40px;
+    }
+    .fTime {
+      width: 50px;
+    }
+    .fPermissions {
+      margin: 0;
+    }
   }
 }

@@ -34,10 +34,10 @@ const Hotkeys = props => {
           </li>
           <li>
             <span className="name">n</span>
-            <span className="description">{i18n['New Fille']}</span>
+            <span className="description">{i18n['New File']}</span>
           </li>
           <li>
-            <span className="name">F7</span>
+            <span className="name">F6</span>
             <span className="description">{i18n['New Folder']}</span>
           </li>
           <li>
@@ -51,10 +51,6 @@ const Hotkeys = props => {
           <li>
             <span className="name">m</span>
             <span className="description">{i18n['Move']}</span>
-          </li>
-          <li>
-            <span className="name">F5</span>
-            <span className="description">{i18n['Copy']}</span>
           </li>
           <li>
             <span className="name">F5</span>
@@ -107,7 +103,7 @@ const Hotkeys = props => {
             <span className="description">{i18n['Open File / Enter Directory']}</span>
           </li>
           <li>
-            <span className="name">F4</span>
+            <span className="name">F3</span>
             <span className="description">{i18n['Edit File']}</span>
           </li>
           <li>

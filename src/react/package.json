@@ -13,7 +13,7 @@
     "axios": "^0.21.4",
     "bootstrap": "^4.3.1",
     "classname": "0.0.0",
-    "dayjs": "^1.10.7",
+    "dayjs": "^1.11.4",
     "jquery": "^3.5.1",
     "node-sass": "^4.14.1",
     "perfect-scrollbar": "^1.5.3",

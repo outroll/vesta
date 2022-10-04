@@ -222,6 +222,17 @@ button {
       }
     }
   }
+
+  .content .servers-list .servers-wrapper .l-col {
+    display: flex;
+    align-items: center;
+    height: 55px;
+    margin-top: .75rem;
+
+    .checkbox {
+      margin: 0px;
+    }
+  }
 }
 
 @media (max-width: 900px) {
