@@ -21,7 +21,7 @@ const Preview = (props) => {
 
   const hotkeys = e => {
     if (e.keyCode === 121) {
-      props.onClose();
+      onClose();
     }
   }
 

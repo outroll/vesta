@@ -12,7 +12,6 @@ const Menu = (props) => {
 
   useEffect(() => {
     document.addEventListener('keydown', handleUserKeyDown)
-
     return () => document.removeEventListener('keydown', handleUserKeyDown)
   }, [handleUserKeyDown])
 
@@ -122,12 +121,10 @@ const Menu = (props) => {
 
   const hotKeys = (e) => {
     e.stopPropagation()
-    e.preventDefault()
     let isSearchInputFocused = document.querySelector('input:focus') || document.querySelector('textarea:focus')
-
     if (props.modalVisible || isSearchInputFocused) return
-
     if (e.shiftKey && e.keyCode === 118) {
+      e.preventDefault()
       rename()
       return
     }
@@ -135,36 +132,47 @@ const Menu = (props) => {
     switch (e.keyCode) {
       // u
       case 85:
+        e.preventDefault();
         return inputFile.current.click()
       // n
       case 78:
+        e.preventDefault()
         return newFile()
       // F6
       case 118:
+        e.preventDefault()
         return newDirectory()
       // d
       case 68:
+        e.preventDefault()
         return download()
       // F2
       case 113:
+        e.preventDefault()
         return rename()
       // m
       case 77:
+        e.preventDefault()
         return move()
       // F4
       case 115:
+        e.preventDefault()
         return copy()
       // a
       case 65:
+        e.preventDefault()
         return archive()
       // F8
       case 119:
+        e.preventDefault()
         return deleteFile()
       // Del
       case 46:
+        e.preventDefault()
         return deleteFile()
       // F3
       case 114:
+        e.preventDefault()
         return permissions()
       default:
         break
