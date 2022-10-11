@@ -15,7 +15,6 @@ const Notifications = () => {
 
   useEffect(() => {
     if (!notifications.length) {
-      console.log(notifications);
       fetchData();
     }
   }, [notifications]);

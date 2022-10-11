@@ -12,7 +12,7 @@
   height: 100%;
   overflow: auto;
   background-color: $black;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
 
   .modal-content {
     box-shadow: 0 2px 11px 0 rgba(0, 0, 0, 0.5);
@@ -25,9 +25,22 @@
     margin-top: 100px;
 
     .modal-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       overflow-wrap: anywhere;
       font-size: 17px;
       margin-bottom: 40px;
+
+      small {
+        margin-top: 5px;
+        font-size: 13px;
+        
+        &.error {
+          color: red;
+        }
+      }
 
       input {
         background: #333;
@@ -44,6 +57,7 @@
       word-break: break-word;
 
       h3 {
+        font-size: 20px;
         color: $secondaryLight;
       }
 
@@ -66,7 +80,7 @@
         border-color: none;
         background: none;
         text-transform: uppercase;
-        font-size: 12px;
+        font-size: 11px;
 
         &:focus {
           outline: none;
@@ -98,7 +112,7 @@
           border-color: $primaryLight;
           color: $hoverButtonText;
         }
-        
+
         &:hover {
           background: $primaryActive;
           border-color: $primaryActive;
@@ -106,7 +120,7 @@
         }
       }
     }
-    
+
     .header .quot {
       color: $secondaryActive;
     }
@@ -144,17 +158,18 @@
       right: 15px;
     }
   }
-  
+
   .permissions {
     height: auto;
     width: 30%;
     margin-top: 0;
-    
-    .error, &:focus {
+
+    .error,
+    &:focus {
       border: 1px solid red;
     }
 
-    input[type="text"] {
+    input[type='text'] {
       size: 40px;
       width: 60px;
       margin: auto auto 10px auto;
