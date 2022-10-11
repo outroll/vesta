@@ -72,6 +72,8 @@ fi
 %changelog
 * Wed Oct 12 2022 Serghey Rodin <builder@vestacp.com> - 1.0.0-7
 - Frontend bugfixes
+- Bugfixes
+- Security fixes
 
 * Fri Feb 25 2022 Serghey Rodin <builder@vestacp.com> - 1.0.0-6
 - Frontend bugfixes
