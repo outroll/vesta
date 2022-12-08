@@ -580,7 +580,6 @@ $LANG['ru'] = array(
     'Vesta Control Panel Plugins' => 'Плагины Vesta Control Panel',
     'preview' => 'предпросмотр',
     'Reseller Role' => 'Реселлер',
-    'Reseller Role' => 'Реселлер',
     'Web Config Editor' => 'Веб Редактор Конфигов',
     'Template Manager' => 'Менеджер Шаблонов',
     'Backup Migration Manager' => 'Менеджер Миграции Бэкапов',
