@@ -27,7 +27,7 @@ software="nginx apache2 apache2.2-common apache2-suexec-custom apache2-utils
     libapache2-mod-ruid2 lsof mc mysql-client mysql-common mysql-server
     ntpdate php-cgi php-common php-curl php-fpm phpmyadmin php-mysql
     phppgadmin php-pgsql postgresql postgresql-contrib proftpd-basic quota
-    roundcube-core roundcube-mysql roundcube-plugins rrdtool rssh spamassassin
+    roundcube-core roundcube-mysql roundcube-plugins rrdtool spamassassin
     sudo vesta vesta-ioncube vesta-nginx vesta-php vesta-softaculous
     vim-common vsftpd webalizer whois zip net-tools"
 
@@ -702,15 +702,6 @@ echo "$(which ntpdate) -s ntp.ubuntu.com" >> /etc/cron.daily/ntpdate
 chmod 775 /etc/cron.daily/ntpdate
 ntpdate -s ntp.ubuntu.com
 
-# Adding rssh
-if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
-    echo /usr/bin/rssh >> /etc/shells
-fi
-sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
-sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
-sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
-chmod 755 /usr/bin/rssh
-
 
 #----------------------------------------------------------#
 #                     Configure Vesta                      #
@@ -1008,6 +999,11 @@ if [ "$mysql" = 'yes' ]; then
         mysql_install_db
     fi
     if [ "$release" == '18.04' ]; then
+        mkdir /var/lib/mysql
+        chown mysql:mysql /var/lib/mysql
+        mysqld --initialize-insecure
+    fi
+    if [ "$release" != '18.04' ]; then
         mkdir /var/lib/mysql
         chown mysql:mysql /var/lib/mysql
         mysqld --initialize-insecure
