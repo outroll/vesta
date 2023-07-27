@@ -572,7 +572,7 @@ service vesta stop > /dev/null 2>&1
 cp -r $VESTA/* $vst_backups/vesta > /dev/null 2>&1
 apt-get -y remove vesta vesta-nginx vesta-php > /dev/null 2>&1
 apt-get -y purge vesta vesta-nginx vesta-php > /dev/null 2>&1
-rm -rf $VESTA > /dev/null 2>&1
+#rm -rf $VESTA > /dev/null 2>&1
 
 
 #----------------------------------------------------------#
@@ -701,6 +701,15 @@ echo '#!/bin/sh' > /etc/cron.daily/ntpdate
 echo "$(which ntpdate) -s ntp.ubuntu.com" >> /etc/cron.daily/ntpdate
 chmod 775 /etc/cron.daily/ntpdate
 ntpdate -s ntp.ubuntu.com
+
+# Adding rssh
+if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
+    echo /usr/bin/rssh >> /etc/shells
+fi
+sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
+sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
+sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
+chmod 755 /usr/bin/rssh
 
 
 #----------------------------------------------------------#
@@ -996,6 +1005,7 @@ if [ "$mysql" = 'yes' ]; then
     # Configuring MySQL/MariaDB
     cp -f $vestacp/mysql/$mycnf /etc/mysql/my.cnf
     if [ "$release" != '16.04' ]; then
+        #mysql_secure_installation
         mysql_install_db
     fi
     if [ "$release" == '18.04' ]; then
@@ -1003,14 +1013,9 @@ if [ "$mysql" = 'yes' ]; then
         chown mysql:mysql /var/lib/mysql
         mysqld --initialize-insecure
     fi
-    if [ "$release" != '18.04' ]; then
-        mkdir /var/lib/mysql
-        chown mysql:mysql /var/lib/mysql
-        mysqld --initialize-insecure
-    fi
     update-rc.d mysql defaults
     service mysql start
-    check_result $? "mysql start failed"
+    #check_result $? "mysql start failed"
 
     # Securing MySQL/MariaDB installation
     mpass=$(gen_pass)
@@ -1255,7 +1260,7 @@ if [ "$fail2ban" = 'yes' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n vsftpd-iptables -A 2)
         fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/false/true/" /etc/fail2ban/jail.local
-    fi 
+    fi
     update-rc.d fail2ban defaults
     service fail2ban start
     check_result $? "fail2ban start failed"
