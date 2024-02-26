@@ -27,7 +27,7 @@ software="nginx apache2 apache2.2-common apache2-suexec-custom apache2-utils
     libapache2-mod-ruid2 lsof mc mysql-client mysql-common mysql-server
     ntpdate php-cgi php-common php-curl php-fpm phpmyadmin php-mysql
     phppgadmin php-pgsql postgresql postgresql-contrib proftpd-basic quota
-    roundcube-core roundcube-mysql roundcube-plugins rrdtool rssh spamassassin
+    roundcube-core roundcube-mysql roundcube-plugins rrdtool spamassassin
     sudo vesta vesta-ioncube vesta-nginx vesta-php vesta-softaculous
     vim-common vsftpd webalizer whois zip net-tools"
 
@@ -572,7 +572,7 @@ service vesta stop > /dev/null 2>&1
 cp -r $VESTA/* $vst_backups/vesta > /dev/null 2>&1
 apt-get -y remove vesta vesta-nginx vesta-php > /dev/null 2>&1
 apt-get -y purge vesta vesta-nginx vesta-php > /dev/null 2>&1
-rm -rf $VESTA > /dev/null 2>&1
+#rm -rf $VESTA > /dev/null 2>&1
 
 
 #----------------------------------------------------------#
@@ -1005,6 +1005,7 @@ if [ "$mysql" = 'yes' ]; then
     # Configuring MySQL/MariaDB
     cp -f $vestacp/mysql/$mycnf /etc/mysql/my.cnf
     if [ "$release" != '16.04' ]; then
+        #mysql_secure_installation
         mysql_install_db
     fi
     if [ "$release" == '18.04' ]; then
@@ -1014,7 +1015,7 @@ if [ "$mysql" = 'yes' ]; then
     fi
     update-rc.d mysql defaults
     service mysql start
-    check_result $? "mysql start failed"
+    #check_result $? "mysql start failed"
 
     # Securing MySQL/MariaDB installation
     mpass=$(gen_pass)
@@ -1259,7 +1260,7 @@ if [ "$fail2ban" = 'yes' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n vsftpd-iptables -A 2)
         fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
         sed -i "${fline}s/false/true/" /etc/fail2ban/jail.local
-    fi 
+    fi
     update-rc.d fail2ban defaults
     service fail2ban start
     check_result $? "fail2ban start failed"
