@@ -1,6 +1,8 @@
 [Vesta Control Panel](http://vestacp.com/)
 ==================================================
 
+Vesta is back under active development as of 25 February 2024. We are commited to open source, and will engage with the community to identify the new roadmap for Vesta. Stay tuned!
+
 [![Join the chat at https://gitter.im/vesta-cp/Lobby](https://badges.gitter.im/vesta-cp/Lobby.svg)](https://gitter.im/vesta-cp/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 * Vesta is an open source hosting control panel.
