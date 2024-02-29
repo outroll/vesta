@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add system ip address
-# options: IP NETMASK [INTERFACE] [USER] [IP_STATUS] [IP_NAME] [NAT_IP]
+# options: IP NETMASK [INTERFACE] [USER] [IP_STATUS] [DEFAULT_DOMAIN] [NAT_IP]
 #
 # The function adds ip address into a system. It also creates rc scripts. You
 # can specify ip name which will be used as root domain for temporary aliases.
@@ -34,7 +34,7 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '2' "$#" 'IP NETMASK [INTERFACE] [USER] [STATUS] [NAME] [NATED_IP]'
+check_args '2' "$#" 'IP NETMASK [INTERFACE] [USER] [STATUS] [DEFAULT_DOMAIN] [NATED_IP]'
 is_format_valid 'ip' 'netmask' 'interface' 'user' 'ip_status'
 is_ip_free
 is_object_valid 'user' 'USER' "$user"
@@ -90,7 +90,7 @@ date=$(echo "$time_n_date" |cut -f 2 -d \ )
 # Adding vesta ip
 echo "OWNER='$user'
 STATUS='$ip_status'
-NAME='$ip_name'
+DEFAULT_DOMAIN='$ip_name'
 U_SYS_USERS=''
 U_WEB_DOMAINS='0'
 INTERFACE='$interface'
@@ -98,6 +98,7 @@ NETMASK='$netmask'
 NAT='$nat_ip'
 TIME='$time'
 DATE='$date'" > $VESTA/data/ips/$ip
+HOSTNAME=`hostname`
 chmod 660 $VESTA/data/ips/$ip
 
 # WEB support
@@ -106,17 +107,21 @@ if [ ! -z "$WEB_SYSTEM" ]; then
     rm -f $web_conf
 
     if [ "$WEB_SYSTEM" = 'httpd' ] || [ "$WEB_SYSTEM" = 'apache2' ]; then
-        if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
-            echo "NameVirtualHost $ip:$WEB_PORT" >  $web_conf
+        if [ -z "$(grep -r "Listen 127.0.0.1:$WEB_PORT" /etc/httpd/conf.d/* )" ]; then
+            if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
+                echo "NameVirtualHost $ip:$WEB_PORT" >  $web_conf
+            fi
+            echo "Listen 127.0.0.1:$WEB_PORT" >> $web_conf
         fi
-        echo "Listen $ip:$WEB_PORT" >> $web_conf
-    fi
+   fi
 
     if [ "$WEB_SSL" = 'mod_ssl' ]; then
-        if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
-            echo "NameVirtualHost $ip:$WEB_SSL_PORT" >> $web_conf
+        if [ -z "$(grep -r "Listen 127.0.0.1:$WEB_PORT" /etc/httpd/conf.d/* )" ]; then
+            if [ -z "$(/usr/sbin/apachectl -v | grep Apache/2.4)" ]; then
+                echo "NameVirtualHost $ip:$WEB_SSL_PORT" >> $web_conf
+            fi
+            echo "Listen 127.0.0.1:$WEB_SSL_PORT" >> $web_conf
         fi
-        echo "Listen $ip:$WEB_SSL_PORT" >> $web_conf
     fi
 fi
 
@@ -126,6 +131,7 @@ if [ ! -z "$PROXY_SYSTEM" ]; then
         sed -e "s/%ip%/$ip/g" \
             -e "s/%web_port%/$WEB_PORT/g" \
             -e "s/%proxy_port%/$PROXY_PORT/g" \
+            -e "s/%hostname%/$HOSTNAME/g" \
         > /etc/$PROXY_SYSTEM/conf.d/$ip.conf
 
     # mod_extract_forwarded
