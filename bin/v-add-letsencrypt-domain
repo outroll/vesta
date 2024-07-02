@@ -169,7 +169,7 @@ for auth in $authz; do
     echo "[$(date)] : query_le_v2 \"$auth\" \"$payload\" \"$nonce\"" >> /usr/local/vesta/log/letsencrypt.log
     answer=$(query_le_v2 "$auth" "$payload" "$nonce")
     echo "[$(date)] : answer=$answer" >> /usr/local/vesta/log/letsencrypt.log
-    url=$(echo "$answer" |grep -A3 $proto |grep url |cut -f 4 -d \")
+    url=$(echo "$answer" |grep -A3 $proto |grep '"url"' |cut -f 4 -d \")
     echo "[$(date)] : url=$url" >> /usr/local/vesta/log/letsencrypt.log
     token=$(echo "$answer" |grep -A3 $proto |grep token |cut -f 4 -d \")
     echo "[$(date)] : token=$token" >> /usr/local/vesta/log/letsencrypt.log
