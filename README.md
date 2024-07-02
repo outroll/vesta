@@ -18,7 +18,7 @@ ssh root@your.server
 
 Download the installation script, and run it:
 ```bash
-curl http://vestacp.com/pub/vst-install.sh | bash
+curl https://vestacp.com/pub/vst-install.sh | bash
 ```
 
 How to install (3 step)
@@ -31,7 +31,7 @@ ssh root@your.server
 
 Download the installation script:
 ```bash
-curl -O http://vestacp.com/pub/vst-install.sh
+curl -O https://vestacp.com/pub/vst-install.sh
 ```
 Then run it:
 ```bash
@@ -40,5 +40,5 @@ bash vst-install.sh
 
 License
 ----------------------------
-Vesta is licensed under  [GPL v3 ](https://github.com/serghey-rodin/vesta/blob/master/LICENSE) license
+Vesta is licensed under  [GPL v3 ](https://github.com/outroll/vesta/blob/master/LICENSE) license
 
