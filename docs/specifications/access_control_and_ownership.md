@@ -2,7 +2,7 @@
 
 # VestaCP Access Control and Ownership
 VestaCP is built on the concept of federated access control and ownership for users. The hierarchy of ownership is as follows:
-- **Admin**: The highest level of ownership in VestaCP. The admin has the ability to create and manage users, and assign them to organisations and team. The admin can also create and manage servers, and assign them to organisations and teams. The admin can also create and manage organizations.
+- **Admin**: The highest level of ownership in VestaCP. The admin has the ability to create and manage users, and assign them to organisations and teamd. The admin can also create and manage organizations and teams.
 - **Organization**: The second level of ownership in VestaCP. An organization can have multiple teams and projects. The organization can also have multiple users under teams. Organizations can be created by the admin.
 - **Team**: The third level of ownership in VestaCP. A team can have multiple projects and users. Teams can be created by the admin or organization owner.
 - **User**: The lowest level of ownership in VestaCP. A user can be assigned to an organisation or a team and can have access to projects. Users can be created by the admin, organization owner, or team owner.
