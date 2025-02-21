@@ -1,4 +1,4 @@
-[Back to Specifications](readme.md)
+[Back to Specifications](README.md)
 
 # VestaCP Access Control and Ownership
 VestaCP is built on the concept of federated access control and ownership for users. The hierarchy of ownership is as follows:
@@ -42,4 +42,4 @@ The following functionality is available in VestaCP:
 - Reset passwords
 
 ## API
-Please see the API documentation for more information on how to interact with the VestaCP authentication API at [API Documentation](../api/readme.md).
+Please see the API documentation for more information on how to interact with the VestaCP authentication API at [API Documentation](../api/README.md).
