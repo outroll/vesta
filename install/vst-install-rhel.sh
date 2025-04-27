@@ -1204,10 +1204,8 @@ if [ "$spamd" = 'yes' ]; then
     service spamassassin start
     check_result $? "spamassassin start failed"
     if [ "$release" -ge '7' ]; then
-        groupadd -g 1001 spamd
-        useradd -u 1001 -g spamd -s /sbin/nologin -d \
-            /var/lib/spamassassin spamd
-        mkdir /var/lib/spamassassin
+        useradd spamd -s /sbin/nologin -d /var/lib/spamassassin 2>/dev/null
+        mkdir -p /var/lib/spamassassin
         chown spamd:spamd /var/lib/spamassassin
     fi
 fi
