@@ -14,9 +14,9 @@ ip=$1
 ip_name=$2
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/ip.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/ip.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -38,7 +38,7 @@ update_ip_value '$NAME' "$ip_name"
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

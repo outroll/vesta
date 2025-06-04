@@ -694,7 +694,7 @@
                             <tr>
                                 <td class="vst-text input-label step-top">
                                     <a href="javascript:elementHideShow('ssl');" class="vst-text">
-                                        <b><?php print __('Vesta SSL');?><img src="/images/arrow.png"></b>
+                                        <b><?php print __('DevIT SSL');?><img src="/images/arrow.png"></b>
                                     </a>
                                 </td>
                             </tr>
@@ -704,7 +704,7 @@
                                         <tr>
                                             <td class="vst-text input-label step-top">
                                                 <label><input type="checkbox" size="20" class="vst-checkbox" name="v_web_ssl_domain_checkbox"
-                                                            <?php if(!empty($_SESSION['VESTA_CERTIFICATE'])) echo "checked=yes" ?>
+                                                            <?php if(!empty($_SESSION['devit_CERTIFICATE'])) echo "checked=yes" ?>
                                                             onclick="javascript:elementHideShow('domain_ssl');">
                                                     <?php print __('Use Web Domain SSL Certificate');?>
                                                 </label>
@@ -712,7 +712,7 @@
                                         </tr>
                                         <tr>
                                             <td class="vst-text input-label step-left">
-                                                <table style="display:<?php if (empty($_SESSION['VESTA_CERTIFICATE'])) echo 'none';?> ;" id="domain_ssl">
+                                                <table style="display:<?php if (empty($_SESSION['devit_CERTIFICATE'])) echo 'none';?> ;" id="domain_ssl">
                                                     <tr>
                                                         <td class="vst-text">
                                                             <?php print __('Domain') ?>
@@ -721,14 +721,14 @@
                                                     <tr>
                                                         <td>
                                                             <select class="vst-list" name="v_web_ssl_domain">
-                                                                <option value='' <?php if(empty($_SESSION['VESTA_CERTIFICATE'])) echo 'selected' ?>></option>
+                                                                <option value='' <?php if(empty($_SESSION['devit_CERTIFICATE'])) echo 'selected' ?>></option>
                                                                 <?php
                                                                     foreach ($v_ssl_domains as $key => $value) {
                                                                         echo "\t\t\t\t<option value=\"".$value."\"";
-                                                                        if ((!empty($_SESSION['VESTA_CERTIFICATE'])) && ( $value == $_SESSION['VESTA_CERTIFICATE'])){
+                                                                        if ((!empty($_SESSION['devit_CERTIFICATE'])) && ( $value == $_SESSION['devit_CERTIFICATE'])){
                                                                             echo ' selected' ;
                                                                         }
-                                                                        if ((!empty($_SESSION['VESTA_CERTIFICATE'])) && ( $value == $_POST['v_vesta_certificate'])){
+                                                                        if ((!empty($_SESSION['devit_CERTIFICATE'])) && ( $value == $_POST['v_devit_certificate'])){
                                                                             echo ' selected' ;
                                                                         }
                                                                         echo ">".$value."</option>\n";
@@ -833,14 +833,14 @@
 
                             <tr>
                                 <td class="vst-text input-label step-top">
-                                    <a href="javascript:elementHideShow('vesta');" class="vst-text">
-                                        <b><?php print __('Vesta Control Panel Plugins');?> <!-- span style="color:#ff6701;font-size:10px; padding:0 10px;">preview</span--><img src="/images/arrow.png"></b>
+                                    <a href="javascript:elementHideShow('devit');" class="vst-text">
+                                        <b><?php print __('DevIT Control Panel Plugins');?> <!-- span style="color:#ff6701;font-size:10px; padding:0 10px;">preview</span--><img src="/images/arrow.png"></b>
                                     </a>
                                 </td>
                             </tr>
                             <tr>
                                 <td class="vst-text input-label step-left">
-                                    <table style="display:<?php if (empty($v_adv) && $_GET['lead'] != 'filemanager' && $_GET['lead'] != 'sftp') echo 'none';?> ;" id="vesta">
+                                    <table style="display:<?php if (empty($v_adv) && $_GET['lead'] != 'filemanager' && $_GET['lead'] != 'sftp') echo 'none';?> ;" id="devit">
                                         <tr>
                                             <td class="vst-text">
                                                 <?php print __('Version') ?>
@@ -941,13 +941,13 @@
                                                             </div>
                                                             <ul>
                                                                 <li>
-                                                                    <a href="https://vestacp.com/checkout/2co.php?product_id=6&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Licence').' 3$/'.__('month').'</a>
+                                                                    <a href="https://devitcp.com/checkout/2co.php?product_id=6&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Licence').' 3$/'.__('month').'</a>
                                                                 </li>
                                                                 <li>
-                                                                    <a href="https://vestacp.com/checkout/2co.php?product_id=9&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Lifetime License').' 18$</a>
+                                                                    <a href="https://devitcp.com/checkout/2co.php?product_id=9&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Lifetime License').' 18$</a>
                                                                 </li>
                                                             </ul>
-                                                            <span class="twoco">2Checkout.com Inc. (Ohio, USA) is a payment facilitator for goods and services provided by vestacp.com.</span>';
+                                                            <span class="twoco">2Checkout.com Inc. (Ohio, USA) is a payment facilitator for goods and services provided by devitcp.com.</span>';
                                                     }
                                                     ?>
                                                 </div>
@@ -989,13 +989,13 @@
                                                             </div>
                                                             <ul>
                                                                 <li>
-                                                                    <a href="https://vestacp.com/checkout/2co.php?product_id=7&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Licence').' 3$/'.__('month').'</a>
+                                                                    <a href="https://devitcp.com/checkout/2co.php?product_id=7&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Licence').' 3$/'.__('month').'</a>
                                                                 </li>
                                                                 <li>
-                                                                    <a href="https://vestacp.com/checkout/2co.php?product_id=8&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Lifetime License').' 28$</a>
+                                                                    <a href="https://devitcp.com/checkout/2co.php?product_id=8&referer='.$_SERVER['HTTP_HOST'].'" class="purchase">'.__('Buy Lifetime License').' 28$</a>
                                                                 </li>
                                                             </ul>
-                                                            <span class="twoco">2Checkout.com Inc. (Ohio, USA) is a payment facilitator for goods and services provided by vestacp.com.</span>';
+                                                            <span class="twoco">2Checkout.com Inc. (Ohio, USA) is a payment facilitator for goods and services provided by devitcp.com.</span>';
                                                     }
                                                     ?>
                                                 </div>

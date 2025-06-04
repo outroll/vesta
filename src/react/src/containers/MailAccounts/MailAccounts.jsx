@@ -374,7 +374,7 @@ export default function MailAccounts(props) {
   return (
     <div className="mail-accounts">
       <Helmet>
-        <title>{`Vesta - ${i18n.MAIL}`}</title>
+        <title>{`devit - ${i18n.MAIL}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name={i18n['Add Mail Account']} href={`/add/mail/?domain=${props.domain}`} showLeftMenu={true} />

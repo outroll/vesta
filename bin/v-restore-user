@@ -9,7 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Import VESTA variable for cron launch
+# Import devit variable for cron launch
 source /etc/profile
 
 # Argument definition
@@ -29,12 +29,12 @@ if [ -z "$BACKUP" ]; then
 fi
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/func/ip.sh
-source $VESTA/func/db.sh
-source $VESTA/func/rebuild.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/func/ip.sh
+source $devit/func/db.sh
+source $devit/func/rebuild.sh
+source $devit/conf/devit.conf
 
 # Check backup ownership function
 is_backup_available() {
@@ -66,7 +66,7 @@ EOF
 
 # FTP backup download function
 ftp_download() {
-    source $VESTA/conf/ftp.backup.conf
+    source $devit/conf/ftp.backup.conf
     if [ -z "$PORT" ]; then
         PORT='21'
     fi
@@ -136,7 +136,7 @@ EOF
 
 # SFTP backup download function
 sftp_download() {
-    source $VESTA/conf/sftp.backup.conf
+    source $devit/conf/sftp.backup.conf
     if [ -z "$PORT" ]; then
         PORT='22'
     fi
@@ -151,9 +151,9 @@ sftp_download() {
 
 # Google backup download function
 google_download() {
-    source $VESTA/conf/google.backup.conf
-    gsutil="$VESTA/3rdparty/gsutil/gsutil"
-    export BOTO_CONFIG="$VESTA/conf/.google.backup.boto"
+    source $devit/conf/google.backup.conf
+    gsutil="$devit/3rdparty/gsutil/gsutil"
+    export BOTO_CONFIG="$devit/conf/.google.backup.boto"
     ${gsutil} cp gs://$BUCKET/$BPATH/$1 $BACKUP/ > /dev/null 2>&1
     if [ "$?" -ne 0 ]; then
         check_result "$E_CONNECT" "gsutil failed to download $1"
@@ -202,7 +202,7 @@ if [ -z "$check_user" ]; then
     email=$(get_user_value '$CONTACT')
 else
     create_user="yes"
-    email=$(grep CONTACT $VESTA/data/users/admin/user.conf | cut -f2 -d \')
+    email=$(grep CONTACT $devit/data/users/admin/user.conf | cut -f2 -d \')
 fi
 
 
@@ -210,7 +210,7 @@ fi
 disk_usage=$(df $BACKUP |tail -n1 |tr ' ' '\n' |grep % |cut -f 1 -d %)
 if [ "$disk_usage" -ge "$BACKUP_DISK_LIMIT" ]; then
     echo "Error: Not enough disk space" |$SENDMAIL -s "$subj" $email $notify
-    sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+    sed -i "/ $user /d" $devit/data/queue/backup.pipe
     check_result $E_DISK "Not enough disk space"
 fi
 
@@ -223,7 +223,7 @@ while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
     if [ "$i" -ge "15" ]; then
         la_error="LoadAverage $la is above threshold"
         echo "Error: $la_error" |$SENDMAIL -s "$subj" $email $notify
-        sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+        sed -i "/ $user /d" $devit/data/queue/backup.pipe
         check_result $E_LA "$la_error"
     fi
     la=$(cat /proc/loadavg |cut -f 1 -d ' ' |cut -f 1 -d '.')
@@ -238,7 +238,7 @@ fi
 tmpdir=$(mktemp -p $BACKUP_TEMP -d)
 if [ "$?" -ne 0 ]; then
     echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notify
-    sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+    sed -i "/ $user /d" $devit/data/queue/backup.pipe
     check_result "$E_NOTEXIST" "can't create tmp dir"
 fi
 
@@ -248,19 +248,19 @@ if [ "$create_user" = 'yes' ]; then
     echo -e "$(date "+%F %T") $user" |tee -a $tmpdir/restore.log
 
     # Unpacking user container
-    tar xf $BACKUP/$backup -C $tmpdir ./vesta
+    tar xf $BACKUP/$backup -C $tmpdir ./devit
     if [ "$?" -ne 0 ]; then
         rm -rf $tmpdir
         echo "Can't unpack user contaner" |$SENDMAIL -s "$subj" $email $notify
-        sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+        sed -i "/ $user /d" $devit/data/queue/backup.pipe
         check_result "$E_PARSING" "can't unpack user contaner"
     fi
 
     # Restoring user.conf
     mkdir $USER_DATA
-    cp $tmpdir/vesta/user.conf $USER_DATA/
-    cp -r  $tmpdir/vesta/ssl $USER_DATA/ >/dev/null 2>&1
-    cp $tmpdir/vesta/backup-excludes.conf $USER_DATA/ >/dev/null 2>&1
+    cp $tmpdir/devit/user.conf $USER_DATA/
+    cp -r  $tmpdir/devit/ssl $USER_DATA/ >/dev/null 2>&1
+    cp $tmpdir/devit/backup-excludes.conf $USER_DATA/ >/dev/null 2>&1
 
     # Rebuilding user
     rebuild_user_conf
@@ -271,7 +271,7 @@ tar xf $BACKUP/$backup -C $tmpdir ./pam
 if [ "$?" -ne 0 ]; then
     rm -rf $tmpdir
     echo "Can't unpack PAM contaner" |$SENDMAIL -s "$subj" $email $notify
-    sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+    sed -i "/ $user /d" $devit/data/queue/backup.pipe
     check_result "$E_PARSING" "can't unpack PAM contaner"
 fi
 old_user=$(cut -f 1 -d : $tmpdir/pam/passwd)
@@ -306,7 +306,7 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
                 rm -rf $tmpdir
                 error="$domain belongs to another user"
                 echo "$error" |$SENDMAIL -s "$subj" $email $notify
-                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                sed -i "/ $user /d" $devit/data/queue/backup.pipe
                 check_result "$E_PARSING" "$error"
             fi
         fi
@@ -317,13 +317,13 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
             rm -rf $tmpdir
             error="Can't unpack $domain web container"
             echo "$error" |$SENDMAIL -s "$subj" $email $notify
-            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+            sed -i "/ $user /d" $devit/data/queue/backup.pipe
             check_result "$E_PARSING" "$error"
         fi
 
         # Restoring web.conf
         if [ -z "$check_config" ]; then
-            eval $(cat $tmpdir/web/$domain/vesta/web.conf)
+            eval $(cat $tmpdir/web/$domain/devit/web.conf)
 
             # Deleting conflicting aliases
             for dom_alias in ${ALIAS//,/ }; do
@@ -419,7 +419,7 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
         #    rm -rf $tmpdir
         #    error="can't unpack $domain data tarball"
         #    echo "$error" |$SENDMAIL -s "$subj" $email $notify
-        #    sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+        #    sed -i "/ $user /d" $devit/data/queue/backup.pipe
         #    check_result "$E_PARSING" "$error"
         #fi
 
@@ -435,9 +435,9 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
     done
 
     # Adding user to traff queue
-    sed -i "/ $user /d" $VESTA/data/queue/traffic.pipe
+    sed -i "/ $user /d" $devit/data/queue/traffic.pipe
     echo "$BIN/v-update-web-domains-traff $user" >>\
-        $VESTA/data/queue/traffic.pipe
+        $devit/data/queue/traffic.pipe
 
     # Restarting web server
     $BIN/v-restart-web
@@ -475,7 +475,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
                 rm -rf $tmpdir
                 error="$domain belongs to another user"
                 echo "$error" |$SENDMAIL -s "$subj" $email $notify
-                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                sed -i "/ $user /d" $devit/data/queue/backup.pipe
                 check_result "$E_PARSING" "$error"
             fi
         fi
@@ -486,13 +486,13 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
             rm -rf $tmpdir
             error="Can't unpack $domain dns container"
             echo "$error" |$SENDMAIL -s "$subj" $email $notify
-            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+            sed -i "/ $user /d" $devit/data/queue/backup.pipe
             check_result "$E_PARSING" "$error"
         fi
 
         # Restoring dns.conf
         if [ -z "$check_config" ]; then
-            eval $(cat $tmpdir/dns/$domain/vesta/dns.conf)
+            eval $(cat $tmpdir/dns/$domain/devit/dns.conf)
 
             # Checking ip address
             check_ip=$(is_ip_valid $IP $user)
@@ -517,7 +517,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
         fi
 
         # Restoring dns records
-        cp -f $tmpdir/dns/$domain/vesta/$domain.conf $USER_DATA/dns/
+        cp -f $tmpdir/dns/$domain/devit/$domain.conf $USER_DATA/dns/
 
         # Rebuilding dns domain
         rebuild_dns_domain_conf
@@ -562,7 +562,7 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
                 rm -rf $tmpdir
                 error="$domain belongs to another user"
                 echo "$error" |$SENDMAIL -s "$subj" $email $notify
-                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                sed -i "/ $user /d" $devit/data/queue/backup.pipe
                 check_result "$E_PARSING" "$error"
             fi
         fi
@@ -573,23 +573,23 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
             rm -rf $tmpdir
             error="Can't unpack $domain mail container"
             echo "$error" |$SENDMAIL -s "$subj" $email $notify
-            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+            sed -i "/ $user /d" $devit/data/queue/backup.pipe
             check_result "$E_PARSING" "$error"
         fi
 
         # Restoring mail.conf
         if [ -z "$check_config" ]; then
-            cat $tmpdir/mail/$domain/vesta/mail.conf >> $USER_DATA/mail.conf
+            cat $tmpdir/mail/$domain/devit/mail.conf >> $USER_DATA/mail.conf
         fi
 
         # Restoring DKIM
-        if [ -e "$tmpdir/mail/$domain/vesta/$domain.pem" ]; then
-            cp -f $tmpdir/mail/$domain/vesta/$domain.pem $USER_DATA/mail/
-            cp -f $tmpdir/mail/$domain/vesta/$domain.pub $USER_DATA/mail/
+        if [ -e "$tmpdir/mail/$domain/devit/$domain.pem" ]; then
+            cp -f $tmpdir/mail/$domain/devit/$domain.pem $USER_DATA/mail/
+            cp -f $tmpdir/mail/$domain/devit/$domain.pub $USER_DATA/mail/
         fi
 
         # Restoring email accounts
-        cp -f $tmpdir/mail/$domain/vesta/$domain.conf $USER_DATA/mail/
+        cp -f $tmpdir/mail/$domain/devit/$domain.conf $USER_DATA/mail/
 
         # Rebuilding mail config
         rebuild_mail_domain_conf
@@ -607,7 +607,7 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
                 rm -rf $tmpdir
                 error="Can't unpack $domain mail account container"
                 echo "$error" |$SENDMAIL -s "$subj" $email $notify
-                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                sed -i "/ $user /d" $devit/data/queue/backup.pipe
                 check_result "$E_PARSING" "$error"
             fi
 
@@ -653,13 +653,13 @@ if [ "$db" != 'no' ] && [ ! -z "$DB_SYSTEM" ]; then
             rm -rf $tmpdir
             error="Can't unpack $database database container"
             echo "$error" |$SENDMAIL -s "$subj" $email $notify
-            sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+            sed -i "/ $user /d" $devit/data/queue/backup.pipe
             check_result "$E_PARSING" "$error"
         fi
 
         # Restore database config
         if [ -z "$check_config" ]; then
-            eval $(cat $tmpdir/db/$database/vesta/db.conf)
+            eval $(cat $tmpdir/db/$database/devit/db.conf)
             DB=$(echo "$DB"  |sed -e "s/${old_user}_//")
             DB="${user}_${DB}"
             DBUSER=$(echo "$DBUSER" |sed -e "s/${old_user}_//")
@@ -696,7 +696,7 @@ if [ "$cron" != 'no' ] && [ ! -z "CRON_SYSTEM" ]; then
         rm -rf $tmpdir
         error="Can't unpack cron container"
         echo "$error" |$SENDMAIL -s "$subj" $email $notify
-        sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+        sed -i "/ $user /d" $devit/data/queue/backup.pipe
         check_result "$E_PARSING" "$error"
     fi
 
@@ -743,7 +743,7 @@ if [ "$udir" != 'no' ]; then
             if [ "$?" -ne 0 ]; then
                 error="can't unpack $user_dir user dir contaner"
                 echo "$error" |$SENDMAIL -s "$subj" $email $notify
-                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                sed -i "/ $user /d" $devit/data/queue/backup.pipe
                 check_result "$E_PARSING" "$error"
             fi
 
@@ -751,7 +751,7 @@ if [ "$udir" != 'no' ]; then
             if [ "$?" -ne 0 ]; then
                 error="can't unpack $user_dir user dir contaner"
                 echo "$error" |$SENDMAIL -s "$subj" $email $notify
-                sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
+                sed -i "/ $user /d" $devit/data/queue/backup.pipe
                 check_result "$E_PARSING" "$error"
             fi
 
@@ -772,11 +772,11 @@ cat $tmpdir/restore.log |$SENDMAIL -s "$subj" $email $notify
 rm -rf $tmpdir
 
 # Cleaning restore queue
-sed -i "/v-restore-user $user /d" $VESTA/data/queue/backup.pipe
+sed -i "/v-restore-user $user /d" $devit/data/queue/backup.pipe
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Update user counters

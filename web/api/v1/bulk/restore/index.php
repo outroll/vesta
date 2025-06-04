@@ -31,13 +31,13 @@ if (!empty($_POST['cron'])) $cron = 'yes';
 if (!empty($_POST['udir'])) $udir = escapeshellarg(implode(",",$_POST['udir']));
 
 if ($action == 'restore') {
-    exec (VESTA_CMD."v-schedule-user-restore ".$user." ".$backup." ".$web." ".$dns." ".$mail." ".$db." ".$cron." ".$udir, $output, $return_var);
+    exec (devit_CMD."v-schedule-user-restore ".$user." ".$backup." ".$web." ".$dns." ".$mail." ".$db." ".$cron." ".$udir, $output, $return_var);
     if ($return_var == 0) {
         $_SESSION['error_msg'] = __('RESTORE_SCHEDULED');
     } else {
         $_SESSION['error_msg'] = implode('<br>', $output);
         if (empty($_SESSION['error_msg'])) {
-            $_SESSION['error_msg'] = __('Error: vesta did not return any output.');
+            $_SESSION['error_msg'] = __('Error: devit did not return any output.');
         }
         if ($return_var == 4) {
             $_SESSION['error_msg'] = __('RESTORE_EXISTS');

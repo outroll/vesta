@@ -13,8 +13,8 @@
 user=$1
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -34,13 +34,13 @@ is_backup_scheduled 'backup'
 #----------------------------------------------------------#
 
 # Adding backup task to  the queue
-log=$VESTA/log/backup.log
+log=$devit/log/backup.log
 echo "$BIN/v-backup-user $user yes >> $log 2>&1" >>\
-    $VESTA/data/queue/backup.pipe
+    $devit/data/queue/backup.pipe
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

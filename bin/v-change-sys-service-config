@@ -16,8 +16,8 @@ restart=$3
 echo "$0 $*" >/tmp/t.log
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -122,7 +122,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

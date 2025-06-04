@@ -16,9 +16,9 @@ domain=$(idn -t --quiet -u "$2" )
 restart="$3"
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -55,12 +55,12 @@ fi
 # Updating dns-cluster queue
 if [ ! -z "$DNS_CLUSTER" ]; then
     cmd="$BIN/v-delete-remote-dns-domain $user $domain"
-    echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
+    echo "$cmd" >> $devit/data/queue/dns-cluster.pipe
 fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Deleting domain

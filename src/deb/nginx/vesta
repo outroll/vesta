@@ -1,34 +1,34 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:       vesta
+# Provides:       devit
 #                 internal nginx
 #                 internal php-fpm
 # Required-Start:    $local_fs $remote_fs $network $syslog
 # Required-Stop:     $local_fs $remote_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: starts the vesta control panel
+# Short-Description: starts the devit control panel
 # Description:       starts nginx and php-fpm using start-stop-daemon
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-NGINX_DAEMON=/usr/local/vesta/nginx/sbin/vesta-nginx
-NGINX_NAME=vesta-nginx
-NGINX_DESC=vesta-nginx
-NGINX_PID=/var/run/vesta-nginx.pid
+NGINX_DAEMON=/usr/local/devit/nginx/sbin/devit-nginx
+NGINX_NAME=devit-nginx
+NGINX_DESC=devit-nginx
+NGINX_PID=/var/run/devit-nginx.pid
 
-PHP_DAEMON=/usr/local/vesta/php/sbin/vesta-php
-PHP_NAME=vesta-php
-PHP_DESC=vesta-php
-PHP_PID=/var/run/vesta-php.pid
-PHP_CONF=/usr/local/vesta/php/etc/php-fpm.conf
+PHP_DAEMON=/usr/local/devit/php/sbin/devit-php
+PHP_NAME=devit-php
+PHP_DESC=devit-php
+PHP_PID=/var/run/devit-php.pid
+PHP_CONF=/usr/local/devit/php/etc/php-fpm.conf
 
 set -e
 
 . /lib/lsb/init-functions
 
-. /etc/profile.d/vesta.sh
+. /etc/profile.d/devit.sh
 
 start_nginx() {
     start-stop-daemon --start --quiet --pidfile $NGINX_PID \
@@ -82,12 +82,12 @@ case "$1" in
         ;;
 
     status)
-        status_of_proc -p $NGINX_PID "$NGINX_DAEMON" vesta-nginx
-        status_of_proc -p $PHP_PID "$PHP_DAEMON" vesta-php
+        status_of_proc -p $NGINX_PID "$NGINX_DAEMON" devit-nginx
+        status_of_proc -p $PHP_PID "$PHP_DAEMON" devit-php
         ;;
 
     *)
-        echo "Usage: Vesta {start|stop|restart|status}" >&2
+        echo "Usage: devit {start|stop|restart|status}" >&2
         exit 1
         ;;
 esac

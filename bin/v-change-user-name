@@ -15,8 +15,8 @@ fname=$2
 lname=$3
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -43,7 +43,7 @@ update_user_value "$user" '$LNAME' "$lname"
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

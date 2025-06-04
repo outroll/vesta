@@ -20,8 +20,8 @@ cron=$7
 udir=$8
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 # Check backup ownership function
 is_backup_available() {
@@ -55,14 +55,14 @@ is_backup_available "$user" "$backup"
 #----------------------------------------------------------#
 
 # Adding restore task to  the queue
-log=$VESTA/log/restore.log
+log=$devit/log/restore.log
 options="'$web' '$dns' '$mail' '$db' '$cron' '$udir'"
 echo "$BIN/v-restore-user $user $backup $options  yes >> $log 2>&1" >>\
-    $VESTA/data/queue/backup.pipe
+    $devit/data/queue/backup.pipe
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

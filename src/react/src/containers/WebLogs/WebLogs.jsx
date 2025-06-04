@@ -90,7 +90,7 @@ export default function WebLogs() {
   return (
     <div className="web-logs">
       <Helmet>
-        <title>{`Vesta - ${i18n.WEB}`}</title>
+        <title>{`devit - ${i18n.WEB}`}</title>
       </Helmet>
       <TopPanel menuItems={menuItems} extraMenuItems={extraMenuItems} />
       <div className="content">

@@ -410,7 +410,7 @@ const Users = props => {
   return (
     <div>
       <Helmet>
-        <title>{`Vesta - ${i18n.USER}`}</title>
+        <title>{`devit - ${i18n.USER}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton

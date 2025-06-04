@@ -17,9 +17,9 @@ account=$3
 malias=$4
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 # Additional argument formatting
 format_domain
@@ -55,10 +55,10 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
-# Adding vesta alias
+# Adding devit alias
 aliases=$(get_object_value "mail/$domain" 'ACCOUNT' "$account" '$ALIAS')
 if [ -z "$aliases" ]; then
     aliases="$malias"

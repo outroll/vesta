@@ -15,7 +15,7 @@ if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
 }
 
 if ($_SESSION['user'] == 'admin') {
-    exec (VESTA_CMD."v-delete-cron-vesta-autoupdate", $output, $return_var);
+    exec (devit_CMD."v-delete-cron-devit-autoupdate", $output, $return_var);
     $message = __('Autoupdate has been successfully disabled');
     unset($output);
 }

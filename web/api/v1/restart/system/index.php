@@ -12,7 +12,7 @@ if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
 
 if ($_SESSION['user'] == 'admin') {
     if (!empty($_GET['hostname'])) {
-        exec (VESTA_CMD."v-restart-system yes", $output, $return_var);
+        exec (devit_CMD."v-restart-system yes", $output, $return_var);
         $_SESSION['error_msg'] = 'The system is going down for reboot NOW!';
     }
     unset($output);

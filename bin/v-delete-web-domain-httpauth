@@ -16,9 +16,9 @@ auth_user=$3
 restart=${4-yes}
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 # Defining htpasswd file
 htaccess="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.$domain.conf_htaccess"
@@ -66,7 +66,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Rebuilding FTP variables

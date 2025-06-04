@@ -13,8 +13,8 @@
 format=${1-shell}
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 export PATH=$PATH:/sbin
 
@@ -262,7 +262,7 @@ fi
 # Checking FIREWALL system
 if [ ! -z "$FIREWALL_SYSTEM" ] && [ "$FIREWALL_SYSTEM" != 'remote' ]; then
     state="stopped"
-    /sbin/iptables -L vesta >/dev/null 2>&1
+    /sbin/iptables -L devit >/dev/null 2>&1
     if [ "$?" -eq 0 ]; then
         state="running"
     fi
@@ -287,7 +287,7 @@ esac
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

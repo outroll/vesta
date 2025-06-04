@@ -22,23 +22,23 @@ comment=$5
 rule=$6
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 # Get next firewall rule id
 get_next_fw_rule() {
     if [ -z "$rule" ]; then
-        curr_str=$(grep "RULE=" $VESTA/data/firewall/rules.conf |\
+        curr_str=$(grep "RULE=" $devit/data/firewall/rules.conf |\
          cut -f 2 -d \' | sort -n | tail -n1)
         rule="$((curr_str +1))"
     fi
 }
 
 sort_fw_rules() {
-    cat $VESTA/data/firewall/rules.conf |\
-        sort -n -k 2 -t \' > $VESTA/data/firewall/rules.conf.tmp
-    mv -f $VESTA/data/firewall/rules.conf.tmp \
-        $VESTA/data/firewall/rules.conf
+    cat $devit/data/firewall/rules.conf |\
+        sort -n -k 2 -t \' > $devit/data/firewall/rules.conf.tmp
+    mv -f $devit/data/firewall/rules.conf.tmp \
+        $devit/data/firewall/rules.conf
 }
 
 
@@ -72,10 +72,10 @@ str="$str IP='$ip' COMMENT='$comment' SUSPENDED='no'"
 str="$str TIME='$time' DATE='$date'"
 
 # Adding to config
-echo "$str" >> $VESTA/data/firewall/rules.conf
+echo "$str" >> $devit/data/firewall/rules.conf
 
 # Changing permissions
-chmod 660 $VESTA/data/firewall/rules.conf
+chmod 660 $devit/data/firewall/rules.conf
 
 # Sorting firewall rules by id number
 sort_fw_rules
@@ -85,7 +85,7 @@ $BIN/v-update-firewall
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

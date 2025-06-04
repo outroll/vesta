@@ -2923,15 +2923,15 @@ a.button.cancel {
 .login a.error {
   color: #BE5ABF;
 }
-.vestacp {
+.devitcp {
   color: #505050;
   font-size: 10px;
   text-align: right;
 }
-.vestacp:hover {
+.devitcp:hover {
   color: #2c9491;
 }
-.vestacp:active {
+.devitcp:active {
   color: #ff6701;
 }
 .login-bottom {

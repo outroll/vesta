@@ -14,9 +14,9 @@ domain=$1
 user=$2
 
 # Includes
-source $VESTA/func/ip.sh
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/ip.sh
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -41,7 +41,7 @@ fi
 #----------------------------------------------------------#
 
 # WEB domain
-web_data=$(grep "DOMAIN='$domain'" $VESTA/data/users/$owner/web.conf)
+web_data=$(grep "DOMAIN='$domain'" $devit/data/users/$owner/web.conf)
 if [ ! -z "$web_data" ]; then
     $BIN/v-suspend-web-domain $owner $domain >> /dev/null 2>&1
     eval $web_data
@@ -53,14 +53,14 @@ if [ ! -z "$web_data" ]; then
 
     # Check SSL
     if [ "$SSL" = 'yes' ]; then
-        ssl_crt=$VESTA/data/users/$owner/ssl/$domain.crt
-        ssl_key=$VESTA/data/users/$owner/ssl/$domain.key
-        ssl_ca=$VESTA/data/users/$owner/ssl/$domain.ca
-        ssl_pem=$VESTA/data/users/$owner/ssl/$domain.pem
-        mv $ssl_crt $VESTA/data/users/$user/ssl/
-        mv $ssl_key $VESTA/data/users/$user/ssl/
-        mv $ssl_ca $VESTA/data/users/$user/ssl/ >> /dev/null 2>&1
-        mv $ssl_pem $VESTA/data/users/$user/ssl/ >> /dev/null 2>&1
+        ssl_crt=$devit/data/users/$owner/ssl/$domain.crt
+        ssl_key=$devit/data/users/$owner/ssl/$domain.key
+        ssl_ca=$devit/data/users/$owner/ssl/$domain.ca
+        ssl_pem=$devit/data/users/$owner/ssl/$domain.pem
+        mv $ssl_crt $devit/data/users/$user/ssl/
+        mv $ssl_key $devit/data/users/$user/ssl/
+        mv $ssl_ca $devit/data/users/$user/ssl/ >> /dev/null 2>&1
+        mv $ssl_pem $devit/data/users/$user/ssl/ >> /dev/null 2>&1
         rm -f $HOMEDIR/$owner/conf/web/ssl.$domain.*
     fi
 
@@ -73,8 +73,8 @@ if [ ! -z "$web_data" ]; then
     fi
 
     # Move config
-    sed -i "/DOMAIN='$domain'/d" $VESTA/data/users/$owner/web.conf
-    echo "$web_data" >> $VESTA/data/users/$user/web.conf
+    sed -i "/DOMAIN='$domain'/d" $devit/data/users/$owner/web.conf
+    echo "$web_data" >> $devit/data/users/$user/web.conf
 
     # Move data
     mv $HOMEDIR/$owner/web/$domain $HOMEDIR/$user/web/
@@ -90,23 +90,23 @@ if [ ! -z "$web_data" ]; then
 fi
 
 # DNS domain
-dns_data=$(grep "DOMAIN='$domain'" $VESTA/data/users/$owner/dns.conf)
+dns_data=$(grep "DOMAIN='$domain'" $devit/data/users/$owner/dns.conf)
 if [ ! -z "$dns_data" ]; then
     eval $dns_data
 
     # Change IP
     if [ ! -z "$ip" ]; then
         dns_data=$(echo "$dns_data" | sed "s/IP='$IP'/IP='$ip'/")
-        sed -i "s/$IP/$ip/g" $VESTA/data/users/$owner/dns/$domain.conf
+        sed -i "s/$IP/$ip/g" $devit/data/users/$owner/dns/$domain.conf
     fi
 
     # Move config
-    sed -i "/DOMAIN='$domain'/d" $VESTA/data/users/$owner/dns.conf
-    echo "$dns_data" >> $VESTA/data/users/$user/dns.conf
+    sed -i "/DOMAIN='$domain'/d" $devit/data/users/$owner/dns.conf
+    echo "$dns_data" >> $devit/data/users/$user/dns.conf
 
     # Move dns records
-    mv $VESTA/data/users/$owner/dns/$domain.conf \
-        $VESTA/data/users/$user/dns/
+    mv $devit/data/users/$owner/dns/$domain.conf \
+        $devit/data/users/$user/dns/
 
     # Rebuild config
     $BIN/v-unsuspend-dns-domain $user $domain no >> /dev/null 2>&1
@@ -120,21 +120,21 @@ if [ ! -z "$dns_data" ]; then
 fi
 
 # MAIL domain
-mail_data=$(grep "DOMAIN='$domain'" $VESTA/data/users/$owner/mail.conf)
+mail_data=$(grep "DOMAIN='$domain'" $devit/data/users/$owner/mail.conf)
 if [ ! -z "$mail_data" ]; then
 
     # Move config
-    sed -i "/DOMAIN='$domain'/d" $VESTA/data/users/$owner/mail.conf
-    echo "$mail_data" >> $VESTA/data/users/$user/mail.conf
-    mv -f $VESTA/data/users/$owner/mail/$domain.conf \
-        $VESTA/data/users/$user/mail/
+    sed -i "/DOMAIN='$domain'/d" $devit/data/users/$owner/mail.conf
+    echo "$mail_data" >> $devit/data/users/$user/mail.conf
+    mv -f $devit/data/users/$owner/mail/$domain.conf \
+        $devit/data/users/$user/mail/
 
     # Move DKIM
-    if [ -e "$VESTA/data/users/$owner/mail/$domain.pem" ]; then
-        mv -f $VESTA/data/users/$owner/mail/$domain.pem \
-            $VESTA/data/users/$user/mail/
-        mv -f $VESTA/data/users/$owner/mail/$domain.pub \
-            $VESTA/data/users/$user/mail/
+    if [ -e "$devit/data/users/$owner/mail/$domain.pem" ]; then
+        mv -f $devit/data/users/$owner/mail/$domain.pem \
+            $devit/data/users/$user/mail/
+        mv -f $devit/data/users/$owner/mail/$domain.pub \
+            $devit/data/users/$user/mail/
     fi
 
     # Move data
@@ -168,7 +168,7 @@ $BIN/v-update-user-counters $user
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

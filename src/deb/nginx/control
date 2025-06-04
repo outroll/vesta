@@ -1,14 +1,14 @@
-Source: vesta-nginx
-Package: vesta-nginx
+Source: devit-nginx
+Package: devit-nginx
 Priority: optional
 Version: 1.0.0-1
 Section: admin
-Maintainer: Serghey Rodin <skid@vestacp.com>
-Homepage: http://vestacp.com
+Maintainer: Serghey Rodin <skid@devitcp.com>
+Homepage: http://devitcp.com
 Architecture: amd64
-Depends: vesta
-Description: Vesta Nginx
- Vesta is an open source hosting control panel.
- Vesta has a clean and focused interface without the clutter.
- Vesta has the latest of very innovative technologies.
+Depends: devit
+Description: devit Nginx
+ devit is an open source hosting control panel.
+ devit has a clean and focused interface without the clutter.
+ devit has the latest of very innovative technologies.
 

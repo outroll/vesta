@@ -77,7 +77,7 @@ const Postgresql = () => {
   return (
     <div className="edit-template edit-pgsql">
       <Helmet>
-        <title>{`Vesta - ${i18n.SERVER}`}</title>
+        <title>{`devit - ${i18n.SERVER}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

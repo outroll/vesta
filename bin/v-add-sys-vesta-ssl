@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: add vesta ssl certificate
+# info: add devit ssl certificate
 # options: USER DOMAIN [RESTART]
 #
-# The function copies user domain SSL to vesta SSL directory
+# The function copies user domain SSL to devit SSL directory
 
 
 #----------------------------------------------------------#
@@ -15,9 +15,9 @@ domain=$2
 restart=$3
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -39,8 +39,8 @@ is_object_value_exist 'web' 'DOMAIN' "$domain" '$SSL'
 # Defining certificate location
 dom_crt="/home/$user/conf/web/ssl.$domain.pem"
 dom_key="/home/$user/conf/web/ssl.$domain.key"
-vst_crt="$VESTA/ssl/certificate.crt"
-vst_key="$VESTA/ssl/certificate.key"
+vst_crt="$devit/ssl/certificate.crt"
+vst_key="$devit/ssl/certificate.key"
 
 # Checking certificate
 if [ ! -e "$dom_crt" ] || [ ! -e "$dom_key" ]; then
@@ -62,7 +62,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Restarting services
@@ -76,19 +76,19 @@ if [ "$restart" != 'no' ]; then
     if [ ! -z "$FTP_SYSTEM" ]; then
         $BIN/v-restart-service "$FTP_SYSTEM"
     fi
-    if [ -e "/var/run/vesta-nginx.pid" ]; then
-        kill -HUP $(cat /var/run/vesta-nginx.pid)
+    if [ -e "/var/run/devit-nginx.pid" ]; then
+        kill -HUP $(cat /var/run/devit-nginx.pid)
     else
-        service vesta restart
+        service devit restart
     fi
 fi
 
-# Updating vesta.conf
-if [ -z "$(grep VESTA_CERTIFICATE $VESTA/conf/vesta.conf)" ]; then
-    echo "VESTA_CERTIFICATE='$user:$domain'" >> $VESTA/conf/vesta.conf
+# Updating devit.conf
+if [ -z "$(grep devit_CERTIFICATE $devit/conf/devit.conf)" ]; then
+    echo "devit_CERTIFICATE='$user:$domain'" >> $devit/conf/devit.conf
 else
-    sed -i "s/VESTA_CERTIFICATE.*/VESTA_CERTIFICATE='$user:$domain'/g" \
-        $VESTA/conf/vesta.conf
+    sed -i "s/devit_CERTIFICATE.*/devit_CERTIFICATE='$user:$domain'/g" \
+        $devit/conf/devit.conf
 fi
 
 # Logging

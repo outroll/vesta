@@ -22,7 +22,7 @@ if (!empty($_REQUEST['path'])) {
             chmod($fn, 0644);
 
             if ($f) {
-                exec (VESTA_CMD . "v-copy-fs-file {$user} {$fn} ".escapeshellarg($path), $output, $return_var);
+                exec (devit_CMD . "v-copy-fs-file {$user} {$fn} ".escapeshellarg($path), $output, $return_var);
                 $error = check_return_code($return_var, $output);
                 if ($return_var != 0) {
                     $error = 'Error while saving file';
@@ -33,7 +33,7 @@ if (!empty($_REQUEST['path'])) {
         }
     }
 
-    exec (VESTA_CMD . "v-open-fs-file {$user} ".escapeshellarg($path), $content, $return_var);
+    exec (devit_CMD . "v-open-fs-file {$user} ".escapeshellarg($path), $content, $return_var);
     if ($return_var != 0) {
         $error = 'Error while opening file'; // todo: handle this more styled
         exit;

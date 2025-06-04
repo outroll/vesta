@@ -15,9 +15,9 @@ domain=$2
 restart=$3
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -39,8 +39,8 @@ is_object_value_exist 'web' 'DOMAIN' "$domain" '$SSL'
 # Defining certificate location
 dom_crt="/home/$user/conf/web/ssl.$domain.pem"
 dom_key="/home/$user/conf/web/ssl.$domain.key"
-vst_crt="$VESTA/ssl/mail.crt"
-vst_key="$VESTA/ssl/mail.key"
+vst_crt="$devit/ssl/mail.crt"
+vst_key="$devit/ssl/mail.key"
 
 # Checking certificate
 if [ ! -e "$dom_crt" ] || [ ! -e "$dom_key" ]; then
@@ -79,7 +79,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Restarting services
@@ -92,12 +92,12 @@ if [ "$restart" != 'no' ]; then
     fi
 fi
 
-# Updating vesta.conf
-if [ -z "$(grep MAIL_CERTIFICATE $VESTA/conf/vesta.conf)" ]; then
-    echo "MAIL_CERTIFICATE='$user:$domain'" >> $VESTA/conf/vesta.conf
+# Updating devit.conf
+if [ -z "$(grep MAIL_CERTIFICATE $devit/conf/devit.conf)" ]; then
+    echo "MAIL_CERTIFICATE='$user:$domain'" >> $devit/conf/devit.conf
 else
     sed -i "s/MAIL_CERTIFICATE.*/MAIL_CERTIFICATE='$user:$domain'/g" \
-        $VESTA/conf/vesta.conf
+        $devit/conf/devit.conf
 fi
 
 # Logging

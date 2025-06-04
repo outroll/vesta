@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: update all vesta packages
+# info: update all devit packages
 # options: USER [RESTART]
 #
-# The function of updating all vesta packages
+# The function of updating all devit packages
 
 
 #----------------------------------------------------------#
@@ -13,8 +13,8 @@
 source /etc/profile
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -22,12 +22,12 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 # Starting update loop
-for package in vesta vesta-nginx vesta-php vesta-ioncube vesta-softaculous; do
-    $BIN/v-update-sys-vesta "$package"
+for package in devit devit-nginx devit-php devit-ioncube devit-softaculous; do
+    $BIN/v-update-sys-devit "$package"
 done
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

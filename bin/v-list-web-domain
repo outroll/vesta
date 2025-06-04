@@ -15,7 +15,7 @@ domain=$2
 format=${3-shell}
 
 # Includes
-source $VESTA/func/main.sh
+source $devit/func/main.sh
 
 # JSON list function
 json_list() {
@@ -48,7 +48,7 @@ json_list() {
 
 # SHELL list function
 shell_list() {
-    source $VESTA/conf/vesta.conf
+    source $devit/conf/devit.conf
     echo "DOMAIN:         $DOMAIN"
     echo "ALIAS:          ${ALIAS//,/ }"
     echo "IP:             $IP"
@@ -132,7 +132,7 @@ esac
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

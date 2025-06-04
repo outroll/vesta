@@ -63,7 +63,7 @@ const AddBanIP = () => {
   }
 
   const renderChainOptions = () => {
-    return ['SSH', 'WEB', 'FTP', 'DNS', 'MAIL', 'DB', 'VESTA'].map((chain, index) => (
+    return ['SSH', 'WEB', 'FTP', 'DNS', 'MAIL', 'DB', 'devit'].map((chain, index) => (
       <option key={index} selected={userLanguage === chain} value={chain}>{chain}</option>
     ));
   }
@@ -71,7 +71,7 @@ const AddBanIP = () => {
   return (
     <div className="edit-template add-user">
       <Helmet>
-        <title>{`Vesta - ${i18n.FIREWALL}`}</title>
+        <title>{`devit - ${i18n.FIREWALL}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

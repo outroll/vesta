@@ -83,7 +83,7 @@ const EditFirewall = props => {
   return (
     <div className="edit-template edit-firewall">
       <Helmet>
-        <title>{`Vesta - ${i18n.FIREWALL}`}</title>
+        <title>{`devit - ${i18n.FIREWALL}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

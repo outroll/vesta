@@ -1,5 +1,5 @@
 #!/bin/bash
-# info: delete sys vesta user ssl certificate
+# info: delete sys devit user ssl certificate
 # options: NONE
 #
 # The script disables user domain ssl synchronization
@@ -10,8 +10,8 @@
 #----------------------------------------------------------#
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -23,12 +23,12 @@ source $VESTA/conf/vesta.conf
 #                       Action                             #
 #----------------------------------------------------------#
 
-# Updating vesta.conf value
-sed -i "/VESTA_CERTIFICATE=/ d" $VESTA/conf/vesta.conf
+# Updating devit.conf value
+sed -i "/devit_CERTIFICATE=/ d" $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

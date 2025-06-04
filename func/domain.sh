@@ -35,7 +35,7 @@ is_backend_template_valid() {
 
 # Web domain existence check
 is_web_domain_new() {
-    web=$(grep -F -H "DOMAIN='$1'" $VESTA/data/users/*/web.conf)
+    web=$(grep -F -H "DOMAIN='$1'" $devit/data/users/*/web.conf)
     if [ ! -z "$web" ]; then
         if [ "$type" == 'web' ]; then
             check_result $E_EXISTS "Web domain $1 exist"
@@ -49,7 +49,7 @@ is_web_domain_new() {
 
 # Web alias existence check
 is_web_alias_new() {
-    web_alias=$(grep -wH "$1" $VESTA/data/users/*/web.conf)
+    web_alias=$(grep -wH "$1" $devit/data/users/*/web.conf)
     if [ ! -z "$web_alias" ]; then
         a1=$(echo "$web_alias" |grep -F "'$1'" |cut -f 7 -d /)
         if [ ! -z "$a1" ] && [ "$2" == "web"  ]; then
@@ -160,8 +160,8 @@ prepare_web_domain_values() {
         ssl_ca_str='#'
     fi
     if [ "$SUSPENDED" = 'yes' ]; then
-        docroot="$VESTA/data/templates/web/suspend"
-        sdocroot="$VESTA/data/templates/web/suspend"
+        docroot="$devit/data/templates/web/suspend"
+        sdocroot="$devit/data/templates/web/suspend"
     fi
 }
 
@@ -207,11 +207,11 @@ add_web_config() {
     chown root:$user $conf
     chmod 640 $conf
 
-    if [ -z "$(grep "$conf" /etc/$1/conf.d/vesta.conf)" ]; then
+    if [ -z "$(grep "$conf" /etc/$1/conf.d/devit.conf)" ]; then
         if [ "$1" != 'nginx' ]; then
-            echo "Include $conf" >> /etc/$1/conf.d/vesta.conf
+            echo "Include $conf" >> /etc/$1/conf.d/devit.conf
         else
-            echo "include $conf;" >> /etc/$1/conf.d/vesta.conf
+            echo "include $conf;" >> /etc/$1/conf.d/devit.conf
         fi
     fi
 
@@ -281,7 +281,7 @@ del_web_config() {
     fi
 
     if [ -e "$conf" ]; then
-        sed -i "\|$conf|d" /etc/$1/conf.d/vesta.conf
+        sed -i "\|$conf|d" /etc/$1/conf.d/devit.conf
         rm -f $conf
     else
         # fallback to old style configs
@@ -297,7 +297,7 @@ del_web_config() {
     # clean-up for both config styles if there is no more domains
     web_domain=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
     if [ "$web_domain" -eq '0' ]; then
-        sed -i "/.*\/$user\/conf\/web\//d" /etc/$1/conf.d/vesta.conf
+        sed -i "/.*\/$user\/conf\/web\//d" /etc/$1/conf.d/devit.conf
         if [ -f "$conf" ]; then
             rm -f $conf
         fi
@@ -366,7 +366,7 @@ is_dns_template_valid() {
 
 # DNS domain existence check
 is_dns_domain_new() {
-    dns=$(ls $VESTA/data/users/*/dns/$1.conf 2>/dev/null)
+    dns=$(ls $devit/data/users/*/dns/$1.conf 2>/dev/null)
     if [ ! -z "$dns" ]; then
         if [ "$2" == 'dns' ]; then
             check_result $E_EXISTS "DNS domain $1 exists"
@@ -539,7 +539,7 @@ is_dns_nameserver_valid() {
 
 # Mail domain existence check
 is_mail_domain_new() {
-    mail=$(ls $VESTA/data/users/*/mail/$1.conf 2>/dev/null)
+    mail=$(ls $devit/data/users/*/mail/$1.conf 2>/dev/null)
     if [ ! -z "$mail" ]; then
         if [ "$2" == 'mail' ]; then
             check_result $E_EXISTS "Mail domain $1 exists"

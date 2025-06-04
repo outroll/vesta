@@ -1,20 +1,20 @@
-Name:           vesta
+Name:           devit
 Version:        1.0.0
 Release:        7
-Summary:        Vesta Control Panel
+Summary:        devit Control Panel
 Group:          System Environment/Base
 License:        GPL
-URL:            http://vestacp.com/
-Vendor:         vestacp.com
+URL:            http://devitcp.com/
+Vendor:         devitcp.com
 Source0:        %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       redhat-release >= 5
-Provides:       vestacp vesta-api vesta
+Provides:       devitcp devit-api devit
 
-%define         _vestadir  /usr/local/%{name}
+%define         _devitdir  /usr/local/%{name}
 
 %description
-This package contains the packages for Vesta Control Panel api.
+This package contains the packages for devit Control Panel api.
 
 %global debug_package %{nil}
 
@@ -24,106 +24,106 @@ This package contains the packages for Vesta Control Panel api.
 %build
 
 %install
-install -d  %{buildroot}%{_vestadir}
-%{__cp} -ad ./* %{buildroot}%{_vestadir}
+install -d  %{buildroot}%{_devitdir}
+%{__cp} -ad ./* %{buildroot}%{_devitdir}
 
 %clean
 rm -rf %{buildroot}
 
 %post
 if [ $1 -ge 2 ]; then
-    if [ -x /usr/local/vesta/upd/add_sudo.sh ]; then
-        /usr/local/vesta/upd/add_sudo.sh
+    if [ -x /usr/local/devit/upd/add_sudo.sh ]; then
+        /usr/local/devit/upd/add_sudo.sh
     fi
-    if [ -x /usr/local/vesta/upd/add_notifications.sh ]; then
-        /usr/local/vesta/upd/add_notifications.sh
+    if [ -x /usr/local/devit/upd/add_notifications.sh ]; then
+        /usr/local/devit/upd/add_notifications.sh
     fi
-    if [ -x /usr/local/vesta/upd/fix_sessions.sh ]; then
-        /usr/local/vesta/upd/fix_sessions.sh
+    if [ -x /usr/local/devit/upd/fix_sessions.sh ]; then
+        /usr/local/devit/upd/fix_sessions.sh
     fi
-    if [ -x /usr/local/vesta/upd/fix_nginx_auth.sh ]; then
-        /usr/local/vesta/upd/fix_nginx_auth.sh
+    if [ -x /usr/local/devit/upd/fix_nginx_auth.sh ]; then
+        /usr/local/devit/upd/fix_nginx_auth.sh
     fi
-    if [ -x /usr/local/vesta/upd/fix_roundcube.sh ]; then
-        /usr/local/vesta/upd/fix_roundcube.sh
-    fi
-
-    if [ -x /usr/local/vesta/upd/limit_sudo.sh ]; then
-        /usr/local/vesta/upd/limit_sudo.sh
+    if [ -x /usr/local/devit/upd/fix_roundcube.sh ]; then
+        /usr/local/devit/upd/fix_roundcube.sh
     fi
 
-    if [ -x /usr/local/vesta/upd/fix_dhcprenew.sh ]; then
-        /usr/local/vesta/upd/fix_dhcprenew.sh
+    if [ -x /usr/local/devit/upd/limit_sudo.sh ]; then
+        /usr/local/devit/upd/limit_sudo.sh
+    fi
+
+    if [ -x /usr/local/devit/upd/fix_dhcprenew.sh ]; then
+        /usr/local/devit/upd/fix_dhcprenew.sh
     fi
 
 fi
 %files
-%{_vestadir}
-%config(noreplace) %{_vestadir}/web/images/sprite.png
-%config(noreplace) %{_vestadir}/web/images/favicon.ico
-%config(noreplace) %{_vestadir}/web/css/file_manager.css
-%config(noreplace) %{_vestadir}/web/css/file_manager_editor.css
-%config(noreplace) %{_vestadir}/web/css/jquery.arcticmodal.css
-%config(noreplace) %{_vestadir}/web/css/jquery-custom-dialogs.css
-%config(noreplace) %{_vestadir}/web/css/jquery.fileupload.css
-%config(noreplace) %{_vestadir}/web/css/styles.min.css
-%config(noreplace) %{_vestadir}/web/css/uploadify.css
+%{_devitdir}
+%config(noreplace) %{_devitdir}/web/images/sprite.png
+%config(noreplace) %{_devitdir}/web/images/favicon.ico
+%config(noreplace) %{_devitdir}/web/css/file_manager.css
+%config(noreplace) %{_devitdir}/web/css/file_manager_editor.css
+%config(noreplace) %{_devitdir}/web/css/jquery.arcticmodal.css
+%config(noreplace) %{_devitdir}/web/css/jquery-custom-dialogs.css
+%config(noreplace) %{_devitdir}/web/css/jquery.fileupload.css
+%config(noreplace) %{_devitdir}/web/css/styles.min.css
+%config(noreplace) %{_devitdir}/web/css/uploadify.css
 
 %changelog
-* Wed Oct 12 2022 Serghey Rodin <builder@vestacp.com> - 1.0.0-7
+* Wed Oct 12 2022 Serghey Rodin <builder@devitcp.com> - 1.0.0-7
 - Frontend bugfixes
 - Bugfixes
 - Security fixes
 
-* Fri Feb 25 2022 Serghey Rodin <builder@vestacp.com> - 1.0.0-6
+* Fri Feb 25 2022 Serghey Rodin <builder@devitcp.com> - 1.0.0-6
 - Frontend bugfixes
 
-* Mon Nov 22 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-5
+* Mon Nov 22 2021 Serghey Rodin <builder@devitcp.com> - 1.0.0-5
 - Bugfixes
 
-* Mon Nov 1 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-4
+* Mon Nov 1 2021 Serghey Rodin <builder@devitcp.com> - 1.0.0-4
 - Merge pull request #2128 to fix LE related issues in UI
 
-* Sun Oct 31 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-3
+* Sun Oct 31 2021 Serghey Rodin <builder@devitcp.com> - 1.0.0-3
 - Merge pull request #2108 and #2109
 
-* Sat Oct 30 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-2
+* Sat Oct 30 2021 Serghey Rodin <builder@devitcp.com> - 1.0.0-2
 - Merge pull request #2074 from mix5003/fix-fi
 
-* Sat Oct 30 2021 Serghey Rodin <builder@vestacp.com> - 1.0.0-1
+* Sat Oct 30 2021 Serghey Rodin <builder@devitcp.com> - 1.0.0-1
 - Modern Web UI based on React
 - Bugfixes
 
-* Sat Sep 29 2019 Serghey Rodin <builder@vestacp.com> - 0.9.8-26
+* Sat Sep 29 2019 Serghey Rodin <builder@devitcp.com> - 0.9.8-26
 - Let's Encrypt HTTP/2 support
 
-* Thu Aug 15 2019 Serghey Rodin <builder@vestacp.com> - 0.9.8-25
+* Thu Aug 15 2019 Serghey Rodin <builder@devitcp.com> - 0.9.8-25
 - Security bugfixes
 - LEv2 idn fix
 
-* Mon Apr 18 2019 Serghey Rodin <builder@vestacp.com> - 0.9.8-24
+* Mon Apr 18 2019 Serghey Rodin <builder@devitcp.com> - 0.9.8-24
 - Bugfixes
 - Security patches
 - LEv2
 - Server LE
 - i18n updates
 
-* Thu Oct 18 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-23
+* Thu Oct 18 2018 Serghey Rodin <builder@devitcp.com> - 0.9.8-23
 - Security fixes
 
-* Wed Jun 27 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-22
+* Wed Jun 27 2018 Serghey Rodin <builder@devitcp.com> - 0.9.8-22
 - Security fixes
 
-* Fri May 11 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-21
+* Fri May 11 2018 Serghey Rodin <builder@devitcp.com> - 0.9.8-21
 - Additional security fixes
 
-* Sun Apr 08 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-20
+* Sun Apr 08 2018 Serghey Rodin <builder@devitcp.com> - 0.9.8-20
 - Hardening password checks
 
-* Wed Jan 10 2018 Serghey Rodin <builder@vestacp.com> - 0.9.8-19
+* Wed Jan 10 2018 Serghey Rodin <builder@devitcp.com> - 0.9.8-19
 - Fixed backup restore function
 
-* Fri Dec 29 2017 Serghey Rodin <builder@vestacp.com> - 0.9.8-18
+* Fri Dec 29 2017 Serghey Rodin <builder@devitcp.com> - 0.9.8-18
 - Let's Encrypt for internationalized domains (IDN)
 - Softaculous Application Installer
 - Debian 9 support sponsored by isicore.com
@@ -132,7 +132,7 @@ fi
 - We've made 1478 commits
 - 29 bugs closed / 141 pull requests merged
 
-* Mon Nov 14 2016 Serghey Rodin <builder@vestacp.com> - 0.9.8-17
+* Mon Nov 14 2016 Serghey Rodin <builder@devitcp.com> - 0.9.8-17
 - System Config Editor
 - Let's Encrypt GUI
 - Google Nearline expiremental backup support
@@ -146,7 +146,7 @@ fi
 - Dozen bugfixes including security issues
 
 
-* Mon Jun 27 2016 Serghey Rodin <builder@vestacp.com> - 0.9.8-16
+* Mon Jun 27 2016 Serghey Rodin <builder@devitcp.com> - 0.9.8-16
 - Full keyboard control
 - Cron Helper
 - LetsEncrypt Support cli-only
@@ -157,7 +157,7 @@ fi
 - Core refactoring
 - Dozen bugfixes including security issues
 
-* Fri Nov 06 2015 Serghey Rodin <builder@vestacp.com> - 0.9.8-15
+* Fri Nov 06 2015 Serghey Rodin <builder@devitcp.com> - 0.9.8-15
 - File Manager (commercial plugin)
 - SFTP Chroot (commercial plugin)
 - Monitoring Tools: top/free/df/server-status/mysql-status/etc
@@ -183,17 +183,17 @@ fi
 - BugFix: Fail2Ban manager
 - BugFix: Service manager
 
-* Wed Jun 03 2015 Serghey Rodin <builder@vestacp.com> - 0.9.8-13
+* Wed Jun 03 2015 Serghey Rodin <builder@devitcp.com> - 0.9.8-13
 - New UI
 - PHP-FPM support
 - Security improvements
 - Dozen bugfixes
 
-* Wed Oct 23 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-12
+* Wed Oct 23 2014 Serghey Rodin <builder@devitcp.com> - 0.9.8-12
 - Firewall service handler for Debian and Ubuntu
 - Minor i18n fix
 
-* Wed Oct 22 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-11
+* Wed Oct 22 2014 Serghey Rodin <builder@devitcp.com> - 0.9.8-11
 - Firewall support
 - Fail2ban support
 - Sudo support for admin user
@@ -206,7 +206,7 @@ fi
 - Fix for ftp user login
 
 
-* Mon Aug 4 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-10
+* Mon Aug 4 2014 Serghey Rodin <builder@devitcp.com> - 0.9.8-10
 - New Design
 - MultiFTP Support
 - Exim Queue Chart
@@ -236,7 +236,7 @@ fi
 - Fixed spelling. Thanks to Jakub Ďuraš https://github.com/jlamer, Kotso https://github.com/kotso, Dustin Dauncey http://www.dustindauncey.com
 
 
-* Sun May 18 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-9
+* Sun May 18 2014 Serghey Rodin <builder@devitcp.com> - 0.9.8-9
 - File System Quota support
 - Norwegian translation. Thanks to Helge Sverre
 - New script to change system hostname
@@ -250,7 +250,7 @@ fi
 - Fix for better vhost matching in get_web_config_brds()
 - Fix for upstart service handler
 
-* Fri Apr 18 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-8
+* Fri Apr 18 2014 Serghey Rodin <builder@devitcp.com> - 0.9.8-8
 - Auto Updates
 - Backup Exclusions
 - Memory Chart Improvements
@@ -267,7 +267,7 @@ fi
 - Fix for 1024 DKIM keys. Thanks to demlasjr
 - Fix for exim user on Debian/Ubuntu
 
-* Tue Feb 18 2014 Serghey Rodin <builder@vestacp.com> - 0.9.8-7
+* Tue Feb 18 2014 Serghey Rodin <builder@devitcp.com> - 0.9.8-7
 - CSR Generator
 - JS hint for dns record
 - Support for single-character email usernames
@@ -287,7 +287,7 @@ fi
 - Fix for SSL template change
 - Fix for PostgreSQL database status
 
-* Wed Nov 27 2013 Serghey Rodin <builder@vestacp.com> - 0.9.8-6
+* Wed Nov 27 2013 Serghey Rodin <builder@devitcp.com> - 0.9.8-6
 - New style for "Add" button
 - Quick links after object creation (login as/webmail/pma)
 - Custom 3rd party links
@@ -313,7 +313,7 @@ fi
 - Fix for date and time on database creation
 - Fix for Web API encoding artefacts in web API
 
-* Mon Oct 15 2013 Serghey Rodin <builder@vestacp.com> - 0.9.8-5
+* Mon Oct 15 2013 Serghey Rodin <builder@devitcp.com> - 0.9.8-5
 - Fix for dns sensitive records from Ursadon
 - Fix for exim antispam/antivirus protection
 - Fix for service listing func on RHEL/CentOS 5
@@ -327,16 +327,16 @@ fi
 - Implemented automatical suspend function for failed remote dns host
 - Improved restart functions
 - Default DKIM key size has been increased to 1024
-- From now vesta.conf can override any func variable
+- From now devit.conf can override any func variable
 - Ubuntu LTS 12.04/13.04 and Debian 7 are now officially supported
 
-* Tue Sep 17 2013 Serghey Rodin <builder@vestacp.com> - 0.9.8-4
+* Tue Sep 17 2013 Serghey Rodin <builder@devitcp.com> - 0.9.8-4
 - DNS cluster 5-minute sync improvement
 - Crontab ownership fix
 - Fix for nginx template switcher
 - Fix for LoadAverage check
 
-* Mon Jul 30 2013 Serghey Rodin <builder@vestacp.com> - 0.9.8-3
+* Mon Jul 30 2013 Serghey Rodin <builder@devitcp.com> - 0.9.8-3
 - Fix for zero cron bug
 - Minor fixes for dns sync
 - Updated romanian language file
@@ -347,13 +347,13 @@ fi
 - Debian/Ubuntu addoptation
 - Czech language support
 
-* Mon Jun 10 2013 Serghey Rodin <builder@vestacp.com> - 0.9.8-2
+* Mon Jun 10 2013 Serghey Rodin <builder@devitcp.com> - 0.9.8-2
 - Fixed missing ssl certificate on restore
 - Fixed wrong disk usage key
 - Added nginx trigger for templates
 - Added template update function
 
-* Mon May 27 2013 Serghey Rodin <builder@vestacp.com> - 0.9.8-1
+* Mon May 27 2013 Serghey Rodin <builder@devitcp.com> - 0.9.8-1
 - DNS Cluster
 - JS: select checkbox by clicking on a row
 - Record order change functions
@@ -366,16 +366,16 @@ fi
 - Edit user from topmenu links
 - Highlighted active links
 
-* Mon Apr 08 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-21
+* Mon Apr 08 2013 Serghey Rodin <builder@devitcp.com> - 0.9.7-21
 - Fix for null data in bandwidth calculation
 - Fix from Magentron for updating or deleting SSL certificates
 - Fix from Magentron for database host validation
 
-* Fri Apr 05 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-21
+* Fri Apr 05 2013 Serghey Rodin <builder@devitcp.com> - 0.9.7-21
 - i18n fix for IDN domain names
 - fixed bandwidth calculation
 
-* Tue Apr 03 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-20
+* Tue Apr 03 2013 Serghey Rodin <builder@devitcp.com> - 0.9.7-20
 - email notifcation on backup error
 - backup now saves file permissions
 - web backup scheduler
@@ -389,7 +389,7 @@ fi
 - Nginx repo integration
 - Improved template structure
 
-* Thu Mar 05 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-19
+* Thu Mar 05 2013 Serghey Rodin <builder@devitcp.com> - 0.9.7-19
 - Inconsistent archive removal when backup failed
 - Fixed mail config removal
 - Removed  email notification if database hasn't been created
@@ -398,7 +398,7 @@ fi
 - APC will be installed by default
 - Even more clean looking html
 
-* Wed Feb 27 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-18
+* Wed Feb 27 2013 Serghey Rodin <builder@devitcp.com> - 0.9.7-18
 - Web API wrapper
 - WHMCS support module
 - Reread system ip addresses function
@@ -410,7 +410,7 @@ fi
 - Improved traffic calc function
 - Fixed incomplete mail account listing bug
 
-* Mon Feb 18 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-17
+* Mon Feb 18 2013 Serghey Rodin <builder@devitcp.com> - 0.9.7-17
 - fixed blank screen on bad login
 - ftp account uid same as uid of main user
 - support for NATed network
@@ -418,21 +418,21 @@ fi
 - new installer (info about packages)
 - dns records remains alive on suspend
 
-* Mon Jan 28 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-16
+* Mon Jan 28 2013 Serghey Rodin <builder@devitcp.com> - 0.9.7-16
 - new color scheme
 - i18n support
 - idn fix for awstats
 - service manager
 - web updater
 
-* Mon Jan 14 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-15
+* Mon Jan 14 2013 Serghey Rodin <builder@devitcp.com> - 0.9.7-15
 - replaced underlines in rebuild script
 - less history to improve listing speed
 - proper perms for fcgid in rebuild script
 - improved domain validation
 - added dash as a valid character for templates
 
-* Tue Jan 08 2013 Serghey Rodin <builder@vestacp.com> - 0.9.7-14
+* Tue Jan 08 2013 Serghey Rodin <builder@devitcp.com> - 0.9.7-14
 - display full emailbox on edit page
 - submenu scroling visabilty
 - uppercase arguments in cli help message
@@ -444,7 +444,7 @@ fi
 - nonreplaceble logo.png
 - added verification for none uniq ftp account
 
-* Mon Dec 24 2012 Serghey Rodin <builder@vestacp.com> - 0.9.7-13
+* Mon Dec 24 2012 Serghey Rodin <builder@devitcp.com> - 0.9.7-13
 - imroved ssl certificate validation
 - added links in return status string
 - disabled database charset validation
@@ -455,35 +455,35 @@ fi
 - improved dns expiriation date formating
 - navigation menu improvements
 
-* Mon Dec 17 2012 Serghey Rodin <builder@vestacp.com> - 0.9.7-12
+* Mon Dec 17 2012 Serghey Rodin <builder@devitcp.com> - 0.9.7-12
 - renamed SSL Certificate Authority field
 - fixed history log page for users
 
-* Sun Dec 16 2012 Serghey Rodin <builder@vestacp.com> - 0.9.7-11
+* Sun Dec 16 2012 Serghey Rodin <builder@devitcp.com> - 0.9.7-11
 - disabled ssl check function for startssl certificates
 
-* Sun Dec 16 2012 Serghey Rodin <builder@vestacp.com> - 0.9.7-10
+* Sun Dec 16 2012 Serghey Rodin <builder@devitcp.com> - 0.9.7-10
 - fixed bug in ip change function
 - replaced cancel with back on control buttons
 
-* Sat Dec 01 2012 Serghey Rodin <builder@vestacp.com> - 0.9.7-3
+* Sat Dec 01 2012 Serghey Rodin <builder@devitcp.com> - 0.9.7-3
 - hotfix for mysql unsuspend function
 
-* Thu Nov 29 2012 Serghey Rodin <builder@vestacp.com> - 0.9.7-2
+* Thu Nov 29 2012 Serghey Rodin <builder@devitcp.com> - 0.9.7-2
 - hotfix for user valudation function
 
-* Sun Jul 01 2012 Serghey Rodin <builder@vestacp.com> - 0.9.7-1
+* Sun Jul 01 2012 Serghey Rodin <builder@devitcp.com> - 0.9.7-1
 - New web interface
 - Mail api
-- Changed vesta user with admin
+- Changed devit user with admin
 
-* Wed Jan 25 2012 Serghey Rodin <builder@vestacp.com> - 0.9.6-3
+* Wed Jan 25 2012 Serghey Rodin <builder@devitcp.com> - 0.9.6-3
 - Alpha preview of 'login as' function
 
-* Tue Jan 24 2012 Serghey Rodin <builder@vestacp.com> - 0.9.6-2
+* Tue Jan 24 2012 Serghey Rodin <builder@devitcp.com> - 0.9.6-2
 - Bugfix: nginx include + dublicate ip adresses in listing
 
-* Tue Jan 17 2012 Serghey Rodin <builder@vestacp.com> - 0.9.6-1
+* Tue Jan 17 2012 Serghey Rodin <builder@devitcp.com> - 0.9.6-1
 - Web interface
 - Rebuild functions
 - RRD support
@@ -492,10 +492,10 @@ fi
 - ServerAlias 8k issue
 - Autodocumentation
 
-* Tue Sep 13 2011 Serghey Rodin <builder@vestacp.com> - 0.9.5-2
+* Tue Sep 13 2011 Serghey Rodin <builder@devitcp.com> - 0.9.5-2
 - small fixes to domain function
 
-* Tue Sep 13 2011 Serghey Rodin <builder@vestacp.com> - 0.9.5-1
+* Tue Sep 13 2011 Serghey Rodin <builder@devitcp.com> - 0.9.5-1
 - added mpm itk, fcgi, mod_ruid2 support
 - changed permissions in bin directory
 - new scripts v_del_sys_user v_list_sys_user_childs v_rebuild_dns_domains
@@ -515,9 +515,9 @@ fi
 - changed web domains directory to "web"
 - fixed v_change_db_password localhost bug
 - removed main config from rpm
-- improved vesta install scenario
+- improved devit install scenario
 
-* Tue Jul 05 2011 Serghey Rodin <builder@vestacp.com> - 0.9.4-1
+* Tue Jul 05 2011 Serghey Rodin <builder@devitcp.com> - 0.9.4-1
 - nginx per domain integration
 - removed SSL key and renamed TEMPLATES to WEB_TPL
 - added web config rebuild script
@@ -534,17 +534,17 @@ fi
 - updated v_add_sys_user script (ns1 ns2 args)
 - updated documentation
 
-* Tue Jan 04 2011 Serghey Rodin <builder@vestacp.com> - 0.9.3-3
+* Tue Jan 04 2011 Serghey Rodin <builder@devitcp.com> - 0.9.3-3
 - new rpm spec without updates to code
 
-* Sun Jan 02 2011 Serghey Rodin <builder@vestacp.com> - 0.9.3-2
+* Sun Jan 02 2011 Serghey Rodin <builder@devitcp.com> - 0.9.3-2
 - many fixes to installer
 - added condition to upgrade macro in spec file
 - fixed v_add_web_alias_script
 - updated disk.pipe
 
-* Tue Dec 28 2010 Serghey Rodin <builder@vestacp.com> - 0.9.3-1
-- excluded vesta user from package
+* Tue Dec 28 2010 Serghey Rodin <builder@devitcp.com> - 0.9.3-1
+- excluded devit user from package
 - new template storage scheme
 - updated funcion increase_user_value()
 - added new keys U_CHILDS MAX_CHILDS U_DIR_DISK
@@ -554,17 +554,17 @@ fi
 - updated function get_usr_disk()
 - added new script v_upd_sys_user_disk
 
-* Mon Nov 22 2010 Serghey Rodin <builder@vestacp.com> - 0.9.2-4
+* Mon Nov 22 2010 Serghey Rodin <builder@devitcp.com> - 0.9.2-4
 - fixed update script / rpm %files section
 
-* Mon Nov 22 2010 Serghey Rodin <builder@vestacp.com> - 0.9.2-3
-- fixed update script v_upd_sys_vesta
+* Mon Nov 22 2010 Serghey Rodin <builder@devitcp.com> - 0.9.2-3
+- fixed update script v_upd_sys_devit
 
-* Mon Nov 22 2010 Serghey Rodin <builder@vestacp.com> - 0.9.2-2
-- removed user vesta user from rpm
+* Mon Nov 22 2010 Serghey Rodin <builder@devitcp.com> - 0.9.2-2
+- removed user devit user from rpm
 - fixed %postun script
 
-* Mon Nov 22 2010 Serghey Rodin <builder@vestacp.com> - 0.9.2-1
+* Mon Nov 22 2010 Serghey Rodin <builder@devitcp.com> - 0.9.2-1
 - added sqlite support into x86_64 repo
 - fixed permissions on /var/log/httpd/domains
 - many fixes in installer
@@ -572,17 +572,17 @@ fi
 - added default robots.txt in v_add_web_domain
 - new web_domains.conf key NGINX_EXT
 
-* Sat Nov 13 2010 Serghey Rodin <builder@vestacp.com> - 0.9.1-7
+* Sat Nov 13 2010 Serghey Rodin <builder@devitcp.com> - 0.9.1-7
 - added script v_upd_sys_user_bill
 - updated installer 
 - replaced v_list_web_domains_proxy with v_list_web_domains_nginx
 - fixed rpaf.conf generation
 - added nginx templates
 
-* Tue Oct 29 2010 Serghey Rodin <builder@vestacp.com> - 0.9.1-6
+* Tue Oct 29 2010 Serghey Rodin <builder@devitcp.com> - 0.9.1-6
 - added missing function to db/ip/shared includes
 
-* Tue Oct 26 2010 Serghey Rodin <builder@vestacp.com> - 0.9.1-5
+* Tue Oct 26 2010 Serghey Rodin <builder@devitcp.com> - 0.9.1-5
 - added U prefix to DISK and BANDWIDTH keys
 - new script v_change_sys_ip_name
 - added keys NETMASK,INTERFACE,DATE to ip system
@@ -591,16 +591,16 @@ fi
 - fixed update_user_value() function
 - updated installer
 
-* Thu Oct 07 2010 Serghey Rodin <builder@vestacp.com> - 0.9.1-4
+* Thu Oct 07 2010 Serghey Rodin <builder@devitcp.com> - 0.9.1-4
 - fixed path in php-cgi templates
 - increased php_memory_limit up to 32M for wordpress
 - updated vsftpd and sudoers configs
 
-* Wed Oct 05 2010 Serghey Rodin <builder@vestacp.com> - 0.9.1-3
+* Wed Oct 05 2010 Serghey Rodin <builder@devitcp.com> - 0.9.1-3
 - updated db functions
 
-* Wed Oct 04 2010 Serghey Rodin <builder@vestacp.com> - 0.9.1-2
+* Wed Oct 04 2010 Serghey Rodin <builder@devitcp.com> - 0.9.1-2
 - fixed dns installer + added cron job logging
 
-* Wed Sep 15 2010 Serghey Rodin <builder@vestacp.com> - 0.9.1-1
-- created vesta api package
+* Wed Sep 15 2010 Serghey Rodin <builder@devitcp.com> - 0.9.1-1
+- created devit api package

@@ -1,6 +1,6 @@
 <?php
 /**
- * Vesta language file
+ * DevIT language file
  * COLOBOCman (colobocman@gmail.com)
  * Alexandr Loskutov (alex_connor@icloud.com)
  */
@@ -396,7 +396,7 @@ $LANG['ua'] = array(
     'ICMP' => 'ICMP',
     'SSH' => 'SSH',
     'FTP' => 'FTP',
-    'VESTA' => 'VESTA',
+    'devit' => 'devit',
     'Add one more Name Server' => 'Додати ще один сервер імен',
 
     'web domain' => 'web домен',
@@ -511,17 +511,17 @@ $LANG['ua'] = array(
     'CRON_EXCLUSIONS' => 'Для того, щоб виключити всі завдання, використовуйте *',
     'USER_EXCLUSIONS' => 'Вкажіть теки по одній на рядок. Для того, щоб виключити всі, використовуйте *',
 
-    'Welcome to Vesta Control Panel' => 'Вітаємо в панелі керування Vesta',
-    'MAIL_FROM' => 'Vesta Control Panel <noreply@%s>',
+    'Welcome to DevIT Control Panel' => 'Вітаємо в панелі керування DevIT',
+    'MAIL_FROM' => 'DevIT Control Panel <noreply@%s>',
     'GREETINGS_GORDON_FREEMAN' => "Вітаємо, %s %s,\n",
     'GREETINGS' => "Вітаємо,\n",
-    'ACCOUNT_READY' => "Ваш аккаунт успішно створено і готовий до використання.\n\nhttps://%s/login/\nІм'я користувача: %s\nПароль: %s\n\n--\nПанель керування Vesta\n",
+    'ACCOUNT_READY' => "Ваш аккаунт успішно створено і готовий до використання.\n\nhttps://%s/login/\nІм'я користувача: %s\nПароль: %s\n\n--\nПанель керування DevIT\n",
 
     'FTP login credentials' => 'Дані доступу до FTP',
-    'FTP_ACCOUNT_READY' => "FTP аккаунт успішно створено і готовий до використання.\n\nХост: %s\nІм'я користувача: %s_%s\nПароль: %s\n\n--\nПанель керування Vesta\n",
+    'FTP_ACCOUNT_READY' => "FTP аккаунт успішно створено і готовий до використання.\n\nХост: %s\nІм'я користувача: %s_%s\nПароль: %s\n\n--\nПанель керування DevIT\n",
 
     'Database Credentials' => 'Дані доступу до БД',
-    'DATABASE_READY' => "База даних успішно створена.\n\nБаза даних: %s\nКористувач: %s\nПароль: %s\n%s\n\n--\nПанель керування Vesta\n",
+    'DATABASE_READY' => "База даних успішно створена.\n\nБаза даних: %s\nКористувач: %s\nПароль: %s\n%s\n\n--\nПанель керування DevIT\n",
 
     'forgot password' => 'нагадати пароль',
     'Confirm' => 'Підтвердити',
@@ -532,7 +532,7 @@ $LANG['ua'] = array(
     'RESET_NOTICE' => 'Скинути сповіщення',
     'RESET_CODE_SENT' => 'Код для відновлення паролю успішно відправлено на вашу електронну пошту.<br>',
     'MAIL_RESET_SUBJECT' => 'Відновлення паролю %s',
-    'PASSWORD_RESET_REQUEST'=>"Щоб відновити пароль, будь-ласка, перейдіть за посиланням :\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nТакож ви можете відкрити сторінку https://%s/reset/?action=code&user=%s і вручну ввести код для відновлення:\n%s\n\nЯкщо ви не виконували процедуру відновлення паролю, будь ласка, проігноруйте цей лист і прийміть наші вибачення.\n\n--\nПанель керування Vesta\n",
+    'PASSWORD_RESET_REQUEST'=>"Щоб відновити пароль, будь-ласка, перейдіть за посиланням :\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nТакож ви можете відкрити сторінку https://%s/reset/?action=code&user=%s і вручну ввести код для відновлення:\n%s\n\nЯкщо ви не виконували процедуру відновлення паролю, будь ласка, проігноруйте цей лист і прийміть наші вибачення.\n\n--\nПанель керування DevIT\n",
 
     'Jan' => 'Січ',
     'Feb' => 'Лют',
@@ -576,7 +576,7 @@ $LANG['ua'] = array(
     'sftp' => 'SFTP',
     'SFTP Chroot' => 'SFTP Chroot',
     'FileSystem Disk Quota' => 'Дискова квота файлової системи',
-    'Vesta Control Panel Plugins' => 'Плагіни Vesta Control Panel',
+    'DevIT Control Panel Plugins' => 'Плагіни DevIT Control Panel',
     'preview' => "прев'ю",
     'Reseller Role' => 'Реселлер',
     'Web Config Editor' => 'Редактор Web конфігів',
@@ -737,7 +737,7 @@ $LANG['ua'] = array(
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
 
-    'Vesta SSL' => 'Vesta SSL',
+    'DevIT SSL' => 'DevIT SSL',
     'SUBJECT' => "ОБ'ЄКТ",
     'ALIASES' => 'АЛІАСИ',
     'NOT_BEFORE' => 'НЕДОСТУПНИЙ ДО',

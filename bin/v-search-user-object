@@ -15,8 +15,8 @@ object=$2
 format=${3-shell}
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 # Json list function
 json_list_search() {
@@ -87,13 +87,13 @@ IFS=$'\n'
 
 # Search query
 search=$(grep "$object" \
-    $VESTA/data/users/$user/web.conf \
-    $VESTA/data/users/$user/dns.conf \
-    $VESTA/data/users/$user/dns/*.conf \
-    $VESTA/data/users/$user/mail.conf \
-    $VESTA/data/users/$user/mail/*.conf \
-    $VESTA/data/users/$user/db.conf \
-    $VESTA/data/users/$user/cron.conf 2> /dev/null)
+    $devit/data/users/$user/web.conf \
+    $devit/data/users/$user/dns.conf \
+    $devit/data/users/$user/dns/*.conf \
+    $devit/data/users/$user/mail.conf \
+    $devit/data/users/$user/mail/*.conf \
+    $devit/data/users/$user/db.conf \
+    $devit/data/users/$user/cron.conf 2> /dev/null)
     
 for row in $search; do
     # Initialise variable
@@ -249,7 +249,7 @@ esac
 rm $conf
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

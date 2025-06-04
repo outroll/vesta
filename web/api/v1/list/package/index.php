@@ -14,7 +14,7 @@ if ($_SESSION['user'] != 'admin') {
 }
 
 // Data
-exec (VESTA_CMD."v-list-user-packages json", $output, $return_var);
+exec (devit_CMD."v-list-user-packages json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 unset($output);
 

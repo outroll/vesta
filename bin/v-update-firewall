@@ -15,9 +15,9 @@ modprobe="/sbin/modprobe"
 sysctl="/sbin/sysctl"
 
 # Includes
-source /etc/profile.d/vesta.sh
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source /etc/profile.d/devit.sh
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -32,8 +32,8 @@ is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
 #----------------------------------------------------------#
 
 # Checking local IPv4 rules
-rules="$VESTA/data/firewall/rules.conf"
-ports="$VESTA/data/firewall/ports.conf"
+rules="$devit/data/firewall/rules.conf"
+ports="$devit/data/firewall/ports.conf"
 
 if [ ! -e "$rules" ]; then
     exit
@@ -67,7 +67,7 @@ if [ "$conntrack" != 'no' ]; then
 fi
 
 # Handling local traffic
-for ip in $(ls $VESTA/data/ips); do
+for ip in $(ls $devit/data/ips); do
     echo "$iptables -A INPUT -s $ip -j ACCEPT" >> $tmp
 done
 echo "$iptables -A INPUT -s 127.0.0.1 -j ACCEPT" >> $tmp
@@ -111,8 +111,8 @@ done
 # Switching chain policy to DROP
 echo "$iptables -P INPUT DROP" >> $tmp
 
-# Adding vesta chain
-echo "$iptables -N vesta" >> $tmp
+# Adding devit chain
+echo "$iptables -N devit" >> $tmp
 
 # Applying rules
 bash $tmp 2>/dev/null
@@ -121,13 +121,13 @@ bash $tmp 2>/dev/null
 rm -f $tmp
 
 # Checking custom trigger
-if [ -x "$VESTA/data/firewall/custom.sh" ]; then
-    bash $VESTA/data/firewall/custom.sh
+if [ -x "$devit/data/firewall/custom.sh" ]; then
+    bash $devit/data/firewall/custom.sh
 fi
 
 # Checking fail2ban support
 if [ ! -z "$FIREWALL_EXTENSION" ]; then
-    for chain in $(cat $VESTA/data/firewall/chains.conf 2>/dev/null); do
+    for chain in $(cat $devit/data/firewall/chains.conf 2>/dev/null); do
         eval $chain
         if [[ "$PORT" =~ ,|-|: ]] ; then
             port="-m multiport --dports $PORT"
@@ -142,7 +142,7 @@ if [ ! -z "$FIREWALL_EXTENSION" ]; then
     bash $tmp 2>/dev/null
     rm -f $tmp
 
-    for ban in $(cat $VESTA/data/firewall/banlist.conf 2>/dev/null); do
+    for ban in $(cat $devit/data/firewall/banlist.conf 2>/dev/null); do
         eval $ban
         echo -n "$iptables -I fail2ban-$CHAIN 1 -s $IP" >> $tmp
         echo " -j REJECT --reject-with icmp-port-unreachable" >> $tmp
@@ -178,7 +178,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

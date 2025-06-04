@@ -93,7 +93,7 @@ const EditMail = props => {
   return (
     <div className="edit-template edit-mail">
       <Helmet>
-        <title>{`Vesta - ${i18n.MAIL}`}</title>
+        <title>{`devit - ${i18n.MAIL}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

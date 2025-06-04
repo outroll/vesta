@@ -386,7 +386,7 @@ const Databases = props => {
   return (
     <div className="databases">
       <Helmet>
-        <title>{`Vesta - ${i18n.DB}`}</title>
+        <title>{`devit - ${i18n.DB}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name="Add Database" href="/add/db" showLeftMenu={true} />

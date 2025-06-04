@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: update vesta package/configs
+# info: update devit package/configs
 # options: PACKAGE [VERSION]
 #
-# The function runs as rpm update trigger. It pulls shell script from vesta
+# The function runs as rpm update trigger. It pulls shell script from devit
 # server and runs it.
 
 
@@ -17,8 +17,8 @@ package=$1
 source /etc/profile
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -29,19 +29,19 @@ source $VESTA/conf/vesta.conf
 check_args '1' "$#" 'PACKAGE'
 
 valid=0
-if [ "$package" = "vesta" ]; then
+if [ "$package" = "devit" ]; then
     valid=1
 fi
-if [ "$package" = "vesta-nginx" ]; then
+if [ "$package" = "devit-nginx" ]; then
     valid=1
 fi
-if [ "$package" = "vesta-php" ]; then
+if [ "$package" = "devit-php" ]; then
     valid=1
 fi
-if [ "$package" = "vesta-ioncube" ]; then 
+if [ "$package" = "devit-ioncube" ]; then 
     valid=1
 fi
-if [ "$package" = "vesta-softaculous" ]; then
+if [ "$package" = "devit-softaculous" ]; then
     valid=1
 fi
 if [ $valid -eq 0 ]; then
@@ -58,24 +58,24 @@ if [ -n "$(command -v yum)" ]; then
     yum -q clean all
 
     # Define yum cmd
-    yum="yum -q -y --noplugins --disablerepo=* --enablerepo=vesta"
+    yum="yum -q -y --noplugins --disablerepo=* --enablerepo=devit"
 
-    # Update vesta package
+    # Update devit package
     $yum update $package > /dev/null 2>&1
     check_result $? "$package update failed" $E_UPDATE
 else
     # Update repo
-    apt-get update -o Dir::Etc::sourcelist="sources.list.d/vesta.list" \
+    apt-get update -o Dir::Etc::sourcelist="sources.list.d/devit.list" \
         -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" -qq
 
-    # Update vesta package
+    # Update devit package
     apt-get install $package -qq > /dev/null 2>&1
     check_result $? "$package update failed" $E_UPDATE
 fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

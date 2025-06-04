@@ -13,7 +13,7 @@ if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
 	$error = 'Unathenticated.';
 }
 
-exec (VESTA_CMD."v-add-cron-reports ".$user, $output, $return_var);
+exec (devit_CMD."v-add-cron-reports ".$user, $output, $return_var);
 $message = __('Cronjob email reporting has been successfully enabled');
 unset($output);
 

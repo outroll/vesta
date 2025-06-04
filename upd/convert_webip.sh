@@ -1,21 +1,21 @@
 #!/bin/bash
 
-# Include vesta.conf
-source /usr/local/vesta/conf/vesta.conf
+# Include devit.conf
+source /usr/local/devit/conf/devit.conf
 
 # Check if old scheme is in use
-check_oldip=$(grep "^Listen" /etc/$WEB_SYSTEM/conf.d/vesta.conf)
+check_oldip=$(grep "^Listen" /etc/$WEB_SYSTEM/conf.d/devit.conf)
 if [ -z "$check_oldip" ]; then
     exit
 fi
 
-# Remove old ip definitions from vesta.conf
-sed -i "/^Listen/d" /etc/$WEB_SYSTEM/conf.d/vesta.conf
-sed -i "/^NameVirtualHost/d" /etc/$WEB_SYSTEM/conf.d/vesta.conf
-sed -i "/^$/d" /etc/$WEB_SYSTEM/conf.d/vesta.conf
+# Remove old ip definitions from devit.conf
+sed -i "/^Listen/d" /etc/$WEB_SYSTEM/conf.d/devit.conf
+sed -i "/^NameVirtualHost/d" /etc/$WEB_SYSTEM/conf.d/devit.conf
+sed -i "/^$/d" /etc/$WEB_SYSTEM/conf.d/devit.conf
 
 # Create new ip configs
-for ip in $(ls /usr/local/vesta/data/ips); do
+for ip in $(ls /usr/local/devit/data/ips); do
     web_conf="/etc/$WEB_SYSTEM/conf.d/$ip.conf"
 
     if [ "$WEB_SYSTEM" = 'httpd' ] || [ "$WEB_SYSTEM" = 'apache2' ]; then
@@ -30,6 +30,6 @@ for ip in $(ls /usr/local/vesta/data/ips); do
 done
 
 # Restart web server
-/usr/local/vesta/bin/v-restart-web
+/usr/local/devit/bin/v-restart-web
 
 exit

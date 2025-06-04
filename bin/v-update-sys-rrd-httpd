@@ -13,8 +13,8 @@
 period=${1-daily}
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -93,7 +93,7 @@ rrdtool graph $RRD/web/$period-httpd.png \
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 if [ "$result" -ne 0 ]; then

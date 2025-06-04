@@ -10,8 +10,8 @@
 #----------------------------------------------------------#
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -50,16 +50,16 @@ done
 # Deleting cron job
 rm -f /etc/cron.daily/quotacheck
 
-# Updating vesta.conf value
-if [ -z "$(grep DISK_QUOTA $VESTA/conf/vesta.conf)" ]; then
-    echo "DISK_QUOTA='no'" >> $VESTA/conf/vesta.conf
+# Updating devit.conf value
+if [ -z "$(grep DISK_QUOTA $devit/conf/devit.conf)" ]; then
+    echo "DISK_QUOTA='no'" >> $devit/conf/devit.conf
 else
-    sed -i "s/DISK_QUOTA=.*/DISK_QUOTA='no'/g" $VESTA/conf/vesta.conf
+    sed -i "s/DISK_QUOTA=.*/DISK_QUOTA='no'/g" $devit/conf/devit.conf
 fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

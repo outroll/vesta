@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: activate vesta license
+# info: activate devit license
 # options: MODULE LICENSE
 #
-# The function activates and registers the vesta license
+# The function activates and registers the devit license
 
 
 #----------------------------------------------------------#
@@ -17,8 +17,8 @@ license=$2
 source /etc/profile
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -34,9 +34,9 @@ is_user_format_valid "$license" "license"
 #----------------------------------------------------------#
 
 # Activating license
-v_host='https://vestacp.com/checkout'
+v_host='https://devitcp.com/checkout'
 answer=$(curl -s "$v_host/activate.php?licence_key=$license&module=$module")
-check_result $? "cant' connect to vestacp.com " $E_CONNECT
+check_result $? "cant' connect to devitcp.com " $E_CONNECT
 
 # Checking server answer
 if [[ "$answer" != '0' ]]; then
@@ -46,14 +46,14 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
-# Updating vesta.conf
-if [ -z "$(grep "${module}_KEY" $VESTA/conf/vesta.conf)" ]; then
-    echo "${module}_KEY='$license'" >> $VESTA/conf/vesta.conf
+# Updating devit.conf
+if [ -z "$(grep "${module}_KEY" $devit/conf/devit.conf)" ]; then
+    echo "${module}_KEY='$license'" >> $devit/conf/devit.conf
 else
-    sed -i "s/${module}_KEY=.*/${module}_KEY='$license'/g" $VESTA/conf/vesta.conf
+    sed -i "s/${module}_KEY=.*/${module}_KEY='$license'/g" $devit/conf/devit.conf
 fi
 
 # Activating sftpjail

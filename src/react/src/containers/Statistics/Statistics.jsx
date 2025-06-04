@@ -168,7 +168,7 @@ const Statistics = props => {
   return (
     <div className="statistics-list">
       <Helmet>
-        <title>{`Vesta - ${i18n.STATS}`}</title>
+        <title>{`devit - ${i18n.STATS}`}</title>
       </Helmet>
       <Toolbar mobile={false} className="justify-right">
         <div className="r-menu">

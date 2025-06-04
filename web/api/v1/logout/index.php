@@ -12,7 +12,7 @@ if (!empty($_SESSION['look'])) {
 	$response = 'logged_out_as';
 	$v_user = empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'];
 	top_panel($v_user, $TAB);
-	exec (VESTA_CMD . "v-list-user ".$v_user." json", $output, $return_var);
+	exec (devit_CMD . "v-list-user ".$v_user." json", $output, $return_var);
     $users = json_decode(implode('', $output), true);
 } else {
 	$response = 'logged_out';

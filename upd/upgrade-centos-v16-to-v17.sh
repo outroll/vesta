@@ -1,29 +1,29 @@
 #!/bin/bash
 
-RHOST='r.vestacp.com'
-CHOST='c.vestacp.com'
+RHOST='r.devitcp.com'
+CHOST='c.devitcp.com'
 REPO='cmmnt'
 VERSION='rhel'
-VESTA='/usr/local/vesta'
+devit='/usr/local/devit'
 os=$(cut -f 1 -d ' ' /etc/redhat-release)
 release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
-vestacp="http://$CHOST/$VERSION/$release"
+devitcp="http://$CHOST/$VERSION/$release"
 servername=$(hostname -f)
 
 
 # PATH fix
-if [ ! -f "/etc/profile.d/vesta.sh" ]; then
-    echo "export VESTA='$VESTA'" > /etc/profile.d/vesta.sh
+if [ ! -f "/etc/profile.d/devit.sh" ]; then
+    echo "export devit='$devit'" > /etc/profile.d/devit.sh
 fi
-if [ $( grep -ic "vesta" /root/.bash_profile ) -eq 0 ]; then
-    echo 'PATH=$PATH:'$VESTA'/bin' >> /root/.bash_profile
+if [ $( grep -ic "devit" /root/.bash_profile ) -eq 0 ]; then
+    echo 'PATH=$PATH:'$devit'/bin' >> /root/.bash_profile
 fi
 
 
-# Linking /var/log/vesta
-if [ ! -L "/var/log/vesta" ]; then
-    ln -s $VESTA/log /var/log/vesta
+# Linking /var/log/devit
+if [ ! -L "/var/log/devit" ]; then
+    ln -s $devit/log /var/log/devit
 fi
 
 
@@ -31,7 +31,7 @@ fi
 yum -y install expect > /dev/null 2>&1
 
 
-# Roundcube Vesta password driver - changing password_vesta_host (in config) to server hostname 
+# Roundcube DevIT password driver - changing password_devit_host (in config) to server hostname 
 if [ -f "/usr/share/roundcubemail/plugins/password/config.inc.php" ]; then
     sed -i "s/localhost/$servername/g" /usr/share/roundcubemail/plugins/password/config.inc.php
 fi
@@ -39,13 +39,13 @@ fi
 
 # Workaround for OpenVZ/Virtuozzo
 if [ "$release" -eq '7' ] && [ -e "/proc/vz/veinfo" ]; then
-    if [ $( grep -ic "Vesta: workraround for networkmanager" /etc/rc.local ) -eq 0 ]; then
+    if [ $( grep -ic "DevIT: workraround for networkmanager" /etc/rc.local ) -eq 0 ]; then
         if [ -f "/etc/nginx/nginx.conf" ] ; then
-            echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
+            echo "#DevIT: workraround for networkmanager" >> /etc/rc.local
             echo "sleep 3 && service nginx restart" >> /etc/rc.local
         fi
         if [ -f "/etc/httpd/conf/httpd.conf" ] ; then
-            echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
+            echo "#DevIT: workraround for networkmanager" >> /etc/rc.local
             echo "sleep 2 && service httpd restart" >> /etc/rc.local
         fi
     fi
@@ -87,8 +87,8 @@ fi
 
 # Fixing empty NAT ip
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
-pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
-file="$VESTA/data/ips/$ip"
+pub_ip=$(curl -s devitcp.com/what-is-my-ip/)
+file="$devit/data/ips/$ip"
 if [ -f "$file" ] && [ $( grep -ic "NAT=''" $file ) -eq 1 ]; then
     if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
         v-change-sys-ip-nat $ip $pub_ip
@@ -96,4 +96,4 @@ if [ -f "$file" ] && [ $( grep -ic "NAT=''" $file ) -eq 1 ]; then
 fi
 
 # Dovecot logrorate script
-wget $vestacp/logrotate/dovecot -O /etc/logrotate.d/dovecot
+wget $devitcp/logrotate/dovecot -O /etc/logrotate.d/dovecot

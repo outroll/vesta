@@ -103,7 +103,7 @@ const EditInternetProtocol = () => {
   return (
     <div className="edit-template edit-ip">
       <Helmet>
-        <title>{`Vesta - ${i18n.IP}`}</title>
+        <title>{`devit - ${i18n.IP}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

@@ -1,5 +1,5 @@
 // Init kinda namespace object
-var VE = { // Vesta Events object
+var VE = { // DevIT Events object
     core: {}, // core functions
     navigation: {
         state: {

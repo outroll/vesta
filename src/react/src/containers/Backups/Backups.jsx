@@ -350,7 +350,7 @@ const Backups = props => {
   return (
     <div className="backups">
       <Helmet>
-        <title>{`Vesta - ${i18n.BACKUP}`}</title>
+        <title>{`devit - ${i18n.BACKUP}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <div className="l-menu">

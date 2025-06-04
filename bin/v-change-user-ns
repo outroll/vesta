@@ -21,8 +21,8 @@ ns7=$(echo $8 | sed -e 's/\.*$//g' -e 's/^\.*//g')
 ns8=$(echo $9 | sed -e 's/\.*$//g' -e 's/^\.*//g')
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -75,7 +75,7 @@ update_user_value "$user" '$NS' "$ns"
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

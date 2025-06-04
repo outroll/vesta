@@ -17,7 +17,7 @@ $action = $_POST['action'];
 
 if ($_SESSION['user'] == 'admin') {
     switch ($action) {
-        case 'reread IP': exec(VESTA_CMD."v-update-sys-ip", $output, $return_var);
+        case 'reread IP': exec(devit_CMD."v-update-sys-ip", $output, $return_var);
                 exit;
             break;
         case 'delete': $cmd='v-delete-sys-ip';
@@ -30,7 +30,7 @@ if ($_SESSION['user'] == 'admin') {
 
 foreach ($ip as $value) {
     $value = escapeshellarg($value);
-    exec (VESTA_CMD.$cmd." ".$value, $output, $return_var);
+    exec (devit_CMD.$cmd." ".$value, $output, $return_var);
 }
 
 $result = array(

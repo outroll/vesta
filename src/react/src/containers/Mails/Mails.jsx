@@ -389,7 +389,7 @@ const Mails = props => {
   return (
     <div className="mails">
       <Helmet>
-        <title>{`Vesta - ${i18n.MAIL}`}</title>
+        <title>{`devit - ${i18n.MAIL}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name="Add Mail Domain" href="/add/mail" showLeftMenu={true} />

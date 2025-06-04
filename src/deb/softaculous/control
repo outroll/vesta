@@ -1,10 +1,10 @@
-Source: vesta-softaculous
-Package: vesta-softaculous
+Source: devit-softaculous
+Package: devit-softaculous
 Priority: optional
 Version: 1.0.0-1
 Section: admin
-Maintainer: Serghey Rodin <skid@vestacp.com>
+Maintainer: Serghey Rodin <skid@devitcp.com>
 Homepage: https://www.softaculous.com
 Architecture: amd64
-Depends: bash, awk, sed, vesta-ioncube
-Description: softaculous plugin for Vesta
+Depends: bash, awk, sed, devit-ioncube
+Description: softaculous plugin for devit

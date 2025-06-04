@@ -1,5 +1,5 @@
 #!/bin/bash
-# info: adding cronjob for vesta-softaculous installation
+# info: adding cronjob for devit-softaculous installation
 # options: NONE
 #
 # The function adds cronjob for letsencrypt ssl certificate installation
@@ -10,9 +10,9 @@
 #----------------------------------------------------------#
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -27,9 +27,9 @@ is_system_enabled "$CRON_SYSTEM" 'CRON_SYSTEM'
 #----------------------------------------------------------#
 
 
-# Adding cronjob for vesta-softaculous
-cmd="sudo /usr/local/vesta/bin/v-add-vesta-softaculous"
-check_cron=$(grep "$cmd" $VESTA/data/users/admin/cron.conf 2> /dev/null)
+# Adding cronjob for devit-softaculous
+cmd="sudo /usr/local/devit/bin/v-add-devit-softaculous"
+check_cron=$(grep "$cmd" $devit/data/users/admin/cron.conf 2> /dev/null)
 if [ -z "$check_cron" ] && [ ! -z "$CRON_SYSTEM" ]; then
     $BIN/v-add-cron-job admin '*/1' '*' '*' '*' '*' "$cmd"
 fi
@@ -37,7 +37,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

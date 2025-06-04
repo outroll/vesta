@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: change vesta port
+# info: change devit port
 # options: port
 #
-# Function will change vesta port
+# Function will change devit port
 
 #----------------------------------------------------------#
 #                    Variable&Function                     #
@@ -11,18 +11,18 @@
 # Argument definition
 port=$1
 
-if [ -z "$VESTA" ]; then
-    VESTA="/usr/local/vesta"
+if [ -z "$devit" ]; then
+    devit="/usr/local/devit"
 fi
 
-# Get current vesta port by reading nginx.conf
-oldport=$(grep 'listen' $VESTA/nginx/conf/nginx.conf | awk '{print $2}' | sed "s|;||")
+# Get current devit port by reading nginx.conf
+oldport=$(grep 'listen' $devit/nginx/conf/nginx.conf | awk '{print $2}' | sed "s|;||")
 if [ -z "$oldport" ]; then
     oldport=8083
 fi
 
 # Includes
-source $VESTA/func/main.sh
+source $devit/func/main.sh
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -40,18 +40,18 @@ is_int_format_valid "$port" 'port number'
 #                       Action                             #
 #----------------------------------------------------------#
 
-sed -i "s|$oldport;|$port;|g" $VESTA/nginx/conf/nginx.conf
+sed -i "s|$oldport;|$port;|g" $devit/nginx/conf/nginx.conf
 if [ -f "/etc/roundcube/plugins/password/config.inc.php" ]; then
     sed -i "s|'$oldport'|'$port'|g" /etc/roundcube/plugins/password/config.inc.php
 fi
-sed -i "s|'$oldport'|'$port'|g" $VESTA/data/firewall/rules.conf
-$VESTA/bin/v-update-firewall
+sed -i "s|'$oldport'|'$port'|g" $devit/data/firewall/rules.conf
+$devit/bin/v-update-firewall
 systemctl restart fail2ban.service
 sed -i "s| $oldport | $port |g" /etc/iptables.rules
-systemctl restart vesta
+systemctl restart devit
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

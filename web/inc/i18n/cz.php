@@ -1,6 +1,6 @@
 <?php
 /**
- * Vesta language file
+ * DevIT language file
  * Sergey Sorokoletov <sergey.sorokoletov@gmail.com>
  *
  */
@@ -396,7 +396,7 @@ $LANG['cz'] = array(
     'ICMP' => 'ICMP',
     'SSH' => 'SSH',
     'FTP' => 'FTP',
-    'VESTA' => 'VESTA',
+    'devit' => 'devit',
     'Add one more Name Server' => 'Add one more Name Server',
 
     'web domain' => 'web domain',
@@ -511,17 +511,17 @@ $LANG['cz'] = array(
     'CRON_EXCLUSIONS' => 'To exclude all jobs use *',
     'USER_EXCLUSIONS' => 'Type directory name, one per line. To exlude all dirs use *',
 
-    'Welcome to Vesta Control Panel'  => 'Vítejte na Vesta Control Panel',
-    'MAIL_FROM'  => 'Vesta Control Panel <noreply@%s>',
+    'Welcome to DevIT Control Panel'  => 'Vítejte na DevIT Control Panel',
+    'MAIL_FROM'  => 'DevIT Control Panel <noreply@%s>',
     'GREETINGS_GORDON_FREEMAN' => "Ahoj!, %s %s,\n",
     'GREETINGS' => "Ahoj!,\n",
-    'ACCOUNT_READY' => "Váš účet byl vytvořen a je připraven k použití.\n\nhttps://%s/login/\nUživatelské jméno: %s\nHeslo: %s\n\n--\nVesta Control Panel\n",
+    'ACCOUNT_READY' => "Váš účet byl vytvořen a je připraven k použití.\n\nhttps://%s/login/\nUživatelské jméno: %s\nHeslo: %s\n\n--\nDevIT Control Panel\n",
 
     'FTP login credentials'  => 'FTP přihlašovací údaje',
-    'FTP_ACCOUNT_READY' => "FTP účet byl vytvořen a je připraven k použití.\n\nHostname: %s\nUživatelské jméno: %s_%s\nHeslo: %s\n\n--\nVesta Control Panel\n",
+    'FTP_ACCOUNT_READY' => "FTP účet byl vytvořen a je připraven k použití.\n\nHostname: %s\nUživatelské jméno: %s_%s\nHeslo: %s\n\n--\nDevIT Control Panel\n",
 
     'Database Credentials'  => 'Databáze přihlašovací údaje',
-    'DATABASE_READY' => "Databáze byla úspěšně vytvořena.\n\nDatabase: %s\nUživatelské jméno: %s\nHeslo: %s\n%s\n\n--\nVesta Control Panel\n",
+    'DATABASE_READY' => "Databáze byla úspěšně vytvořena.\n\nDatabase: %s\nUživatelské jméno: %s\nHeslo: %s\n%s\n\n--\nDevIT Control Panel\n",
 
     'forgot password'  => 'zapomenuté heslo',
     'Confirm'  => 'Potvrdit',
@@ -532,7 +532,7 @@ $LANG['cz'] = array(
     'RESET_NOTICE'  => '',
     'RESET_CODE_SENT'  => 'Resetování hesla. Kód byl odeslán na vaši e-mailovou adresu<br>',
     'MAIL_RESET_SUBJECT'  => 'Obnovení hesla na %s',
-    'PASSWORD_RESET_REQUEST' => "Chcete-li obnovit heslo ovládacího panelu, prosím následujte tento odkaz:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nPřípadně, můžete se obrátit na https://%s/reset/?action=code&user=%s a zadejte následující resetovací kód:\n%s\n\nPokud jste si nevyžádali resetování hesla, prosím, tuto zprávu ignorovat a přijmout naši omluvu.\n\n--\nVesta Control Panel\n",
+    'PASSWORD_RESET_REQUEST' => "Chcete-li obnovit heslo ovládacího panelu, prosím následujte tento odkaz:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nPřípadně, můžete se obrátit na https://%s/reset/?action=code&user=%s a zadejte následující resetovací kód:\n%s\n\nPokud jste si nevyžádali resetování hesla, prosím, tuto zprávu ignorovat a přijmout naši omluvu.\n\n--\nDevIT Control Panel\n",
 
     'Jan' => 'Jan',
     'Feb' => 'Feb',
@@ -576,7 +576,7 @@ $LANG['cz'] = array(
     'sftp' => 'SFTP',
     'SFTP Chroot' => 'SFTP Chroot',
     'FileSystem Disk Quota' => 'FileSystem Disk Quota',
-    'Vesta Control Panel Plugins' => 'Vesta Control Panel Plugins',
+    'DevIT Control Panel Plugins' => 'DevIT Control Panel Plugins',
     'preview' => 'preview',
     'Reseller Role' => 'Reseller Role',
     'Web Config Editor' => 'Web Config Editor',
@@ -737,7 +737,7 @@ $LANG['cz'] = array(
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
 
-    'Vesta SSL' => 'Vesta SSL',
+    'DevIT SSL' => 'DevIT SSL',
     'SUBJECT' => 'SUBJECT',
     'ALIASES' => 'ALIASES',
     'NOT_BEFORE' => 'NOT_BEFORE',

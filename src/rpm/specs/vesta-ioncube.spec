@@ -1,4 +1,4 @@
-Name:           vesta-ioncube
+Name:           devit-ioncube
 Version:        1.0.0
 Release:        1
 Summary:        ionCube Loader
@@ -8,13 +8,13 @@ URL:            https://www.ioncube.com
 Vendor:         ioncube.com
 Source0:        %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires:       vesta-php
-Provides:       vesta-ioncube
+Requires:       devit-php
+Provides:       devit-ioncube
 
-%define         _vestadir  /usr/local/vesta/ioncube
+%define         _devitdir  /usr/local/devit/ioncube
 
 %description
-This package contains ionCube loader for Vesta
+This package contains ionCube loader for devit
 
 %global debug_package %{nil}
 
@@ -24,30 +24,30 @@ This package contains ionCube loader for Vesta
 %build
 
 %install
-install -d  %{buildroot}%{_vestadir}
-%{__cp} -ad ./* %{buildroot}%{_vestadir}
+install -d  %{buildroot}%{_devitdir}
+%{__cp} -ad ./* %{buildroot}%{_devitdir}
 
 %clean
 rm -rf %{buildroot}
 
 %post
 if [ $1 -eq 1 ]; then
-    if [ -e /usr/local/vesta/ioncube/ioncube.sh ]; then
-        /usr/local/vesta/ioncube/ioncube.sh add
+    if [ -e /usr/local/devit/ioncube/ioncube.sh ]; then
+        /usr/local/devit/ioncube/ioncube.sh add
     fi
 fi
 
 %preun
 if [ $1 -eq 0 ]; then
-    if [ -e /usr/local/vesta/ioncube/ioncube.sh ]; then
-        /usr/local/vesta/ioncube/ioncube.sh delete
+    if [ -e /usr/local/devit/ioncube/ioncube.sh ]; then
+        /usr/local/devit/ioncube/ioncube.sh delete
     fi
 fi
 
 %files
-%{_vestadir}
+%{_devitdir}
 
 %changelog
-* Fri Jun 16 2017 Serghey Rodin <builder@vestacp.com> - 0.9.8-18
+* Fri Jun 16 2017 Serghey Rodin <builder@devitcp.com> - 0.9.8-18
 - Initial package for ionCube 6.1.0
 

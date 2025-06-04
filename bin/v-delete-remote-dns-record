@@ -15,9 +15,9 @@ domain=$2
 id=$3
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/remote.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/remote.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -38,7 +38,7 @@ remote_dns_health_check
 
 # Starting cluster loop
 IFS=$'\n'
-for cluster in $(cat $VESTA/conf/dns-cluster.conf); do
+for cluster in $(cat $devit/conf/dns-cluster.conf); do
 
     # Parsing remote host parameters
     eval $cluster
@@ -61,11 +61,11 @@ done
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Updating pipe
-pipe="$VESTA/data/queue/dns-cluster.pipe"
+pipe="$devit/data/queue/dns-cluster.pipe"
 str=$(grep -n "$SCRIPT $1 $2 $3$" $pipe | cut -f1 -d: | head -n1)
 if [ ! -z "$str" ]; then
     sed -i "$str d"  $pipe

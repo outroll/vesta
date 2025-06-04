@@ -16,49 +16,49 @@ if ($_SESSION['user'] != 'admin') {
 // CPU info
 if (isset($_GET['cpu'])) {
     $TAB = 'CPU';
-    exec (VESTA_CMD.'v-list-sys-cpu-status', $output, $return_var);
+    exec (devit_CMD.'v-list-sys-cpu-status', $output, $return_var);
 }
 
 // Memory info
 if (isset($_GET['mem'])) {
     $TAB = 'MEMORY';
-    exec (VESTA_CMD.'v-list-sys-memory-status', $output, $return_var);
+    exec (devit_CMD.'v-list-sys-memory-status', $output, $return_var);
 }
 
 // Disk info
 if (isset($_GET['disk'])) {
     $TAB = 'DISK';
-    exec (VESTA_CMD.'v-list-sys-disk-status', $output, $return_var);
+    exec (devit_CMD.'v-list-sys-disk-status', $output, $return_var);
 }
 
 // Network info
 if (isset($_GET['net'])) {
     $TAB = 'NETWORK';
-    exec (VESTA_CMD.'v-list-sys-network-status', $output, $return_var);
+    exec (devit_CMD.'v-list-sys-network-status', $output, $return_var);
 }
 
 // Web info
 if (isset($_GET['web'])) {
     $TAB = 'WEB';
-    exec (VESTA_CMD.'v-list-sys-web-status', $output, $return_var);
+    exec (devit_CMD.'v-list-sys-web-status', $output, $return_var);
 }
 
 // DNS info
 if (isset($_GET['dns'])) {
     $TAB = 'DNS';
-    exec (VESTA_CMD.'v-list-sys-dns-status', $output, $return_var);
+    exec (devit_CMD.'v-list-sys-dns-status', $output, $return_var);
 }
 
 // Mail info
 if (isset($_GET['mail'])) {
     $TAB = 'MAIL';
-    exec (VESTA_CMD.'v-list-sys-mail-status', $output, $return_var);
+    exec (devit_CMD.'v-list-sys-mail-status', $output, $return_var);
 }
 
 // DB info
 if (isset($_GET['db'])) {
     $TAB = 'DB';
-    exec (VESTA_CMD.'v-list-sys-db-status', $output, $return_var);
+    exec (devit_CMD.'v-list-sys-db-status', $output, $return_var);
 }
 
 foreach($output as $file) {
@@ -66,10 +66,10 @@ foreach($output as $file) {
 }
 
 // Data
-exec (VESTA_CMD."v-list-sys-info json", $output, $return_var);
+exec (devit_CMD."v-list-sys-info json", $output, $return_var);
 $sys = json_decode(implode('', $output), true);
 unset($output);
-exec (VESTA_CMD."v-list-sys-services json", $output, $return_var);
+exec (devit_CMD."v-list-sys-services json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 unset($output);
 

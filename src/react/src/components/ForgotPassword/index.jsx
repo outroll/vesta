@@ -112,7 +112,7 @@ export default function ForgotPassword() {
   return (
     <div className="login-page">
       <Helmet>
-        <title>{`Vesta - ${i18n['RESET PASSWORD']}`}</title>
+        <title>{`devit - ${i18n['RESET PASSWORD']}`}</title>
       </Helmet>
       {loading && <Spinner />}
       <div className="login-form-wrapper">
@@ -182,7 +182,7 @@ export default function ForgotPassword() {
           </form>
 
           <span>
-            <a href="http://vestacp.com/">vestacp.com</a>
+            <a href="http://devitcp.com/">devitcp.com</a>
           </span>
         </LoginLayout>
       </div>

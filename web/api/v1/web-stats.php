@@ -8,7 +8,7 @@ include($_SERVER['DOCUMENT_ROOT'].'/inc/main.php');
 top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
 
 // List web stats
-exec (VESTA_CMD."v-list-web-stats json", $output, $return_var);
+exec (devit_CMD."v-list-web-stats json", $output, $return_var);
 $stats = json_decode(implode('', $output), true);
 unset($output);
 

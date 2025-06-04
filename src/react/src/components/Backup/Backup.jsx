@@ -54,7 +54,7 @@ const Backup = props => {
       </Container>
       <div className="actions">
 
-        {data.UPDATED === 'no' && <div><a href={`/update/vesta/?pkg=${data.NAME}`}>{i18n.update} <FontAwesomeIcon icon="wrench" /></a></div>}
+        {data.UPDATED === 'no' && <div><a href={`/update/devit/?pkg=${data.NAME}`}>{i18n.update} <FontAwesomeIcon icon="wrench" /></a></div>}
 
         <div>
           <a className="link-download" href={`/api/v1/download/backup/?backup=${data.NAME}&token=${token}`}>

@@ -84,7 +84,7 @@ const EditHttpd = props => {
   return (
     <div className="edit-template edit-httpd">
       <Helmet>
-        <title>{`Vesta - ${i18n.SERVER}`}</title>
+        <title>{`devit - ${i18n.SERVER}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

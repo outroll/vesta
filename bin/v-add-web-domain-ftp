@@ -18,9 +18,9 @@ password=$4; HIDE=4
 ftp_path=$5
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 # Additional argument formatting
 format_domain
@@ -98,7 +98,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Transforming absolute path to relative

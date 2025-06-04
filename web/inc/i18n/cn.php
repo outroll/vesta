@@ -1,7 +1,7 @@
 <?php
 /**
- * Vesta language file
- * 浩浩 (github#myrevery.com) Feedback: https://myrevery.com/tag/vestacp
+ * DevIT language file
+ * 浩浩 (github#myrevery.com) Feedback: https://myrevery.com/tag/devitcp
  * Kevin (kevin#kvm.la)
  * Tips:
  * 欢迎大家参与完善此翻译档，但请慎重选择最终中文字词
@@ -282,9 +282,9 @@ $LANG['cn'] = array(
     'CPU' => 'CPU',
     'Memory' => '内存',
     'Uptime' => '已运行时间',
-    'core package' => 'Vesta 核心系统',
-    'php interpreter' => 'Vesta PHP解释器',
-    'internal web server' => 'Vesta Web服务',
+    'core package' => 'DevIT 核心系统',
+    'php interpreter' => 'DevIT PHP解释器',
+    'internal web server' => 'DevIT Web服务',
     'Version' => '版本',
     'Release' => '发行版本',
     'Architecture' => '架构',
@@ -406,7 +406,7 @@ $LANG['cn'] = array(
     'ICMP' => 'ICMP',
     'SSH' => 'SSH',
     'FTP' => 'FTP',
-    'VESTA' => 'Vesta',
+    'devit' => 'DevIT',
     'Add one more Name Server' => '增加一个DNS服务器',
 
     'web domain' => '网站域名',
@@ -521,17 +521,17 @@ $LANG['cn'] = array(
     'CRON_EXCLUSIONS' => '要排除所有任务请使用 *',
     'USER_EXCLUSIONS' => '输入目录名称，每行一个。要排除所有目录请使用 *',
 
-    'Welcome to Vesta Control Panel' => '欢迎来到 Vesta 管理系统',
-    'MAIL_FROM' => 'Vesta 管理系统 <noreply@%s>',
+    'Welcome to DevIT Control Panel' => '欢迎来到 DevIT 管理系统',
+    'MAIL_FROM' => 'DevIT 管理系统 <noreply@%s>',
     'GREETINGS_GORDON_FREEMAN' => "您好，%s %s，\n\n",
     'GREETINGS' => "您好，\n\n",
-    'ACCOUNT_READY' => "您的账户已创建成功，并可以开始使用了！\n\nhttps://%s/login/\n用户名称: %s\n密码: %s\n\n--\nVesta 管理系统\n",
+    'ACCOUNT_READY' => "您的账户已创建成功，并可以开始使用了！\n\nhttps://%s/login/\n用户名称: %s\n密码: %s\n\n--\nDevIT 管理系统\n",
 
     'FTP login credentials' => 'FTP 登录信息',
-    'FTP_ACCOUNT_READY' => "FTP 账户已创建成功，并可以开始使用了！\n\n主机名称: %s\n用户名称: %s_%s\n密码: %s\n\n--\nVesta 管理系统\n",
+    'FTP_ACCOUNT_READY' => "FTP 账户已创建成功，并可以开始使用了！\n\n主机名称: %s\n用户名称: %s_%s\n密码: %s\n\n--\nDevIT 管理系统\n",
 
     'Database Credentials' => '数据库登录信息',
-    'DATABASE_READY' => "数据库已添加成功！\n\n数据库名称: %s\n用户名称: %s\n密码: %s\n%s\n\n--\nVesta 管理系统\n",
+    'DATABASE_READY' => "数据库已添加成功！\n\n数据库名称: %s\n用户名称: %s\n密码: %s\n%s\n\n--\nDevIT 管理系统\n",
 
     'forgot password' => '忘记密码',
     'Confirm' => '确认',
@@ -542,7 +542,7 @@ $LANG['cn'] = array(
     'RESET_NOTICE' => '',
     'RESET_CODE_SENT' => '重置代码已发送到您的邮箱<br>',
     'MAIL_RESET_SUBJECT' => '重置密码在 %s',
-    'PASSWORD_RESET_REQUEST' => '重置密码请点击链接:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\n或者您可以到 https://%s/reset/?action=code&user=%s\n输入重置代码:\n%s\n\n如果您没有要求重置密码，请忽略此邮件\n\n--\nVesta 管理系统\n',
+    'PASSWORD_RESET_REQUEST' => '重置密码请点击链接:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\n或者您可以到 https://%s/reset/?action=code&user=%s\n输入重置代码:\n%s\n\n如果您没有要求重置密码，请忽略此邮件\n\n--\nDevIT 管理系统\n',
 
     'Jan' => '01月',
     'Feb' => '02月',
@@ -586,7 +586,7 @@ $LANG['cn'] = array(
     'sftp' => 'SFTP',
     'SFTP Chroot' => 'SFTP Chroot',
     'FileSystem Disk Quota' => '磁盘配额',
-    'Vesta Control Panel Plugins' => 'Vesta 插件',
+    'DevIT Control Panel Plugins' => 'DevIT 插件',
     'preview' => '预览',
     'Reseller Role' => '作为经销商',
     'Web Config Editor' => '网络配置编辑器',
@@ -747,7 +747,7 @@ $LANG['cn'] = array(
     'webalizer' => 'Webalizer',
     'awstats' => 'AWStats',
 
-    'Vesta SSL' => 'Vesta SSL',
+    'DevIT SSL' => 'DevIT SSL',
     'SUBJECT' => '使用者',
     'ALIASES' => '可选名称',
     'NOT_BEFORE' => '有效期自',

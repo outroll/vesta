@@ -2,7 +2,7 @@
 
 Type here, e.g. CentOS 6
 
-### VestaCP Version:
+### DevITCP Version:
 
 Type here, e.g. 3.14159
 
@@ -12,7 +12,7 @@ Type here, e.g. php-fpm, apache, nginx, mysql
 
 ### Steps to Reproduce:
 
-Type here, e.g. install vesta and type rm -rf / --no-preserve-root
+Type here, e.g. install devit and type rm -rf / --no-preserve-root
 
 ### Related Issues/Forum Threads:
 

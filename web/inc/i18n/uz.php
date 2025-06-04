@@ -1,6 +1,6 @@
 <?php
 /**
- * Vesta language file
+ * DevIT language file
  * Akbarali (me@akbarali.uz)
  * site: https://akbarali.uz
  */
@@ -401,7 +401,7 @@ $LANG['uz'] = [
     'ICMP'                       => 'ICMP',
     'SSH'                        => 'SSH',
     'FTP'                        => 'FTP',
-    'VESTA'                      => 'VESTA',
+    'devit'                      => 'devit',
     'Add one more Name Server'   => "Yana bitta nom serverini qo'shish",
 
     'web domain'   => 'web domen',
@@ -516,17 +516,17 @@ $LANG['uz'] = [
     'CRON_EXCLUSIONS' => 'Для того чтобы исключить все задания, используйте * ',
     'USER_EXCLUSIONS' => 'Укажите папки по одной в строке.Для того чтобы исключить все, используйте * ',
 
-    'Welcome to Vesta Control Panel' => "Vesta boshqaruv paneliga xush kelibsiz",
-    'MAIL_FROM'                      => 'Vesta Control Panel < noreply@%s > ',
+    'Welcome to DevIT Control Panel' => "DevIT boshqaruv paneliga xush kelibsiz",
+    'MAIL_FROM'                      => 'DevIT Control Panel < noreply@%s > ',
     'GREETINGS_GORDON_FREEMAN'       => "Salom %s %s,\n",
     'GREETINGS'                      => "Salom,\n",
-    'ACCOUNT_READY'                  => "Hisob muvaffaqiyatli yaratildi va foydalanishga tayyor.\n\nhttps://%s/login/\nFoydalanuvchi nomi: %s\nParol: %s\n\n--\nVesta boshqaruv paneli\n",
+    'ACCOUNT_READY'                  => "Hisob muvaffaqiyatli yaratildi va foydalanishga tayyor.\n\nhttps://%s/login/\nFoydalanuvchi nomi: %s\nParol: %s\n\n--\nDevIT boshqaruv paneli\n",
 
     'FTP login credentials' => "FTP kirish ma'lumotlari",
-    'FTP_ACCOUNT_READY'     => "FTP hisobi muvaffaqiyatli yaratildi va foydalanishga tayyor.\n\nXost: %s\nFoydalanuvchi nomi: %s_%s\nParol: %s\n\n--\nVesta boshqaruv paneli\n",
+    'FTP_ACCOUNT_READY'     => "FTP hisobi muvaffaqiyatli yaratildi va foydalanishga tayyor.\n\nXost: %s\nFoydalanuvchi nomi: %s_%s\nParol: %s\n\n--\nDevIT boshqaruv paneli\n",
 
     'Database Credentials' => "Ma'lumotlar bazasiga kirish uchun ma'lumotlar",
-    'DATABASE_READY'       => "Ma'lumotlar bazasi muvaffaqiyatli yaratildi.\n\nMa'lumotlar bazasi: %s\nFoydalanuvchi: %s\nParol: %s\n%s\n\n--\nVesta boshqaruv paneli\n",
+    'DATABASE_READY'       => "Ma'lumotlar bazasi muvaffaqiyatli yaratildi.\n\nMa'lumotlar bazasi: %s\nFoydalanuvchi: %s\nParol: %s\n%s\n\n--\nDevIT boshqaruv paneli\n",
 
     'forgot password'        => 'eslatmoq',
     'Confirm'                => 'Tasdiqlang',
@@ -537,7 +537,7 @@ $LANG['uz'] = [
     'RESET_NOTICE'           => '',
     'RESET_CODE_SENT'        => 'Parolni tiklash kodi elektron pochta manzilingizga yuborildi..<br > ',
     'MAIL_RESET_SUBJECT'     => ' % s parolni tiklash',
-    'PASSWORD_RESET_REQUEST' => "Boshqaruv paneli parolini tiklash uchun quyidagi havolaga oʻting:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nBoʻlmasa, https://%s/reset/ sahifasiga oʻting. ?action=code&user=%s va quyidagi tiklash kodini kiriting:\n%s\n\nAgar siz parolni tiklashni soʻramagan boʻlsangiz, ushbu xabarga eʼtibor bermang va uzrimizni qabul qiling.\n\n--\nVesta boshqaruv paneli\n",
+    'PASSWORD_RESET_REQUEST' => "Boshqaruv paneli parolini tiklash uchun quyidagi havolaga oʻting:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nBoʻlmasa, https://%s/reset/ sahifasiga oʻting. ?action=code&user=%s va quyidagi tiklash kodini kiriting:\n%s\n\nAgar siz parolni tiklashni soʻramagan boʻlsangiz, ushbu xabarga eʼtibor bermang va uzrimizni qabul qiling.\n\n--\nDevIT boshqaruv paneli\n",
 
     'Jan' => 'Yan',
     'Feb' => 'Fev',
@@ -581,7 +581,7 @@ $LANG['uz'] = [
     'sftp'                           => 'SFTP',
     'SFTP Chroot'                    => 'SFTP Chroot',
     'FileSystem Disk Quota'          => "Fayl tizimi disk kvotasi",
-    'Vesta Control Panel Plugins'    => 'Плагины Vesta Control Panel',
+    'DevIT Control Panel Plugins'    => 'Плагины DevIT Control Panel',
     'preview'                        => "oldindan ko'rish",
     'Reseller Role'                  => 'Sotuvchi roli',
     'Web Config Editor'              => "Veb konfiguratsiya muharriri",
@@ -743,7 +743,7 @@ $LANG['uz'] = [
     'webalizer' => 'webalizer',
     'awstats'   => 'awstats',
 
-    'Vesta SSL'  => 'Vesta SSL',
+    'DevIT SSL'  => 'DevIT SSL',
     'SUBJECT'    => "OB'YEKT",
     'ALIASES'    => 'ALIASES',
     'NOT_BEFORE' => 'НЕДОСТУПЕН ДО',

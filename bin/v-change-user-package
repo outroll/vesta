@@ -15,9 +15,9 @@ package=$2
 force=$3
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 is_package_avalable() {
 
@@ -29,7 +29,7 @@ is_package_avalable() {
     DISK_QUOTA='0'
     BANDWIDTH='0'
 
-    pkg_data=$(cat $VESTA/data/packages/$package.pkg| egrep -v "TIME|DATE")
+    pkg_data=$(cat $devit/data/packages/$package.pkg| egrep -v "TIME|DATE")
     IFS=$'\n'
     for str in $pkg_data; do
         key=$(echo $str |cut -f 1 -d =)
@@ -82,7 +82,7 @@ is_package_avalable() {
 
 change_user_package() {
     source $USER_DATA/user.conf
-    pkg_data=$(cat $VESTA/data/packages/$package.pkg| egrep -v "TIME|DATE")
+    pkg_data=$(cat $devit/data/packages/$package.pkg| egrep -v "TIME|DATE")
     IFS=$'\n'
     for str in $pkg_data; do
         key=$(echo $str |cut -f 1 -d =)
@@ -172,19 +172,19 @@ shell=$(grep -w "$shell_conf" /etc/shells |head -n1)
 /usr/bin/chsh -s "$shell" "$user" &>/dev/null
 
 # Run template trigger
-if [ -x "$VESTA/data/packages/$package.sh" ]; then
-    $VESTA/data/packages/$package.sh "$user" "$CONTACT" "$FNAME" "$LNAME"
+if [ -x "$devit/data/packages/$package.sh" ]; then
+    $devit/data/packages/$package.sh "$user" "$CONTACT" "$FNAME" "$LNAME"
 fi
 
 # Update disk quota
-source $VESTA/conf/vesta.conf
+source $devit/conf/devit.conf
 if [ "$DISK_QUOTA" = 'yes' ]; then
     $BIN/v-update-user-quota $user
 fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

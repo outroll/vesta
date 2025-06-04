@@ -13,8 +13,8 @@
 restart=$1
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -22,7 +22,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 # Defining config host
-chost='c.vestacp.com'
+chost='c.devitcp.com'
 
 # Detcing OS
 case $(head -n1 /etc/issue |cut -f 1 -d ' ') in
@@ -47,16 +47,16 @@ if [ "$version" = 'debian' ]; then
 fi
 
 # Defining download url
-vestacp="http://$chost/$version/$release"
+devitcp="http://$chost/$version/$release"
 
 # Downloading template archive
 cd $(mktemp -d)
-wget $vestacp/templates.tar.gz -q
+wget $devitcp/templates.tar.gz -q
 
 check_result $? "can't download template.tar.gz" $E_CONNECT
 
 # Updating templates
-tar -xzpf templates.tar.gz -C $VESTA/data/ templates/web
+tar -xzpf templates.tar.gz -C $devit/data/ templates/web
 
 # Rebuilding web domains
 for user in $($BIN/v-list-sys-users plain); do
@@ -65,7 +65,7 @@ done
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Restarting web server

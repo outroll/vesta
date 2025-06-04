@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: deactivate vesta license
+# info: deactivate devit license
 # options: MODULE LICENSE
 #
-# The function deactivates vesta license
+# The function deactivates devit license
 
 
 #----------------------------------------------------------#
@@ -17,8 +17,8 @@ license=$2
 source /etc/profile
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -34,9 +34,9 @@ check_args '2' "$#" 'MODULE LICENSE'
 #----------------------------------------------------------#
 
 # Activating license
-v_host='https://vestacp.com/checkout'
+v_host='https://devitcp.com/checkout'
 answer=$(curl -s "$v_host/cancel.php?licence_key=$license&module=$module")
-check_result $? "cant' connect to vestacp.com " $E_CONNECT
+check_result $? "cant' connect to devitcp.com " $E_CONNECT
 
 # Checking server answer
 if [[ "$answer" != '0' ]]; then
@@ -46,12 +46,12 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
-# Updating vesta.conf
-if [ ! -z "$(grep "${module}_KEY" $VESTA/conf/vesta.conf)" ]; then
-    sed -i "s/${module}_KEY=.*/${module}_KEY=''/g" $VESTA/conf/vesta.conf
+# Updating devit.conf
+if [ ! -z "$(grep "${module}_KEY" $devit/conf/devit.conf)" ]; then
+    sed -i "s/${module}_KEY=.*/${module}_KEY=''/g" $devit/conf/devit.conf
 fi
 
 # Deactivating sftpjail

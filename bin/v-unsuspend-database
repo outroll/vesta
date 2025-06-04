@@ -14,9 +14,9 @@ user=$1
 database=$2
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/db.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/db.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -46,7 +46,7 @@ esac
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Updating db value

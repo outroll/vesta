@@ -84,7 +84,7 @@ export default function AddDNSRecord(props) {
   return (
     <div className="edit-template add-dns-record">
       <Helmet>
-        <title>{`Vesta - ${i18n.DNS}`}</title>
+        <title>{`devit - ${i18n.DNS}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

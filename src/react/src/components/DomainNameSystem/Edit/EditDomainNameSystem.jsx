@@ -93,7 +93,7 @@ const EditDomainNameSystem = props => {
   return (
     <div className="edit-template edit-dns">
       <Helmet>
-        <title>{`Vesta - ${i18n.DNS}`}</title>
+        <title>{`devit - ${i18n.DNS}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

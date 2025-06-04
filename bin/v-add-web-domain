@@ -25,10 +25,10 @@ aliases=$5
 proxy_ext=$6
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/func/ip.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/func/ip.sh
+source $devit/conf/devit.conf
 
 # Additional argument formatting
 format_domain
@@ -146,7 +146,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Increasing counters

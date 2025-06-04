@@ -13,8 +13,8 @@
 timezone=$1
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 is_timezone_valid() {
     if [ ! -e "/usr/share/zoneinfo/$timezone" ]; then
@@ -63,7 +63,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

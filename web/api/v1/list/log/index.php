@@ -8,7 +8,7 @@ top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB
 header('Content-Type: application/json');
 
 // Data
-exec (VESTA_CMD."v-list-user-log $user json", $output, $return_var);
+exec (devit_CMD."v-list-user-log $user json", $output, $return_var);
 check_error($return_var);
 $data = json_decode(implode('', $output), true);
 $data = array_reverse($data);

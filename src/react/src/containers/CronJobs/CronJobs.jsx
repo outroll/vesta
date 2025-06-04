@@ -393,7 +393,7 @@ const CronJobs = props => {
   return (
     <div className="cronJobs">
       <Helmet>
-        <title>{`Vesta - ${i18n.CRON}`}</title>
+        <title>{`devit - ${i18n.CRON}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name={i18n['Add Cron Job']} href="/add/cron" showLeftMenu={true} />

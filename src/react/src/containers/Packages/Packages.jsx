@@ -355,7 +355,7 @@ const Packages = props => {
   return (
     <div className="packages">
       <Helmet>
-        <title>{`Vesta - ${i18n.PACKAGE}`}</title>
+        <title>{`devit - ${i18n.PACKAGE}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name={i18n['Add Package']} href="/add/package/" showLeftMenu={true} />

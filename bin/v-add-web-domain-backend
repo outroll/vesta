@@ -16,9 +16,9 @@ template=${3-default}
 restart=$4
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -63,7 +63,7 @@ cat $WEBTPL/$WEB_BACKEND/$template.tpl |\
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Restart backend server

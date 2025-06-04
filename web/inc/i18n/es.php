@@ -1,6 +1,6 @@
 <?php
 /**
- * Vesta language file
+ * DevIT language file
  *
  * Traducción al español por:
  * > Omar Gonzalez - ogonzale@alumnos.inf.utfsm.cl
@@ -403,7 +403,7 @@ $LANG['es'] = array(
     'ICMP' => 'ICMP',
     'SSH' => 'SSH',
     'FTP' => 'FTP',
-    'VESTA' => 'VESTA',
+    'devit' => 'devit',
     'Add one more Name Server' => 'Añadir otro Servidor de Nombre',
 
     'web domain' => 'dominio web',
@@ -518,17 +518,17 @@ $LANG['es'] = array(
     'CRON_EXCLUSIONS' => 'Para excluir todas las tareas programadas utilice *',
     'USER_EXCLUSIONS' => 'Ingrese el nombre del directorio, uno por línea. Para excluir todos los directorios utilice *',
 
-    'Welcome to Vesta Control Panel'  => 'Bienvenido al Panel de Control Vesta',
-    'MAIL_FROM'  => 'Panel de Control Vesta <noreply@%s>',
+    'Welcome to DevIT Control Panel'  => 'Bienvenido al Panel de Control DevIT',
+    'MAIL_FROM'  => 'Panel de Control DevIT <noreply@%s>',
     'GREETINGS_GORDON_FREEMAN' => "Hola, %s %s,\n",
     'GREETINGS' => "Hola,\n",
-    'ACCOUNT_READY' => "Su cuenta ha sido creada con éxito y ya puede hacer uso de ella en:\n\nhttps://%s/login/\nNombre de usuario: %s\nContraseña: %s\n\n--\nPanel de Control Vesta\n",
+    'ACCOUNT_READY' => "Su cuenta ha sido creada con éxito y ya puede hacer uso de ella en:\n\nhttps://%s/login/\nNombre de usuario: %s\nContraseña: %s\n\n--\nPanel de Control DevIT\n",
 
     'FTP login credentials'  => 'Datos de acceso a FTP',
-    'FTP_ACCOUNT_READY' => "La cuenta FTP ha sido creada con éxito y ya puede hacer uso de ella.\n\nNombre del servidor: %s\nNombre de usuario: %s_%s\nContraseña: %s\n\n--\nPanel de Control Vesta\n",
+    'FTP_ACCOUNT_READY' => "La cuenta FTP ha sido creada con éxito y ya puede hacer uso de ella.\n\nNombre del servidor: %s\nNombre de usuario: %s_%s\nContraseña: %s\n\n--\nPanel de Control DevIT\n",
 
     'Database Credentials'  => 'Datos de acceso a la Base de Datos',
-    'DATABASE_READY' => "La Base de Datos ha sido creada exitosamente.\n\nBase de Datos: %s\nNombre de usuario: %s\nContraseña: %s\n%s\n\n--\nPanel de Control Vesta\n",
+    'DATABASE_READY' => "La Base de Datos ha sido creada exitosamente.\n\nBase de Datos: %s\nNombre de usuario: %s\nContraseña: %s\n%s\n\n--\nPanel de Control DevIT\n",
 
     'forgot password'  => '¿olvidó su contraseña?',
     'Confirm'  => 'Confirmar',
@@ -539,7 +539,7 @@ $LANG['es'] = array(
     'RESET_NOTICE'  => '',
     'RESET_CODE_SENT'  => 'El código de restablecimiento de contraseña ha sido enviado a su correo<br>',
     'MAIL_RESET_SUBJECT'  => 'Restablecimiento de Contraseña en %s',
-    'PASSWORD_RESET_REQUEST' => "Para restablecer su contraseña del panel de control, por favor ingrese a éste link:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nAlternativamente, puede dirigirse a https://%s/reset/?action=code&user=%s e ingresar el siguiente código de restablecimiento:\n%s\n\nSi usted no ha solicitado un restablecimiento de contraseña, por favor ignore este mensaje y acepte nuestras disculpas.\n\n--\nPanel de Control Vesta\n",
+    'PASSWORD_RESET_REQUEST' => "Para restablecer su contraseña del panel de control, por favor ingrese a éste link:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\nAlternativamente, puede dirigirse a https://%s/reset/?action=code&user=%s e ingresar el siguiente código de restablecimiento:\n%s\n\nSi usted no ha solicitado un restablecimiento de contraseña, por favor ignore este mensaje y acepte nuestras disculpas.\n\n--\nPanel de Control DevIT\n",
 
     'Jan' => 'Ene',
     'Feb' => 'Feb',
@@ -583,7 +583,7 @@ $LANG['es'] = array(
     'sftp' => 'SFTP',
     'SFTP Chroot' => 'SFTP Chroot',
     'FileSystem Disk Quota' => 'FileSystem - Cuota del disco',
-    'Vesta Control Panel Plugins' => 'Plugins de Vesta Control Panel',
+    'DevIT Control Panel Plugins' => 'Plugins de DevIT Control Panel',
     'preview' => 'previsualizar',
     'Reseller Role' => 'Rol de Revendedor',
     'Web Config Editor' => 'Editor de Configuración Web',
@@ -744,7 +744,7 @@ $LANG['es'] = array(
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
 
-    'Vesta SSL' => 'Vesta SSL',
+    'DevIT SSL' => 'DevIT SSL',
     'SUBJECT' => 'EMITIDO PARA',
     'ALIASES' => 'ALIAS',
     'NOT_BEFORE' => 'VÁLIDO DESDE',

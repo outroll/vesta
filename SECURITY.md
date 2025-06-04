@@ -2,4 +2,4 @@
 
 ## Reporting a Vulnerability
 
-Please report security issues to dev@vestacp.com
+Please report security issues to dev@devitcp.com

@@ -15,8 +15,8 @@ domain=$2
 domain_idn=$2
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 # Additional argument formatting
 format_domain
@@ -59,7 +59,7 @@ done
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 update_object_value 'mail' 'DOMAIN' "$domain" '$U_DISK' "$dom_diks"

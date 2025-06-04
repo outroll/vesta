@@ -16,8 +16,8 @@ user=$1
 API='https://acme-v02.api.letsencrypt.org'
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 # encode base64
 encode_base64() {
@@ -119,7 +119,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Adding le.conf

@@ -19,7 +19,7 @@ export const bulkAction = (action, updates) => {
     formData.append("pkg[]", update);
   });
 
-  return axios.post(BASE_URL + '/api/v1/bulk/vesta/', formData);
+  return axios.post(BASE_URL + '/api/v1/bulk/devit/', formData);
 };
 
 export const handleAction = uri => {

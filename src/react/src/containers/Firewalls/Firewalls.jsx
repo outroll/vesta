@@ -365,7 +365,7 @@ const Firewalls = props => {
   return (
     <div className="firewalls">
       <Helmet>
-        <title>{`Vesta - ${i18n.FIREWALL}`}</title>
+        <title>{`devit - ${i18n.FIREWALL}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton href="/add/firewall/" name={i18n['Add Rule']} showLeftMenu={true} />

@@ -1,7 +1,7 @@
 <?php
  /*
  * 
- *Vesta Farsi/Persian language file
+ *DevIT Farsi/Persian language file
  * By Foad Gh (secretjail@yahoo.com / http://www.Dotserver.ir )
  * Yalda night 2015
  * َAnd Ham3D (hamed334@gmail.com)
@@ -390,7 +390,7 @@ $LANG['fa'] = array(
     'ICMP' => 'ICMP',
     'SSH' => 'SSH',
     'FTP' => 'FTP',
-    'VESTA' => 'وستا',
+    'devit' => 'وستا',
     'Add one more Name Server' => 'افزودن یک نام سرور دیگر',
     'web domain' => 'دامنه وب',
     'dns domain' => 'دامنه نام دامنه',
@@ -499,7 +499,7 @@ $LANG['fa'] = array(
     'DB_EXCLUSIONS' => 'نام كامل پایگاه داده را در خطی جداگانه بنویسید.برای دربرگیری تمامی پایگاه های داده از * استفاده كنید.',
     'CRON_EXCLUSIONS' => 'برای دربرگیری تمامی كار ها از * استفاده كنید',
     'USER_EXCLUSIONS' => 'نام هر پوشه را در خطی جداگانه بنویسید.برای دربرگیری تمام پوشه ها از * استفاده كنید.',
-    'Welcome to Vesta Control Panel' => 'به کنترل پنل وستا خوش آمدید',
+    'Welcome to DevIT Control Panel' => 'به کنترل پنل وستا خوش آمدید',
     'MAIL_FROM' => 'كنترل پنل وستا <noreply@%s>',
     'GREETINGS_GORDON_FREEMAN' => "درود, %s %s,\n",
     'GREETINGS' => "درود,\n",
@@ -559,7 +559,7 @@ $LANG['fa'] = array(
     'sftp' => 'SFTP',
     'SFTP Chroot' => 'SFTP Chroot',
     'FileSystem Disk Quota' => 'سهمیه فایل سیستم دیسك ',
-    'Vesta Control Panel Plugins' => 'افزونه های كنترل پنل وستا',
+    'DevIT Control Panel Plugins' => 'افزونه های كنترل پنل وستا',
     'preview' => 'پیش نمایش',
     'Reseller Role' => 'نقش فروشنده',
     'Web Config Editor' => 'ویرایشگر پیكربند وب',
@@ -711,7 +711,7 @@ $LANG['fa'] = array(
     'Generate' => 'آفریدن',
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
-    'Vesta SSL' => 'وستا SSL',
+    'DevIT SSL' => 'وستا SSL',
     'SUBJECT' => 'موضوع',
     'ALIASES' => 'نام های مستعار',
     'NOT_BEFORE' => 'جز_پیش از',

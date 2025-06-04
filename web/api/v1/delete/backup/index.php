@@ -19,7 +19,7 @@ if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
 if (!empty($_GET['backup'])) {
     $v_username = escapeshellarg($user);
     $v_backup = escapeshellarg($_GET['backup']);
-    exec (VESTA_CMD."v-delete-user-backup ".$v_username." ".$v_backup, $output, $return_var);
+    exec (devit_CMD."v-delete-user-backup ".$v_username." ".$v_backup, $output, $return_var);
 }
 check_return_code($return_var,$output);
 unset($output);

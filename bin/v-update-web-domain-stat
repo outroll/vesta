@@ -15,9 +15,9 @@ domain=$2
 domain_idn=$2
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 # Additional argument formatting
 format_domain
@@ -86,7 +86,7 @@ build_awstats() {
 
     # Logo check
     if [ ! -e "$dir/logo.png" ]; then
-        cp -r $VESTA/web/images/logo.png $dir/
+        cp -r $devit/web/images/logo.png $dir/
     fi
 
     # Icon directory check
@@ -144,7 +144,7 @@ chown -R $user:$(groups $user| cut -f 3 -d ' ') $dir
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # No Logging

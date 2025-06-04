@@ -18,13 +18,13 @@ $action = $_POST['action'];
 
 if ($_SESSION['user'] == 'admin') {
     switch ($action) {
-        case 'update': $cmd='v-update-sys-vesta';
+        case 'update': $cmd='v-update-sys-devit';
             break;
         default: exit;
     }
     foreach ($pkg as $value) {
         $value = escapeshellarg($value);
-        exec (VESTA_CMD.$cmd." ".$value, $output, $return_var);
+        exec (devit_CMD.$cmd." ".$value, $output, $return_var);
     }
 }
 

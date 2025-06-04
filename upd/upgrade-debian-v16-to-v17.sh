@@ -1,35 +1,35 @@
 #!/bin/bash
 
-CHOST='c.vestacp.com'
+CHOST='c.devitcp.com'
 VERSION='debian'
-VESTA='/usr/local/vesta'
+devit='/usr/local/devit'
 os='debian'
 release=$(cat /etc/debian_version|grep -o [0-9]|head -n1)
 codename="$(cat /etc/os-release |grep VERSION= |cut -f 2 -d \(|cut -f 1 -d \))"
-vestacp="http://$CHOST/$VERSION/$release"
+devitcp="http://$CHOST/$VERSION/$release"
 servername=$(hostname -f)
 
 apt-get update > /dev/null 2>&1
 
 
 # PATH fix
-if [ ! -f "/etc/profile.d/vesta.sh" ]; then
-    echo "export VESTA='$VESTA'" > /etc/profile.d/vesta.sh
+if [ ! -f "/etc/profile.d/devit.sh" ]; then
+    echo "export devit='$devit'" > /etc/profile.d/devit.sh
 fi
-if [ $( grep -ic "vesta" /root/.bash_profile ) -eq 0 ]; then
-    echo 'PATH=$PATH:'$VESTA'/bin' >> /root/.bash_profile
+if [ $( grep -ic "devit" /root/.bash_profile ) -eq 0 ]; then
+    echo 'PATH=$PATH:'$devit'/bin' >> /root/.bash_profile
 fi
 
 
-# Linking /var/log/vesta
-if [ ! -L "/var/log/vesta" ]; then
-    ln -s $VESTA/log /var/log/vesta
+# Linking /var/log/devit
+if [ ! -L "/var/log/devit" ]; then
+    ln -s $devit/log /var/log/devit
 fi
 
 
 if [ -f "/etc/roundcube/plugins/password/config.inc.php" ]; then
 
-    # Roundcube Vesta password driver - changing password_vesta_host (in config) to server hostname 
+    # Roundcube DevIT password driver - changing password_devit_host (in config) to server hostname 
     sed -i "s/localhost/$servername/g" /etc/roundcube/plugins/password/config.inc.php
 
     # Roundcube log permission fix
@@ -64,7 +64,7 @@ fi
 
 # RoundCube tinyMCE fix
 if [ "$release" -eq '8' ]; then
-    tinymceFixArchiveURL=$vestacp/roundcube/roundcube-tinymce.tar.gz
+    tinymceFixArchiveURL=$devitcp/roundcube/roundcube-tinymce.tar.gz
     tinymceParentFolder=/usr/share/roundcube/program/js
     tinymceFolder=$tinymceParentFolder/tinymce
     tinymceBadJS=$tinymceFolder/tiny_mce.js
@@ -88,8 +88,8 @@ fi
 
 # Fixing empty NAT ip
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
-pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
-file="$VESTA/data/ips/$ip"
+pub_ip=$(curl -s devitcp.com/what-is-my-ip/)
+file="$devit/data/ips/$ip"
 if [ -f "$file" ] && [ $( grep -ic "NAT=''" $file ) -eq 1 ]; then
     if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
         v-change-sys-ip-nat $ip $pub_ip
@@ -106,7 +106,7 @@ fi
 
 # Switching to mod_remoteip
 if [ ! -f "/etc/apache2/mods-enabled/remoteip.load" ]; then
-    $VESTA/upd/switch_rpath.sh 
+    $devit/upd/switch_rpath.sh 
 fi
 
 
@@ -134,4 +134,4 @@ if [ -f "/lib/systemd/system/clamav-daemon.service" ]; then
 fi
 
 # Dovecot logrorate script
-wget $vestacp/logrotate/dovecot -O /etc/logrotate.d/dovecot
+wget $devitcp/logrotate/dovecot -O /etc/logrotate.d/dovecot

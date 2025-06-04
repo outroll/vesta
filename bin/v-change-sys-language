@@ -13,12 +13,12 @@
 language=$1
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 is_language_valid() {
-    if [ ! -e "$VESTA/web/inc/i18n/$language.php" ]; then
+    if [ ! -e "$devit/web/inc/i18n/$language.php" ]; then
         echo "Error: language file $language doesn't exist"
         log_event "$E_NOTEXIST $ARGUMENTS"
         exit $E_NOTEXIST
@@ -40,15 +40,15 @@ is_language_valid $language
 #----------------------------------------------------------#
 
 # Change language
-if [ -z "$(grep LANGUAGE $VESTA/conf/vesta.conf)" ]; then
-    echo "LANGUAGE='$language'" >> $VESTA/conf/vesta.conf
+if [ -z "$(grep LANGUAGE $devit/conf/devit.conf)" ]; then
+    echo "LANGUAGE='$language'" >> $devit/conf/devit.conf
 else
-    sed -i "s/LANGUAGE=.*/LANGUAGE='$language'/g" $VESTA/conf/vesta.conf
+    sed -i "s/LANGUAGE=.*/LANGUAGE='$language'/g" $devit/conf/devit.conf
 fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

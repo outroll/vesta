@@ -288,7 +288,7 @@ const Updates = props => {
   return (
     <div className="statistics-list updates">
       <Helmet>
-        <title>{`Vesta - ${i18n.UPDATES}`}</title>
+        <title>{`devit - ${i18n.UPDATES}`}</title>
       </Helmet>
       <Toolbar mobile={false} className="justify-right">
         <LeftButton name="Add Cron Job" showLeftMenu={false} />

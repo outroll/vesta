@@ -118,7 +118,7 @@ const AddDatabase = memo(props => {
   return (
     <div className="edit-template add-db">
       <Helmet>
-        <title>{`Vesta - ${i18n.DB}`}</title>
+        <title>{`devit - ${i18n.DB}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

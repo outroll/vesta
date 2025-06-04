@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: delete vesta autoupdate cron job
+# info: delete devit autoupdate cron job
 # options: NONE
 #
-# The function deletes vesta autoupdate cron job.
+# The function deletes devit autoupdate cron job.
 
 
 #----------------------------------------------------------#
@@ -13,8 +13,8 @@
 user=admin
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -22,7 +22,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 is_system_enabled "$CRON_SYSTEM" 'CRON_SYSTEM'
-check_cron=$(grep 'v-update-sys-vesta-all' $USER_DATA/cron.conf)
+check_cron=$(grep 'v-update-sys-devit-all' $USER_DATA/cron.conf)
 if [ -z "$check_cron" ]; then
     exit
 fi
@@ -45,7 +45,7 @@ sync_cron_jobs
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Decreasing cron value

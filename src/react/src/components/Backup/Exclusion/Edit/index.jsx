@@ -76,7 +76,7 @@ const EditBackupExclusions = () => {
   return (
     <div className="edit-template edit-backup-exclusions">
       <Helmet>
-        <title>{`Vesta - ${i18n.BACKUP}`}</title>
+        <title>{`devit - ${i18n.BACKUP}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

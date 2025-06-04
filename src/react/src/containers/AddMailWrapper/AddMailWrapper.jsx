@@ -24,7 +24,7 @@ export default function AddMailWrapper() {
   return (
     <>
       <Helmet>
-        <title>{`Vesta - ${i18n.MAIL}`}</title>
+        <title>{`devit - ${i18n.MAIL}`}</title>
       </Helmet>
       {
         domain
