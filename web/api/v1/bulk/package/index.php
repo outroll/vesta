@@ -27,7 +27,7 @@ if ($_SESSION['user'] == 'admin') {
 
 foreach ($package as $value) {
     $value = escapeshellarg($value);
-    exec (VESTA_CMD.$cmd." ".$value, $output, $return_var);
+    exec (devit_CMD.$cmd." ".$value, $output, $return_var);
     $restart = 'yes';
 }
 

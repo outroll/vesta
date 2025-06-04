@@ -183,7 +183,7 @@ const RRDs = props => {
   return (
     <div className="rrd-list">
       <Helmet>
-        <title>{`Vesta - ${i18n.RRD}`}</title>
+        <title>{`devit - ${i18n.RRD}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div className="periods-wrapper">

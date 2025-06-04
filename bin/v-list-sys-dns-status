@@ -13,8 +13,8 @@
 #format=${1-shell}
 
 # Includes
-#source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+#source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 #----------------------------------------------------------#
 #                       Action                             #
@@ -69,7 +69,7 @@ if [ -e "$dump_file" ]; then
 fi
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

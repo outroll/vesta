@@ -141,7 +141,7 @@ const BackupExclusions = props => {
   return (
     <div className="exclusions-list">
       <Helmet>
-        <title>{`Vesta - ${i18n.BACKUP}`}</title>
+        <title>{`devit - ${i18n.BACKUP}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <LeftButton href="/edit/backup/exclusions" list="server" name={i18n.configure} showLeftMenu={true} />

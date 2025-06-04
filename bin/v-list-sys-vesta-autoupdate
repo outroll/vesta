@@ -1,5 +1,5 @@
 #!/bin/bash
-# info: list vesta autoupdate settings
+# info: list devit autoupdate settings
 # options: [FORMAT]
 #
 # The function for obtaining autoupdate setings.
@@ -14,7 +14,7 @@ user='admin'
 format=${1-shell}
 
 # Includes
-source $VESTA/func/main.sh
+source $devit/func/main.sh
 
 # JSON list function
 json_list() {
@@ -62,7 +62,7 @@ csv_list() {
 #----------------------------------------------------------#
 
 # Check cron tab
-check_cron=$(grep 'v-update-sys-vesta-all' $USER_DATA/cron.conf)
+check_cron=$(grep 'v-update-sys-devit-all' $USER_DATA/cron.conf)
 
 # Listing data
 case $format in
@@ -75,7 +75,7 @@ esac
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

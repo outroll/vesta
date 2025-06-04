@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import EditServerWebOption from './EditServerWebOption';
 import EditServerDnsOption from './EditServerDnsOption';
-import EditVestaPluginsOption from './EditVestaPlugins';
-import EditVestaSslOption from './EditVestaSslOption';
+import EditdevitPluginsOption from './EditdevitPlugins';
+import EditdevitSslOption from './EditdevitSslOption';
 import EditDatabaseOption from './EditDatabaseOption';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import EditBackupOption from './EditBackupOption';
@@ -116,7 +116,7 @@ const EditServer = props => {
   return (
     <div className="edit-template edit-server">
       <Helmet>
-        <title>{`Vesta - ${i18n.SERVER}`}</title>
+        <title>{`devit - ${i18n.SERVER}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>
@@ -213,18 +213,18 @@ const EditServer = props => {
               <EditBackupOption data={state.data} visible={state.backupOption} />
 
               <button type="button" onClick={() => toggleOption('sslOption')}>
-                {i18n['Vesta SSL']}
+                {i18n['devit SSL']}
                 {state.sslOption ? <FontAwesomeIcon icon="caret-up" /> : <FontAwesomeIcon icon="caret-down" />}
               </button>
 
-              <EditVestaSslOption data={state.data} visible={state.sslOption} />
+              <EditdevitSslOption data={state.data} visible={state.sslOption} />
 
               <button type="button" onClick={() => toggleOption('pluginsOption')}>
-                {i18n['Vesta Control Panel Plugins']}
+                {i18n['devit Control Panel Plugins']}
                 {state.pluginsOption ? <FontAwesomeIcon icon="caret-up" /> : <FontAwesomeIcon icon="caret-down" />}
               </button>
 
-              <EditVestaPluginsOption data={state.data} visible={state.pluginsOption} />
+              <EditdevitPluginsOption data={state.data} visible={state.pluginsOption} />
             </div>
 
             <div className="buttons-wrapper">

@@ -406,7 +406,7 @@ $LANG['cn'] = array(
     'ICMP' => 'ICMP',
     'SSH' => 'SSH',
     'FTP' => 'FTP',
-    'VESTA' => 'DevIT',
+    'devit' => 'DevIT',
     'Add one more Name Server' => '增加一个DNS服务器',
 
     'web domain' => '网站域名',

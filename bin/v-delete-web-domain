@@ -19,10 +19,10 @@ domain_idn=$2
 restart=$3
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/func/ip.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/func/ip.sh
+source $devit/conf/devit.conf
 
 # Additional argument formatting
 format_domain
@@ -82,7 +82,7 @@ fi
 
 # Deleting web stats
 if [ ! -z "$STATS" ] && [ "$STATS" != 'no' ]; then
-    sed -i "/ $domain$/d" $VESTA/data/queue/webstats.pipe
+    sed -i "/ $domain$/d" $devit/data/queue/webstats.pipe
     rm -f $HOMEDIR/$user/conf/web/$STATS.$domain.conf
     rm -f /etc/awstats/$STATS.$domain.conf
 fi
@@ -108,7 +108,7 @@ rm -rf $HOMEDIR/$user/web/$domain
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Decreasing user counters

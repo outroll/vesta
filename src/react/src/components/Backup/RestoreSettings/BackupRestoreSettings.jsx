@@ -262,7 +262,7 @@ export default function BackupRestoreSettings(props) {
   return (
     <div className="mail-accounts backups-restore-settings">
       <Helmet>
-        <title>{`Vesta - ${i18n.BACKUP}`}</title>
+        <title>{`devit - ${i18n.BACKUP}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name={i18n['Restore All']} list="backup-details" onClick={() => handleRestore(`?backup=${props.backup}`)} showLeftMenu={true} />

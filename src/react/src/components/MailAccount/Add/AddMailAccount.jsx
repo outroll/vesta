@@ -112,7 +112,7 @@ export default function AddMailAccount(props) {
   return (
     <div className="edit-template add-mail-account">
       <Helmet>
-        <title>{`Vesta - ${i18n.MAIL}`}</title>
+        <title>{`devit - ${i18n.MAIL}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

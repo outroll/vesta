@@ -359,7 +359,7 @@ const InternetProtocols = props => {
   return (
     <div className="internetProtocols">
       <Helmet>
-        <title>{`Vesta - ${i18n.IP}`}</title>
+        <title>{`devit - ${i18n.IP}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name={i18n['Add IP']} href="/add/ip/" showLeftMenu={true} />

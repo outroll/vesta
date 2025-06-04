@@ -77,7 +77,7 @@ const Bind9 = () => {
   return (
     <div className="edit-template edit-bind9">
       <Helmet>
-        <title>{`Vesta - ${i18n.SERVER}`}</title>
+        <title>{`devit - ${i18n.SERVER}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

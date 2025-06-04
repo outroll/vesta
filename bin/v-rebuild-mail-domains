@@ -13,10 +13,10 @@
 user=$1
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/func/rebuild.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/func/rebuild.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -57,7 +57,7 @@ done
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Updating counters

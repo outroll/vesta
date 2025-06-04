@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: check vesta license
+# info: check devit license
 # options: [MODULE]
 #
-# The function activates and register vesta license
+# The function activates and register devit license
 
 
 #----------------------------------------------------------#
@@ -16,8 +16,8 @@ module=$(echo $1 | tr '[:lower:]' '[:upper:]')
 source /etc/profile
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -31,9 +31,9 @@ source $VESTA/conf/vesta.conf
 
 # Checking module
 if [ -z "$module" ]; then
-    modules=$(grep _KEY= $VESTA/conf/vesta.conf)
+    modules=$(grep _KEY= $devit/conf/devit.conf)
 else
-    modules=$(grep "${module}_KEY" $VESTA/conf/vesta.conf)
+    modules=$(grep "${module}_KEY" $devit/conf/devit.conf)
 fi
 
 IFS=$'\n'
@@ -41,23 +41,23 @@ for str in $modules; do
     module=$(echo "$str" |cut -f 1 -d _)
     license=$(echo "$str" |cut -f 2 -d \')
     if [ ! -z "$license" ]; then
-        v_host='https://vestacp.com/checkout'
+        v_host='https://devitcp.com/checkout'
         answer=$(curl -s "$v_host/check.php?licence_key=$license&module=$module")
-        check_result $? "cant' connect to vestacp.com " 0
+        check_result $? "cant' connect to devitcp.com " 0
         echo "$module $license $answer"
         if [[ "$answer" != '0' ]]; then
             if [ "$module" = 'SFTPJAIL' ]; then
                 setsid $BIN/v-delete-sys-sftp-jail 2>/dev/null
             fi
             sed -i "s/${module}_KEY=.*/${module}_KEY=''/g" \
-                $VESTA/conf/vesta.conf
+                $devit/conf/devit.conf
         fi
     fi
 done
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

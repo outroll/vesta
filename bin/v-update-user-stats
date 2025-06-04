@@ -17,9 +17,9 @@ user=$1
 source /etc/profile
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -67,10 +67,10 @@ TOTAL_USERS=0
 
 # Updating user stats
 for user in $user_list; do
-    if [ ! -f "$VESTA/data/users/$user/user.conf" ]; then
+    if [ ! -f "$devit/data/users/$user/user.conf" ]; then
         continue;
     fi
-    USER_DATA=$VESTA/data/users/$user
+    USER_DATA=$devit/data/users/$user
     source $USER_DATA/user.conf
     next_month=$(date +'%m/01/%y' -d '+ 1 month')
     DATE=$(date -d "$next_month -1day" +%F)
@@ -131,7 +131,7 @@ for user in $user_list; do
 done
 
 # Updating overall stats
-stats="$VESTA/data/users/admin/overall_stats.log"
+stats="$devit/data/users/admin/overall_stats.log"
 
 s="DATE='$DATE' TIME='$TIME' PACKAGE='default' IP_OWNED='$TOTAL_IP_OWNED'"
 s="$s DISK_QUOTA='0' U_DISK='$TOTAL_U_DISK' U_DISK_DIRS='$TOTAL_U_DISK_DIRS'"
@@ -168,7 +168,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

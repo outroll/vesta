@@ -14,7 +14,7 @@ if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
 if ($_SESSION['user'] == 'admin') {
     if (!empty($_GET['pkg'])) {
         $v_pkg = escapeshellarg($_GET['pkg']);
-        exec (VESTA_CMD."v-update-sys-devit ".$v_pkg, $output, $return_var);
+        exec (devit_CMD."v-update-sys-devit ".$v_pkg, $output, $return_var);
     }
 
     if ($return_var != 0) {

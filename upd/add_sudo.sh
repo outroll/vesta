@@ -7,7 +7,7 @@ if [ ! -e '/etc/sudoers.d/admin' ]; then
         chmod 750 /etc/sudoers.d
     fi
     echo '# Created by devit update-trigger' > /etc/sudoers.d/admin
-    echo 'Defaults env_keep="VESTA"' >> /etc/sudoers.d/admin
+    echo 'Defaults env_keep="devit"' >> /etc/sudoers.d/admin
     echo 'Defaults:admin !syslog' >> /etc/sudoers.d/admin
     echo 'Defaults:admin !requiretty' >> /etc/sudoers.d/admin
     echo 'Defaults:root !requiretty' >> /etc/sudoers.d/admin

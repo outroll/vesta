@@ -16,10 +16,10 @@ dbuser="$user"_"$3"
 password=$4; HIDE=4
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/db.sh
-source $VESTA/func/rebuild.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/db.sh
+source $devit/func/rebuild.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -81,7 +81,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

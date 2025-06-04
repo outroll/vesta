@@ -4,12 +4,12 @@
 #   php-fpm
 #
 # chkconfig:   - 85 15
-# description:  Run vesta web server
-# processname: vesta
+# description:  Run devit web server
+# processname: devit
 . /etc/rc.d/init.d/functions
 
-# Vesta PATH
-. /etc/profile.d/vesta.sh
+# devit PATH
+. /etc/profile.d/devit.sh
 
 # Source networking configuration.
 . /etc/sysconfig/network
@@ -17,13 +17,13 @@
 # Check that networking is up.
 [ "$NETWORKING" = "no" ] && exit 0
 
-nginx="/usr/local/vesta/nginx/sbin/vesta-nginx"
-nignx_conf="/usr/local/vesta/nginx/conf/nginx.conf"
-php="/usr/local/vesta/php/sbin/vesta-php"
-php_conf="/usr/local/vesta/php/etc/php-fpm.conf"
+nginx="/usr/local/devit/nginx/sbin/devit-nginx"
+nignx_conf="/usr/local/devit/nginx/conf/nginx.conf"
+php="/usr/local/devit/php/sbin/devit-php"
+php_conf="/usr/local/devit/php/etc/php-fpm.conf"
 
-vesta_user=admin
-vesta_group=admin
+devit_user=admin
+devit_group=admin
 
 start() {
     [ -x $nginx ] || exit 5
@@ -31,32 +31,32 @@ start() {
     [ -x $php ] || exit 1
     [ -f $php_conf ] || exit 2
 
-    echo -n $"Starting vesta-nginx: "
+    echo -n $"Starting devit-nginx: "
     daemon $nginx
     retval=$?
     echo
     [[ $retval -ne 0 ]] && exit $retval
 
-    echo -n $"Starting vesta-php: "
+    echo -n $"Starting devit-php: "
     daemon $php
     echo
     return $retval
 }
 
 stop() {
-    echo -n $"Stopping vesta-nginx: "
-    killproc -p /var/run/vesta-nginx.pid vesta-nginx -QUIT
+    echo -n $"Stopping devit-nginx: "
+    killproc -p /var/run/devit-nginx.pid devit-nginx -QUIT
     retval=$?
     echo
     [ -f ${pidfile} ] && /bin/rm -f ${pidfile}
     [[ $retval -ne 0 ]] && exit $retval
 
-    echo -n $"Stopping vesta-php: "
-    killproc -p /var/run/vesta-php.pid vesta-php -QUIT
+    echo -n $"Stopping devit-php: "
+    killproc -p /var/run/devit-php.pid devit-php -QUIT
     retval=$?
     echo
-    [ -f /var/run/vesta-php.pid ] && /bin/rm -f /var/run/vesta-php.pid
-    [ -f /var/run/vesta-php.sock ] && /bin/rm -f /var/run/vesta-php.sock
+    [ -f /var/run/devit-php.pid ] && /bin/rm -f /var/run/devit-php.pid
+    [ -f /var/run/devit-php.sock ] && /bin/rm -f /var/run/devit-php.sock
     return $retval
 }
 
@@ -66,22 +66,22 @@ restart(){
 }
 
 reload() {
-    echo -n $"Reloading vesta-nginx: "
-    killproc -p /var/run/vesta-nginx.pid vesta-nginx -USR2
+    echo -n $"Reloading devit-nginx: "
+    killproc -p /var/run/devit-nginx.pid devit-nginx -USR2
     retval=$?
     echo
     [[ $retval -ne 0 ]] && exit $retval
 
-    echo -n $"Reloading vesta-php: "
-    killproc -p /var/run/vesta-php.pid vesta-php -USR2
+    echo -n $"Reloading devit-php: "
+    killproc -p /var/run/devit-php.pid devit-php -USR2
     retval=$?
     echo
     return $retval
 }
 
 rh_status(){
-    status -p /var/run/vesta-nginx.pid vesta-nginx
-    status -p /var/run/vesta-php.pid vesta-php
+    status -p /var/run/devit-nginx.pid devit-nginx
+    status -p /var/run/devit-php.pid devit-php
 }
 
 case "$1" in

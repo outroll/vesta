@@ -19,7 +19,7 @@ if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
 if (!empty($_GET['job'])) {
     $v_username = escapeshellarg($user);
     $v_job = escapeshellarg($_GET['job']);
-    exec (VESTA_CMD."v-delete-cron-job ".$v_username." ".$v_job, $output, $return_var);
+    exec (devit_CMD."v-delete-cron-job ".$v_username." ".$v_job, $output, $return_var);
 }
 check_return_code($return_var,$output);
 unset($output);

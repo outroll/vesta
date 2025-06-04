@@ -394,7 +394,7 @@ $LANG['ur'] = array(
     'ICMP'  => 'ICMP',
     'SSH'  => 'SSH',
     'FTP'  => 'FTP',
-    'VESTA'  => 'DevIT کی',
+    'devit'  => 'DevIT کی',
     'Add one more Name Server'  => 'ایک اور نام سرور شامل کریں',
     
     'web domain'  => 'ویب ڈومین',

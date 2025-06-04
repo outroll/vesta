@@ -15,7 +15,7 @@ PACKAGE=$package
 format=${2-shell}
 
 # Includes
-source $VESTA/func/main.sh
+source $devit/func/main.sh
 
 # JSON list function
 json_list() {
@@ -104,7 +104,7 @@ is_package_valid
 #----------------------------------------------------------#
 
 # Parsing package
-source $VESTA/data/packages/$PACKAGE.pkg
+source $devit/data/packages/$PACKAGE.pkg
 
 # Listing data
 case $format in
@@ -116,7 +116,7 @@ esac
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

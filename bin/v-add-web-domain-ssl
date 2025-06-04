@@ -36,10 +36,10 @@ domain=$(idn -t --quiet -u "$domain" )
 domain_idn=$(idn -t --quiet -a "$domain")
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/func/ip.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/func/ip.sh
+source $devit/conf/devit.conf
 
 # Additional argument formatting
 format_domain
@@ -103,7 +103,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Increasing domain value
@@ -121,11 +121,11 @@ $BIN/v-restart-proxy $restart
 check_result $? "Proxy restart failed" >/dev/null
 
 # Updating system ssl dependencies
-if [ ! -z "$VESTA_CERTIFICATE" ]; then
-    crt_user=$(echo "$VESTA_CERTIFICATE" |cut -f 1 -d :)
-    crt_domain=$(echo "$VESTA_CERTIFICATE" |cut -f 2 -d :)
+if [ ! -z "$devit_CERTIFICATE" ]; then
+    crt_user=$(echo "$devit_CERTIFICATE" |cut -f 1 -d :)
+    crt_domain=$(echo "$devit_CERTIFICATE" |cut -f 2 -d :)
     if [ "$user" = "$crt_user" ] && [ "$domain" = "$crt_domain" ]; then
-        $BIN/v-add-sys-vesta-ssl $user $domain >/dev/null 2>&1
+        $BIN/v-add-sys-devit-ssl $user $domain >/dev/null 2>&1
     fi
 fi
 if [ ! -z "$MAIL_CERTIFICATE" ]; then
@@ -144,7 +144,7 @@ if [ ! -z "$UPDATE_HOSTNAME_SSL" ] && [ "$UPDATE_HOSTNAME_SSL" = "yes" ]; then
 fi
 
 UPDATE_SSL_SCRIPT=''
-source $VESTA/conf/vesta.conf
+source $devit/conf/devit.conf
 if [ ! -z "$UPDATE_SSL_SCRIPT" ]; then
     eval "$UPDATE_SSL_SCRIPT $user $domain"
 fi

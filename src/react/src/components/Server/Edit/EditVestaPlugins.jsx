@@ -4,7 +4,7 @@ import SelectInput from 'src/components/ControlPanel/AddItemLayout/Form/SelectIn
 import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/TextInput';
 import { useSelector } from 'react-redux';
 
-const EditVestaPluginsOption = ({ data, visible }) => {
+const EditdevitPluginsOption = ({ data, visible }) => {
   const { i18n } = useSelector(state => state.session);
   const { session } = useSelector(state => state.userSession);
   const [sftpValue, setSftpValue] = useState(data.lead || session['SFTPJAIL_KEY'] ? 'yes' : 'no');
@@ -65,15 +65,15 @@ const EditVestaPluginsOption = ({ data, visible }) => {
           </div>
 
           <div className="buy-license">
-            <a href={`https://vestacp.com/checkout/2co.php?product_id=6&referer=${data.http_host}`}>
+            <a href={`https://devitcp.com/checkout/2co.php?product_id=6&referer=${data.http_host}`}>
               {i18n['Buy Licence']} 3$ {i18n['month']}
             </a>
-            <a href={`https://vestacp.com/checkout/2co.php?product_id=9&referer=${data.http_host}`}>
+            <a href={`https://devitcp.com/checkout/2co.php?product_id=9&referer=${data.http_host}`}>
               {i18n['Buy Lifetime License']} 18$
             </a>
           </div>
 
-          <span>2Checkout.com Inc. (Ohio, USA) is a payment facilitator for goods and services provided by vestacp.com.</span>
+          <span>2Checkout.com Inc. (Ohio, USA) is a payment facilitator for goods and services provided by devitcp.com.</span>
         </div>)
       }
     }
@@ -109,15 +109,15 @@ const EditVestaPluginsOption = ({ data, visible }) => {
           </div>
 
           <div className="buy-license">
-            <a href={`https://vestacp.com/checkout/2co.php?product_id=7&referer=${data.http_host}`} target="_blank" rel="noopener noreferrer">
+            <a href={`https://devitcp.com/checkout/2co.php?product_id=7&referer=${data.http_host}`} target="_blank" rel="noopener noreferrer">
               {i18n['Buy Licence']} 3$ {i18n['month']}
             </a>
-            <a href={`https://vestacp.com/checkout/2co.php?product_id=8&referer=${data.http_host}`} target="_blank" rel="noopener noreferrer">
+            <a href={`https://devitcp.com/checkout/2co.php?product_id=8&referer=${data.http_host}`} target="_blank" rel="noopener noreferrer">
               {i18n['Buy Lifetime License']} 28$
             </a>
           </div>
 
-          <span>2Checkout.com Inc. (Ohio, USA) is a payment facilitator for goods and services provided by vestacp.com.</span>
+          <span>2Checkout.com Inc. (Ohio, USA) is a payment facilitator for goods and services provided by devitcp.com.</span>
         </div>)
       }
     }
@@ -221,4 +221,4 @@ const EditVestaPluginsOption = ({ data, visible }) => {
   );
 }
 
-export default EditVestaPluginsOption;
+export default EditdevitPluginsOption;

@@ -35,7 +35,7 @@ switch ($action) {
 
 foreach ($rule as $value) {
     $value = escapeshellarg($value);
-    exec (VESTA_CMD.$cmd." ".$value, $output, $return_var);
+    exec (devit_CMD.$cmd." ".$value, $output, $return_var);
     $restart = 'yes';
 }
 

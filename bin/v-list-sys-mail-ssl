@@ -13,7 +13,7 @@
 format=${1-shell}
 
 # Includes
-source $VESTA/func/main.sh
+source $devit/func/main.sh
 
 # JSON list function
 json_list() {
@@ -98,16 +98,16 @@ csv_list() {
 #----------------------------------------------------------#
 
 # Parsing SSL certificate
-if [ ! -e "$VESTA/ssl/mail.crt" ] || [ ! -e "$VESTA/ssl/mail.key" ]; then
+if [ ! -e "$devit/ssl/mail.crt" ] || [ ! -e "$devit/ssl/mail.key" ]; then
     exit
 fi
 
-crt=$(cat $VESTA/ssl/mail.crt |sed ':a;N;$!ba;s/\n/\\n/g')
-key=$(cat $VESTA/ssl/mail.key |sed ':a;N;$!ba;s/\n/\\n/g')
+crt=$(cat $devit/ssl/mail.crt |sed ':a;N;$!ba;s/\n/\\n/g')
+key=$(cat $devit/ssl/mail.key |sed ':a;N;$!ba;s/\n/\\n/g')
 
 
 # Parsing SSL certificate details without CA
-info=$(openssl x509 -text -in $VESTA/ssl/mail.crt)
+info=$(openssl x509 -text -in $devit/ssl/mail.crt)
 subj=$(echo "$info" |grep Subject: |cut -f 2 -d =)
 before=$(echo "$info" |grep Before: |sed -e "s/.*Before: //")
 after=$(echo "$info" |grep "After :" |sed -e "s/.*After : //")
@@ -129,7 +129,7 @@ esac
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
 // Change port
-exec (VESTA_CMD."v-change-devit-port ".escapeshellarg('8087'), $output, $return_var);
+exec (devit_CMD."v-change-devit-port ".escapeshellarg('8087'), $output, $return_var);
 check_return_code($return_var,$output);
 unset($output);
 

@@ -401,7 +401,7 @@ $LANG['uz'] = [
     'ICMP'                       => 'ICMP',
     'SSH'                        => 'SSH',
     'FTP'                        => 'FTP',
-    'VESTA'                      => 'VESTA',
+    'devit'                      => 'devit',
     'Add one more Name Server'   => "Yana bitta nom serverini qo'shish",
 
     'web domain'   => 'web domen',

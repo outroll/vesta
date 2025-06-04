@@ -15,8 +15,8 @@ key=$(echo "$1" | tr '[:lower:]' '[:upper:]' )
 value=$2
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 PATH="$PATH:/usr/local/sbin:/sbin:/usr/sbin:/root/bin"
 
@@ -35,11 +35,11 @@ format_no_quotes "$value" 'value'
 #----------------------------------------------------------#
 
 # Updating conf
-check_ckey=$(grep "^$key='" $VESTA/conf/vesta.conf)
+check_ckey=$(grep "^$key='" $devit/conf/devit.conf)
 if [ -z "$check_ckey" ]; then
-    echo "$key='$value'" >> $VESTA/conf/vesta.conf
+    echo "$key='$value'" >> $devit/conf/devit.conf
 else
-    sed -i "s|$key=.*|$key='$value'|g" $VESTA/conf/vesta.conf
+    sed -i "s|$key=.*|$key='$value'|g" $devit/conf/devit.conf
 fi
 
 if [ "$key" = "BACKUP" ] && [ "$value" != '/backup' ]; then
@@ -49,7 +49,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

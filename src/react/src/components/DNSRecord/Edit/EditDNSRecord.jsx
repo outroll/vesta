@@ -105,7 +105,7 @@ export default function EditDNSRecord(props) {
   return (
     <div className="edit-template edit-dns-rec">
       <Helmet>
-        <title>{`Vesta - ${i18n.DNS}`}</title>
+        <title>{`devit - ${i18n.DNS}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

@@ -106,7 +106,7 @@ const ServiceInfo = () => {
   return (
     <div className="service-info">
       <Helmet>
-        <title>{`Vesta - ${i18n.SERVER}`}</title>
+        <title>{`devit - ${i18n.SERVER}`}</title>
       </Helmet>
       <TopPanel menuItems={menuItems} />
       <div className="content">

@@ -132,7 +132,7 @@ const AddUser = props => {
   return (
     <div className="edit-template add-user">
       <Helmet>
-        <title>{`Vesta - ${i18n.USER}`}</title>
+        <title>{`devit - ${i18n.USER}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

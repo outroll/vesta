@@ -1,8 +1,8 @@
-# Created by vesta installer
-Defaults env_keep="VESTA"
+# Created by devit installer
+Defaults env_keep="devit"
 Defaults:admin !syslog
 Defaults:admin !requiretty
 Defaults:root !requiretty
 
-# sudo is limited to vesta scripts
-admin   ALL=NOPASSWD:/usr/local/vesta/bin/*
+# sudo is limited to devit scripts
+admin   ALL=NOPASSWD:/usr/local/devit/bin/*

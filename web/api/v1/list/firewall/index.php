@@ -14,7 +14,7 @@ if ($_SESSION['user'] != 'admin') {
 }
 
 // Data
-exec (VESTA_CMD."v-list-firewall json", $output, $return_var);
+exec (devit_CMD."v-list-firewall json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 $data = array_reverse($data, true);
 unset($output);

@@ -18,7 +18,7 @@ define('NO_AUTH_REQUIRED',true);
 include("/usr/local/devit/web/inc/main.php");
 
 // Set system language
-exec (VESTA_CMD . "v-list-sys-config json", $output, $return_var);
+exec (devit_CMD . "v-list-sys-config json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 if (!empty( $data['config']['LANGUAGE'])) {
     $_SESSION['language'] = $data['config']['LANGUAGE'];

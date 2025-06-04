@@ -6,7 +6,7 @@ import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Ch
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-const EditVestaSslOption = ({ data, visible }) => {
+const EditdevitSslOption = ({ data, visible }) => {
   const { i18n } = useSelector(state => state.session);
   const [domainsVisible, setDomainsVisible] = useState(false);
   const [sslDomains, setSslDomains] = useState([]);
@@ -27,7 +27,7 @@ const EditVestaSslOption = ({ data, visible }) => {
       <Checkbox
         onChange={checked => setDomainsVisible(checked)}
         title={i18n['Use Web Domain SSL Certificate']}
-        defaultChecked={data.vesta_certificate}
+        defaultChecked={data.devit_certificate}
         name="v_web_ssl_domain_checkbox"
         id="web_ssl_domain_checkbox"
         checked={domainsVisible}
@@ -37,7 +37,7 @@ const EditVestaSslOption = ({ data, visible }) => {
         domainsVisible && (
           <div className="domain-group">
             <SelectInput
-              selected={data.vesta_certificate}
+              selected={data.devit_certificate}
               name="v_web_ssl_domain"
               title={i18n['Domain']}
               options={sslDomains}
@@ -126,4 +126,4 @@ const EditVestaSslOption = ({ data, visible }) => {
   );
 }
 
-export default EditVestaSslOption;
+export default EditdevitSslOption;

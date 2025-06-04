@@ -397,7 +397,7 @@ const DomainNameSystems = props => {
   return (
     <div className="dns">
       <Helmet>
-        <title>{`Vesta - ${i18n.DNS}`}</title>
+        <title>{`devit - ${i18n.DNS}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name={i18n['Add DNS Domain']} href="/add/dns" showLeftMenu={true} />

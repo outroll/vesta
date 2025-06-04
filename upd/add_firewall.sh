@@ -1,17 +1,17 @@
 #!/bin/bash
 
 source /etc/profile.d/devit.sh
-if [ ! -e "$VESTA/data/firewall" ]; then
-    mkdir -p $VESTA/data/firewall
-    chmod 770 $VESTA/data/firewall
+if [ ! -e "$devit/data/firewall" ]; then
+    mkdir -p $devit/data/firewall
+    chmod 770 $devit/data/firewall
 
-    cp $VESTA/install/rhel/firewall/* \
-        $VESTA/data/firewall/
-    chmod 660 $VESTA/data/firewall/*
+    cp $devit/install/rhel/firewall/* \
+        $devit/data/firewall/
+    chmod 660 $devit/data/firewall/*
 
-    source $VESTA/conf/devit.conf
+    source $devit/conf/devit.conf
     if [ -z "$FIREWALL_SYSTEM" ]; then
         echo "FIREWALL_SYSTEM='iptables'" \
-            >> $VESTA/conf/devit.conf
+            >> $devit/conf/devit.conf
     fi
 fi

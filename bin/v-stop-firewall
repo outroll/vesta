@@ -14,9 +14,9 @@ iptables="/sbin/iptables"
 modprobe="/sbin/modprobe"
 
 # Includes
-source /etc/profile.d/vesta.sh
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source /etc/profile.d/devit.sh
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -37,11 +37,11 @@ tmp=$(mktemp)
 echo "$iptables -P INPUT ACCEPT" >> $tmp
 echo "$iptables -F INPUT" >> $tmp
 
-# Deleting vesta chain
-echo "$iptables -X vesta" >> $tmp
+# Deleting devit chain
+echo "$iptables -X devit" >> $tmp
 
 # Deleting custom chains
-chains=$(cat $VESTA/data/firewall/chains.conf 2>/dev/null)
+chains=$(cat $devit/data/firewall/chains.conf 2>/dev/null)
 IFS=$'\n'
 for chain in $chains; do
     eval $chain
@@ -74,7 +74,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

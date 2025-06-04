@@ -396,7 +396,7 @@ $LANG['id'] = array(
     'ICMP' => 'ICMP',
     'SSH' => 'SSH',
     'FTP' => 'FTP',
-    'VESTA' => 'VESTA',
+    'devit' => 'devit',
     'Add one more Name Server' => 'Tambah satu atau lebih Name Server',
 
     'web domain' => 'web domain',

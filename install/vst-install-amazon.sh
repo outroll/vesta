@@ -10,13 +10,13 @@ RHOST='r.devitcp.com'
 CHOST='c.devitcp.com'
 REPO='cmmnt'
 VERSION='rhel'
-VESTA='/usr/local/devit'
+devit='/usr/local/devit'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os='rhel'
 release='6'
 codename="${os}_$release"
-devitcp="$VESTA/install/$VERSION/$release"
+devitcp="$devit/install/$VERSION/$release"
 
 # Defining software pack for all distros
 software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
@@ -483,8 +483,8 @@ echo "name=DevIT - $REPO" >> $vrepo
 echo "baseurl=http://$RHOST/$REPO/$release/\$basearch/" >> $vrepo
 echo "enabled=1" >> $vrepo
 echo "gpgcheck=1" >> $vrepo
-echo "gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA" >> $vrepo
-wget c.devitcp.com/GPG.txt -O /etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA
+echo "gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-devit" >> $vrepo
+wget c.devitcp.com/GPG.txt -O /etc/pki/rpm-gpg/RPM-GPG-KEY-devit
 
 
 #----------------------------------------------------------#
@@ -558,8 +558,8 @@ mv /var/lib/pgsql/data $vst_backups/postgresql/  >/dev/null 2>&1
 
 # Backup DevIT
 service devit stop > /dev/null 2>&1
-mv $VESTA/data/* $vst_backups/devit > /dev/null 2>&1
-mv $VESTA/conf/* $vst_backups/devit > /dev/null 2>&1
+mv $devit/data/* $vst_backups/devit > /dev/null 2>&1
+mv $devit/conf/* $vst_backups/devit > /dev/null 2>&1
 
 
 #----------------------------------------------------------#
@@ -702,7 +702,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                     Configure VESTA                      #
+#                     Configure devit                      #
 #----------------------------------------------------------#
 
 # Installing sudo configuration
@@ -711,10 +711,10 @@ cp -f $devitcp/sudo/admin /etc/sudoers.d/
 chmod 440 /etc/sudoers.d/admin
 
 # Configuring system env
-echo "export VESTA='$VESTA'" > /etc/profile.d/devit.sh
+echo "export devit='$devit'" > /etc/profile.d/devit.sh
 chmod 755 /etc/profile.d/devit.sh
 source /etc/profile.d/devit.sh
-echo 'PATH=$PATH:'$VESTA'/bin' >> /root/.bash_profile
+echo 'PATH=$PATH:'$devit'/bin' >> /root/.bash_profile
 echo 'export PATH' >> /root/.bash_profile
 source /root/.bash_profile
 
@@ -722,127 +722,127 @@ source /root/.bash_profile
 cp -f $devitcp/logrotate/devit /etc/logrotate.d/
 
 # Building directory tree and creating some blank files for devit
-mkdir -p $VESTA/conf $VESTA/log $VESTA/ssl $VESTA/data/ips \
-    $VESTA/data/queue $VESTA/data/users $VESTA/data/firewall \
-    $VESTA/data/sessions
-touch $VESTA/data/queue/backup.pipe $VESTA/data/queue/disk.pipe \
-    $VESTA/data/queue/webstats.pipe $VESTA/data/queue/restart.pipe \
-    $VESTA/data/queue/traffic.pipe $VESTA/log/system.log \
-    $VESTA/log/nginx-error.log $VESTA/log/auth.log
-chmod 750 $VESTA/conf $VESTA/data/users $VESTA/data/ips $VESTA/log
-chmod -R 750 $VESTA/data/queue
-chmod 660 $VESTA/log/*
+mkdir -p $devit/conf $devit/log $devit/ssl $devit/data/ips \
+    $devit/data/queue $devit/data/users $devit/data/firewall \
+    $devit/data/sessions
+touch $devit/data/queue/backup.pipe $devit/data/queue/disk.pipe \
+    $devit/data/queue/webstats.pipe $devit/data/queue/restart.pipe \
+    $devit/data/queue/traffic.pipe $devit/log/system.log \
+    $devit/log/nginx-error.log $devit/log/auth.log
+chmod 750 $devit/conf $devit/data/users $devit/data/ips $devit/log
+chmod -R 750 $devit/data/queue
+chmod 660 $devit/log/*
 rm -f /var/log/devit
-ln -s $VESTA/log /var/log/devit
-chmod 770 $VESTA/data/sessions
+ln -s $devit/log /var/log/devit
+chmod 770 $devit/data/sessions
 
 # Generating devit configuration
-rm -f $VESTA/conf/devit.conf 2>/dev/null
-touch $VESTA/conf/devit.conf
-chmod 660 $VESTA/conf/devit.conf
+rm -f $devit/conf/devit.conf 2>/dev/null
+touch $devit/conf/devit.conf
+chmod 660 $devit/conf/devit.conf
 
 # Web stack
 if [ "$apache" = 'yes' ] && [ "$nginx" = 'no' ] ; then
-    echo "WEB_SYSTEM='httpd'" >> $VESTA/conf/devit.conf
-    echo "WEB_RGROUPS='apache'" >> $VESTA/conf/devit.conf
-    echo "WEB_PORT='80'" >> $VESTA/conf/devit.conf
-    echo "WEB_SSL_PORT='443'" >> $VESTA/conf/devit.conf
-    echo "WEB_SSL='mod_ssl'"  >> $VESTA/conf/devit.conf
-    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/devit.conf
+    echo "WEB_SYSTEM='httpd'" >> $devit/conf/devit.conf
+    echo "WEB_RGROUPS='apache'" >> $devit/conf/devit.conf
+    echo "WEB_PORT='80'" >> $devit/conf/devit.conf
+    echo "WEB_SSL_PORT='443'" >> $devit/conf/devit.conf
+    echo "WEB_SSL='mod_ssl'"  >> $devit/conf/devit.conf
+    echo "STATS_SYSTEM='webalizer,awstats'" >> $devit/conf/devit.conf
 fi
 if [ "$apache" = 'yes' ] && [ "$nginx"  = 'yes' ] ; then
-    echo "WEB_SYSTEM='httpd'" >> $VESTA/conf/devit.conf
-    echo "WEB_RGROUPS='apache'" >> $VESTA/conf/devit.conf
-    echo "WEB_PORT='8080'" >> $VESTA/conf/devit.conf
-    echo "WEB_SSL_PORT='8443'" >> $VESTA/conf/devit.conf
-    echo "WEB_SSL='mod_ssl'"  >> $VESTA/conf/devit.conf
-    echo "PROXY_SYSTEM='nginx'" >> $VESTA/conf/devit.conf
-    echo "PROXY_PORT='80'" >> $VESTA/conf/devit.conf
-    echo "PROXY_SSL_PORT='443'" >> $VESTA/conf/devit.conf
-    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/devit.conf
+    echo "WEB_SYSTEM='httpd'" >> $devit/conf/devit.conf
+    echo "WEB_RGROUPS='apache'" >> $devit/conf/devit.conf
+    echo "WEB_PORT='8080'" >> $devit/conf/devit.conf
+    echo "WEB_SSL_PORT='8443'" >> $devit/conf/devit.conf
+    echo "WEB_SSL='mod_ssl'"  >> $devit/conf/devit.conf
+    echo "PROXY_SYSTEM='nginx'" >> $devit/conf/devit.conf
+    echo "PROXY_PORT='80'" >> $devit/conf/devit.conf
+    echo "PROXY_SSL_PORT='443'" >> $devit/conf/devit.conf
+    echo "STATS_SYSTEM='webalizer,awstats'" >> $devit/conf/devit.conf
 fi
 if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
-    echo "WEB_SYSTEM='nginx'" >> $VESTA/conf/devit.conf
-    echo "WEB_PORT='80'" >> $VESTA/conf/devit.conf
-    echo "WEB_SSL_PORT='443'" >> $VESTA/conf/devit.conf
-    echo "WEB_SSL='openssl'"  >> $VESTA/conf/devit.conf
+    echo "WEB_SYSTEM='nginx'" >> $devit/conf/devit.conf
+    echo "WEB_PORT='80'" >> $devit/conf/devit.conf
+    echo "WEB_SSL_PORT='443'" >> $devit/conf/devit.conf
+    echo "WEB_SSL='openssl'"  >> $devit/conf/devit.conf
     if [ "$phpfpm" = 'yes' ]; then
-        echo "WEB_BACKEND='php-fpm'" >> $VESTA/conf/devit.conf
+        echo "WEB_BACKEND='php-fpm'" >> $devit/conf/devit.conf
     fi
-    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/devit.conf
+    echo "STATS_SYSTEM='webalizer,awstats'" >> $devit/conf/devit.conf
 fi
 
 # FTP stack
 if [ "$vsftpd" = 'yes' ]; then
-    echo "FTP_SYSTEM='vsftpd'" >> $VESTA/conf/devit.conf
+    echo "FTP_SYSTEM='vsftpd'" >> $devit/conf/devit.conf
 fi
 if [ "$proftpd" = 'yes' ]; then
-    echo "FTP_SYSTEM='proftpd'" >> $VESTA/conf/devit.conf
+    echo "FTP_SYSTEM='proftpd'" >> $devit/conf/devit.conf
 fi
 
 # DNS stack
 if [ "$named" = 'yes' ]; then
-    echo "DNS_SYSTEM='named'" >> $VESTA/conf/devit.conf
+    echo "DNS_SYSTEM='named'" >> $devit/conf/devit.conf
 fi
 
 # Mail stack
 if [ "$exim" = 'yes' ]; then
-    echo "MAIL_SYSTEM='exim'" >> $VESTA/conf/devit.conf
+    echo "MAIL_SYSTEM='exim'" >> $devit/conf/devit.conf
     if [ "$clamd" = 'yes'  ]; then
-        echo "ANTIVIRUS_SYSTEM='clamd.scan'" >> $VESTA/conf/devit.conf
+        echo "ANTIVIRUS_SYSTEM='clamd.scan'" >> $devit/conf/devit.conf
     fi
     if [ "$spamd" = 'yes' ]; then
-        echo "ANTISPAM_SYSTEM='spamassassin'" >> $VESTA/conf/devit.conf
+        echo "ANTISPAM_SYSTEM='spamassassin'" >> $devit/conf/devit.conf
     fi
     if [ "$dovecot" = 'yes' ]; then
-        echo "IMAP_SYSTEM='dovecot'" >> $VESTA/conf/devit.conf
+        echo "IMAP_SYSTEM='dovecot'" >> $devit/conf/devit.conf
     fi
 fi
 
 # Cron daemon
-echo "CRON_SYSTEM='crond'" >> $VESTA/conf/devit.conf
+echo "CRON_SYSTEM='crond'" >> $devit/conf/devit.conf
 
 # Firewall stack
 if [ "$iptables" = 'yes' ]; then
-    echo "FIREWALL_SYSTEM='iptables'" >> $VESTA/conf/devit.conf
+    echo "FIREWALL_SYSTEM='iptables'" >> $devit/conf/devit.conf
 fi
 if [ "$iptables" = 'yes' ] && [ "$fail2ban" = 'yes' ]; then
-    echo "FIREWALL_EXTENSION='fail2ban'" >> $VESTA/conf/devit.conf
+    echo "FIREWALL_EXTENSION='fail2ban'" >> $devit/conf/devit.conf
 fi
 
 # Disk quota
 if [ "$quota" = 'yes' ]; then
-    echo "DISK_QUOTA='yes'" >> $VESTA/conf/devit.conf
+    echo "DISK_QUOTA='yes'" >> $devit/conf/devit.conf
 fi
 
 # Backups
-echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/devit.conf
+echo "BACKUP_SYSTEM='local'" >> $devit/conf/devit.conf
 
 # Language
-echo "LANGUAGE='$lang'" >> $VESTA/conf/devit.conf
+echo "LANGUAGE='$lang'" >> $devit/conf/devit.conf
 
 # Version
-echo "VERSION='0.9.8'" >> $VESTA/conf/devit.conf
+echo "VERSION='0.9.8'" >> $devit/conf/devit.conf
 
 # Installing hosting packages
-cp -rf $devitcp/packages $VESTA/data/
+cp -rf $devitcp/packages $devit/data/
 
 # Installing templates
-cp -rf $devitcp/templates $VESTA/data/
+cp -rf $devitcp/templates $devit/data/
 
 # Copying index.html to default documentroot
-cp $VESTA/data/templates/web/skel/public_html/index.html /var/www/html/
+cp $devit/data/templates/web/skel/public_html/index.html /var/www/html/
 sed -i 's/%domain%/It worked!/g' /var/www/html/index.html
 
 # Installing firewall rules
 chkconfig firewalld off >/dev/null 2>&1
-cp -rf $devitcp/firewall $VESTA/data/
+cp -rf $devitcp/firewall $devit/data/
 
 # Configuring server hostname
-$VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
+$devit/bin/v-change-sys-hostname $servername 2>/dev/null
 
 # Generating SSL certificate
-$VESTA/bin/v-generate-ssl-cert $(hostname) $email 'US' 'California' \
+$devit/bin/v-generate-ssl-cert $(hostname) $email 'US' 'California' \
      'San Francisco' 'DevIT Control Panel' 'IT' > /tmp/vst.pem
 
 # Parsing certificate file
@@ -851,11 +851,11 @@ key_start=$(grep -n "BEGIN RSA" /tmp/vst.pem |cut -f 1 -d:)
 key_end=$(grep -n  "END RSA" /tmp/vst.pem |cut -f 1 -d:)
 
 # Adding SSL certificate
-cd $VESTA/ssl
+cd $devit/ssl
 sed -n "1,${crt_end}p" /tmp/vst.pem > certificate.crt
 sed -n "$key_start,${key_end}p" /tmp/vst.pem > certificate.key
-chown root:mail $VESTA/ssl/*
-chmod 660 $VESTA/ssl/*
+chown root:mail $devit/ssl/*
+chmod 660 $devit/ssl/*
 rm /tmp/vst.pem
 
 
@@ -1271,93 +1271,93 @@ if [ ! -z "$(grep ^admin: /etc/group)" ] && [ "$force" = 'yes' ]; then
 fi
 
 # Adding DevIT admin account
-$VESTA/bin/v-add-user admin $vpass $email default System Administrator
+$devit/bin/v-add-user admin $vpass $email default System Administrator
 check_result $? "can't create admin user"
-$VESTA/bin/v-change-user-shell admin bash
-$VESTA/bin/v-change-user-language admin $lang
+$devit/bin/v-change-user-shell admin bash
+$devit/bin/v-change-user-language admin $lang
 
 # Configuring system IPs
-$VESTA/bin/v-update-sys-ip
+$devit/bin/v-update-sys-ip
 
 # Get main IP
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
 
 # Configuring firewall
 if [ "$iptables" = 'yes' ]; then
-    $VESTA/bin/v-update-firewall
+    $devit/bin/v-update-firewall
 fi
 
 # Get public IP
 pub_ip=$(curl -s devitcp.com/what-is-my-ip/)
 if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
-    echo "$VESTA/bin/v-update-sys-ip" >> /etc/rc.local
-    $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
+    echo "$devit/bin/v-update-sys-ip" >> /etc/rc.local
+    $devit/bin/v-change-sys-ip-nat $ip $pub_ip
     ip=$pub_ip
 fi
 
 # Configuring MySQL host
 if [ "$mysql" = 'yes' ]; then
-    $VESTA/bin/v-add-database-host mysql localhost root $mpass
-    $VESTA/bin/v-add-database admin default default $(gen_pass) mysql
+    $devit/bin/v-add-database-host mysql localhost root $mpass
+    $devit/bin/v-add-database admin default default $(gen_pass) mysql
 fi
 
 # Configuring PostgreSQL host
 if [ "$postgresql" = 'yes' ]; then
-    $VESTA/bin/v-add-database-host pgsql localhost postgres $ppass
-    $VESTA/bin/v-add-database admin db db $(gen_pass) pgsql
+    $devit/bin/v-add-database-host pgsql localhost postgres $ppass
+    $devit/bin/v-add-database admin db db $(gen_pass) pgsql
 fi
 
 # Adding default domain
-$VESTA/bin/v-add-domain admin $servername
+$devit/bin/v-add-domain admin $servername
 
 # Adding cron jobs
-command="sudo $VESTA/bin/v-update-sys-queue disk"
-$VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command"
-command="sudo $VESTA/bin/v-update-sys-queue traffic"
-$VESTA/bin/v-add-cron-job 'admin' '10' '00' '*' '*' '*' "$command"
-command="sudo $VESTA/bin/v-update-sys-queue webstats"
-$VESTA/bin/v-add-cron-job 'admin' '30' '03' '*' '*' '*' "$command"
-command="sudo $VESTA/bin/v-update-sys-queue backup"
-$VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
-command="sudo $VESTA/bin/v-backup-users"
-$VESTA/bin/v-add-cron-job 'admin' '10' '05' '*' '*' '*' "$command"
-command="sudo $VESTA/bin/v-update-user-stats"
-$VESTA/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
-command="sudo $VESTA/bin/v-update-sys-rrd"
-$VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+command="sudo $devit/bin/v-update-sys-queue disk"
+$devit/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command"
+command="sudo $devit/bin/v-update-sys-queue traffic"
+$devit/bin/v-add-cron-job 'admin' '10' '00' '*' '*' '*' "$command"
+command="sudo $devit/bin/v-update-sys-queue webstats"
+$devit/bin/v-add-cron-job 'admin' '30' '03' '*' '*' '*' "$command"
+command="sudo $devit/bin/v-update-sys-queue backup"
+$devit/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+command="sudo $devit/bin/v-backup-users"
+$devit/bin/v-add-cron-job 'admin' '10' '05' '*' '*' '*' "$command"
+command="sudo $devit/bin/v-update-user-stats"
+$devit/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
+command="sudo $devit/bin/v-update-sys-rrd"
+$devit/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
 service crond restart
 
 # Building RRD images
-$VESTA/bin/v-update-sys-rrd
+$devit/bin/v-update-sys-rrd
 
 # Enabling file system quota
 if [ "$quota" = 'yes' ]; then
-    $VESTA/bin/v-add-sys-quota
+    $devit/bin/v-add-sys-quota
 fi
 
 # Enabling Softaculous plugin
 if [ "$softaculous" = 'yes' ]; then
-    $VESTA/bin/v-add-devit-softaculous
+    $devit/bin/v-add-devit-softaculous
 fi
 
 # Starting DevIT service
 chkconfig devit on
 service devit start
 check_result $? "devit start failed"
-chown admin:admin $VESTA/data/sessions
+chown admin:admin $devit/data/sessions
 
 # Adding notifications
-$VESTA/upd/add_notifications.sh
+$devit/upd/add_notifications.sh
 
 # Adding cronjob for autoupdates
-$VESTA/bin/v-add-cron-devit-autoupdate
+$devit/bin/v-add-cron-devit-autoupdate
 
 if [ "$port" != "8083" ]; then
     echo "=== Set DevIT port: $port"
-    $VESTA/bin/v-change-devit-port $port
+    $devit/bin/v-change-devit-port $port
 fi
 
-echo "NOTIFY_ADMIN_FULL_BACKUP='$email'" >> $VESTA/conf/devit.conf
+echo "NOTIFY_ADMIN_FULL_BACKUP='$email'" >> $devit/conf/devit.conf
 
 #----------------------------------------------------------#
 #                   DevIT Access Info                      #
@@ -1399,8 +1399,8 @@ if [ $make_ssl -eq 1 ]; then
     if [ "$www_host_ip" != "$pub_ip" ]; then
         if [ "$named" = 'yes' ]; then
             echo "=== Deleting www to server hostname"
-            $VESTA/bin/v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
-            $VESTA/bin/v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
+            $devit/bin/v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
+            $devit/bin/v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
         fi
         www_host=""
    fi
@@ -1411,13 +1411,13 @@ echo "Hostname $servername is pointing to $host_ip"
 
 if [ $make_ssl -eq 1 ]; then
     echo "=== Generating HOSTNAME SSL"
-    $VESTA/bin/v-add-letsencrypt-domain 'admin' "$servername" "$www_host" 'yes'
-    $VESTA/bin/v-update-host-certificate 'admin' "$servername"
+    $devit/bin/v-add-letsencrypt-domain 'admin' "$servername" "$www_host" 'yes'
+    $devit/bin/v-update-host-certificate 'admin' "$servername"
 else
     echo "We will not generate SSL because of this"
 fi
 echo "==="
-echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/devit.conf
+echo "UPDATE_HOSTNAME_SSL='yes'" >> $devit/conf/devit.conf
 fi
 
 # Sending notification to admin email
@@ -1437,7 +1437,7 @@ Sincerely yours
 devitcp.com team
 " > $tmpfile
 
-send_mail="$VESTA/web/inc/mail-wrapper.php"
+send_mail="$devit/web/inc/mail-wrapper.php"
 cat $tmpfile | $send_mail -s "DevIT Control Panel" $email
 
 # Congrats

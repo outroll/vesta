@@ -31,7 +31,7 @@ foreach ($ipchain as $value) {
     list($ip,$chain) = explode(":",$value);
     $v_ip    = escapeshellarg($ip);
     $v_chain = escapeshellarg($chain);
-    exec (VESTA_CMD.$cmd." ".$v_ip." ".$v_chain, $output, $return_var);
+    exec (devit_CMD.$cmd." ".$v_ip." ".$v_chain, $output, $return_var);
 }
 
 $result = array(

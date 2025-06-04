@@ -13,8 +13,8 @@
 host=$1
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -37,7 +37,7 @@ update_object_value "../../conf/dns-cluster" 'HOST' "$host" '$SUSPENDED' 'yes'
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

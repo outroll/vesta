@@ -10,8 +10,8 @@
 #----------------------------------------------------------#
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -26,8 +26,8 @@ is_system_enabled "$CRON_SYSTEM" 'CRON_SYSTEM'
 #----------------------------------------------------------#
 
 # Add cron job
-cmd="sudo /usr/local/vesta/bin/v-update-sys-queue restart"
-check_cron=$(grep "$cmd" $VESTA/data/users/admin/cron.conf 2> /dev/null)
+cmd="sudo /usr/local/devit/bin/v-update-sys-queue restart"
+check_cron=$(grep "$cmd" $devit/data/users/admin/cron.conf 2> /dev/null)
 if [ ! -z "$check_cron" ]; then
     eval $check_cron
     $BIN/v-delete-cron-job admin "$JOB"
@@ -35,7 +35,7 @@ fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

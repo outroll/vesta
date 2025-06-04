@@ -125,7 +125,7 @@ const EditMail = props => {
   return (
     <div className="edit-template edit-cron">
       <Helmet>
-        <title>{`Vesta - ${i18n.CRON}`}</title>
+        <title>{`devit - ${i18n.CRON}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

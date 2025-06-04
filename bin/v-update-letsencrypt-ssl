@@ -14,8 +14,8 @@
 source /etc/profile
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -25,11 +25,11 @@ source $VESTA/conf/vesta.conf
 lecounter=0
 hostname=$(hostname)
 
-echo "[$(date)] : -----------------------------------------------------------------------------------" >> /usr/local/vesta/log/letsencrypt_cron.log
+echo "[$(date)] : -----------------------------------------------------------------------------------" >> /usr/local/devit/log/letsencrypt_cron.log
 
 # Checking user certificates
 for user in $($BIN/v-list-users plain |cut -f 1); do
-    USER_DATA=$VESTA/data/users/$user
+    USER_DATA=$devit/data/users/$user
 
     for domain in $(search_objects 'web' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
     
@@ -48,7 +48,7 @@ for user in $($BIN/v-list-users plain |cut -f 1); do
 
         if [[ "$fail_counter" -ge 7 ]] && [[ "$limit_check" -eq 1 ]]; then
             # echo "$domain failed $fail_counter times for LetsEncrypt renewing, skipping"
-            echo "[$(date)] : $domain failed $fail_counter times for LetsEncrypt renewing, skipping" >> /usr/local/vesta/log/letsencrypt_cron.log
+            echo "[$(date)] : $domain failed $fail_counter times for LetsEncrypt renewing, skipping" >> /usr/local/devit/log/letsencrypt_cron.log
             continue;
         fi
         crt_data=$(openssl x509 -text -in $USER_DATA/ssl/$domain.crt)
@@ -70,12 +70,12 @@ for user in $($BIN/v-list-users plain |cut -f 1); do
             msg=$($BIN/v-add-letsencrypt-domain $user $domain $aliases)
             if [ $? -ne 0 ]; then
                 if [[ $msg == *"is suspended" ]]; then
-                    echo "[$(date)] : SUSPENDED: $domain $msg" >> /usr/local/vesta/log/letsencrypt_cron.log
+                    echo "[$(date)] : SUSPENDED: $domain $msg" >> /usr/local/devit/log/letsencrypt_cron.log
                 else
-                    echo "[$(date)] : $domain $msg" >> /usr/local/vesta/log/letsencrypt_cron.log
+                    echo "[$(date)] : $domain $msg" >> /usr/local/devit/log/letsencrypt_cron.log
                     echo "$domain $msg"
                     fail_counter=$(alter_web_counter "$user" "$domain" 'LETSENCRYPT_FAIL_COUNT')
-                    echo "[$(date)] : fail_counter = $fail_counter" >> /usr/local/vesta/log/letsencrypt_cron.log
+                    echo "[$(date)] : fail_counter = $fail_counter" >> /usr/local/devit/log/letsencrypt_cron.log
                     echo "fail_counter = $fail_counter"
                 fi
             fi
@@ -84,7 +84,7 @@ for user in $($BIN/v-list-users plain |cut -f 1); do
 done
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # No Logging

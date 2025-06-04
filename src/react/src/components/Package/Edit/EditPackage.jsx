@@ -116,7 +116,7 @@ const EditPackage = props => {
   return (
     <div className="edit-template edit-package">
       <Helmet>
-        <title>{`Vesta - ${i18n.PACKAGE}`}</title>
+        <title>{`devit - ${i18n.PACKAGE}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

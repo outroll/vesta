@@ -1,5 +1,5 @@
 #!/bin/bash
-# info: delete sys vesta user ssl certificate
+# info: delete sys devit user ssl certificate
 # options: NONE
 #
 # The script disables user domain ssl synchronization
@@ -10,8 +10,8 @@
 #----------------------------------------------------------#
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -23,8 +23,8 @@ source $VESTA/conf/vesta.conf
 #                       Action                             #
 #----------------------------------------------------------#
 
-vst_crt="$VESTA/ssl/certificate.crt"
-vst_key="$VESTA/ssl/certificate.key"
+vst_crt="$devit/ssl/certificate.crt"
+vst_key="$devit/ssl/certificate.key"
 
 # Updating mail certificate
 case $MAIL_SYSTEM in
@@ -44,19 +44,19 @@ if [ ! -z "$IMAP_SYSTEM" ] && [ -e "$conf" ]; then
 fi
 
 # Moving old certificates
-if [ -e "$VESTA/ssl/mail.crt" ]; then
-    mv -f $VESTA/ssl/mail.crt $VESTA/ssl/mail.crt.old
+if [ -e "$devit/ssl/mail.crt" ]; then
+    mv -f $devit/ssl/mail.crt $devit/ssl/mail.crt.old
 fi
-if [ -e "VESTA/ssl/mail.key" ]; then
-    mv $VESTA/ssl/mail.key VESTA/ssl/mail.key.old
+if [ -e "devit/ssl/mail.key" ]; then
+    mv $devit/ssl/mail.key devit/ssl/mail.key.old
 fi
 
-# Updating vesta.conf value
-sed -i "/MAIL_CERTIFICATE=/ d" $VESTA/conf/vesta.conf
+# Updating devit.conf value
+sed -i "/MAIL_CERTIFICATE=/ d" $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Restarting services

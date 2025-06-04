@@ -396,7 +396,7 @@ $LANG['ar'] = array(
     'ICMP' => 'ICMP',
     'SSH' => 'SSH',
     'FTP' => 'FTP',
-    'VESTA' => 'فيستا',
+    'devit' => 'فيستا',
     'Add one more Name Server' => 'إضافة مخدم أسماء (NS) جديد',
 
     'web domain' => 'نطاق ويب',

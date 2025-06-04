@@ -380,7 +380,7 @@ const Web = props => {
   return (
     <div className="web">
       <Helmet>
-        <title>{`Vesta - ${i18n.WEB}`}</title>
+        <title>{`devit - ${i18n.WEB}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name={i18n['Add Web Domain']} href="/add/web/" showLeftMenu={true} />

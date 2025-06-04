@@ -336,7 +336,7 @@ export default function DnsRecords(props) {
   return (
     <div className="dns-records">
       <Helmet>
-        <title>{`Vesta - ${i18n.DNS}`}</title>
+        <title>{`devit - ${i18n.DNS}`}</title>
       </Helmet>
       <Toolbar mobile={false} >
         <LeftButton name={i18n['Add DNS Record']} href={`/add/dns/?domain=${state.domain}`} showLeftMenu={true} />

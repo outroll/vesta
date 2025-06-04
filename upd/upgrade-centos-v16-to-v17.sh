@@ -4,7 +4,7 @@ RHOST='r.devitcp.com'
 CHOST='c.devitcp.com'
 REPO='cmmnt'
 VERSION='rhel'
-VESTA='/usr/local/devit'
+devit='/usr/local/devit'
 os=$(cut -f 1 -d ' ' /etc/redhat-release)
 release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
@@ -14,16 +14,16 @@ servername=$(hostname -f)
 
 # PATH fix
 if [ ! -f "/etc/profile.d/devit.sh" ]; then
-    echo "export VESTA='$VESTA'" > /etc/profile.d/devit.sh
+    echo "export devit='$devit'" > /etc/profile.d/devit.sh
 fi
 if [ $( grep -ic "devit" /root/.bash_profile ) -eq 0 ]; then
-    echo 'PATH=$PATH:'$VESTA'/bin' >> /root/.bash_profile
+    echo 'PATH=$PATH:'$devit'/bin' >> /root/.bash_profile
 fi
 
 
 # Linking /var/log/devit
 if [ ! -L "/var/log/devit" ]; then
-    ln -s $VESTA/log /var/log/devit
+    ln -s $devit/log /var/log/devit
 fi
 
 
@@ -88,7 +88,7 @@ fi
 # Fixing empty NAT ip
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
 pub_ip=$(curl -s devitcp.com/what-is-my-ip/)
-file="$VESTA/data/ips/$ip"
+file="$devit/data/ips/$ip"
 if [ -f "$file" ] && [ $( grep -ic "NAT=''" $file ) -eq 1 ]; then
     if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
         v-change-sys-ip-nat $ip $pub_ip

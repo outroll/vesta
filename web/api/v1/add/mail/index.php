@@ -56,7 +56,7 @@ if (!empty($_POST['ok'])) {
 
     // Add mail domain
     if (empty($_SESSION['error_msg'])) {
-        exec (VESTA_CMD."v-add-mail-domain ".$user." ".$v_domain." ".$v_antispam." ".$v_antivirus." ".$v_dkim, $output, $return_var);
+        exec (devit_CMD."v-add-mail-domain ".$user." ".$v_domain." ".$v_antispam." ".$v_antivirus." ".$v_dkim, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
@@ -117,7 +117,7 @@ if (!empty($_POST['ok_acc'])) {
         $fp = fopen($v_password, "w");
         fwrite($fp, $_POST['v_password']."\n");
         fclose($fp);
-        exec (VESTA_CMD."v-add-mail-account ".$user." ".$v_domain." ".$v_account." ".$v_password." ".$v_quota, $output, $return_var);
+        exec (devit_CMD."v-add-mail-account ".$user." ".$v_domain." ".$v_account." ".$v_password." ".$v_quota, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         unlink($v_password);
@@ -134,7 +134,7 @@ if (!empty($_POST['ok_acc'])) {
         foreach ($aliases as $alias) {
             $alias = escapeshellarg($alias);
             if (empty($_SESSION['error_msg'])) {
-                exec (VESTA_CMD."v-add-mail-account-alias ".$user." ".$v_domain." ".$v_account." ".$alias, $output, $return_var);
+                exec (devit_CMD."v-add-mail-account-alias ".$user." ".$v_domain." ".$v_account." ".$alias, $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
             }
@@ -151,7 +151,7 @@ if (!empty($_POST['ok_acc'])) {
         foreach ($fwd as $forward) {
             $forward = escapeshellarg($forward);
             if (empty($_SESSION['error_msg'])) {
-                exec (VESTA_CMD."v-add-mail-account-forward ".$user." ".$v_domain." ".$v_account." ".$forward, $output, $return_var);
+                exec (devit_CMD."v-add-mail-account-forward ".$user." ".$v_domain." ".$v_account." ".$forward, $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
             }
@@ -160,7 +160,7 @@ if (!empty($_POST['ok_acc'])) {
 
     // Add fwd_only flag
     if ((!empty($_POST['v_fwd_only'])) && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-add-mail-account-fwd-only ".$user." ".$v_domain." ".$v_account, $output, $return_var);
+        exec (devit_CMD."v-add-mail-account-fwd-only ".$user." ".$v_domain." ".$v_account, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }

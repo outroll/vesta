@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: change vesta ssl certificate
+# info: change devit ssl certificate
 # options: SSL_DIR [RESTART]
 #
-# The function changes vesta SSL certificate and the key.
+# The function changes devit SSL certificate and the key.
 
 
 #----------------------------------------------------------#
@@ -15,9 +15,9 @@ ssl_dir=$1
 restart=$2
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -50,21 +50,21 @@ else
 fi
 
 # Moving old certificate
-mv $VESTA/ssl/certificate.crt $VESTA/ssl/certificate.crt.back
-mv $VESTA/ssl/certificate.key $VESTA/ssl/certificate.key.back
+mv $devit/ssl/certificate.crt $devit/ssl/certificate.crt.back
+mv $devit/ssl/certificate.key $devit/ssl/certificate.key.back
 
 # Adding new certificate
-cp -f $ssl_dir/certificate.crt $VESTA/ssl/certificate.crt
-cp -f $ssl_dir/certificate.key $VESTA/ssl/certificate.key
+cp -f $ssl_dir/certificate.crt $devit/ssl/certificate.crt
+cp -f $ssl_dir/certificate.key $devit/ssl/certificate.key
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Restarting web server
 if [ "$restart" != 'no' ]; then
-    kill -HUP $(cat /var/run/vesta-nginx.pid)
+    kill -HUP $(cat /var/run/devit-nginx.pid)
     $BIN/v-restart-mail
     if [ ! -z "$IMAP_SYSTEM" ]; then
         v-restart-service "$IMAP_SYSTEM"

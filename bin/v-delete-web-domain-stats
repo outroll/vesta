@@ -16,9 +16,9 @@ domain=$2
 domain_idn=$2
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 # Additional argument formatting
 format_domain
@@ -58,11 +58,11 @@ rm -f $HOMEDIR/$user/conf/web/$STATS.$domain.conf
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Deleting pipe command
-sed -i "/ $domain$/d" $VESTA/data/queue/webstats.pipe
+sed -i "/ $domain$/d" $devit/data/queue/webstats.pipe
 
 # Update config
 update_object_value 'web' 'DOMAIN' "$domain" '$STATS' ''

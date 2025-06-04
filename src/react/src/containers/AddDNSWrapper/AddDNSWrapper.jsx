@@ -23,7 +23,7 @@ export default function AddDNSWrapper() {
   return (
     <>
       <Helmet>
-        <title>{`Vesta - ${i18n.DNS}`}</title>
+        <title>{`devit - ${i18n.DNS}`}</title>
       </Helmet>
       {
         isDnsRecord

@@ -313,7 +313,7 @@ const Servers = props => {
   return (
     <div className="servers-list">
       <Helmet>
-        <title>{`Vesta - ${i18n.SERVER}`}</title>
+        <title>{`devit - ${i18n.SERVER}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <LeftButton href="/edit/server/" list="server" name={i18n.configure} showLeftMenu={true} />

@@ -13,7 +13,7 @@ $v_domain = escapeshellarg($_GET['domain']);
 if ($_GET['type'] == 'access') $type = 'access';
 if ($_GET['type'] == 'error') $type = 'error';
 
-$data = exec (VESTA_CMD."v-list-web-domain-".$type."log $user ".$v_domain, $output, $return_var);
+$data = exec (devit_CMD."v-list-web-domain-".$type."log $user ".$v_domain, $output, $return_var);
 $content = '';
 
 if ($return_var == 0 ) {

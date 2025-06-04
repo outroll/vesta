@@ -139,7 +139,7 @@ const AddWebDomain = props => {
   return (
     <div className="edit-template add-web">
       <Helmet>
-        <title>{`Vesta - ${i18n.WEB}`}</title>
+        <title>{`devit - ${i18n.WEB}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

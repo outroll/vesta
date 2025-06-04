@@ -395,7 +395,7 @@ $LANG['ja'] = array(
     'ICMP' => 'ICMP',
     'SSH' => 'SSH',
     'FTP' => 'FTP',
-    'VESTA' => 'VESTA',
+    'devit' => 'devit',
     'Add one more Name Server' => 'ネームサーバーを追加',
 
     'web domain' => 'ウェブドメイン',

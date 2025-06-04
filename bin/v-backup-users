@@ -14,25 +14,25 @@
 source /etc/profile
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-$BIN/v-check-vesta-license >/dev/null
+$BIN/v-check-devit-license >/dev/null
 
 if [ -z "$BACKUP_SYSTEM" ]; then
     exit
 fi
 for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
-    if [ ! -f "$VESTA/data/users/$user/user.conf" ]; then
+    if [ ! -f "$devit/data/users/$user/user.conf" ]; then
         continue;
     fi
-    check_suspend=$(grep "SUSPENDED='no'" $VESTA/data/users/$user/user.conf)
-    log=$VESTA/log/backup.log
+    check_suspend=$(grep "SUSPENDED='no'" $devit/data/users/$user/user.conf)
+    log=$devit/log/backup.log
     if [ ! -z "$check_suspend" ]; then
         echo -e "================================" >> $log
         echo -e "$user" >> $log
@@ -43,7 +43,7 @@ for user in $(grep '@' /etc/passwd |cut -f1 -d:); do
 done
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # No Logging

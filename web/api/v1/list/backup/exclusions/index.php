@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 include($_SERVER['DOCUMENT_ROOT'].'/inc/main.php');
 
 // Data
-exec (VESTA_CMD."v-list-user-backup-exclusions $user json", $output, $return_var);
+exec (devit_CMD."v-list-user-backup-exclusions $user json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 unset($output);
 

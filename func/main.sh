@@ -6,12 +6,12 @@ BACKUP_GZIP=9
 BACKUP_DISK_LIMIT=95
 BACKUP_LA_LIMIT=5
 RRD_STEP=300
-BIN=$VESTA/bin
-USER_DATA=$VESTA/data/users/$user
-WEBTPL=$VESTA/data/templates/web
-DNSTPL=$VESTA/data/templates/dns
-RRD=$VESTA/web/rrd
-SENDMAIL="$VESTA/web/inc/mail-wrapper.php"
+BIN=$devit/bin
+USER_DATA=$devit/data/users/$user
+WEBTPL=$devit/data/templates/web
+DNSTPL=$devit/data/templates/dns
+RRD=$devit/web/rrd
+SENDMAIL="$devit/web/inc/mail-wrapper.php"
 
 # Return codes
 OK=0
@@ -54,9 +54,9 @@ log_event() {
         LOG_TIME="$date $time $(basename $0)"
     fi
     if [ "$1" -eq 0 ]; then
-        echo "$LOG_TIME $2" >> $VESTA/log/system.log
+        echo "$LOG_TIME $2" >> $devit/log/system.log
     else
-        echo "$LOG_TIME $2 [Error $1]" >> $VESTA/log/error.log
+        echo "$LOG_TIME $2 [Error $1]" >> $devit/log/error.log
     fi
 }
 
@@ -65,7 +65,7 @@ log_history() {
     cmd=$1
     undo=${2-no}
     log_user=${3-$user}
-    log=$VESTA/data/users/$log_user/history.log
+    log=$devit/data/users/$log_user/history.log
     touch $log
     if [ '99' -lt "$(wc -l $log |cut -f 1 -d ' ')" ]; then
         tail -n 49 $log > $log.moved
@@ -164,7 +164,7 @@ generate_password() {
 # Package existence check
 is_package_valid() {
     if [ -z "$1" ]; then
-        pkg_dir="$VESTA/data/packages"
+        pkg_dir="$devit/data/packages"
     fi
     if [ ! -e "$pkg_dir/$package.pkg" ]; then
         check_result $E_NOTEXIST "package $package doesn't exist"
@@ -188,8 +188,8 @@ is_backup_enabled() {
 
 # Check user backup settings
 is_backup_scheduled() {
-    if [ -e "$VESTA/data/queue/backup.pipe" ]; then
-        check_q=$(grep " $user " $VESTA/data/queue/backup.pipe | grep $1)
+    if [ -e "$devit/data/queue/backup.pipe" ]; then
+        check_q=$(grep " $user " $devit/data/queue/backup.pipe | grep $1)
         if [ ! -z "$check_q" ]; then
             check_result $E_EXISTS "$1 is already scheduled"
         fi
@@ -214,11 +214,11 @@ is_object_new() {
 is_object_valid() {
     if [ $2 = 'USER' ]; then
         user_vst_dir=$(basename $3)
-        if [ ! -d "$VESTA/data/users/$user_vst_dir" ]; then
+        if [ ! -d "$devit/data/users/$user_vst_dir" ]; then
             check_result $E_NOTEXIST "$1 $3 doesn't exist"
         fi
     else
-        object=$(grep "$2='$3'" $VESTA/data/users/$user/$1.conf)
+        object=$(grep "$2='$3'" $devit/data/users/$user/$1.conf)
         if [ -z "$object" ]; then
             arg1=$(basename $1)
             arg2=$(echo $2 |tr '[:upper:]' '[:lower:]')
@@ -360,10 +360,10 @@ get_user_value() {
 # Update user value in user.conf
 update_user_value() {
     key="${2//$}"
-    lnr=$(grep -n "^$key='" $VESTA/data/users/$1/user.conf |cut -f 1 -d ':')
+    lnr=$(grep -n "^$key='" $devit/data/users/$1/user.conf |cut -f 1 -d ':')
     if [ ! -z "$lnr" ]; then
-        sed -i "$lnr d" $VESTA/data/users/$1/user.conf
-        sed -i "$lnr i\\$key='${3}'" $VESTA/data/users/$1/user.conf
+        sed -i "$lnr d" $devit/data/users/$1/user.conf
+        sed -i "$lnr i\\$key='${3}'" $devit/data/users/$1/user.conf
     fi
 }
 
@@ -371,7 +371,7 @@ update_user_value() {
 increase_user_value() {
     key="${2//$}"
     factor="${3-1}"
-    conf="$VESTA/data/users/$1/user.conf"
+    conf="$devit/data/users/$1/user.conf"
     old=$(grep "$key=" $conf | cut -f 2 -d \')
     if [ -z "$old" ]; then
         old=0
@@ -384,7 +384,7 @@ increase_user_value() {
 decrease_user_value() {
     key="${2//$}"
     factor="${3-1}"
-    conf="$VESTA/data/users/$1/user.conf"
+    conf="$devit/data/users/$1/user.conf"
     old=$(grep "$key=" $conf | cut -f 2 -d \')
     if [ -z "$old" ]; then
         old=0
@@ -976,7 +976,7 @@ format_aliases() {
 alter_web_counter() {
     user=$1
     domain=$2
-    USER_DATA=$VESTA/data/users/$user
+    USER_DATA=$devit/data/users/$user
     
     varc=$3
     vard="\$${varc}"
@@ -999,7 +999,7 @@ alter_web_counter() {
 reset_web_counter() {
     user=$1
     domain=$2
-    USER_DATA=$VESTA/data/users/$user
+    USER_DATA=$devit/data/users/$user
     
     varc=$3
     vard="\$${varc}"
@@ -1010,7 +1010,7 @@ reset_web_counter() {
 get_web_counter() {
     user=$1
     domain=$2
-    USER_DATA=$VESTA/data/users/$user
+    USER_DATA=$devit/data/users/$user
     
     varc=$3
     vard="\$${varc}"

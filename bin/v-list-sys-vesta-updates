@@ -2,7 +2,7 @@
 # info: list system updates
 # options: [FORMAT]
 #
-# The function checks available updates for vesta packages.
+# The function checks available updates for devit packages.
 
 
 #----------------------------------------------------------#
@@ -13,8 +13,8 @@
 format=${1-shell}
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 fields="\$NAME \$VERSION \$RELEASE \$ARCH \$UPDATED \$DESCR \$TIME \$DATE"
 
 # JSON list function
@@ -61,20 +61,20 @@ shell_list() {
 #----------------------------------------------------------#
 
 # Checking official latest version
-latest=$(wget -q -T 1 -t 1 http://c.vestacp.com/latest.txt -O -)
+latest=$(wget -q -T 1 -t 1 http://c.devitcp.com/latest.txt -O -)
 
-# Checking installed vesta version
+# Checking installed devit version
 if [ -d "/etc/sysconfig" ]; then
     rpm_format="VERSION='%{VERSION}'"
     rpm_format="$rpm_format RELEASE='%{RELEASE}'"
     rpm_format="$rpm_format ARCH='%{ARCH}'"
     rpm_format="$rpm_format UTIME='%{INSTALLTIME}'\n"
-    eval $(rpm --queryformat="$rpm_format" -q vesta)
+    eval $(rpm --queryformat="$rpm_format" -q devit)
     DATE=$(date -d @$UTIME +%F)
     TIME=$(date -d @$UTIME +%T)
 else
-    dpkg_data=$(dpkg-query -s vesta)
-    pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/vesta.list)
+    dpkg_data=$(dpkg-query -s devit)
+    pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/devit.list)
     ARCH=$(echo "$dpkg_data"|grep Architecture |cut -f 2 -d ' ')
     VERSION=$(echo "$dpkg_data"|grep ^Version |cut -f 2 -d ' '|cut -f 1 -d \-)
     RELEASE=$(echo "$dpkg_data"|grep ^Version |cut -f 2 -d ' '|cut -f 2 -d \-)
@@ -82,84 +82,84 @@ else
     TIME=$(date -d @$pkg_date +"%T")
 fi
 UPDATED='yes'
-if [ ! -z "$latest" ] && [ "$latest" \> "vesta-$VERSION-$RELEASE" ]; then
+if [ ! -z "$latest" ] && [ "$latest" \> "devit-$VERSION-$RELEASE" ]; then
     UPDATED='no'
 fi
-data="NAME='vesta' VERSION='$VERSION' RELEASE='$RELEASE' ARCH='$ARCH'"
+data="NAME='devit' VERSION='$VERSION' RELEASE='$RELEASE' ARCH='$ARCH'"
 data="$data UPDATED='$UPDATED' DESCR='core package' TIME='$TIME' DATE='$DATE'"
 
-# Checking installed vesta-php version
+# Checking installed devit-php version
 if [ -d "/etc/sysconfig" ]; then
-    eval $(rpm --queryformat="$rpm_format" -q vesta-php)
+    eval $(rpm --queryformat="$rpm_format" -q devit-php)
     DATE=$(date -d @$UTIME +%F)
     TIME=$(date -d @$UTIME +%T)
 else
-    dpkg_data=$(dpkg-query -s vesta-php)
-    pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/vesta-php.list)
+    dpkg_data=$(dpkg-query -s devit-php)
+    pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/devit-php.list)
     ARCH=$(echo "$dpkg_data"|grep Architecture | cut -f 2 -d ' ')
     VERSION=$(echo "$dpkg_data"|grep ^Version |cut -f 2 -d ' '|cut -f 1 -d \-)
     RELEASE=$(echo "$dpkg_data"|grep ^Version |cut -f 2 -d ' '|cut -f 2 -d \-)
     DATE=$(date -d @$pkg_date +"%F")
     TIME=$(date -d @$pkg_date +"%T")
 fi
-data="$data\nNAME='vesta-php' VERSION='$VERSION' RELEASE='$RELEASE'"
+data="$data\nNAME='devit-php' VERSION='$VERSION' RELEASE='$RELEASE'"
 data="$data ARCH='$ARCH' UPDATED='$UPDATED' DESCR='php interpreter'"
 data="$data TIME='$TIME' DATE='$DATE'"
 
-# Checking installed vesta-nginx version
+# Checking installed devit-nginx version
 if [ -d "/etc/sysconfig" ]; then
-    eval $(rpm --queryformat="$rpm_format" -q vesta-nginx)
+    eval $(rpm --queryformat="$rpm_format" -q devit-nginx)
     DATE=$(date -d @$UTIME +%F)
     TIME=$(date -d @$UTIME +%T)
 else
-    dpkg_data=$(dpkg-query -s vesta-nginx)
-    pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/vesta-nginx.list)
+    dpkg_data=$(dpkg-query -s devit-nginx)
+    pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/devit-nginx.list)
     ARCH=$(echo "$dpkg_data"|grep Architecture | cut -f 2 -d ' ')
     VERSION=$(echo "$dpkg_data"|grep ^Version |cut -f 2 -d ' '|cut -f 1 -d \-)
     RELEASE=$(echo "$dpkg_data"|grep ^Version |cut -f 2 -d ' '|cut -f 2 -d \-)
     DATE=$(date -d @$pkg_date +"%F")
     TIME=$(date -d @$pkg_date +"%T")
 fi
-data="$data\nNAME='vesta-nginx' VERSION='$VERSION' RELEASE='$RELEASE'"
+data="$data\nNAME='devit-nginx' VERSION='$VERSION' RELEASE='$RELEASE'"
 data="$data ARCH='$ARCH' UPDATED='$UPDATED' DESCR='internal web server'"
 data="$data TIME='$TIME' DATE='$DATE'"
 
-# Checking installed vesta-ioncube version
+# Checking installed devit-ioncube version
 if [ "$SOFTACULOUS" = 'yes' ]; then
     if [ -d "/etc/sysconfig" ]; then
-        eval $(rpm --queryformat="$rpm_format" -q vesta-ioncube)
+        eval $(rpm --queryformat="$rpm_format" -q devit-ioncube)
         DATE=$(date -d @$UTIME +%F)
         TIME=$(date -d @$UTIME +%T)
     else
-        dpkg_data=$(dpkg-query -s vesta-ioncube)
-        pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/vesta-php.list)
+        dpkg_data=$(dpkg-query -s devit-ioncube)
+        pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/devit-php.list)
         ARCH=$(echo "$dpkg_data"|grep Architecture | cut -f 2 -d ' ')
         VERSION=$(echo "$dpkg_data"|grep ^Vers |cut -f2 -d ' '|cut -f1 -d \-)
         RELEASE=$(echo "$dpkg_data"|grep ^Vers |cut -f2 -d ' '|cut -f2 -d \-)
         DATE=$(date -d @$pkg_date +"%F")
         TIME=$(date -d @$pkg_date +"%T")
     fi
-    data="$data\nNAME='vesta-ioncube' VERSION='$VERSION' RELEASE='$RELEASE'"
+    data="$data\nNAME='devit-ioncube' VERSION='$VERSION' RELEASE='$RELEASE'"
     data="$data ARCH='$ARCH' UPDATED='$UPDATED' DESCR='php encoder'"
     data="$data TIME='$TIME' DATE='$DATE'"
 fi
 
-# Checking installed vesta-softaculous version
+# Checking installed devit-softaculous version
 if [ "$SOFTACULOUS" = 'yes' ]; then
     if [ -d "/etc/sysconfig" ]; then
-        eval $(rpm --queryformat="$rpm_format" -q vesta-softaculous)
+        eval $(rpm --queryformat="$rpm_format" -q devit-softaculous)
         DATE=$(date -d @$UTIME +%F)
         TIME=$(date -d @$UTIME +%T)
     else
-        dpkg_data=$(dpkg-query -s vesta-softaculous)
-        pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/vesta-php.list)
+        dpkg_data=$(dpkg-query -s devit-softaculous)
+        pkg_date=$(stat -c "%Y" /var/lib/dpkg/info/devit-php.list)
         ARCH=$(echo "$dpkg_data"|grep Architecture | cut -f 2 -d ' ')
         VERSION=$(echo "$dpkg_data"|grep ^Vers |cut -f2 -d ' '|cut -f1 -d \-)
         RELEASE=$(echo "$dpkg_data"|grep ^Vers |cut -f2 -d ' '|cut -f2 -d \-)
         DATE=$(date -d @$pkg_date +"%F")
         TIME=$(date -d @$pkg_date +"%T")
     fi
-    data="$data\nNAME='vesta-softaculous' VERSION='$VERSION' RELEASE='$RELEASE'"
+    data="$data\nNAME='devit-softaculous' VERSION='$VERSION' RELEASE='$RELEASE'"
     data="$data ARCH='$ARCH' UPDATED='$UPDATED' DESCR='app installer'"
     data="$data TIME='$TIME' DATE='$DATE'"
 fi
@@ -175,7 +175,7 @@ esac
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit

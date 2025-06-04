@@ -1,9 +1,9 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: vesta
-Source: http://vestacp.com
+Upstream-Name: devit
+Source: http://devitcp.com
 
 Files: *
-Copyright: 2013 Serghey Rodin <skid@vestacp.com>
+Copyright: 2013 Serghey Rodin <skid@devitcp.com>
 License: GPL-3.0+
 
 License: GPL-3.0+

@@ -27,7 +27,7 @@ if ($_SESSION['user'] == 'admin') {
     }
 
     if ((!empty($_POST['system'])) && ($action == 'restart')) {
-        exec (VESTA_CMD."v-restart-system yes", $output, $return_var);
+        exec (devit_CMD."v-restart-system yes", $output, $return_var);
         $_SESSION['error_srv'] = 'The system is going down for reboot NOW!';
         unset($output);
         exit;
@@ -35,7 +35,7 @@ if ($_SESSION['user'] == 'admin') {
 
     foreach ($service as $value) {
         $value = escapeshellarg($value);
-        exec (VESTA_CMD.$cmd." ".$value, $output, $return_var);
+        exec (devit_CMD.$cmd." ".$value, $output, $return_var);
     }
 }
 

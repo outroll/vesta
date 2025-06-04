@@ -23,7 +23,7 @@ export default function EditMailWrapper() {
   return (
     <>
       <Helmet>
-        <title>{`Vesta - ${i18n.MAIL}`}</title>
+        <title>{`devit - ${i18n.MAIL}`}</title>
       </Helmet>
       {
         isMailAccount

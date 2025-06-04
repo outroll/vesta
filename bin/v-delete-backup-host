@@ -13,8 +13,8 @@
 type=$1
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -35,20 +35,20 @@ fi
 #----------------------------------------------------------#
 
 # Deleting host config
-rm -f $VESTA/conf/$type.backup.conf
+rm -f $devit/conf/$type.backup.conf
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
-# Updating vesta.conf
+# Updating devit.conf
 bckp=$(echo "$BACKUP_SYSTEM" |\
     sed "s/,/\n/g"|\
     sed "s/^$type$//" |\
     sed "/^$/d"|\
     sed ':a;N;$!ba;s/\n/,/g')
-sed -i "s/BACKUP_SYSTEM=.*/BACKUP_SYSTEM='$bckp'/g" $VESTA/conf/vesta.conf
+sed -i "s/BACKUP_SYSTEM=.*/BACKUP_SYSTEM='$bckp'/g" $devit/conf/devit.conf
 
 # Logging
 log_event "$OK" "$ARGUMENTS"

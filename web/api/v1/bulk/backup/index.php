@@ -22,7 +22,7 @@ switch ($action) {
 
 foreach ($backup as $value) {
     $value = escapeshellarg($value);
-    exec (VESTA_CMD.$cmd." ".$user." ".$value, $output, $return_var);
+    exec (devit_CMD.$cmd." ".$user." ".$value, $output, $return_var);
 }
 
 $result = array(

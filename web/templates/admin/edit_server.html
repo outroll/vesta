@@ -704,7 +704,7 @@
                                         <tr>
                                             <td class="vst-text input-label step-top">
                                                 <label><input type="checkbox" size="20" class="vst-checkbox" name="v_web_ssl_domain_checkbox"
-                                                            <?php if(!empty($_SESSION['VESTA_CERTIFICATE'])) echo "checked=yes" ?>
+                                                            <?php if(!empty($_SESSION['devit_CERTIFICATE'])) echo "checked=yes" ?>
                                                             onclick="javascript:elementHideShow('domain_ssl');">
                                                     <?php print __('Use Web Domain SSL Certificate');?>
                                                 </label>
@@ -712,7 +712,7 @@
                                         </tr>
                                         <tr>
                                             <td class="vst-text input-label step-left">
-                                                <table style="display:<?php if (empty($_SESSION['VESTA_CERTIFICATE'])) echo 'none';?> ;" id="domain_ssl">
+                                                <table style="display:<?php if (empty($_SESSION['devit_CERTIFICATE'])) echo 'none';?> ;" id="domain_ssl">
                                                     <tr>
                                                         <td class="vst-text">
                                                             <?php print __('Domain') ?>
@@ -721,14 +721,14 @@
                                                     <tr>
                                                         <td>
                                                             <select class="vst-list" name="v_web_ssl_domain">
-                                                                <option value='' <?php if(empty($_SESSION['VESTA_CERTIFICATE'])) echo 'selected' ?>></option>
+                                                                <option value='' <?php if(empty($_SESSION['devit_CERTIFICATE'])) echo 'selected' ?>></option>
                                                                 <?php
                                                                     foreach ($v_ssl_domains as $key => $value) {
                                                                         echo "\t\t\t\t<option value=\"".$value."\"";
-                                                                        if ((!empty($_SESSION['VESTA_CERTIFICATE'])) && ( $value == $_SESSION['VESTA_CERTIFICATE'])){
+                                                                        if ((!empty($_SESSION['devit_CERTIFICATE'])) && ( $value == $_SESSION['devit_CERTIFICATE'])){
                                                                             echo ' selected' ;
                                                                         }
-                                                                        if ((!empty($_SESSION['VESTA_CERTIFICATE'])) && ( $value == $_POST['v_devit_certificate'])){
+                                                                        if ((!empty($_SESSION['devit_CERTIFICATE'])) && ( $value == $_POST['v_devit_certificate'])){
                                                                             echo ' selected' ;
                                                                         }
                                                                         echo ">".$value."</option>\n";

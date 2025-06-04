@@ -2,8 +2,8 @@
 
 # Define some variables
 source /etc/profile.d/devit.sh
-V_BIN="$VESTA/bin"
-V_TEST="$VESTA/test"
+V_BIN="$devit/bin"
+V_TEST="$devit/test"
 
 # Define functions
 random() {

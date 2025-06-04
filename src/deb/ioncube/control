@@ -1,10 +1,10 @@
-Source: vesta-ioncube
-Package: vesta-ioncube
+Source: devit-ioncube
+Package: devit-ioncube
 Priority: optional
 Version: 1.0.0-1
 Section: admin
-Maintainer: Serghey Rodin <skid@vestacp.com>
+Maintainer: Serghey Rodin <skid@devitcp.com>
 Homepage: https://www.ioncube.com
 Architecture: amd64
-Depends: bash, awk, sed, vesta-php
-Description: ionCube Loader for Vesta
+Depends: bash, awk, sed, devit-php
+Description: ionCube Loader for devit

@@ -28,9 +28,9 @@ ns8=${11}
 restart=${12}
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/func/domain.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/func/domain.sh
+source $devit/conf/devit.conf
 
 # Additional argument formatting
 format_domain
@@ -184,12 +184,12 @@ fi
 # Updating dns-cluster queue
 if [ ! -z "$DNS_CLUSTER" ]; then
     cmd="$BIN/v-add-remote-dns-domain $user $domain yes"
-    echo "$cmd" >> $VESTA/data/queue/dns-cluster.pipe
+    echo "$cmd" >> $devit/data/queue/dns-cluster.pipe
 fi
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Increasing domain value

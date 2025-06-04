@@ -1,13 +1,13 @@
-Source: vesta
-Package: vesta
+Source: devit
+Package: devit
 Priority: optional
 Version: 1.0.0-7
 Section: admin
-Maintainer: Serghey Rodin <skid@vestacp.com>
-Homepage: http://vestacp.com
+Maintainer: Serghey Rodin <skid@devitcp.com>
+Homepage: http://devitcp.com
 Architecture: amd64
 Depends: bash, awk, sed
-Description: Vesta
- Vesta is an open source hosting control panel.
- Vesta has a clean and focused interface without the clutter.
- Vesta has the latest of very innovative technologies.
+Description: devit
+ devit is an open source hosting control panel.
+ devit has a clean and focused interface without the clutter.
+ devit has the latest of very innovative technologies.

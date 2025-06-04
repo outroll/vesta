@@ -154,7 +154,7 @@ const Logs = props => {
   return (
     <div className="logs-list">
       <Helmet>
-        <title>{`Vesta - ${i18n.LOG}`}</title>
+        <title>{`devit - ${i18n.LOG}`}</title>
       </Helmet>
       <Toolbar mobile={false} className="justify-right">
         <LeftButton name="Add Cron Job" showLeftMenu={false} />

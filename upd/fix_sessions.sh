@@ -2,12 +2,12 @@
 # Fix devit session save path
 
 # Defining vars
-VESTA='/usr/local/devit'
-cmd1="$VESTA/upd/fix_sessions.sh"
-cmd2="$VESTA/bin/fix_sessions.sh"
-cron="$VESTA/data/users/admin/cron.conf"
-sessions="$VESTA/data/sessions"
-conf="$VESTA/php/etc/php-fpm.conf"
+devit='/usr/local/devit'
+cmd1="$devit/upd/fix_sessions.sh"
+cmd2="$devit/bin/fix_sessions.sh"
+cron="$devit/data/users/admin/cron.conf"
+sessions="$devit/data/sessions"
+conf="$devit/php/etc/php-fpm.conf"
 settings="
 php_admin_value[memory_limit] = 256M
 php_admin_value[post_max_size] = 512M
@@ -24,7 +24,7 @@ if [ ! -z "$1" ]; then
     str="$str CMD='sudo $cmd2' TIME='04:39:26' DATE='2016-06-24'"
     if [ -z "$(grep $cmd2 $cron)" ]; then
         echo "$str" >> $cron
-        source $VESTA/func/main.sh
+        source $devit/func/main.sh
         sync_cron_jobs
         $BIN/v-restart-cron
     fi
@@ -54,11 +54,11 @@ fi
 
 # Cleaning up cron jobs
 if [ ! -z "$(grep $cmd2 $cron)" ]; then
-    source $VESTA/func/main.sh
+    source $devit/func/main.sh
     sed -i "/JOB='777' /d" $cron
     sync_cron_jobs
     $BIN/v-restart-cron
-    rm -f $VESTA/bin/fix_sessions.sh
+    rm -f $devit/bin/fix_sessions.sh
 fi
 
 exit

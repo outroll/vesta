@@ -14,10 +14,10 @@ if ($_SESSION['user'] != 'admin') {
 }
 
 // Data
-exec (VESTA_CMD."v-list-sys-devit-updates json", $output, $return_var);
+exec (devit_CMD."v-list-sys-devit-updates json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 unset($output);
-exec (VESTA_CMD."v-list-sys-devit-autoupdate plain", $output, $return_var);
+exec (devit_CMD."v-list-sys-devit-autoupdate plain", $output, $return_var);
 $autoupdate = $output[0];
 unset($output);
 

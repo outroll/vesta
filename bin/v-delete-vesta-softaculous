@@ -1,5 +1,5 @@
 #!/bin/bash
-# info: delete vesta softaculous
+# info: delete devit softaculous
 # options: NONE
 #
 # The script disables softaculous plugin
@@ -10,8 +10,8 @@
 #----------------------------------------------------------#
 
 # Includes
-source $VESTA/func/main.sh
-source $VESTA/conf/vesta.conf
+source $devit/func/main.sh
+source $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
@@ -28,18 +28,18 @@ fi
 #----------------------------------------------------------#
 
 # Deleting symlink
-if [ -e "$VESTA/web/softaculous" ]; then
-    mkdir -p $VESTA/disabled_plugins
-    mv $VESTA/web/softaculous $VESTA/disabled_plugins
+if [ -e "$devit/web/softaculous" ]; then
+    mkdir -p $devit/disabled_plugins
+    mv $devit/web/softaculous $devit/disabled_plugins
 fi
 
 # Updating SOFTACULOUS value
 sed -i "s/SOFTACULOUS.*/SOFTACULOUS='no'/g" \
-        $VESTA/conf/vesta.conf
+        $devit/conf/devit.conf
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 # Logging

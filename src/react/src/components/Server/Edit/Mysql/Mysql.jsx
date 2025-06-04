@@ -104,7 +104,7 @@ const Mysql = ({ serviceName = '' }) => {
   return (
     <div className="edit-template edit-mysql">
       <Helmet>
-        <title>{`Vesta - ${i18n.SERVER}`}</title>
+        <title>{`devit - ${i18n.SERVER}`}</title>
       </Helmet>
       <Toolbar mobile={false}>
         <div></div>

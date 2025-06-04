@@ -2,8 +2,8 @@
 
 source /etc/profile.d/devit.sh
 
-V_BIN="$VESTA/bin"
-V_TEST="$VESTA/test"
+V_BIN="$devit/bin"
+V_TEST="$devit/test"
 
 commands='v_list_cron_jobs admin json
 v_list_databases admin json

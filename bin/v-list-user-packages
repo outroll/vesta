@@ -13,7 +13,7 @@
 format=${1-shell}
 
 # Includes
-source $VESTA/func/main.sh
+source $devit/func/main.sh
 
 
 # JSON list function
@@ -24,7 +24,7 @@ json_list() {
     echo "{"
     for package in $packages; do
         PACKAGE=${package/.pkg/}
-        source $VESTA/data/packages/$package
+        source $devit/data/packages/$package
         echo -n '    "'$PACKAGE'": {
         "WEB_TEMPLATE": "'$WEB_TEMPLATE'",
         "BACKEND_TEMPLATE": "'$BACKEND_TEMPLATE'",
@@ -61,9 +61,9 @@ shell_list() {
     echo "PKG   TPL   WEB   DNS   MAIL   DB   SHELL   DISK   BW"
     echo "---   ---   ---   ---   ----   --   -----   ----   --"
     for package in $packages; do
-        source $VESTA/data/packages/$package
+        source $devit/data/packages/$package
         PACKAGE=${package/.pkg/}
-        package_data=$(cat $VESTA/data/packages/$package)
+        package_data=$(cat $devit/data/packages/$package)
         package_data=$(echo "$package_data" |sed -e 's/unlimited/unlim/g')
         eval $package_data
         echo -n "$PACKAGE $WEB_TEMPLATE $BACKEND_TEMPLATE $WEB_DOMAINS $DNS_DOMAINS "
@@ -74,7 +74,7 @@ shell_list() {
 # PLAIN list function
 plain_list() {
     for package in $packages; do
-        source $VESTA/data/packages/$package
+        source $devit/data/packages/$package
         PACKAGE=${package/.pkg/}
         echo -ne "$PACKAGE\t$WEB_TEMPLATE\t$BACKEND_TEMPLATE\t$PROXY_TEMPLATE\t$DNS_TEMPLATE\t"
         echo -ne "$WEB_DOMAINS\t$WEB_ALIASES\t$DNS_DOMAINS\t$DNS_RECORDS\t"
@@ -104,7 +104,7 @@ csv_list() {
 #----------------------------------------------------------#
 
 # Parsing packages
-packages=$(ls --sort=time $VESTA/data/packages |grep .pkg)
+packages=$(ls --sort=time $devit/data/packages |grep .pkg)
 
 # Listing data
 case $format in
@@ -116,7 +116,7 @@ esac
 
 
 #----------------------------------------------------------#
-#                       Vesta                              #
+#                       devit                              #
 #----------------------------------------------------------#
 
 exit
