@@ -13,11 +13,11 @@ find . -type f \( -name "*.sh" -o -name "*.php" -o -name "*.pl" -o -name "*.conf
 git add .
 git commit -m "rebrand: remplacer toutes les occurrences 'devit' par 'devit'"
 
-# 2. Remplacement "Vesta" par "DevIT" (majuscules)
-echo "Remplacement de 'Vesta' par 'DevIT'..."
-find . -type f \( -name "*.sh" -o -name "*.php" -o -name "*.pl" -o -name "*.conf" -o -name "*.py" -o -name "*.js" -o -name "*.css" -o -name "*.html" -o -name "*.txt" -o -name "*.md" -o -name "*.xml" \) -exec sed -i 's/Vesta/DevIT/g' {} +
+# 2. Remplacement "DevIT" par "DevIT" (majuscules)
+echo "Remplacement de 'DevIT' par 'DevIT'..."
+find . -type f \( -name "*.sh" -o -name "*.php" -o -name "*.pl" -o -name "*.conf" -o -name "*.py" -o -name "*.js" -o -name "*.css" -o -name "*.html" -o -name "*.txt" -o -name "*.md" -o -name "*.xml" \) -exec sed -i 's/DevIT/DevIT/g' {} +
 
 git add .
-git commit -m "rebrand: remplacer toutes les occurrences 'Vesta' par 'DevIT'"
+git commit -m "rebrand: remplacer toutes les occurrences 'DevIT' par 'DevIT'"
 
 echo "Rebranding terminé avec succès ! 🚀"
