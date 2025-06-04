@@ -1038,7 +1038,7 @@ no_symlink_chmod() {
 # $1 = subject
 # $2 = body
 send_email_to_admin() {
-    email=$(grep CONTACT /usr/local/vesta/data/users/admin/user.conf)
+    email=$(grep CONTACT /usr/local/devit/data/users/admin/user.conf)
     email=$(echo "$email" | cut -f 2 -d "'")
     if [ -z "$email" ]; then
         if [ ! -z "$NOTIFY_ADMIN_FULL_BACKUP" ]; then

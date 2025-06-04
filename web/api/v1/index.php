@@ -1,5 +1,5 @@
 <?php
-define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
+define('VESTA_CMD', '/usr/bin/sudo /usr/local/devit/bin/');
 
 if (isset($_POST['user']) || isset($_POST['hash'])) {
 
@@ -48,7 +48,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
             exit;
         }
     } else {
-        $key = '/usr/local/vesta/data/keys/' . basename($_POST['hash']);
+        $key = '/usr/local/devit/data/keys/' . basename($_POST['hash']);
         if (file_exists($key) && is_file($key)) {
             exec(VESTA_CMD ."v-check-api-key ".escapeshellarg($key)." ".$v_ip,  $output, $return_var);
             unset($output);

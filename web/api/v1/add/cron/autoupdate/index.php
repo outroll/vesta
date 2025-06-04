@@ -14,7 +14,7 @@ if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
 }
 
 if ($_SESSION['user'] == 'admin') {
-    exec (VESTA_CMD."v-add-cron-vesta-autoupdate", $output, $return_var);
+    exec (VESTA_CMD."v-add-cron-devit-autoupdate", $output, $return_var);
     $message = __('Autoupdate has been successfully enabled');
     unset($output);
 }

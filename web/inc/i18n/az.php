@@ -1,6 +1,6 @@
 <?php
 /**
- * Vesta Azerbaijani language file
+ * DevIT Azerbaijani language file
  * 21.05.2018 Orkhan Oder (orkhan@our.az)
 
  */
@@ -496,15 +496,15 @@ $LANG['az'] = array(
     'DB_EXCLUSIONS' => 'Hər sətrə bir verilənlər bazası əlavə edin. Hamısı üçün * istifadə edin. ',
     'CRON_EXCLUSIONS' => 'Bütün zamanlanmış tapşırıqları xaric etmək üçün * istifadə edin',
     'USER_EXCLUSIONS' => 'Hər sətrə bir qovluq əlavə edin. Bütün versiyaları xaric etmək üçün * istifadə edin',
-    'Welcome to Vesta Control Panel'  => 'Vesta nəzarət panelinə xoş gəldiniz',
-    'MAIL_FROM'  => 'Vesta Nəzarət Paneli <noreply@%s>',
+    'Welcome to DevIT Control Panel'  => 'DevIT nəzarət panelinə xoş gəldiniz',
+    'MAIL_FROM'  => 'DevIT Nəzarət Paneli <noreply@%s>',
     'GREETINGS_GORDON_FREEMAN' => "Hər vaxtınız xeyir, %s %s,\n",
     'GREETINGS' => "Hər vaxtınız xeyir,\n",
-    'ACCOUNT_READY' => "Hesabınız uğurla yaradıldı və istifadəyə hazırdır.\n\nhttps://%s/login/\nİstifadəçi adı: %s\nŞifrə: %s\n\n--\nVesta Nəzarət Paneli\n",
+    'ACCOUNT_READY' => "Hesabınız uğurla yaradıldı və istifadəyə hazırdır.\n\nhttps://%s/login/\nİstifadəçi adı: %s\nŞifrə: %s\n\n--\nDevIT Nəzarət Paneli\n",
     'FTP login credentials'  => 'FTP giriş məlumatları',
-    'FTP_ACCOUNT_READY' => "FTP hesabı uğurla yaradıldı və istifadə hazırdır.\n\nHostname: %s\nİstifadəçi adı: %s_%s\nŞifrə: %s\n\n--\nVesta Control Panel\n",
+    'FTP_ACCOUNT_READY' => "FTP hesabı uğurla yaradıldı və istifadə hazırdır.\n\nHostname: %s\nİstifadəçi adı: %s_%s\nŞifrə: %s\n\n--\nDevIT Control Panel\n",
     'Database Credentials'  => 'Veritabanı Bilgileri',
-    'DATABASE_READY' => "Verilənlər bazası yaradıldı.\n\Verilənlər bazsı: %s\nİstifadəçi: %s\Şifrə: %s\n%s\n\n--\nVesta Nəzarət Paneli\n",
+    'DATABASE_READY' => "Verilənlər bazası yaradıldı.\n\Verilənlər bazsı: %s\nİstifadəçi: %s\Şifrə: %s\n%s\n\n--\nDevIT Nəzarət Paneli\n",
     'forgot password'  => 'Şifrəmi unutdum',
     'Confirm'  => 'Təstiqlə',
     'New Password'  => 'Yeni şifrə',
@@ -514,7 +514,7 @@ $LANG['az'] = array(
     'RESET_NOTICE'  => '',
     'RESET_CODE_SENT'  => 'Şifrə sıfırlama kodu e-poçt ünvanınıza göndərildi.<br>',
     'MAIL_RESET_SUBJECT'  => 'Şifrə sıfırlama - %s',
-    'PASSWORD_RESET_REQUEST' => "Şifrənizi sıfırlamaq üçün lütfən linki izləyin:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\Alternativ olaraq https://%s/reset/?action=code&user=%s linkinə klik edib davamına bu reset kodunuzu daxil edə bilərsiniz:\n%s\n\nƏgər şifrə sıfırlama istəyiniz olmayıbsa lütfən mesajı yox sayın və üzrümüzü qəbul edin.\n\n--\nVesta Nəzarət Mərkəzi\n",
+    'PASSWORD_RESET_REQUEST' => "Şifrənizi sıfırlamaq üçün lütfən linki izləyin:\nhttps://%s/reset/?action=confirm&user=%s&code=%s\n\Alternativ olaraq https://%s/reset/?action=code&user=%s linkinə klik edib davamına bu reset kodunuzu daxil edə bilərsiniz:\n%s\n\nƏgər şifrə sıfırlama istəyiniz olmayıbsa lütfən mesajı yox sayın və üzrümüzü qəbul edin.\n\n--\nDevIT Nəzarət Mərkəzi\n",
     'Jan' => 'Yan',
     'Feb' => 'Fev',
     'Mar' => 'Mar',
@@ -556,7 +556,7 @@ $LANG['az'] = array(
     'sftp' => 'SFTP',
     'SFTP Chroot' => 'SFTP Chroot',
     'FileSystem Disk Quota' => 'FaylSistemi disk kvotası',
-    'Vesta Control Panel Plugins' => 'Vesta Nəzarət Paneli əlavələri',
+    'DevIT Control Panel Plugins' => 'DevIT Nəzarət Paneli əlavələri',
     'preview' => 'Ön görünüş',
     'Reseller Role' => 'Reseller rolu',
     'Web Config Editor' => 'Veb Konfiqurasiya redaktoru',
@@ -708,7 +708,7 @@ $LANG['az'] = array(
     'Generate' => 'Yaratmaq',
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
-    'Vesta SSL' => 'Vesta SSL',
+    'DevIT SSL' => 'DevIT SSL',
     'SUBJECT' => 'MÖVZU',
     'ALIASES' => 'LƏQƏBLƏR',
     'NOT_BEFORE' => 'NOT_BEFORE',

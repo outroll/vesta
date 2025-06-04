@@ -1,26 +1,26 @@
 <?php
 
 /**
- * Vesta Control Panel Password Driver
+ * DevIT Control Panel Password Driver
  *
  * @version 1.0
- * @author Serghey Rodin <skid@vestacp.com>
+ * @author Serghey Rodin <skid@devitcp.com>
  */
-class rcube_vesta_password {
+class rcube_devit_password {
     function save($curpass, $passwd)
     {
         $rcmail = rcmail::get_instance();
-        $vesta_host = $rcmail->config->get('password_vesta_host');
+        $devit_host = $rcmail->config->get('password_devit_host');
 
-        if (empty($vesta_host))
+        if (empty($devit_host))
         {
-            $vesta_host = 'localhost';
+            $devit_host = 'localhost';
         }
 
-        $vesta_port = $rcmail->config->get('password_vesta_port');
-        if (empty($vesta_port))
+        $devit_port = $rcmail->config->get('password_devit_port');
+        if (empty($devit_port))
         {
-            $vesta_port = '8083';
+            $devit_port = '8083';
         }
 
         $postvars = array(
@@ -32,7 +32,7 @@ class rcube_vesta_password {
         $postdata = http_build_query($postvars);
 
         $send  = 'POST /reset/mail/ HTTP/1.1' . PHP_EOL;
-        $send .= 'Host: ' . $vesta_host . PHP_EOL;
+        $send .= 'Host: ' . $devit_host . PHP_EOL;
         $send .= 'User-Agent: PHP Script' . PHP_EOL;
         $send .= 'Content-length: ' . strlen($postdata) . PHP_EOL;
         $send .= 'Content-type: application/x-www-form-urlencoded' . PHP_EOL;
@@ -40,7 +40,7 @@ class rcube_vesta_password {
         $send .= PHP_EOL;
         $send .= $postdata . PHP_EOL . PHP_EOL;
 
-        //$fp = fsockopen('ssl://' . $vesta_host, $vesta_port);
+        //$fp = fsockopen('ssl://' . $devit_host, $devit_port);
         $errno = "";
         $errstr = "";
         $context = stream_context_create();
@@ -50,7 +50,7 @@ class rcube_vesta_password {
         $result = stream_context_set_option($context, 'ssl', 'verify_host', false);
         $result = stream_context_set_option($context, 'ssl', 'allow_self_signed', true);
 
-        $fp = stream_socket_client('ssl://' . $vesta_host . ':'.$vesta_port, $errno, $errstr, 60, STREAM_CLIENT_CONNECT, $context);
+        $fp = stream_socket_client('ssl://' . $devit_host . ':'.$devit_port, $errno, $errstr, 60, STREAM_CLIENT_CONNECT, $context);
         fputs($fp, $send);
         $result = fread($fp, 2048);
         fclose($fp);

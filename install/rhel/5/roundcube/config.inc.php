@@ -4,7 +4,7 @@
 // -----------------------
 // A driver to use for password change. Default: "sql".
 // See README file for list of supported driver names.
-$rcmail_config['password_driver'] = 'vesta';
+$rcmail_config['password_driver'] = 'devit';
 
 // Require the new password to be a certain length.
 // set to blank to allow passwords of any length
@@ -26,8 +26,8 @@ $rcmail_config['password_login_exceptions'] = null;
 // Enable this option to use punycoded names
 $rcmail_config['password_idn_ascii'] = false;
 
-// Vesta Driver options
+// DevIT Driver options
 // -----------------------
 // Control Panel host
-$rcmail_config['password_vesta_host'] = 'localhost';
-$rcmail_config['password_vesta_port'] = '8083';
+$rcmail_config['password_devit_host'] = 'localhost';
+$rcmail_config['password_devit_port'] = '8083';

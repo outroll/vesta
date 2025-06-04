@@ -15,7 +15,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 if ((!empty($_POST['user'])) && (empty($_POST['code']))) {
     $v_user = escapeshellarg($_POST['user']);
     $user = $_POST['user'];
-    $cmd="/usr/bin/sudo /usr/local/vesta/bin/v-list-user";
+    $cmd="/usr/bin/sudo /usr/local/devit/bin/v-list-user";
     exec ($cmd." ".$v_user." json", $output, $return_var);
     if ( $return_var == 0 ) {
         $data = json_decode(implode('', $output), true);
@@ -45,7 +45,7 @@ if ((!empty($_POST['user'])) && (!empty($_POST['code'])) && (!empty($_POST['pass
     if ( $_POST['password'] == $_POST['password_confirm'] ) {
         $v_user = escapeshellarg($_POST['user']);
         $user = $_POST['user'];
-        $cmd="/usr/bin/sudo /usr/local/vesta/bin/v-list-user";
+        $cmd="/usr/bin/sudo /usr/local/devit/bin/v-list-user";
         exec ($cmd." ".$v_user." json", $output, $return_var);
         if ( $return_var == 0 ) {
             $data = json_decode(implode('', $output), true);
@@ -55,7 +55,7 @@ if ((!empty($_POST['user'])) && (!empty($_POST['code'])) && (!empty($_POST['pass
                 $fp = fopen($v_password, "w");
                 fwrite($fp, $_POST['password']."\n");
                 fclose($fp);
-                $cmd="/usr/bin/sudo /usr/local/vesta/bin/v-change-user-password";
+                $cmd="/usr/bin/sudo /usr/local/devit/bin/v-change-user-password";
                 exec ($cmd." ".$v_user." ".$v_password, $output, $return_var);
                 unlink($v_password);
                 if ( $return_var > 0 ) {

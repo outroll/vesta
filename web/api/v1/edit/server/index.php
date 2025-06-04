@@ -86,11 +86,11 @@ foreach ($backup_types as $backup_type) {
 // List ssl web domains
 exec (VESTA_CMD."v-search-ssl-certificates json", $output, $return_var);
 $v_ssl_domains = json_decode(implode('', $output), true);
-//$v_vesta_certificate
+//$v_devit_certificate
 unset($output);
 
 // List ssl certificate info
-exec (VESTA_CMD."v-list-sys-vesta-ssl json", $output, $return_var);
+exec (VESTA_CMD."v-list-sys-devit-ssl json", $output, $return_var);
 $v_sys_ssl_str = json_decode(implode('', $output), true);
 unset($output);
 $v_sys_ssl_crt = $v_sys_ssl_str['VESTA']['CRT'];
@@ -425,7 +425,7 @@ if (!empty($_POST['save'])) {
     // Delete WEB Domain SSL certificate
     if ((!isset($_POST['v_web_ssl_domain_checkbox'])) && (!empty($_SESSION['VESTA_CERTIFICATE'])) && (empty($_SESSION['error_msg']))) {
         unset($_SESSION['VESTA_CERTIFICATE']);
-        exec (VESTA_CMD."v-delete-sys-vesta-ssl", $output, $return_var);
+        exec (VESTA_CMD."v-delete-sys-devit-ssl", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
@@ -437,7 +437,7 @@ if (!empty($_POST['save'])) {
             $v_web_ssl_str = explode(":", $_POST['v_web_ssl_domain']);
             $v_web_ssl_user = escapeshellarg($v_web_ssl_str[0]);
             $v_web_ssl_domain = escapeshellarg($v_web_ssl_str[1]);
-            exec (VESTA_CMD."v-add-sys-vesta-ssl ".$v_web_ssl_user." ".$v_web_ssl_domain, $output, $return_var);
+            exec (VESTA_CMD."v-add-sys-devit-ssl ".$v_web_ssl_user." ".$v_web_ssl_domain, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
 
@@ -445,7 +445,7 @@ if (!empty($_POST['save'])) {
                 $_SESSION['VESTA_CERTIFICATE'] = $_POST['v_web_ssl_domain'];
 
                 // List SSL certificate info
-                exec (VESTA_CMD."v-list-sys-vesta-ssl json", $output, $return_var);
+                exec (VESTA_CMD."v-list-sys-devit-ssl json", $output, $return_var);
                 $v_sys_ssl_str = json_decode(implode('', $output), true);
                 unset($output);
                 $v_sys_ssl_crt = $v_sys_ssl_str['VESTA']['CRT'];
@@ -485,13 +485,13 @@ if (!empty($_POST['save'])) {
                 fclose($fp);
             }
 
-            exec (VESTA_CMD."v-change-sys-vesta-ssl ".$tmpdir, $output, $return_var);
+            exec (VESTA_CMD."v-change-sys-devit-ssl ".$tmpdir, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
 
             if (empty($_SESSION['error_msg'])) {
                 // List ssl certificate info
-                exec (VESTA_CMD."v-list-sys-vesta-ssl json", $output, $return_var);
+                exec (VESTA_CMD."v-list-sys-devit-ssl json", $output, $return_var);
                 $v_sys_ssl_str = json_decode(implode('', $output), true);
                 unset($output);
                 $v_sys_ssl_crt = $v_sys_ssl_str['VESTA']['CRT'];
@@ -518,7 +518,7 @@ if (!empty($_POST['save'])) {
         if($_SESSION['SFTPJAIL_KEY'] != $_POST['v_sftp_licence'] && $_POST['v_sftp'] == 'yes'){
             $module = 'sftpjail';
             $licence_key = escapeshellarg($_POST['v_sftp_licence']);
-            exec (VESTA_CMD."v-activate-vesta-license ".$module." ".$licence_key, $output, $return_var);
+            exec (VESTA_CMD."v-activate-devit-license ".$module." ".$licence_key, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             if (empty($_SESSION['error_msg'])) {
@@ -533,7 +533,7 @@ if (!empty($_POST['save'])) {
         if($_POST['v_sftp'] == 'cancel' && $_SESSION['SFTPJAIL_KEY']){
             $module = 'sftpjail';
             $licence_key = escapeshellarg($_SESSION['SFTPJAIL_KEY']);
-            exec (VESTA_CMD."v-deactivate-vesta-license ".$module." ".$licence_key, $output, $return_var);
+            exec (VESTA_CMD."v-deactivate-devit-license ".$module." ".$licence_key, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             if (empty($_SESSION['error_msg'])) {
@@ -548,7 +548,7 @@ if (!empty($_POST['save'])) {
         if($_SESSION['FILEMANAGER_KEY'] != $_POST['v_filemanager_licence'] && $_POST['v_filemanager'] == 'yes'){
             $module = 'filemanager';
             $licence_key = escapeshellarg($_POST['v_filemanager_licence']);
-            exec (VESTA_CMD."v-activate-vesta-license ".$module." ".$licence_key, $output, $return_var);
+            exec (VESTA_CMD."v-activate-devit-license ".$module." ".$licence_key, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             if (empty($_SESSION['error_msg'])) {
@@ -563,7 +563,7 @@ if (!empty($_POST['save'])) {
         if($_POST['v_filemanager'] == 'cancel' && $_SESSION['FILEMANAGER_KEY']){
             $module = 'filemanager';
             $licence_key = escapeshellarg($_SESSION['FILEMANAGER_KEY']);
-            exec (VESTA_CMD."v-deactivate-vesta-license ".$module." ".$licence_key, $output, $return_var);
+            exec (VESTA_CMD."v-deactivate-devit-license ".$module." ".$licence_key, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             if (empty($_SESSION['error_msg'])) {
@@ -576,7 +576,7 @@ if (!empty($_POST['save'])) {
     // activating softaculous
     if (empty($_SESSION['error_msg'])) {
         if($_SESSION['SOFTACULOUS'] != $_POST['v_softaculous'] && $_POST['v_softaculous'] == 'yes'){
-            exec (VESTA_CMD."v-add-vesta-softaculous WEB", $output, $return_var);
+            exec (VESTA_CMD."v-add-devit-softaculous WEB", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             if (empty($_SESSION['error_msg'])) {
@@ -589,7 +589,7 @@ if (!empty($_POST['save'])) {
     // disable softaculous
     if (empty($_SESSION['error_msg'])) {
         if($_SESSION['SOFTACULOUS'] != $_POST['v_softaculous'] && $_POST['v_softaculous'] == 'no'){
-            exec (VESTA_CMD."v-delete-vesta-softaculous", $output, $return_var);
+            exec (VESTA_CMD."v-delete-devit-softaculous", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             if (empty($_SESSION['error_msg'])) {
@@ -601,7 +601,7 @@ if (!empty($_POST['save'])) {
 
     // Change port
      if ((!empty($_POST['port'])) && ($port != $_POST['port'])) {
-        exec (VESTA_CMD."v-change-vesta-port ".escapeshellarg($_POST['port']), $output, $return_var);
+        exec (VESTA_CMD."v-change-devit-port ".escapeshellarg($_POST['port']), $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $port = $_POST['port'];
@@ -657,7 +657,7 @@ $result = array(
     'sftp_licence_key' => $_GET['sftp_licence_key'],
     'licence_key' => $_GET['sftp_licence_key'] != '' ? $_GET['sftp_licence_key'] : $_SESSION['SFTPJAIL_KEY'],
     'fm_licence_key_option' => $_GET['filemanager_licence_key'] != '' ? $_GET['filemanager_licence_key'] : $_SESSION['FILEMANAGER_KEY'],
-    'vesta_certificate' => $_SESSION['VESTA_CERTIFICATE'],
+    'devit_certificate' => $_SESSION['VESTA_CERTIFICATE'],
     'yes_no_options' => [ __('no'), __('yes') ],
     'dns_cluster_options' => [ __('no'), __('yes') ],
     'postgre_sql_options' => [ __('no'), __('yes') ],

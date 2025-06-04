@@ -1,6 +1,6 @@
 <?php
 /**
- * Vesta hungarian language file
+ * DevIT hungarian language file
  * Fordítás: 2014.06.18. Kovács Ákos - (kovacsakos1991@gmail.com)
  *                       www.kovacsakos.info
  *           2015.06.10. Kőrösi Zoltán - (korosi.zoltan@webnpro.com)
@@ -514,8 +514,8 @@ $LANG['hu'] = array(
     'CRON_EXCLUSIONS' => 'Az összes job kihagyásához használj ',
     'USER_EXCLUSIONS' => 'Írd be a könyvtár nevét, soronként egyet. Az összes kihagyásához használj ',
 
-    'Welcome to Vesta Control Panel'  => 'Üdvözli a Vesta Control Panel!',
-    'MAIL_FROM'  => 'Vesta Control Panel <noreply@%s>',
+    'Welcome to DevIT Control Panel'  => 'Üdvözli a DevIT Control Panel!',
+    'MAIL_FROM'  => 'DevIT Control Panel <noreply@%s>',
     'GREETINGS_GORDON_FREEMAN' => "Üdv, %s %s,\n",
     'GREETINGS' => "Üdv,\n",
     'ACCOUNT_READY' => "A fiókod létrejött és készen áll a használatra.\n\nhttps://%s/login/\nFelhasználónév: %s\nJelszó: %s\n\n--\nKezelőfelület\n",
@@ -579,7 +579,7 @@ $LANG['hu'] = array(
     'sftp' => 'SFTP',
     'SFTP Chroot' => 'SFTP Chroot',
     'FileSystem Disk Quota' => 'Fájlrendszer kvóta',
-    'Vesta Control Panel Plugins' => 'Vesta Control Panel Pluginek',
+    'DevIT Control Panel Plugins' => 'DevIT Control Panel Pluginek',
     'preview' => 'előnézet',
     'Reseller Role' => 'Viszonteladói jogosultságok',
     'Web Config Editor' => 'Web konfiguráció szerkesztő',
@@ -740,7 +740,7 @@ $LANG['hu'] = array(
     'webalizer' => 'webalizer',
     'awstats' => 'awstats',
 
-    'Vesta SSL' => 'Vesta SSL',
+    'DevIT SSL' => 'DevIT SSL',
     'SUBJECT' => 'SUBJECT',
     'ALIASES' => 'ALIASES',
     'NOT_BEFORE' => 'NOT_BEFORE',
