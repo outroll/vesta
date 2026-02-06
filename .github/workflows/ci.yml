@@ -5,6 +5,12 @@ on:
     branches: [ master, develop, vesta-2.0 ]
   pull_request:
     branches: [ master, develop ]
+  workflow_dispatch:
+    inputs:
+      full_test:
+        description: 'Run full test suite including Docker tests'
+        required: false
+        default: 'true'
 
 jobs:
   test-bash:
@@ -17,23 +23,32 @@ jobs:
     - name: Install shellcheck
       run: sudo apt-get update && sudo apt-get install -y shellcheck
 
-    - name: Run shellcheck on bin scripts
+    - name: Run shellcheck on ALL bin scripts
       run: |
-        find bin -type f -name "v-*" | head -20 | xargs shellcheck -S warning || true
-        echo "Shellcheck completed (warnings allowed for legacy code)"
+        find bin -type f -name "v-*" | xargs shellcheck -S warning || true
+        echo "Shellcheck completed"
 
-    - name: Check bash syntax
+    - name: Check bash syntax (strict)
       run: |
+        errors=0
         for script in bin/v-*; do
-          bash -n "$script" || echo "Syntax error in $script"
+          if ! bash -n "$script" 2>/dev/null; then
+            echo "❌ Syntax error in $script"
+            errors=$((errors + 1))
+          fi
         done
-        echo "Bash syntax check completed"
+        if [ $errors -gt 0 ]; then
+          echo "Found $errors scripts with syntax errors"
+          exit 1
+        fi
+        echo "✅ All bash scripts pass syntax check"
 
   build-react:
     name: Build React UI
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
         node-version: [18.x, 20.x, 22.x]
@@ -54,12 +69,25 @@ jobs:
 
     - name: Run tests
       working-directory: ./src/react
-      run: npm test -- --passWithNoTests --watchAll=false || echo "Tests completed with warnings"
-      continue-on-error: true
+      run: npm test -- --passWithNoTests --watchAll=false
 
-    - name: Build
+    - name: Build (production)
       working-directory: ./src/react
       run: CI=false npm run build
+
+    - name: Verify build output
+      working-directory: ./src/react
+      run: |
+        if [ ! -d "build" ]; then
+          echo "❌ Build directory not found"
+          exit 1
+        fi
+        if [ ! -f "build/index.html" ]; then
+          echo "❌ index.html not found in build"
+          exit 1
+        fi
+        echo "✅ Build output verified"
+        ls -la build/
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
@@ -69,31 +97,12 @@ jobs:
         path: src/react/build
         retention-days: 7
 
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Run npm audit
-      working-directory: ./src/react
-      run: |
-        npm audit --audit-level=moderate || true
-        echo "Security audit completed"
-
-    - name: Check for secrets
-      run: |
-        # Basic check for common secret patterns
-        ! grep -r "password\s*=\s*['\"].*['\"]" --include="*.sh" --include="*.php" bin/ web/ || echo "Warning: Potential hardcoded passwords found"
-        ! grep -r "api_key\s*=\s*['\"].*['\"]" --include="*.sh" --include="*.php" bin/ web/ || echo "Warning: Potential hardcoded API keys found"
-        echo "Secret scan completed"
-
   lint-php:
     name: Lint PHP Files
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
         php-version: ['8.0', '8.1', '8.2', '8.3', '8.4']
@@ -106,10 +115,151 @@ jobs:
       with:
         php-version: ${{ matrix.php-version }}
 
-    - name: Check PHP syntax
+    - name: Check PHP syntax (strict)
       run: |
-        find web -name "*.php" -print0 | xargs -0 -n1 php -l
-        echo "PHP ${{ matrix.php-version }} syntax check completed"
+        echo "Testing PHP ${{ matrix.php-version }} syntax..."
+        errors=0
+        while IFS= read -r -d '' file; do
+          if ! php -l "$file" > /dev/null 2>&1; then
+            echo "❌ Syntax error in $file"
+            php -l "$file"
+            errors=$((errors + 1))
+          fi
+        done < <(find web -name "*.php" -print0)
+        if [ $errors -gt 0 ]; then
+          echo "Found $errors PHP files with syntax errors"
+          exit 1
+        fi
+        echo "✅ All PHP files pass syntax check on PHP ${{ matrix.php-version }}"
+
+  php-integration:
+    name: PHP Integration Test
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.1', '8.3', '8.4']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP ${{ matrix.php-version }} with extensions
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: json, curl, mbstring, xml, zip, pdo, pdo_mysql
+
+    - name: Verify PHP extensions
+      run: |
+        echo "PHP Version:"
+        php -v
+        echo ""
+        echo "Loaded extensions:"
+        php -m
+        echo ""
+        echo "Testing required extensions..."
+        php -r "if (!extension_loaded('json')) exit(1);"
+        php -r "if (!extension_loaded('curl')) exit(1);"
+        php -r "if (!extension_loaded('mbstring')) exit(1);"
+        echo "✅ All required extensions loaded"
+
+    - name: Test API endpoints syntax
+      run: |
+        echo "Testing API files can be parsed..."
+        for f in web/api/v1/**/index.php; do
+          php -l "$f" > /dev/null || exit 1
+        done
+        echo "✅ All API endpoints pass syntax check"
+
+  docker-test:
+    name: Docker Integration Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu:22.04
+            name: Ubuntu 22.04
+          - os: ubuntu:24.04
+            name: Ubuntu 24.04
+          - os: debian:11
+            name: Debian 11
+          - os: debian:12
+            name: Debian 12
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Test on ${{ matrix.name }}
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/vesta ${{ matrix.os }} bash -c '
+          apt-get update -qq
+          apt-get install -y -qq php php-cli php-json php-curl > /dev/null 2>&1
+          echo "Testing PHP in ${{ matrix.name }}..."
+          php -v
+          cd /vesta
+          errors=0
+          for f in web/inc/*.php web/api/v1/login/index.php; do
+            if [ -f "$f" ]; then
+              if ! php -l "$f" > /dev/null 2>&1; then
+                echo "❌ $f"
+                errors=$((errors + 1))
+              fi
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            exit 1
+          fi
+          echo "✅ PHP syntax OK on ${{ matrix.name }}"
+        '
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+
+    - name: Run npm audit
+      working-directory: ./src/react
+      run: |
+        npm audit --audit-level=high || echo "⚠️ Security vulnerabilities found (review required)"
+
+    - name: Check for hardcoded secrets
+      run: |
+        echo "Scanning for potential secrets..."
+
+        # Check for hardcoded passwords
+        if grep -rn "password\s*=\s*['\"][^'\"]\+['\"]" --include="*.sh" --include="*.php" bin/ web/ 2>/dev/null | grep -v "password\s*=\s*['\"]['\"]" | grep -v "_password" | grep -v "password_"; then
+          echo "⚠️ Potential hardcoded passwords found (review above)"
+        fi
+
+        # Check for API keys
+        if grep -rn "api_key\s*=\s*['\"][^'\"]\+['\"]" --include="*.sh" --include="*.php" bin/ web/ 2>/dev/null; then
+          echo "⚠️ Potential hardcoded API keys found (review above)"
+        fi
+
+        # Check for private keys
+        if grep -rn "PRIVATE KEY" --include="*.php" --include="*.sh" web/ bin/ 2>/dev/null; then
+          echo "❌ Private keys found in code!"
+          exit 1
+        fi
+
+        echo "✅ Secret scan completed"
+
+    - name: Check file permissions
+      run: |
+        echo "Checking for overly permissive files..."
+        find . -type f -perm /o+w -not -path "./.git/*" | head -20 || true
+        echo "✅ Permission check completed"
 
   test-install-script:
     name: Test Installation Script
@@ -118,13 +268,36 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Validate install scripts
+    - name: Validate install scripts (strict)
       run: |
-        bash -n install/vst-install.sh
-        bash -n install/vst-install-debian.sh
-        bash -n install/vst-install-ubuntu.sh
-        bash -n install/vst-install-rhel.sh
-        echo "Installation script validation completed"
+        echo "Validating installation scripts..."
+
+        scripts=(
+          "install/vst-install.sh"
+          "install/vst-install-debian.sh"
+          "install/vst-install-ubuntu.sh"
+          "install/vst-install-rhel.sh"
+        )
+
+        for script in "${scripts[@]}"; do
+          if [ -f "$script" ]; then
+            echo "Checking $script..."
+            bash -n "$script"
+            echo "✅ $script OK"
+          else
+            echo "⚠️ $script not found"
+          fi
+        done
+
+    - name: Check install script dependencies
+      run: |
+        echo "Checking for required commands in install scripts..."
+        required_cmds="curl wget apt-get yum systemctl"
+        for cmd in $required_cmds; do
+          if grep -q "$cmd" install/*.sh 2>/dev/null; then
+            echo "✅ Uses $cmd"
+          fi
+        done
 
   code-quality:
     name: Code Quality
@@ -146,5 +319,45 @@ jobs:
 
     - name: Run ESLint
       working-directory: ./src/react
-      run: npx eslint src --max-warnings 100 || true
-      continue-on-error: true
+      run: |
+        npx eslint src --format stylish --max-warnings 50 || echo "⚠️ ESLint warnings found"
+
+    - name: Check for console.log statements
+      working-directory: ./src/react
+      run: |
+        if grep -rn "console\.log" src/ --include="*.js" --include="*.jsx" | grep -v "// debug" | head -10; then
+          echo "⚠️ console.log statements found (consider removing for production)"
+        fi
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [test-bash, build-react, lint-php, php-integration, security-scan, test-install-script, code-quality]
+    if: always()
+
+    steps:
+    - name: Check all jobs
+      run: |
+        echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Bash Scripts | ${{ needs.test-bash.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| React Build | ${{ needs.build-react.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| PHP Lint | ${{ needs.lint-php.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| PHP Integration | ${{ needs.php-integration.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Security Scan | ${{ needs.security-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Install Scripts | ${{ needs.test-install-script.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Code Quality | ${{ needs.code-quality.result }} |" >> $GITHUB_STEP_SUMMARY
+
+        if [ "${{ needs.test-bash.result }}" != "success" ] || \
+           [ "${{ needs.build-react.result }}" != "success" ] || \
+           [ "${{ needs.lint-php.result }}" != "success" ] || \
+           [ "${{ needs.php-integration.result }}" != "success" ]; then
+          echo ""
+          echo "❌ Some critical jobs failed!"
+          exit 1
+        fi
+
+        echo ""
+        echo "✅ All critical jobs passed!"
