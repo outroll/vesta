@@ -31,11 +31,12 @@ jobs:
 
   build-react:
     name: Build React UI
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        os: [ubuntu-22.04, ubuntu-24.04]
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -62,7 +63,7 @@ jobs:
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
-      if: matrix.node-version == '20.x'
+      if: matrix.node-version == '20.x' && matrix.os == 'ubuntu-24.04'
       with:
         name: react-build
         path: src/react/build
@@ -90,20 +91,25 @@ jobs:
 
   lint-php:
     name: Lint PHP Files
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+        php-version: ['8.0', '8.1', '8.2', '8.3', '8.4']
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup PHP
+    - name: Setup PHP ${{ matrix.php-version }}
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.1'
+        php-version: ${{ matrix.php-version }}
 
     - name: Check PHP syntax
       run: |
-        find web -name "*.php" -print0 | xargs -0 -n1 php -l || true
-        echo "PHP syntax check completed"
+        find web -name "*.php" -print0 | xargs -0 -n1 php -l
+        echo "PHP ${{ matrix.php-version }} syntax check completed"
 
   test-install-script:
     name: Test Installation Script
