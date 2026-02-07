@@ -16,15 +16,6 @@ jobs:
     name: Build Debian Packages
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        os: [ubuntu-22.04, ubuntu-24.04]
-        include:
-          - os: ubuntu-22.04
-            codename: jammy
-          - os: ubuntu-24.04
-            codename: noble
-
     steps:
     - uses: actions/checkout@v4
 
@@ -83,9 +74,8 @@ jobs:
         cp postinst pkg/DEBIAN/ 2>/dev/null || true
         chmod 755 pkg/DEBIAN/postinst 2>/dev/null || true
 
-        # Copy nginx configs
+        # Copy nginx configs (use install/ubuntu as fallback)
         mkdir -p pkg/usr/local/vesta/nginx
-        cp -r ../../../install/${{ matrix.codename }}/nginx/* pkg/usr/local/vesta/nginx/ 2>/dev/null || \
         cp -r ../../../install/ubuntu/22.04/nginx/* pkg/usr/local/vesta/nginx/ 2>/dev/null || true
 
         fakeroot dpkg-deb --build pkg vesta-nginx_${{ steps.version.outputs.VERSION }}_all.deb
@@ -117,7 +107,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: vesta-packages-${{ matrix.codename }}
+        name: vesta-packages
         path: "*.deb"
         retention-days: 30
 
@@ -128,61 +118,19 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
 
     steps:
-    - name: Download all artifacts
+    - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
+        name: vesta-packages
         path: packages
 
     - name: List packages
-      run: find packages -name "*.deb" -ls
+      run: ls -la packages/
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        files: packages/**/*.deb
+        files: packages/*.deb
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  update-apt-repo:
-    name: Update APT Repository
-    needs: build-deb
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        ref: apt-repo
-        fetch-depth: 0
-
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: packages
-
-    - name: Setup APT repository structure
-      run: |
-        mkdir -p pool/main
-        mkdir -p dists/jammy/main/binary-amd64
-        mkdir -p dists/jammy/main/binary-arm64
-        mkdir -p dists/noble/main/binary-amd64
-        mkdir -p dists/noble/main/binary-arm64
-
-        # Copy packages
-        find packages -name "*.deb" -exec cp {} pool/main/ \;
-
-        # Generate Packages files
-        cd pool/main
-        dpkg-scanpackages . /dev/null > ../../dists/jammy/main/binary-amd64/Packages
-        dpkg-scanpackages . /dev/null > ../../dists/noble/main/binary-amd64/Packages
-        gzip -k ../../dists/jammy/main/binary-amd64/Packages
-        gzip -k ../../dists/noble/main/binary-amd64/Packages
-
-    - name: Commit and push
-      run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
-        git add -A
-        git commit -m "Update packages for ${GITHUB_REF#refs/tags/}" || true
-        git push
