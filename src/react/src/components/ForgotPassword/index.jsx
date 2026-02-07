@@ -145,7 +145,7 @@ export default function ForgotPassword() {
               {
                 state.action === 'code' && (
                   <>
-                    <span>{parse(i18n['RESET_CODE_SENT'])}</span><br />
+                    <span>{i18n['RESET_CODE_SENT'] ? parse(i18n['RESET_CODE_SENT']) : ''}</span><br />
 
                     <TextInput
                       onChange={changeInputHandler}

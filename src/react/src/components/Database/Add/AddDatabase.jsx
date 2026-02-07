@@ -131,7 +131,7 @@ const AddDatabase = memo(props => {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span>{parse(state.okMessage)}</span>
+            <span>{state.okMessage ? parse(state.okMessage) : ''}</span>
           </span>
         </div>
       </Toolbar>
@@ -141,7 +141,7 @@ const AddDatabase = memo(props => {
             <input type="hidden" name="ok" value="add" />
             <input type="hidden" name="token" value={token} />
 
-            <span className="prefix">{parse(state.prefixI18N)}</span>
+            <span className="prefix">{state.prefixI18N ? parse(state.prefixI18N) : ''}</span>
 
             <div className="form-group database">
               <label htmlFor="database">{i18n.Database}</label>

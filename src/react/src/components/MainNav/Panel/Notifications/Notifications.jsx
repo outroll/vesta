@@ -55,7 +55,7 @@ const Notifications = () => {
               <span className="title"><b>{item.TOPIC}</b></span>
               <span className="delete-notification" onClick={() => removeNotification(item.ID)}></span>
             </div>
-            <div>{parse(item.NOTICE)}</div>
+            <div>{item.NOTICE ? parse(item.NOTICE) : ''}</div>
             <div className="dropdown-divider"></div>
           </>
         );

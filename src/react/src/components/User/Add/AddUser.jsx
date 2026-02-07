@@ -139,7 +139,7 @@ const AddUser = props => {
         <div className="search-toolbar-name">{i18n['Adding User']}</div>
         <div className="error"><span className="error-message">{state.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}</span></div>
         <div className="success">
-          <span className="ok-message">{state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{parse(state.okMessage)}</span> </span>
+          <span className="ok-message">{state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{state.okMessage ? parse(state.okMessage) : ''}</span> </span>
         </div>
       </Toolbar>
       <AddItemLayout>

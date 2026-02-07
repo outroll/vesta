@@ -142,7 +142,7 @@ const GenerateSSL = props => {
 
             <div className="error"><span className="error-message">{errorMessage}</span></div>
             <div className="success">
-              <span className="ok-message"><span>{parse(okMessage)}</span> </span>
+              <span className="ok-message"><span>{okMessage ? parse(okMessage) : ''}</span> </span>
             </div>
           </form>
         }

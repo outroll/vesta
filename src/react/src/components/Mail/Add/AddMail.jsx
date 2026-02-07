@@ -77,7 +77,7 @@ const AddMail = props => {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span>{parse(state.okMessage)}</span>
+            <span>{state.okMessage ? parse(state.okMessage) : ''}</span>
           </span>
         </div>
       </Toolbar>

@@ -101,7 +101,7 @@ export default function WebLogs() {
             ? <Spinner />
             : (
               <pre>
-                {parse(state.data)}
+                {state.data ? parse(state.data) : ''}
               </pre>
             )
         }
