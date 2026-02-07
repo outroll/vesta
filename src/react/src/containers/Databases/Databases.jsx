@@ -392,8 +392,8 @@ const Databases = props => {
         <LeftButton name="Add Database" href="/add/db" showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
-            {state.db_myadmin_link && <Link to={{ pathname: state.db_myadmin_link }} className="button-extra" type="submit" target="_blank">phpMyAdmin</Link>}
-            {state.db_pgadmin_link && <Link to={{ pathname: state.db_pgadmin_link }} className="button-extra" type="submit" target="_blank">phpPgAdmin</Link>}
+            {state.db_myadmin_link && <a href={state.db_myadmin_link} className="button-extra" target="_blank" rel="noopener noreferrer">phpMyAdmin</a>}
+            {state.db_pgadmin_link && <a href={state.db_pgadmin_link} className="button-extra" target="_blank" rel="noopener noreferrer">phpPgAdmin</a>}
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />
             <Select list='dbList' bulkAction={bulk} />
             <DropdownFilter changeSorting={changeSorting} sorting={state.sorting} order={state.order} list="dbList" />
