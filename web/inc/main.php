@@ -173,6 +173,7 @@ function translate_date($date){
 }
 
 function humanize_time($usage) {
+    $usage = (float)$usage;
     if ( $usage > 60 ) {
         $usage = $usage / 60;
         if ( $usage > 24 ) {
@@ -203,6 +204,7 @@ function humanize_time($usage) {
 }
 
 function humanize_usage_size($usage) {
+    $usage = (float)$usage;
     if ( $usage > 1024 ) {
         $usage = $usage / 1024;
         if ( $usage > 1024 ) {
@@ -222,6 +224,7 @@ function humanize_usage_size($usage) {
 }
 
 function humanize_usage_measure($usage) {
+    $usage = (float)$usage;
     $measure = 'kb';
 
     if ( $usage > 1024 ) {
@@ -245,8 +248,8 @@ function humanize_usage_measure($usage) {
 
 
 function get_percentage($used,$total) {
-    if (!isset($total)) $total =  0;
-    if (!isset($used)) $used =  0;
+    $total = isset($total) ? (float)$total : 0;
+    $used = isset($used) ? (float)$used : 0;
     if ( $total == 0 ) {
         $percent = 0;
     } else {
@@ -319,11 +322,11 @@ function list_timezones() {
     foreach($timezone_offsets as $timezone => $offset){
         $offset_prefix = $offset < 0 ? '-' : '+';
         $offset_formatted = gmdate( 'H:i', abs($offset) );
-        $pretty_offset = "UTC${offset_prefix}${offset_formatted}";
+        $pretty_offset = "UTC{$offset_prefix}{$offset_formatted}";
         $t = new DateTimeZone($timezone);
         $c = new DateTime(null, $t);
         $current_time = $c->format('H:i:s');
-        $timezone_list[$timezone] = "$timezone [ $current_time ] ${pretty_offset}";
+        $timezone_list[$timezone] = "{$timezone} [ {$current_time} ] {$pretty_offset}";
     }
     return $timezone_list;
 }

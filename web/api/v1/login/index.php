@@ -1,4 +1,5 @@
 <?php
+error_reporting(0);
 
 define('NO_AUTH_REQUIRED',true);
 header('Content-Type: application/json');
@@ -60,8 +61,8 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
             } else {
                 $user = $_POST['user'];
                 $password = $_POST['password'];
-                $salt = $pam[$user]['SALT'];
-                $method = $pam[$user]['METHOD'];
+                $salt = $pam[$user]['SALT'] ?? null;
+                $method = $pam[$user]['METHOD'] ?? null;
 
                 if ($method == 'md5' ) {
                     $hash = crypt($password, '$1$'.$salt.'$');
