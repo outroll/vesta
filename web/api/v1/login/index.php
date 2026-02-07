@@ -38,6 +38,7 @@ if (isset($_SESSION['user'])) {
 // Initialize variables
 $users = null;
 $error = null;
+if (!isset($_SESSION['language'])) $_SESSION['language'] = 'en';
 
 // Basic auth
 if (isset($_POST['user']) && isset($_POST['password'])) {
@@ -139,12 +140,12 @@ if (empty($_SESSION['language'])) {
     $output = '';
     exec (VESTA_CMD."v-list-sys-config json", $output, $return_var);
     $config = json_decode(implode('', $output), true);
-    $lang = $config['config']['LANGUAGE'];
+    $lang = $config['config']['LANGUAGE'] ?? 'en';
 
     $output = '';
     exec (VESTA_CMD."v-list-sys-languages json", $output, $return_var);
     $languages = json_decode(implode('', $output), true);
-    if(in_array($lang, $languages)){
+    if(is_array($languages) && in_array($lang, $languages)){
         $_SESSION['language'] = $lang;
     }
     else {

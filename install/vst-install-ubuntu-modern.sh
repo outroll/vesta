@@ -718,6 +718,12 @@ if [ -d "$REPO_DIR/install/ubuntu/$release" ]; then
         cp -f $REPO_DIR/install/ubuntu/$release/sudo/admin /etc/sudoers.d/
         chmod 440 /etc/sudoers.d/admin
     fi
+
+    # Allow www-data to run vesta commands (for web interface)
+    echo "Configuring sudo for web interface..."
+    echo "www-data ALL=(ALL) NOPASSWD: /usr/local/vesta/bin/*" > /etc/sudoers.d/vesta-www
+    echo 'Defaults env_keep += "VESTA"' >> /etc/sudoers.d/vesta-www
+    chmod 440 /etc/sudoers.d/vesta-www
 fi
 
 #----------------------------------------------------------#
