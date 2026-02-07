@@ -179,9 +179,9 @@ if (isset($_SESSION['user'])) {
 $result = array(
     'token' => $_SESSION['token'] ?? '',
     'panel' => $panel ?? [],
-    'data' => (isset($users) && is_array($users) && isset($users[$v_user])) ? $users[$v_user] : null,
+    'data' => (isset($users) && is_array($users) && isset($users[$v_user])) ? $users[$v_user] : (object)[],
     'user' => $v_user,
-    'session' => $_SESSION,
+    'session' => $_SESSION ?? [],
     'i18n' => isset($LANG[$_SESSION['language']]) ? $LANG[$_SESSION['language']] : [],
     'error' => $error ?? null,
 );
