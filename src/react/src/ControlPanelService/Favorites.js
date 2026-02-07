@@ -1,4 +1,6 @@
 import axios from "axios";
+import { getAuthToken } from "src/utils/token";
+
 let addFavoriteUri = '/api/v1/add/favorite/index.php';
 let deleteFavoriteUri = '/api/v1/delete/favorite/index.php';
 let BASE_URL = window.location.origin;
@@ -8,7 +10,8 @@ export const addFavorite = (unitId, section) => {
   return axios.get(BASE_URL + addFavoriteUri, {
     params: {
       'v_unit_id': unitId,
-      'v_section': section
+      'v_section': section,
+      'token': getAuthToken()
     }
   });
 }
@@ -17,7 +20,8 @@ export const deleteFavorite = (unitId, section) => {
   return axios.get(BASE_URL + deleteFavoriteUri, {
     params: {
       'v_unit_id': unitId,
-      'v_section': section
+      'v_section': section,
+      'token': getAuthToken()
     }
   });
 }
