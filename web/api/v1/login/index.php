@@ -162,8 +162,10 @@ if (empty($_SESSION['token'])) {
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n/'.$_SESSION['language'].'.php');
 
-$v_user = empty($_SESSION['look']) ? ($_SESSION['user'] ?? 'admin') : $_SESSION['look'];
+// Only set v_user if actually logged in
+$v_user = null;
 if (isset($_SESSION['user'])) {
+    $v_user = empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'];
     top_panel($v_user, $TAB);
 
     // Only process panel data if user is logged in
@@ -178,11 +180,11 @@ if (isset($_SESSION['user'])) {
 
 $result = array(
     'token' => $_SESSION['token'] ?? '',
-    'panel' => $panel ?? [],
-    'data' => (isset($users) && is_array($users) && isset($users[$v_user])) ? $users[$v_user] : (object)[],
+    'panel' => $panel ?? (object)[],
+    'data' => (isset($users) && is_array($users) && $v_user && isset($users[$v_user])) ? $users[$v_user] : (object)[],
     'user' => $v_user,
-    'session' => $_SESSION ?? [],
-    'i18n' => isset($LANG[$_SESSION['language']]) ? $LANG[$_SESSION['language']] : [],
+    'session' => $_SESSION ?? (object)[],
+    'i18n' => isset($LANG[$_SESSION['language']]) ? $LANG[$_SESSION['language']] : (object)[],
     'error' => $error ?? null,
 );
 
