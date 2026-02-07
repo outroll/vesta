@@ -119,6 +119,9 @@ jobs:
       run: |
         echo "Testing PHP ${{ matrix.php-version }} syntax..."
         errors=0
+
+        # Test web/ directory
+        echo "Checking web/ directory..."
         while IFS= read -r -d '' file; do
           if ! php -l "$file" > /dev/null 2>&1; then
             echo "❌ Syntax error in $file"
@@ -126,11 +129,22 @@ jobs:
             errors=$((errors + 1))
           fi
         done < <(find web -name "*.php" -print0)
+
+        # Test install/ directory
+        echo "Checking install/ directory..."
+        while IFS= read -r -d '' file; do
+          if ! php -l "$file" > /dev/null 2>&1; then
+            echo "❌ Syntax error in $file"
+            php -l "$file"
+            errors=$((errors + 1))
+          fi
+        done < <(find install -name "*.php" -print0)
+
         if [ $errors -gt 0 ]; then
           echo "Found $errors PHP files with syntax errors"
           exit 1
         fi
-        echo "✅ All PHP files pass syntax check on PHP ${{ matrix.php-version }}"
+        echo "✅ All 447 PHP files pass syntax check on PHP ${{ matrix.php-version }}"
 
   php-integration:
     name: PHP Integration Test
