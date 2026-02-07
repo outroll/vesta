@@ -27,6 +27,8 @@ if (($_SESSION['user'] == 'admin') && (!empty($_GET['user']))) {
 exec (VESTA_CMD."v-list-user ".escapeshellarg($v_username)." json", $output, $return_var);
 check_return_code($return_var,$output);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
+if (!isset($data[$v_username])) $data[$v_username] = array();
 unset($output);
 
 // Parse user
@@ -60,16 +62,19 @@ $v_date = $data[$v_username]['DATE'];
 // List packages
 exec (VESTA_CMD."v-list-user-packages json", $output, $return_var);
 $packages = json_decode(implode('', $output), true);
+if (!is_array($packages)) $packages = array();
 unset($output);
 
 // List languages
 exec (VESTA_CMD."v-list-sys-languages json", $output, $return_var);
 $languages = json_decode(implode('', $output), true);
+if (!is_array($languages)) $languages = array();
 unset($output);
 
 // List shells
 exec (VESTA_CMD."v-list-sys-shells json", $output, $return_var);
 $shells = json_decode(implode('', $output), true);
+if (!is_array($shells)) $shells = array();
 unset($output);
 
 // Are you admin?
@@ -185,27 +190,27 @@ if (!empty($_POST['save'])) {
 
 $result = array(
 	'password' => '',
-	'email' => $data[$v_username]['CONTACT'],
-	'package' => $data[$v_username]['PACKAGE'],
-	'language' => $data[$v_username]['LANGUAGE'],
-	'fname' => $data[$v_username]['FNAME'],
-	'lname' => $data[$v_username]['LNAME'],
-	'shell' => $data[$v_username]['SHELL'],
-	'nameservers' => $nameservers,
-	'ns1' => $nameservers[0],
-	'ns2' => $nameservers[1],
-	'ns3' => $nameservers[2],
-	'ns4' => $nameservers[3],
-	'ns5' => $nameservers[4],
-	'ns6' => $nameservers[5],
-	'ns7' => $nameservers[6],
-	'ns8' => $nameservers[7],
-	'suspended' => $data[$v_username]['SUSPENDED'],
-	'status' => $v_status,
-	'time' => $data[$v_username]['TIME'],
-	'date' => $data[$v_username]['DATE'],
-    'error_msg' => $_SESSION['error_msg'],
-    'ok_msg' => $_SESSION['ok_msg'],
+	'email' => $data[$v_username]['CONTACT'] ?? '',
+	'package' => $data[$v_username]['PACKAGE'] ?? '',
+	'language' => $data[$v_username]['LANGUAGE'] ?? 'en',
+	'fname' => $data[$v_username]['FNAME'] ?? '',
+	'lname' => $data[$v_username]['LNAME'] ?? '',
+	'shell' => $data[$v_username]['SHELL'] ?? '',
+	'nameservers' => $nameservers ?? [],
+	'ns1' => $nameservers[0] ?? '',
+	'ns2' => $nameservers[1] ?? '',
+	'ns3' => $nameservers[2] ?? '',
+	'ns4' => $nameservers[3] ?? '',
+	'ns5' => $nameservers[4] ?? '',
+	'ns6' => $nameservers[5] ?? '',
+	'ns7' => $nameservers[6] ?? '',
+	'ns8' => $nameservers[7] ?? '',
+	'suspended' => $data[$v_username]['SUSPENDED'] ?? 'no',
+	'status' => $v_status ?? 'active',
+	'time' => $data[$v_username]['TIME'] ?? '',
+	'date' => $data[$v_username]['DATE'] ?? '',
+    'error_msg' => $_SESSION['error_msg'] ?? null,
+    'ok_msg' => $_SESSION['ok_msg'] ?? null,
     'packages' => $packages,
     'languages' => $languages,
     'shells' => $shells

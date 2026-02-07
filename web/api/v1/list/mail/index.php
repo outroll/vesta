@@ -1,4 +1,4 @@
-<?
+<?php
 error_reporting(0);
 $TAB = 'MAIL';
 header("Content-Type: application/json");
@@ -10,19 +10,21 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 if (empty($_GET['domain'])){
     exec (VESTA_CMD."v-list-mail-domains $user json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data, true);
     unset($output);
 
-    $favorites = $_SESSION['favourites']['MAIL'];
+    $favorites = $_SESSION['favourites']['MAIL'] ?? [];
 
     // render_page($user, $TAB, 'list_mail');
 } else {
     exec (VESTA_CMD."v-list-mail-accounts ".$user." ".escapeshellarg($_GET['domain'])." json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data, true);
     unset($output);
 
-    $favorites = $_SESSION['favourites']['MAIL_ACC'];
+    $favorites = $_SESSION['favourites']['MAIL_ACC'] ?? [];
 
     // render_page($user, $TAB, 'list_mail_acc');
 }
@@ -83,10 +85,10 @@ $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 $object = (object)[];
 $object->data = $data;
 $object->user = $user;
-$object->panel = $panel;
-$object->webmail = $webmail;
+$object->panel = $panel ?? [];
+$object->webmail = $webmail ?? '/webmail/';
 $object->hostname = $hostname;
-$object->totalAmount = $total_amount;
-$object->mailFav = $favorites;
+$object->totalAmount = $total_amount ?? __('0 domains');
+$object->mailFav = $favorites ?? [];
 
 print json_encode($object);

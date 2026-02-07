@@ -10,6 +10,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 // Data
 exec (VESTA_CMD."v-list-databases $user json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 $data = array_reverse($data, true);
 unset($output);
 
@@ -71,13 +72,13 @@ foreach ($data as $key => $value) {
 $object = (object)[];
 $object->data = $data;
 $object->user = $user;
-$object->panel = $panel;
-$object->db_admin = $db_admin;
-$object->db_admin_link = $db_admin_link;
-$object->db_myadmin_link = $db_myadmin_link;
-$object->db_pgadmin_link = $db_pgadmin_link;
-$object->totalAmount = $total_amount;
-$object->databases = $databases;
-$object->dbFav = $_SESSION['favourites']['DB'];
+$object->panel = $panel ?? [];
+$object->db_admin = $db_admin ?? '';
+$object->db_admin_link = $db_admin_link ?? '';
+$object->db_myadmin_link = $db_myadmin_link ?? '';
+$object->db_pgadmin_link = $db_pgadmin_link ?? '';
+$object->totalAmount = $total_amount ?? __('0 databases');
+$object->databases = $databases ?? [];
+$object->dbFav = $_SESSION['favourites']['DB'] ?? [];
 
 print json_encode($object);

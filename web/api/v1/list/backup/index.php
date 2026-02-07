@@ -11,6 +11,7 @@ top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB
 if (empty($_GET['backup'])){
   exec (VESTA_CMD."v-list-user-backups $user json", $output, $return_var);
   $data = json_decode(implode('', $output), true);
+  if (!is_array($data)) $data = array();
   $data = array_reverse($data,true);
   unset($output);
 
@@ -18,6 +19,7 @@ if (empty($_GET['backup'])){
 } else {
   exec (VESTA_CMD."v-list-user-backup $user ".escapeshellarg($_GET['backup'])." json", $output, $return_var);
   $data = json_decode(implode('', $output), true);
+  if (!is_array($data)) $data = array();
   $data = array_reverse($data,true);
   unset($output);
 
@@ -70,8 +72,8 @@ $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 $object = (object)[];
 $object->data = $data;
 $object->user = $user;
-$object->panel = $panel;
-$object->totalAmount = $total_amount;
-$object->backup_fav = $_SESSION['favourites']['BACKUP'];
+$object->panel = $panel ?? [];
+$object->totalAmount = $total_amount ?? __('0 archives');
+$object->backup_fav = $_SESSION['favourites']['BACKUP'] ?? [];
 
 print json_encode($object);

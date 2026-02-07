@@ -14,6 +14,7 @@ error_reporting(0);
 
 
     $data = json_decode(implode('', $output).'}', true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data,true);
 
     print_r($data);

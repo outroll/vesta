@@ -13,6 +13,7 @@ if ($user == 'admin') {
     exec (VESTA_CMD . "v-list-user ".$user." json", $output, $return_var);
 }
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 $data = array_reverse($data,true);
 // Render page
 top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
@@ -68,10 +69,10 @@ foreach ($data as $key => $value) {
 $result = array(
   'data' => $data,
   'user' => $user,
-  'panel' => $panel,
-  'token' => $_SESSION['token'],
-  'totalAmount' => $total_amount,
-  'userFav' => $_SESSION['favourites']['USER'],
+  'panel' => $panel ?? [],
+  'token' => $_SESSION['token'] ?? '',
+  'totalAmount' => $total_amount ?? __('0 accounts'),
+  'userFav' => $_SESSION['favourites']['USER'] ?? [],
 );
 
 echo json_encode($result);

@@ -101,16 +101,22 @@ function get_favourites(){
     exec (VESTA_CMD."v-list-user-favourites ".$_SESSION['user']." json", $output, $return_var);
 //    $data = json_decode(implode('', $output).'}', true);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) {
+        $_SESSION['favourites'] = array();
+        return;
+    }
     $data = array_reverse($data,true);
     $favourites = array();
 
-    foreach($data['Favourites'] as $key => $favourite){
-        $favourites[$key] = array();
+    if (isset($data['Favourites']) && is_array($data['Favourites'])) {
+        foreach($data['Favourites'] as $key => $favourite){
+            $favourites[$key] = array();
 
-        $items = explode(',', $favourite);
-        foreach($items as $item){
-            if($item)
-                $favourites[$key][trim($item)] = 1;
+            $items = explode(',', $favourite);
+            foreach($items as $item){
+                if($item)
+                    $favourites[$key][trim($item)] = 1;
+            }
         }
     }
 
@@ -142,6 +148,7 @@ function top_panel($user, $TAB) {
         exit;
     }
     $panel = json_decode(implode('', $output), true);
+    if (!is_array($panel)) $panel = array();
     unset($output);
 
 
@@ -149,10 +156,12 @@ function top_panel($user, $TAB) {
     $command = VESTA_CMD."v-list-user-notifications '".$user."' 'json'";
     exec ($command, $output, $return_var);
     $notifications = json_decode(implode('', $output), true);
-    foreach($notifications as $message){
-        if($message['ACK'] == 'no'){
-            $panel[$user]['NOTIFICATIONS'] = 'yes';
-            break;
+    if (is_array($notifications)) {
+        foreach($notifications as $message){
+            if(isset($message['ACK']) && $message['ACK'] == 'no'){
+                $panel[$user]['NOTIFICATIONS'] = 'yes';
+                break;
+            }
         }
     }
     unset($output);

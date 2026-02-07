@@ -11,6 +11,7 @@ top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB
 if (empty($_GET['domain'])){
     exec (VESTA_CMD."v-list-dns-domains $user json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data, true);
     unset($output);
 
@@ -18,6 +19,7 @@ if (empty($_GET['domain'])){
 } else {
     exec (VESTA_CMD."v-list-dns-records ".$user." ".escapeshellarg($_GET['domain'])." json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data, true);
     unset($output);
 
@@ -64,9 +66,9 @@ $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 $object = (object)[];
 $object->data = $data;
 $object->user = $user;
-$object->panel = $panel;
-$object->totalAmount = $total_amount;
-$object->dnsFav = $_SESSION['favourites']['DNS'];
-$object->dnsRecordsFav = $_SESSION['favourites']['DNS_REC'];
+$object->panel = $panel ?? [];
+$object->totalAmount = $total_amount ?? __('0 domains');
+$object->dnsFav = $_SESSION['favourites']['DNS'] ?? [];
+$object->dnsRecordsFav = $_SESSION['favourites']['DNS_REC'] ?? [];
 
 print json_encode($object);

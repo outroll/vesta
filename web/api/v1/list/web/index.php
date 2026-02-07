@@ -10,6 +10,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 // Data
 exec (VESTA_CMD."v-list-web-domains $user json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 $data = array_reverse($data,true);
 $ips = json_decode(shell_exec(VESTA_CMD.'v-list-sys-ips json'), true);
 
@@ -104,9 +105,9 @@ foreach ($data as $key => $value) {
 $object = (object)[];
 $object->data = $data;
 $object->user = $user;
-$object->panel = $panel;
-$object->totalAmount = $total_amount;
-$object->webFav = $_SESSION['favourites']['WEB'];
+$object->panel = $panel ?? [];
+$object->totalAmount = $total_amount ?? __('0 domains');
+$object->webFav = $_SESSION['favourites']['WEB'] ?? [];
 
 print json_encode($object);
 ?>
