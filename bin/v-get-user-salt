@@ -79,10 +79,16 @@ if echo "$shadow" | grep -qE '^\$[0-9a-z]+\$[^\$]+\$'
 then
     salt=$(echo "$shadow" |cut -f 3 -d \$)
     method=$(echo "$shadow" |cut -f 2 -d \$)
-    if [ "$method" -eq '1' ]; then
+    if [ "$method" = '1' ]; then
         method='md5'
-    elif [ "$method" -eq '6' ]; then
+    elif [ "$method" = '6' ]; then
         method='sha-512'
+    elif [ "$method" = 'y' ]; then
+        # Yescrypt is not supported by PHP crypt()
+        # System should be configured to use sha-512 instead
+        echo "Error: yescrypt not supported, please use sha-512"
+        echo "$date $time $user $ip failed to login (yescrypt not supported)" >> $VESTA/log/auth.log
+        exit 9
     else
         echo "Error: password missmatch"
         echo "$date $time $user $ip failed to login" >> $VESTA/log/auth.log
