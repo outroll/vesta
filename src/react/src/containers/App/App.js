@@ -68,16 +68,21 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!Object.entries(session.i18n).length) {
+    // Only run auth check once on mount, not on every session change
+    if (!Object.entries(session.i18n || {}).length) {
       dispatch(checkAuthHandler())
         .then(token => {
           setLoading(false);
         }, (error) => {
           console.error(error);
+          setLoading(false);
           return navigate('/login');
         });
+    } else {
+      setLoading(false);
     }
-  }, [dispatch, navigate, session]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="App">

@@ -26,8 +26,15 @@ const MainNav = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!userName || !user || !session || !Object.entries(user).length || !Object.entries(session).length) {
+    // Only redirect if we have confirmed the user is not logged in
+    // (user and session are explicitly empty objects, not just unloaded)
+    if (!userName) {
       return navigate('/login');
+    }
+
+    // Don't redirect if data is still loading (user/session undefined or not objects)
+    if (!user || !session || typeof user !== 'object' || typeof session !== 'object') {
+      return;
     }
 
     if (session.look) {
