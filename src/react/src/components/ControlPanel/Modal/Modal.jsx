@@ -7,7 +7,7 @@ const Modal = ({ show, text, onSave, onCancel, showSaveButton = true, showCancel
 
   return (
     <div>
-      <div className={`modal fade ${show ? 'show' : ''}`} id="c-panel-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: show ? 'block' : 'none' }}>
+      <div className={`modal fade ${show ? 'show' : ''}`} id="c-panel-modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden={!show} style={{ display: show ? 'block' : 'none' }}>
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">

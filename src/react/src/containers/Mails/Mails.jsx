@@ -18,7 +18,6 @@ import './Mails.scss';
 import { useSelector, useDispatch } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import { Link } from 'react-router-dom';
 
 const Mails = props => {
   const { i18n } = useSelector(state => state.session);
@@ -395,13 +394,13 @@ const Mails = props => {
         <LeftButton name="Add Mail Domain" href="/add/mail" showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
-            {state.webmail && <Link
-              to={{ pathname: `http://${window.location.hostname}${state.webmail}` }}
+            {state.webmail && <a
+              href={`http://${window.location.hostname}${state.webmail}`}
               target="_blank"
-              className="button-extra"
-              type="submit">
+              rel="noopener noreferrer"
+              className="button-extra">
               {i18n['open webmail']}
-            </Link>}
+            </a>}
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />
             <Select list='mailList' bulkAction={bulk} />
             <DropdownFilter changeSorting={changeSorting} sorting={state.sorting} order={state.order} list="mailList" />
