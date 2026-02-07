@@ -112,16 +112,20 @@ if (!empty($_POST['ok'])) {
 exec (VESTA_CMD."v-list-user-packages json", $output, $return_var);
 check_error($return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 unset($output);
 
 // List languages
 exec (VESTA_CMD."v-list-sys-languages json", $output, $return_var);
 $languages = json_decode(implode('', $output), true);
+if (!is_array($languages)) $languages = array();
 unset($output);
 
 $result = array(
-  'error_msg' => $_SESSION['error_msg'],
-  'ok_msg' => $_SESSION['ok_msg']
+  'error_msg' => $_SESSION['error_msg'] ?? null,
+  'ok_msg' => $_SESSION['ok_msg'] ?? null,
+  'packages' => $data,
+  'languages' => $languages
 );
 
 echo json_encode($result);
