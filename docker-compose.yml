@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  vesta:
+    build: .
+    container_name: vesta-test
+    hostname: vesta.local
+    ports:
+      - "8083:8083"  # Vesta Control Panel
+      - "80:80"      # HTTP
+      - "443:443"    # HTTPS
+    volumes:
+      - ./:/opt/vesta-src:ro
+    privileged: true
+    stdin_open: true
+    tty: true
+    command: /bin/bash

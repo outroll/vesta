@@ -9,8 +9,11 @@
 #----------------------------------------------------------#
 export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
-RHOST='apt.vestacp.com'
-CHOST='c.vestacp.com'
+# Package sources - using GitHub releases instead of apt.vestacp.com
+GITHUB_REPO='Dennis-SEG/vesta'
+GITHUB_RELEASE='latest'
+RHOST='apt.vestacp.com'  # Fallback
+CHOST='c.vestacp.com'    # Fallback
 VERSION='ubuntu'
 VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
@@ -36,9 +39,11 @@ software="nginx apache2 apache2-suexec-custom apache2-utils
     php${php_version}-xml php${php_version}-zip php${php_version}-bcmath
     php${php_version}-soap php${php_version}-intl php${php_version}-imap
     postgresql postgresql-contrib proftpd-basic quota
-    roundcube-core roundcube-mysql roundcube-plugins rrdtool rssh spamassassin
-    sudo vesta vesta-ioncube vesta-nginx vesta-php vesta-softaculous
-    vim-common vsftpd webalizer whois zip net-tools software-properties-common"
+    roundcube-core roundcube-mysql roundcube-plugins rrdtool spamassassin
+    sudo vim-common vsftpd webalizer whois zip net-tools software-properties-common"
+
+# Vesta packages - downloaded from GitHub releases
+vesta_packages="vesta vesta-nginx vesta-php"
 
 # Defining help function
 help() {
@@ -335,11 +340,23 @@ curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --batch --yes --dearmo
 echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu $codename nginx" > /etc/apt/sources.list.d/nginx.list
 check_result $? 'Failed to add Nginx repository'
 
-# Add Vesta repository
-echo "Adding Vesta repository..."
-wget -qO - https://c.vestacp.com/deb_signing.key | gpg --batch --yes --dearmor -o /usr/share/keyrings/vesta-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/vesta-keyring.gpg] https://apt.vestacp.com/$codename/ $codename vesta" > /etc/apt/sources.list.d/vesta.list
-check_result $? 'Failed to add Vesta repository'
+# Download Vesta packages from GitHub releases
+echo "Downloading Vesta packages from GitHub..."
+mkdir -p /tmp/vesta-packages
+cd /tmp/vesta-packages
+
+# Get latest release URL from GitHub
+VESTA_VERSION=$(curl -s https://api.github.com/repos/${GITHUB_REPO}/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/' | sed 's/^v//')
+if [ -z "$VESTA_VERSION" ]; then
+    VESTA_VERSION="2.0.0"
+fi
+
+echo "Downloading Vesta version $VESTA_VERSION..."
+for pkg in vesta vesta-nginx vesta-php; do
+    wget -q "https://github.com/${GITHUB_REPO}/releases/download/v${VESTA_VERSION}/${pkg}_${VESTA_VERSION}_all.deb" -O "${pkg}.deb" 2>/dev/null || \
+    echo "Warning: Could not download ${pkg}, will try to install from source"
+done
+cd -
 
 # Update package lists
 echo "Updating package lists..."
