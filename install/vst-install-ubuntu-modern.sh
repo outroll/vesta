@@ -1126,6 +1126,37 @@ apt-get -y autoremove
 apt-get clean
 
 #----------------------------------------------------------#
+#                  Configure Cron Jobs                     #
+#----------------------------------------------------------#
+
+echo "Configuring scheduled tasks..."
+
+# Add system cron jobs for Vesta maintenance
+command="sudo $VESTA/bin/v-update-sys-queue disk"
+$VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-sys-queue traffic"
+$VESTA/bin/v-add-cron-job 'admin' '10' '00' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-sys-queue webstats"
+$VESTA/bin/v-add-cron-job 'admin' '30' '03' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-sys-queue backup"
+$VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-backup-users"
+$VESTA/bin/v-add-cron-job 'admin' '10' '05' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-user-stats"
+$VESTA/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-sys-rrd"
+$VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-letsencrypt-ssl"
+$VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+
+# Restart cron to apply changes
+systemctl restart cron
+
+# Generate initial RRD statistics
+echo "Generating initial statistics..."
+$VESTA/bin/v-update-sys-rrd
+
+#----------------------------------------------------------#
 #                  Installation Complete                   #
 #----------------------------------------------------------#
 
