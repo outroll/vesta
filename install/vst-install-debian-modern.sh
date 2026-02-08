@@ -339,6 +339,11 @@ echo "Installing Vesta Control Panel core..."
 
 # Create Vesta admin user with proper home directory
 if [ -z "$(grep ^admin: /etc/passwd)" ]; then
+    # Remove stale admin group if it exists without user
+    if grep -q ^admin: /etc/group && ! grep -q ^admin: /etc/passwd; then
+        groupdel admin 2>/dev/null || true
+    fi
+
     /usr/sbin/useradd admin -s /bin/bash -c "$email" -m -d /home/admin
 
     # Setup admin home directories for web hosting
@@ -423,6 +428,15 @@ if [ "$nginx" = 'yes' ]; then
     echo "Configuring Nginx as frontend..."
     rm -f /etc/nginx/sites-enabled/default
     rm -f /etc/nginx/conf.d/default.conf
+
+    # Add bytes log format for Vesta traffic tracking
+    if ! grep -q 'log_format bytes' /etc/nginx/nginx.conf; then
+        line=$(grep -n "http {" /etc/nginx/nginx.conf | cut -d: -f1)
+        if [ -n "$line" ]; then
+            nextline=$((line + 1))
+            sed -i "${nextline}i\\    log_format bytes \"\\\$body_bytes_sent\";" /etc/nginx/nginx.conf
+        fi
+    fi
 fi
 
 #----------------------------------------------------------#
