@@ -326,7 +326,7 @@ check_result $? 'apt-get upgrade failed'
 
 # Install basic tools
 echo "Installing basic tools..."
-apt-get -y install curl wget gnupg2 ca-certificates lsb-release apt-transport-https software-properties-common
+apt-get -y install curl wget gnupg2 ca-certificates lsb-release apt-transport-https software-properties-common git
 check_result $? 'Failed to install basic tools'
 
 # Add PHP repository (ondrej PPA)
@@ -591,7 +591,18 @@ chown admin:admin $VESTA/data/users/admin
 
 # Install Vesta from source (apt packages not available for Ubuntu 24.04)
 echo "Installing Vesta from source repository..."
-REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Determine repository location
+REPO_DIR="$(cd "$(dirname "$0")/.." 2>/dev/null && pwd)"
+
+# Check if we have a valid repository (bin directory should exist)
+if [ ! -d "$REPO_DIR/bin" ]; then
+    echo "Repository not found locally, cloning from GitHub..."
+    REPO_DIR="/tmp/vesta-repo"
+    rm -rf $REPO_DIR
+    git clone --depth 1 https://github.com/Dennis-SEG/vesta.git $REPO_DIR
+    check_result $? 'Failed to clone Vesta repository'
+fi
 
 # Copy binaries
 echo "Copying Vesta binaries..."

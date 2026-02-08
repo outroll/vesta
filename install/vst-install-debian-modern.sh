@@ -384,9 +384,47 @@ mkdir -p \
 touch $VESTA/log/auth.log
 chmod 640 $VESTA/log/auth.log
 
-# Download and install Vesta packages
-apt-get -y install vesta vesta-nginx vesta-php
-check_result $? 'Failed to install Vesta packages'
+# Install Vesta from source (official apt packages may not support modern Debian)
+echo "Installing Vesta from source repository..."
+
+# Determine repository location
+REPO_DIR="$(cd "$(dirname "$0")/.." 2>/dev/null && pwd)"
+
+# Check if we have a valid repository (bin directory should exist)
+if [ ! -d "$REPO_DIR/bin" ]; then
+    echo "Repository not found locally, cloning from GitHub..."
+    REPO_DIR="/tmp/vesta-repo"
+    rm -rf $REPO_DIR
+    git clone --depth 1 https://github.com/Dennis-SEG/vesta.git $REPO_DIR
+    check_result $? 'Failed to clone Vesta repository'
+fi
+
+# Create bin directory
+mkdir -p $VESTA/bin
+
+# Copy binaries
+echo "Copying Vesta binaries..."
+cp -rf $REPO_DIR/bin/* $VESTA/bin/
+chmod +x $VESTA/bin/*
+
+# Copy web files
+echo "Copying web interface..."
+cp -rf $REPO_DIR/web/* $VESTA/web/
+
+# Fix mail-wrapper.php shebang to use system PHP
+if [ -f "$VESTA/web/inc/mail-wrapper.php" ]; then
+    sed -i '1s|.*|#!/usr/bin/php|' $VESTA/web/inc/mail-wrapper.php
+fi
+
+# Copy other core files
+echo "Copying configuration files..."
+[ -d "$REPO_DIR/func" ] && cp -rf $REPO_DIR/func $VESTA/
+[ -d "$REPO_DIR/data" ] && cp -rf $REPO_DIR/data/* $VESTA/data/ 2>/dev/null || true
+
+# Copy install directory for templates
+cp -rf $REPO_DIR/install $VESTA/
+
+echo "Vesta core files installed successfully"
 
 # Copy configuration templates from our modern configs
 if [ -d "$VESTA/install/debian/$release" ]; then

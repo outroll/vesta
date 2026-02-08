@@ -42,7 +42,7 @@ software="nginx httpd httpd-tools mod_ssl mod_fcgid mod_proxy_fcgi
     php-mbstring php-mysqlnd php-pdo php-pgsql php-soap php-xml
     php-xmlrpc postgresql postgresql-server proftpd quota
     roundcubemail rrdtool screen spamassassin sudo tar vim-common
-    vsftpd webalizer which zip unzip vesta vesta-nginx vesta-php"
+    vsftpd webalizer which zip unzip"
 
 # Help function
 help() {
@@ -165,9 +165,55 @@ mkdir -p \
     $VESTA/data/users \
     $VESTA/data/firewall
 
-# Download and install Vesta packages
-dnf -y install vesta vesta-nginx vesta-php
-check_result $? 'Failed to install Vesta packages'
+# Install Vesta from source (official rpm packages may not support modern RHEL/Rocky)
+echo "Installing Vesta from source repository..."
+
+# Determine repository location
+REPO_DIR="$(cd "$(dirname "$0")/.." 2>/dev/null && pwd)"
+
+# Check if we have a valid repository (bin directory should exist)
+if [ ! -d "$REPO_DIR/bin" ]; then
+    echo "Repository not found locally, cloning from GitHub..."
+    REPO_DIR="/tmp/vesta-repo"
+    rm -rf $REPO_DIR
+    git clone --depth 1 https://github.com/Dennis-SEG/vesta.git $REPO_DIR
+    check_result $? 'Failed to clone Vesta repository'
+fi
+
+# Create bin directory
+mkdir -p $VESTA/bin $VESTA/web $VESTA/data/packages
+
+# Copy binaries
+echo "Copying Vesta binaries..."
+cp -rf $REPO_DIR/bin/* $VESTA/bin/
+chmod +x $VESTA/bin/*
+
+# Copy web files
+echo "Copying web interface..."
+cp -rf $REPO_DIR/web/* $VESTA/web/
+
+# Fix mail-wrapper.php shebang to use system PHP
+if [ -f "$VESTA/web/inc/mail-wrapper.php" ]; then
+    sed -i '1s|.*|#!/usr/bin/php|' $VESTA/web/inc/mail-wrapper.php
+fi
+
+# Copy other core files
+echo "Copying configuration files..."
+[ -d "$REPO_DIR/func" ] && cp -rf $REPO_DIR/func $VESTA/
+[ -d "$REPO_DIR/data" ] && cp -rf $REPO_DIR/data/* $VESTA/data/ 2>/dev/null || true
+
+# Copy install directory for templates
+cp -rf $REPO_DIR/install $VESTA/
+
+# Create auth.log for login tracking
+touch $VESTA/log/auth.log
+chmod 640 $VESTA/log/auth.log
+
+# Create RRD directory for statistics graphs
+mkdir -p $VESTA/web/rrd
+chown admin:admin $VESTA/web/rrd
+
+echo "Vesta core files installed successfully"
 
 #----------------------------------------------------------#
 #                  Configure Web Servers                   #
