@@ -692,6 +692,15 @@ if [ -d "$VESTA/install/debian/$release/packages" ]; then
     cp -rf $VESTA/install/debian/$release/packages/* $VESTA/data/packages/
 fi
 
+# Copy templates from install directory
+echo "Copying web and DNS templates..."
+mkdir -p $VESTA/data/templates
+if [ -d "$VESTA/install/debian/$release/templates" ]; then
+    cp -rf $VESTA/install/debian/$release/templates/* $VESTA/data/templates/
+elif [ -d "$VESTA/install/debian/12/templates" ]; then
+    cp -rf $VESTA/install/debian/12/templates/* $VESTA/data/templates/
+fi
+
 #----------------------------------------------------------#
 #                  Configure Cron Jobs                     #
 #----------------------------------------------------------#

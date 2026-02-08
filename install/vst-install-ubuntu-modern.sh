@@ -585,10 +585,19 @@ echo "Copying configuration files..."
 
 # Copy packages from install directory
 echo "Copying hosting packages..."
-if [ -d "$REPO_DIR/install/ubuntu/$VERSION/packages" ]; then
-    cp -rf $REPO_DIR/install/ubuntu/$VERSION/packages/* $VESTA/data/packages/
+if [ -d "$REPO_DIR/install/ubuntu/$release/packages" ]; then
+    cp -rf $REPO_DIR/install/ubuntu/$release/packages/* $VESTA/data/packages/
 elif [ -d "$REPO_DIR/install/ubuntu/22.04/packages" ]; then
     cp -rf $REPO_DIR/install/ubuntu/22.04/packages/* $VESTA/data/packages/
+fi
+
+# Copy templates from install directory
+echo "Copying web and DNS templates..."
+mkdir -p $VESTA/data/templates
+if [ -d "$REPO_DIR/install/ubuntu/$release/templates" ]; then
+    cp -rf $REPO_DIR/install/ubuntu/$release/templates/* $VESTA/data/templates/
+elif [ -d "$REPO_DIR/install/ubuntu/22.04/templates" ]; then
+    cp -rf $REPO_DIR/install/ubuntu/22.04/templates/* $VESTA/data/templates/
 fi
 
 # Create auth.log for login tracking

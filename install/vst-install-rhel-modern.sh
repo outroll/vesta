@@ -374,6 +374,15 @@ if [ -d "$VESTA/install/rhel/$release/packages" ]; then
     cp -rf $VESTA/install/rhel/$release/packages/* $VESTA/data/packages/
 fi
 
+# Copy templates from install directory
+echo "Copying web and DNS templates..."
+mkdir -p $VESTA/data/templates
+if [ -d "$VESTA/install/rhel/$release_major/templates" ]; then
+    cp -rf $VESTA/install/rhel/$release_major/templates/* $VESTA/data/templates/
+elif [ -d "$VESTA/install/rhel/9/templates" ]; then
+    cp -rf $VESTA/install/rhel/9/templates/* $VESTA/data/templates/
+fi
+
 #----------------------------------------------------------#
 #                  Configure Cron Jobs                     #
 #----------------------------------------------------------#
