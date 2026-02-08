@@ -307,6 +307,18 @@ apt-get -y install \
     rrdtool rssh sudo vim-common webalizer whois zip net-tools
 check_result $? 'Failed to install utilities'
 
+# Install Roundcube webmail
+echo "Installing Roundcube webmail..."
+debconf-set-selections <<< "roundcube-core roundcube/dbconfig-install boolean true"
+debconf-set-selections <<< "roundcube-core roundcube/database-type select mysql"
+DEBIAN_FRONTEND=noninteractive apt-get -y install roundcube roundcube-mysql roundcube-plugins || true
+
+# Install phpMyAdmin
+echo "Installing phpMyAdmin..."
+debconf-set-selections <<< "phpmyadmin phpmyadmin/dbconfig-install boolean true"
+debconf-set-selections <<< "phpmyadmin phpmyadmin/reconfigure-webserver multiselect none"
+DEBIAN_FRONTEND=noninteractive apt-get -y install phpmyadmin || true
+
 #----------------------------------------------------------#
 #                  Configure System                        #
 #----------------------------------------------------------#
@@ -716,6 +728,19 @@ echo "Creating system directories..."
 mkdir -p /var/log/apache2/domains
 mkdir -p /etc/apache2/conf.d
 touch /etc/apache2/conf.d/vesta.conf
+
+# Setup Roundcube webmail symlink
+if [ -d "/usr/share/roundcube" ]; then
+    ln -sf /usr/share/roundcube $VESTA/web/webmail
+    if [ -f "/etc/roundcube/config.inc.php" ]; then
+        sed -i "s/\$config\['default_host'\].*/\$config['default_host'] = 'localhost';/" /etc/roundcube/config.inc.php
+    fi
+fi
+
+# Setup phpMyAdmin symlink
+if [ -d "/usr/share/phpmyadmin" ]; then
+    ln -sf /usr/share/phpmyadmin $VESTA/web/phpmyadmin
+fi
 
 # Set proper permissions
 chmod 750 $VESTA/data/users/admin
