@@ -583,6 +583,18 @@ echo "Copying configuration files..."
 [ -d "$REPO_DIR/data" ] && cp -rf $REPO_DIR/data/* $VESTA/data/ 2>/dev/null || true
 [ -d "$REPO_DIR/conf" ] && cp -rf $REPO_DIR/conf $VESTA/ 2>/dev/null || true
 
+# Copy packages from install directory
+echo "Copying hosting packages..."
+if [ -d "$REPO_DIR/install/ubuntu/$VERSION/packages" ]; then
+    cp -rf $REPO_DIR/install/ubuntu/$VERSION/packages/* $VESTA/data/packages/
+elif [ -d "$REPO_DIR/install/ubuntu/22.04/packages" ]; then
+    cp -rf $REPO_DIR/install/ubuntu/22.04/packages/* $VESTA/data/packages/
+fi
+
+# Create auth.log for login tracking
+touch $VESTA/log/auth.log
+chmod 640 $VESTA/log/auth.log
+
 echo "Vesta core files installed successfully"
 
 #----------------------------------------------------------#

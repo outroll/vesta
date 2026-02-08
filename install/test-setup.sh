@@ -53,6 +53,7 @@ chmod +x /usr/local/vesta/bin/*
 
 # Create required directories
 echo "Creating required directories..."
+mkdir -p /usr/local/vesta/conf
 mkdir -p /usr/local/vesta/log
 mkdir -p /usr/local/vesta/data/users/admin/conf
 mkdir -p /usr/local/vesta/data/packages
