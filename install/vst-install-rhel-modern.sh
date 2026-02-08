@@ -136,9 +136,18 @@ fi
 
 echo "Installing Vesta Control Panel core..."
 
-# Create Vesta user
+# Create Vesta admin user with proper home directory
 if [ -z "$(grep ^admin: /etc/passwd)" ]; then
-    useradd -c "Vesta Control Panel" -d "$VESTA" -r -s /bin/bash admin
+    /usr/sbin/useradd admin -s /bin/bash -c "$email" -m -d /home/admin
+
+    # Setup admin home directories for web hosting
+    mkdir -p /home/admin/conf/web /home/admin/conf/mail /home/admin/conf/dns
+    mkdir -p /home/admin/web /home/admin/mail /home/admin/tmp
+    chmod 751 /home/admin/conf/web /home/admin/conf/mail /home/admin/conf/dns
+    chmod 751 /home/admin/mail
+    chmod 700 /home/admin/tmp
+    chmod a+x /home/admin
+    chown -R admin:admin /home/admin
 fi
 
 # Create directory structure
@@ -364,10 +373,22 @@ systemctl start vesta
 #                  Final Configuration                     #
 #----------------------------------------------------------#
 
+# Create necessary system directories
+echo "Creating system directories..."
+mkdir -p /var/log/httpd/domains
+mkdir -p /etc/httpd/conf.d
+touch /etc/httpd/conf.d/vesta.conf
+
 # Set proper permissions
 chmod 750 $VESTA/data/users/admin
 chown -R admin:admin $VESTA/data/users/admin
 chown admin:admin $VESTA/web/rrd
+
+# Add system IP address
+echo "Adding system IP address..."
+server_ip=$(hostname -I | awk '{print $1}')
+server_iface=$(ip route | grep default | awk '{print $5}')
+$VESTA/bin/v-add-sys-ip "$server_ip" 255.255.255.0 "$server_iface" admin shared 2>/dev/null || true
 
 # Copy hosting packages
 if [ -d "$VESTA/install/rhel/$release/packages" ]; then
