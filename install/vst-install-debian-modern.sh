@@ -468,6 +468,12 @@ if [ "$mysql" = 'yes' ]; then
     chmod 600 /root/.my.cnf
 
     echo "MariaDB root password: $mpass" >> $tmpfile
+
+    # Create Vesta MySQL host configuration
+    cat > $VESTA/conf/mysql.conf << MYSQLCONF
+HOST='localhost' USER='root' PASSWORD='$mpass' CHARSETS='UTF8,LATIN1,WIN1250,WIN1251,WIN1252,WIN1256,WIN1258,KOI8' MAX_DB='500' U_SYS_USERS='1' U_DB_BASES='0' TPL='default' SUSPENDED='no'
+MYSQLCONF
+    chmod 640 $VESTA/conf/mysql.conf
 fi
 
 #----------------------------------------------------------#
