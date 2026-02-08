@@ -171,9 +171,9 @@ echo "Installing Vesta from source repository..."
 # Determine repository location
 REPO_DIR="$(cd "$(dirname "$0")/.." 2>/dev/null && pwd)"
 
-# Check if we have a valid repository (bin directory should exist)
-if [ ! -d "$REPO_DIR/bin" ]; then
-    echo "Repository not found locally, cloning from GitHub..."
+# Check if we have a valid Vesta repository (look for vesta-specific files)
+if [ ! -f "$REPO_DIR/bin/v-add-user" ]; then
+    echo "Vesta repository not found locally, cloning from GitHub..."
     REPO_DIR="/tmp/vesta-repo"
     rm -rf $REPO_DIR
     git clone --depth 1 https://github.com/Dennis-SEG/vesta.git $REPO_DIR
