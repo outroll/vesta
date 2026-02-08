@@ -1177,12 +1177,24 @@ mkdir -p /var/log/apache2/domains
 mkdir -p /etc/apache2/conf.d
 touch /etc/apache2/conf.d/vesta.conf
 
-# Setup Roundcube webmail symlink
+# Setup Roundcube webmail symlink and database
 if [ -d "/usr/share/roundcube" ]; then
     ln -sf /usr/share/roundcube $VESTA/web/webmail
     # Configure roundcube to use vesta
     if [ -f "/etc/roundcube/config.inc.php" ]; then
         sed -i "s/\$config\['default_host'\].*/\$config['default_host'] = 'localhost';/" /etc/roundcube/config.inc.php
+    fi
+    # Fix roundcube database permissions
+    if [ -f "/etc/roundcube/debian-db.php" ]; then
+        rcpass=$(grep '^\$dbpass' /etc/roundcube/debian-db.php | cut -d\' -f2)
+        if [ -n "$rcpass" ]; then
+            mysql -e "CREATE DATABASE IF NOT EXISTS roundcube;"
+            mysql -e "DROP USER IF EXISTS 'roundcube'@'localhost';" 2>/dev/null
+            mysql -e "CREATE USER 'roundcube'@'localhost' IDENTIFIED BY '$rcpass';"
+            mysql -e "GRANT ALL PRIVILEGES ON roundcube.* TO 'roundcube'@'localhost';"
+            mysql -e "FLUSH PRIVILEGES;"
+            mysql roundcube < /usr/share/roundcube/SQL/mysql.initial.sql 2>/dev/null || true
+        fi
     fi
 fi
 
