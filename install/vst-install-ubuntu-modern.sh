@@ -1119,6 +1119,50 @@ server {
         fastcgi_read_timeout 300;
     }
 
+    # phpMyAdmin location
+    location /phpmyadmin {
+        alias /usr/share/phpmyadmin;
+        index index.php;
+
+        location ~ ^/phpmyadmin/(.*\.php)\$ {
+            alias /usr/share/phpmyadmin/\$1;
+            fastcgi_pass unix:/run/php/php${php_version}-fpm.sock;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME \$request_filename;
+        }
+
+        location ~ ^/phpmyadmin/(doc|sql|setup)/ {
+            deny all;
+        }
+
+        location ~* ^/phpmyadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
+            alias /usr/share/phpmyadmin/\$1;
+        }
+    }
+
+    # Roundcube webmail location
+    location /webmail {
+        alias /usr/share/roundcube;
+        index index.php;
+
+        location ~ ^/webmail/(.*\.php)\$ {
+            alias /usr/share/roundcube/\$1;
+            fastcgi_pass unix:/run/php/php${php_version}-fpm.sock;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME \$request_filename;
+        }
+
+        location ~ ^/webmail/(config|temp|logs)/ {
+            deny all;
+        }
+
+        location ~* ^/webmail/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt|svg|woff|woff2|ttf|eot))\$ {
+            alias /usr/share/roundcube/\$1;
+        }
+    }
+
     # Deny access to hidden files
     location ~ /\. {
         deny all;

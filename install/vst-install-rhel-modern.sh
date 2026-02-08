@@ -399,6 +399,68 @@ mkdir -p /var/log/httpd/domains
 mkdir -p /etc/httpd/conf.d
 touch /etc/httpd/conf.d/vesta.conf
 
+# Setup Roundcube webmail symlink
+if [ -d "/usr/share/roundcubemail" ]; then
+    ln -sf /usr/share/roundcubemail $VESTA/web/webmail
+    # Configure roundcube to use localhost
+    if [ -f "/etc/roundcubemail/config.inc.php" ]; then
+        sed -i "s/\$config\['default_host'\].*/\$config['default_host'] = 'localhost';/" /etc/roundcubemail/config.inc.php
+    fi
+fi
+
+# Setup phpMyAdmin symlink
+if [ -d "/usr/share/phpMyAdmin" ]; then
+    ln -sf /usr/share/phpMyAdmin $VESTA/web/phpmyadmin
+fi
+
+# Add phpMyAdmin and Roundcube location blocks to vesta-nginx config
+if [ -f "$VESTA/nginx/conf/nginx.conf" ]; then
+    # Detect PHP-FPM socket
+    php_socket=$(ls /run/php-fpm/www.sock 2>/dev/null || ls /var/run/php-fpm/www.sock 2>/dev/null || echo "/var/run/vesta-php.sock")
+
+    # Check if location blocks already exist
+    if ! grep -q "location /phpmyadmin" $VESTA/nginx/conf/nginx.conf; then
+        # Add location blocks before the closing brace of the server block
+        sed -i '/location ~ \\\.php\$/i\
+\        # phpMyAdmin location\
+\        location /phpmyadmin {\
+\            alias /usr/share/phpMyAdmin;\
+\            index index.php;\
+\
+\            location ~ ^/phpmyadmin/(.*.php)$ {\
+\                alias /usr/share/phpMyAdmin/$1;\
+\                fastcgi_pass unix:'"$php_socket"';\
+\                fastcgi_index index.php;\
+\                include fastcgi_params;\
+\                fastcgi_param SCRIPT_FILENAME $request_filename;\
+\            }\
+\
+\            location ~ ^/phpmyadmin/(doc|sql|setup)/ {\
+\                deny all;\
+\            }\
+\        }\
+\
+\        # Roundcube webmail location\
+\        location /webmail {\
+\            alias /usr/share/roundcubemail;\
+\            index index.php;\
+\
+\            location ~ ^/webmail/(.*.php)$ {\
+\                alias /usr/share/roundcubemail/$1;\
+\                fastcgi_pass unix:'"$php_socket"';\
+\                fastcgi_index index.php;\
+\                include fastcgi_params;\
+\                fastcgi_param SCRIPT_FILENAME $request_filename;\
+\            }\
+\
+\            location ~ ^/webmail/(config|temp|logs)/ {\
+\                deny all;\
+\            }\
+\        }\
+' $VESTA/nginx/conf/nginx.conf
+    fi
+fi
+
 # Set proper permissions
 chmod 750 $VESTA/data/users/admin
 chown -R admin:admin $VESTA/data/users/admin

@@ -754,6 +754,57 @@ if [ -d "/usr/share/phpmyadmin" ]; then
     ln -sf /usr/share/phpmyadmin $VESTA/web/phpmyadmin
 fi
 
+# Add phpMyAdmin and Roundcube location blocks to vesta-nginx config
+if [ -f "$VESTA/nginx/conf/nginx.conf" ]; then
+    # Detect PHP-FPM socket
+    php_socket=$(ls /run/php/php*-fpm.sock 2>/dev/null | head -1)
+    if [ -z "$php_socket" ]; then
+        php_socket="/var/run/vesta-php.sock"
+    fi
+
+    # Check if location blocks already exist
+    if ! grep -q "location /phpmyadmin" $VESTA/nginx/conf/nginx.conf; then
+        # Add location blocks before the closing brace of the server block
+        sed -i '/location ~ \\\.php\$/i\
+\        # phpMyAdmin location\
+\        location /phpmyadmin {\
+\            alias /usr/share/phpmyadmin;\
+\            index index.php;\
+\
+\            location ~ ^/phpmyadmin/(.*.php)$ {\
+\                alias /usr/share/phpmyadmin/$1;\
+\                fastcgi_pass unix:'"$php_socket"';\
+\                fastcgi_index index.php;\
+\                include fastcgi_params;\
+\                fastcgi_param SCRIPT_FILENAME $request_filename;\
+\            }\
+\
+\            location ~ ^/phpmyadmin/(doc|sql|setup)/ {\
+\                deny all;\
+\            }\
+\        }\
+\
+\        # Roundcube webmail location\
+\        location /webmail {\
+\            alias /usr/share/roundcube;\
+\            index index.php;\
+\
+\            location ~ ^/webmail/(.*.php)$ {\
+\                alias /usr/share/roundcube/$1;\
+\                fastcgi_pass unix:'"$php_socket"';\
+\                fastcgi_index index.php;\
+\                include fastcgi_params;\
+\                fastcgi_param SCRIPT_FILENAME $request_filename;\
+\            }\
+\
+\            location ~ ^/webmail/(config|temp|logs)/ {\
+\                deny all;\
+\            }\
+\        }\
+' $VESTA/nginx/conf/nginx.conf
+    fi
+fi
+
 # Set proper permissions
 chmod 750 $VESTA/data/users/admin
 chown -R admin:admin $VESTA/data/users/admin
