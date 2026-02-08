@@ -116,6 +116,25 @@ Ubuntu 22.04 supports PHP 8.0 - 8.4 via the Sury PPA. Templates are provided for
 - php-fpm-83
 - php-fpm-84
 
+## Quick Test Setup (Development)
+
+For developers who want to test the web UI without running the full installer:
+
+```bash
+cd /path/to/vesta
+sudo ./install/test-setup.sh
+```
+
+This script:
+- Installs nginx and PHP-FPM
+- Copies Vesta files to `/usr/local/vesta/`
+- Configures sudoers for www-data
+- Sets up nginx on port 8083
+
+Access the UI at `http://your-ip:8083`
+
+**Note:** This is for testing only. For production, use the full installer.
+
 ## Troubleshooting
 
 ### phpMyAdmin shows cookie error
