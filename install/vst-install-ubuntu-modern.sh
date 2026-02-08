@@ -595,6 +595,10 @@ fi
 touch $VESTA/log/auth.log
 chmod 640 $VESTA/log/auth.log
 
+# Create RRD directory for statistics graphs
+mkdir -p $VESTA/web/rrd
+chown admin:admin $VESTA/web/rrd
+
 echo "Vesta core files installed successfully"
 
 #----------------------------------------------------------#
