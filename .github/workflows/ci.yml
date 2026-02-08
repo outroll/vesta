@@ -186,8 +186,8 @@ jobs:
         done
         echo "✅ All API endpoints pass syntax check"
 
-  docker-test:
-    name: Docker Integration Test
+  multi-os-php-test:
+    name: Multi-OS PHP Syntax Check
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master'
 
@@ -195,10 +195,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu:22.04
-            name: Ubuntu 22.04
-          - os: ubuntu:24.04
-            name: Ubuntu 24.04
           - os: debian:11
             name: Debian 11
           - os: debian:12
@@ -207,12 +203,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Test on ${{ matrix.name }}
+    - name: Test PHP syntax on ${{ matrix.name }}
       run: |
         docker run --rm -v ${{ github.workspace }}:/vesta ${{ matrix.os }} bash -c '
           apt-get update -qq
           apt-get install -y -qq php php-cli php-json php-curl > /dev/null 2>&1
-          echo "Testing PHP in ${{ matrix.name }}..."
+          echo "Testing PHP syntax in ${{ matrix.name }}..."
           php -v
           cd /vesta
           errors=0

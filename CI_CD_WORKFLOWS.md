@@ -36,12 +36,10 @@ Tests all PHP files against multiple PHP versions:
 | 22.04  | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 24.04  | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-#### 3. Docker Integration
+#### 3. Multi-OS PHP Syntax Check
 
-Tests installation in Docker containers:
+Tests PHP syntax on Debian (not covered by main lint job):
 
-- Ubuntu 22.04
-- Ubuntu 24.04
 - Debian 11
 - Debian 12
 
