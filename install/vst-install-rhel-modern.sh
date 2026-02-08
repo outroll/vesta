@@ -278,6 +278,13 @@ echo "Configuring Vesta admin user..."
 # Set admin password
 echo "admin:$vpass" | chpasswd
 
+# Create required directories
+mkdir -p $VESTA/log $VESTA/web/rrd $VESTA/data/packages
+
+# Create auth.log for login tracking
+touch $VESTA/log/auth.log
+chmod 640 $VESTA/log/auth.log
+
 # Create admin user configuration
 mkdir -p $VESTA/data/users/admin
 
@@ -296,7 +303,7 @@ DNS_RECORDS='0'
 MAIL_DOMAINS='0'
 MAIL_ACCOUNTS='0'
 DATABASES='0'
-CRON_JOBS='0'
+CRON_JOBS='unlimited'
 DISK_QUOTA='unlimited'
 BANDWIDTH='unlimited'
 NS='ns1.$servername'
@@ -360,6 +367,43 @@ systemctl start vesta
 # Set proper permissions
 chmod 750 $VESTA/data/users/admin
 chown -R admin:admin $VESTA/data/users/admin
+chown admin:admin $VESTA/web/rrd
+
+# Copy hosting packages
+if [ -d "$VESTA/install/rhel/$release/packages" ]; then
+    cp -rf $VESTA/install/rhel/$release/packages/* $VESTA/data/packages/
+fi
+
+#----------------------------------------------------------#
+#                  Configure Cron Jobs                     #
+#----------------------------------------------------------#
+
+echo "Configuring scheduled tasks..."
+
+# Add system cron jobs for Vesta maintenance
+command="sudo $VESTA/bin/v-update-sys-queue disk"
+$VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-sys-queue traffic"
+$VESTA/bin/v-add-cron-job 'admin' '10' '00' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-sys-queue webstats"
+$VESTA/bin/v-add-cron-job 'admin' '30' '03' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-sys-queue backup"
+$VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-backup-users"
+$VESTA/bin/v-add-cron-job 'admin' '10' '05' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-user-stats"
+$VESTA/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-sys-rrd"
+$VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+command="sudo $VESTA/bin/v-update-letsencrypt-ssl"
+$VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+
+# Restart cron to apply changes
+systemctl restart crond
+
+# Generate initial RRD statistics
+echo "Generating initial statistics..."
+$VESTA/bin/v-update-sys-rrd
 
 # Clean up
 dnf clean all
