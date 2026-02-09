@@ -737,6 +737,8 @@ echo "LANGUAGE='en'" >> $VESTA/conf/vesta.conf
 echo "VERSION='2.0.2'" >> $VESTA/conf/vesta.conf
 echo "NOTIFY_ADMIN_FULL_BACKUP='$email'" >> $VESTA/conf/vesta.conf
 echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
+echo "MAIL_URL='/webmail/'" >> $VESTA/conf/vesta.conf
+echo "DB_PMA_URL='/phpmyadmin/'" >> $VESTA/conf/vesta.conf
 
 echo "Vesta configuration initialized"
 

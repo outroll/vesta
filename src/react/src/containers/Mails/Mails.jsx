@@ -395,7 +395,7 @@ const Mails = props => {
         <div className="r-menu">
           <div className="input-group input-group-sm">
             {state.webmail && <a
-              href={`http://${window.location.hostname}${state.webmail}`}
+              href={state.webmail}
               target="_blank"
               rel="noopener noreferrer"
               className="button-extra">
