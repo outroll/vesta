@@ -192,6 +192,11 @@ chmod +x $VESTA/bin/*
 echo "Copying web interface..."
 cp -rf $REPO_DIR/web/* $VESTA/web/
 
+# Ensure static/index.html matches root index.html (React app entry point)
+if [ -f "$VESTA/web/index.html" ] && [ -d "$VESTA/web/static" ]; then
+    cp -f $VESTA/web/index.html $VESTA/web/static/index.html
+fi
+
 # Fix mail-wrapper.php shebang to use system PHP
 if [ -f "$VESTA/web/inc/mail-wrapper.php" ]; then
     sed -i '1s|.*|#!/usr/bin/php|' $VESTA/web/inc/mail-wrapper.php
@@ -351,7 +356,8 @@ systemctl start fail2ban
 echo "Configuring Vesta admin user..."
 
 # Set admin password
-echo "admin:$vpass" | chpasswd
+# Use SHA-512 for Vesta compatibility
+echo "admin:$vpass" | chpasswd -c SHA512
 
 # Create required directories
 mkdir -p $VESTA/log $VESTA/web/rrd $VESTA/data/packages
@@ -385,10 +391,40 @@ NS='ns1.$servername'
 NS2='ns2.$servername'
 SHELL='/bin/bash'
 BACKUPS='unlimited'
+CONTACT='$email'
+CRON_REPORTS='no'
+RKEY=''
+HOME='/home/admin'
+IP_AVAIL='1'
+IP_OWNED='1'
+U_USERS='1'
+U_DISK='0'
+U_DISK_DIRS='0'
+U_DISK_WEB='0'
+U_DISK_MAIL='0'
+U_DISK_DB='0'
+U_BANDWIDTH='0'
+U_WEB_DOMAINS='0'
+U_WEB_SSL='0'
+U_WEB_ALIASES='0'
+U_DNS_DOMAINS='0'
+U_DNS_RECORDS='0'
+U_MAIL_DOMAINS='0'
+U_MAIL_DKIM='0'
+U_MAIL_ACCOUNTS='0'
+U_DATABASES='0'
+U_CRON_JOBS='0'
+U_BACKUPS='0'
+SUSPENDED='no'
+SUSPENDED_USERS='0'
+SUSPENDED_WEB='0'
+SUSPENDED_DNS='0'
+SUSPENDED_MAIL='0'
+SUSPENDED_DB='0'
+SUSPENDED_CRON='0'
+LANGUAGE='en'
 TIME='$(date +%Y-%m-%d)'
 DATE='$(date +%Y-%m-%d)'
-SUSPENDED='no'
-SUSPEND_TIME='0'
 EOF
 
 #----------------------------------------------------------#
