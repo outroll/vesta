@@ -14,6 +14,10 @@ if (isset($_GET['logout'])) {
     session_destroy();
 }
 
+// Initialize variables
+$users = null;
+$error = null;
+
 // Login as someone else
 if (isset($_SESSION['user'])) {
     if ((!isset($_GET['token'])) || ($_SESSION['token'] != $_GET['token'])) {
@@ -35,10 +39,6 @@ if (isset($_SESSION['user'])) {
         $users = json_decode(implode('', $output), true);
     }
 }
-
-// Initialize variables
-$users = null;
-$error = null;
 if (!isset($_SESSION['language'])) $_SESSION['language'] = 'en';
 
 // Basic auth
