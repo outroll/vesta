@@ -13,7 +13,7 @@ VERSION='ubuntu'
 VESTA='/usr/local/vesta'
 VESTA_SOURCE=${VESTA_SOURCE:-apt}   # apt (default) | github -- see VESTA_SOURCE=github to install
                                      # the vesta package from GitHub Releases instead of apt.vestacp.com
-GITHUB_REPO='outroll/vesta'
+GITHUB_REPO=${GITHUB_REPO:-outroll/vesta}   # override to test a fork, e.g. GITHUB_REPO=youruser/vesta
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os='ubuntu'
