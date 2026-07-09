@@ -11,6 +11,9 @@ RHOST='apt.vestacp.com'
 CHOST='c.vestacp.com'
 VERSION='ubuntu'
 VESTA='/usr/local/vesta'
+VESTA_SOURCE=${VESTA_SOURCE:-apt}   # apt (default) | github -- see VESTA_SOURCE=github to install
+                                     # the vesta package from GitHub Releases instead of apt.vestacp.com
+GITHUB_REPO='outroll/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os='ubuntu'
@@ -670,8 +673,24 @@ echo -e '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
 # Installing apt packages
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    filtered_software=""
+    for pkg in $software; do
+        [ "$pkg" = 'vesta' ] || filtered_software="$filtered_software $pkg"
+    done
+    software="$filtered_software"
+fi
 apt-get -y install $software
 check_result $? "apt-get install failed"
+
+# Installing vesta package from GitHub Releases instead of apt.vestacp.com
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    echo "=== Installing vesta package from GitHub Releases"
+    curl -L "https://github.com/$GITHUB_REPO/releases/latest/download/vesta_amd64.deb" -o /tmp/vesta_amd64.deb
+    check_result $? "vesta.deb download from GitHub failed"
+    dpkg -i /tmp/vesta_amd64.deb
+    check_result $? "vesta.deb install failed"
+fi
 
 # Restoring autostart policy
 rm -f /usr/sbin/policy-rc.d
