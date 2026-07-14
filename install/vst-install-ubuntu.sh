@@ -674,6 +674,28 @@ apt-get update
 echo -e '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
+# Installing vesta/vesta-nginx/vesta-php/vesta-ioncube packages from GitHub
+# Releases instead of apt.vestacp.com. This must happen BEFORE the apt-get
+# install below: vesta-softaculous (still apt-installed, see repo/key setup
+# above) Depends: vesta, so if these aren't already present apt will pull
+# its own vesta/vesta-nginx/vesta-php/vesta-ioncube from apt.vestacp.com to
+# satisfy that dependency, silently defeating VESTA_SOURCE=github.
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    github_packages="vesta vesta-nginx vesta-php vesta-ioncube"
+    github_debs=""
+    for pkg in $github_packages; do
+        echo "=== Downloading $pkg package from GitHub Releases"
+        wget -q "https://github.com/$GITHUB_REPO/releases/latest/download/${pkg}_amd64.deb" -O "/tmp/${pkg}_amd64.deb"
+        check_result $? "$pkg.deb download from GitHub failed"
+        github_debs="$github_debs /tmp/${pkg}_amd64.deb"
+    done
+    # Installed together (rather than one dpkg -i per package) so dpkg can
+    # resolve the vesta-nginx/vesta-php -> vesta and vesta-ioncube ->
+    # vesta-php Depends: ordering between these off-repo debs.
+    dpkg -i $github_debs
+    check_result $? "vesta package install failed"
+fi
+
 # Installing apt packages
 if [ "$VESTA_SOURCE" = 'github' ]; then
     filtered_software=""
@@ -687,25 +709,6 @@ if [ "$VESTA_SOURCE" = 'github' ]; then
 fi
 apt-get -y install $software
 check_result $? "apt-get install failed"
-
-# Installing vesta/vesta-nginx/vesta-php/vesta-ioncube packages from GitHub
-# Releases instead of apt.vestacp.com. vesta-softaculous is not part of this
-# migration (see the repo/key setup above) and stays apt-installed.
-if [ "$VESTA_SOURCE" = 'github' ]; then
-    github_packages="vesta vesta-nginx vesta-php vesta-ioncube"
-    github_debs=""
-    for pkg in $github_packages; do
-        echo "=== Downloading $pkg package from GitHub Releases"
-        curl -L "https://github.com/$GITHUB_REPO/releases/latest/download/${pkg}_amd64.deb" -o "/tmp/${pkg}_amd64.deb"
-        check_result $? "$pkg.deb download from GitHub failed"
-        github_debs="$github_debs /tmp/${pkg}_amd64.deb"
-    done
-    # Installed together (rather than one dpkg -i per package) so dpkg can
-    # resolve the vesta-nginx/vesta-php -> vesta and vesta-ioncube ->
-    # vesta-php Depends: ordering between these off-repo debs.
-    dpkg -i $github_debs
-    check_result $? "vesta package install failed"
-fi
 
 # Restoring autostart policy
 rm -f /usr/sbin/policy-rc.d
