@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
+  build-vesta:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,21 +17,63 @@ jobs:
       - name: Build vesta_amd64.deb
         run: src/deb/build.sh "${GITHUB_REF_NAME#v}"
 
-      - name: Install nginx/php build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install build-essential libpcre3-dev zlib1g-dev \
-            libssl-dev libxml2-dev libcurl4-openssl-dev libonig-dev \
-            libzip-dev libsqlite3-dev pkg-config bison re2c autoconf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vesta-deb
+          path: vesta_amd64.deb
+
+  build-ioncube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Build vesta-ioncube_amd64.deb
         run: src/deb/ioncube/build.sh "${GITHUB_REF_NAME#v}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vesta-ioncube-deb
+          path: vesta-ioncube_amd64.deb
+
+  # nginx and php are compiled from source and dynamically link against the
+  # host's OpenSSL/libc, so they must be built inside a container matching
+  # the oldest Ubuntu release the installer still supports (18.04) --
+  # building on ubuntu-latest's newer OpenSSL (libssl.so.3) produces
+  # binaries that can't even run on 18.04 (which only has libssl.so.1.1).
+  build-nginx-php:
+    runs-on: ubuntu-latest
+    container: ubuntu:18.04
+    steps:
+      - name: Install git and build dependencies
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get -y install \
+            git ca-certificates curl build-essential libpcre3-dev zlib1g-dev \
+            libssl-dev libxml2-dev libcurl4-openssl-dev libonig-dev \
+            libzip-dev libsqlite3-dev pkg-config bison re2c autoconf
+
+      - uses: actions/checkout@v4
 
       - name: Build vesta-nginx_amd64.deb
         run: src/deb/nginx/build.sh "${GITHUB_REF_NAME#v}"
 
       - name: Build vesta-php_amd64.deb
         run: src/deb/php/build.sh "${GITHUB_REF_NAME#v}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nginx-php-debs
+          path: |
+            vesta-nginx_amd64.deb
+            vesta-php_amd64.deb
+
+  release:
+    needs: [build-vesta, build-ioncube, build-nginx-php]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
 
       - name: Publish GitHub Release
         env:

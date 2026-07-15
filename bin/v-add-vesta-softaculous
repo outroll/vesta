@@ -56,7 +56,11 @@ else
 fi
 
 # Updating php pacakge
-if [ -z "$($VESTA/php/bin/php -v|grep 'PHP 5.6')" ]; then
+# Skipped when VESTA_SOURCE=github: this "PHP 5.6" sniff predates modern
+# PHP builds, so it always considers a non-5.6 vesta-php outdated and would
+# unconditionally reinstall it from apt.vestacp.com, clobbering the
+# GitHub-sourced package regardless of VESTA_SOURCE.
+if [ "$VESTA_SOURCE" != 'github' ] && [ -z "$($VESTA/php/bin/php -v|grep 'PHP 5.6')" ]; then
     if [ -d "/etc/sysconfig" ]; then
         $yum -y update vesta-php
         check_result $? "vesta-php package upgrade failed" $E_UPDATE
