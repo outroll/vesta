@@ -91,6 +91,7 @@ jobs:
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           assets="vesta_amd64.deb vesta-ioncube_amd64.deb vesta-nginx_amd64.deb vesta-php_amd64.deb"
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
