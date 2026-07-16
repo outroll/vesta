@@ -681,6 +681,17 @@ chmod a+x /usr/sbin/policy-rc.d
 # its own vesta/vesta-nginx/vesta-php/vesta-ioncube from apt.vestacp.com to
 # satisfy that dependency, silently defeating VESTA_SOURCE=github.
 if [ "$VESTA_SOURCE" = 'github' ]; then
+    # Runtime libs our compiled vesta-nginx/vesta-php link against
+    # (libonig4/libcurl4/libssl1.1/libxml2/libzip4 for php, libpcre3/zlib1g
+    # for nginx). Installed BEFORE dpkg -i so it never sees an unmet
+    # dependency: if dpkg -i left a package unconfigured, `apt-get -f
+    # install` would "fix" it by whatever means is simplest for its
+    # resolver -- which, with apt.vestacp.com still configured (for
+    # vesta-softaculous), is liable to replace our vesta-php with the real
+    # apt.vestacp.com one, silently defeating VESTA_SOURCE=github again.
+    apt-get -y install libonig4 libcurl4 libssl1.1 libxml2 libzip4 libpcre3 zlib1g
+    check_result $? "runtime library install failed"
+
     github_packages="vesta vesta-nginx vesta-php vesta-ioncube"
     github_debs=""
     for pkg in $github_packages; do
@@ -692,14 +703,13 @@ if [ "$VESTA_SOURCE" = 'github' ]; then
     # Installed together (rather than one dpkg -i per package) so dpkg can
     # resolve the vesta-nginx/vesta-php -> vesta and vesta-ioncube ->
     # vesta-php Depends: ordering between these off-repo debs.
-    # dpkg itself can't fetch dependencies (e.g. libonig4/libcurl4/libssl1.1
-    # for vesta-php, libpcre3/zlib1g for vesta-nginx) -- it only unpacks the
-    # .debs and leaves them unconfigured if those aren't already installed.
-    # `apt-get -f install` finishes the job by fetching anything missing
-    # from the regular Ubuntu archive and configuring the packages.
     dpkg -i $github_debs
-    apt-get -f install -y
     check_result $? "vesta package install failed"
+
+    # Held so a later `apt-get upgrade`/`apt-get install` (e.g. on a
+    # re-run, or vesta-softaculous's own vesta-php version check) can't
+    # replace these with apt.vestacp.com's versions.
+    apt-mark hold vesta vesta-nginx vesta-php vesta-ioncube
 fi
 
 # Installing apt packages
