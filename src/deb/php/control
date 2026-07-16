@@ -6,7 +6,7 @@ Section: admin
 Maintainer: Serghey Rodin <skid@vestacp.com>
 Homepage: http://vestacp.com
 Architecture: amd64
-Depends: vesta
+Depends: vesta, libonig4, libcurl4, libssl1.1, libxml2, libzip4
 Description: Vesta php-fpm
  Vesta is an open source hosting control panel.
  Vesta has a clean and focused interface without the clutter.

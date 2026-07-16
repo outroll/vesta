@@ -692,7 +692,13 @@ if [ "$VESTA_SOURCE" = 'github' ]; then
     # Installed together (rather than one dpkg -i per package) so dpkg can
     # resolve the vesta-nginx/vesta-php -> vesta and vesta-ioncube ->
     # vesta-php Depends: ordering between these off-repo debs.
+    # dpkg itself can't fetch dependencies (e.g. libonig4/libcurl4/libssl1.1
+    # for vesta-php, libpcre3/zlib1g for vesta-nginx) -- it only unpacks the
+    # .debs and leaves them unconfigured if those aren't already installed.
+    # `apt-get -f install` finishes the job by fetching anything missing
+    # from the regular Ubuntu archive and configuring the packages.
     dpkg -i $github_debs
+    apt-get -f install -y
     check_result $? "vesta package install failed"
 fi
 
