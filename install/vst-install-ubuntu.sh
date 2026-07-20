@@ -31,7 +31,7 @@ software="nginx apache2 apache2.2-common apache2-suexec-custom apache2-utils
     ntpdate php-cgi php-common php-curl php-fpm phpmyadmin php-mysql
     phppgadmin php-pgsql postgresql postgresql-contrib proftpd-basic quota
     roundcube-core roundcube-mysql roundcube-plugins rrdtool rssh spamassassin
-    sudo vesta vesta-ioncube vesta-nginx vesta-php vesta-softaculous
+    sudo vesta vesta-ioncube vesta-nginx vesta-php
     vim-common vsftpd webalizer whois zip net-tools"
 
 # Fix for old releases
@@ -59,7 +59,6 @@ help() {
   -i, --iptables          Install Iptables         [yes|no]  default: yes
   -b, --fail2ban          Install Fail2ban         [yes|no]  default: yes
   -r, --remi              Install Remi repo        [yes|no]  default: yes
-  -o, --softaculous       Install Softaculous      [yes|no]  default: yes
   -q, --quota             Filesystem Quota         [yes|no]  default: no
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install      [yes|no]  default: yes
@@ -147,7 +146,6 @@ for arg; do
         --spamassassin)         args="${args}-t " ;;
         --iptables)             args="${args}-i " ;;
         --fail2ban)             args="${args}-b " ;;
-        --softaculous)          args="${args}-o " ;;
         --remi)                 args="${args}-r " ;;
         --quota)                args="${args}-q " ;;
         --lang)                 args="${args}-l " ;;
@@ -166,7 +164,7 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:o:q:l:y:s:u:e:d:p:fh" Option; do
+while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:q:l:y:s:u:e:d:p:fh" Option; do
     case $Option in
         a) apache=$OPTARG ;;            # Apache
         n) nginx=$OPTARG ;;             # Nginx
@@ -183,7 +181,6 @@ while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:o:q:l:y:s:u:e:d:p:fh" Option; do
         i) iptables=$OPTARG ;;          # Iptables
         b) fail2ban=$OPTARG ;;          # Fail2ban
         r) remi=$OPTARG ;;              # Remi repo
-        o) softaculous=$OPTARG ;;       # Softaculous plugin
         q) quota=$OPTARG ;;             # FS Quota
         l) lang=$OPTARG ;;              # Language
         y) interactive=$OPTARG ;;       # Interactive install
@@ -219,7 +216,6 @@ else
 fi
 set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
-set_default_value 'softaculous' 'yes'
 set_default_value 'quota' 'no'
 set_default_value 'interactive' 'yes'
 set_default_value 'ssl' 'no'
@@ -381,11 +377,6 @@ if [ "$ssl" = 'yes' ]; then
     echo '   - LE SSL for hostname'
 fi
 
-# Softaculous
-if [ "$softaculous" = 'yes' ]; then
-    echo '   - Softaculous Plugin'
-fi
-
 # Firewall stack
 if [ "$iptables" = 'yes' ]; then
     echo -n '   - Iptables Firewall'
@@ -498,9 +489,7 @@ echo "deb http://nginx.org/packages/mainline/ubuntu/ $codename nginx" \
 wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
 apt-key add /tmp/nginx_signing.key
 
-# Installing vesta repo -- still required when VESTA_SOURCE=github, since
-# vesta-softaculous is not part of the GitHub Releases migration (commercial
-# third-party product, stays on its own upstream licensing terms).
+# Installing vesta repo
 echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
 wget $CHOST/deb_signing.key -O deb_signing.key
 apt-key add deb_signing.key
@@ -657,9 +646,6 @@ if [ "$postgresql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/php-pgsql//')
     software=$(echo "$software" | sed -e 's/phppgadmin//')
 fi
-if [ "$softaculous" = 'no' ]; then
-    software=$(echo "$software" | sed -e 's/vesta-softaculous//')
-fi
 if [ "$iptables" = 'no' ] || [ "$fail2ban" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/fail2ban//')
 fi
@@ -677,20 +663,11 @@ echo -e '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
 # Installing vesta/vesta-nginx/vesta-php/vesta-ioncube packages from GitHub
-# Releases instead of apt.vestacp.com. This must happen BEFORE the apt-get
-# install below: vesta-softaculous (still apt-installed, see repo/key setup
-# above) Depends: vesta, so if these aren't already present apt will pull
-# its own vesta/vesta-nginx/vesta-php/vesta-ioncube from apt.vestacp.com to
-# satisfy that dependency, silently defeating VESTA_SOURCE=github.
+# Releases instead of apt.vestacp.com.
 if [ "$VESTA_SOURCE" = 'github' ]; then
     # Runtime libs our compiled vesta-nginx/vesta-php link against
     # (libonig4/libcurl4/libssl1.1/libxml2/libzip4 for php, libpcre3/zlib1g
-    # for nginx). Installed BEFORE dpkg -i so it never sees an unmet
-    # dependency: if dpkg -i left a package unconfigured, `apt-get -f
-    # install` would "fix" it by whatever means is simplest for its
-    # resolver -- which, with apt.vestacp.com still configured (for
-    # vesta-softaculous), is liable to replace our vesta-php with the real
-    # apt.vestacp.com one, silently defeating VESTA_SOURCE=github again.
+    # for nginx). Installed BEFORE dpkg -i so it never sees an unmet dependency.
     apt-get -y install libonig4 libcurl4 libssl1.1 libxml2 libzip4 libpcre3 zlib1g
     check_result $? "runtime library install failed"
 
@@ -708,9 +685,8 @@ if [ "$VESTA_SOURCE" = 'github' ]; then
     dpkg -i $github_debs
     check_result $? "vesta package install failed"
 
-    # Held so a later `apt-get upgrade`/`apt-get install` (e.g. on a
-    # re-run, or vesta-softaculous's own vesta-php version check) can't
-    # replace these with apt.vestacp.com's versions.
+    # Held so a later apt-get upgrade/install can't replace these
+    # with apt.vestacp.com's versions.
     apt-mark hold vesta vesta-nginx vesta-php vesta-ioncube
 fi
 
@@ -1400,11 +1376,6 @@ $VESTA/bin/v-update-sys-rrd
 # Enabling file system quota
 if [ "$quota" = 'yes' ]; then
     $VESTA/bin/v-add-sys-quota
-fi
-
-# Enabling softaculous plugin
-if [ "$softaculous" = 'yes' ]; then
-    $VESTA/bin/v-add-vesta-softaculous
 fi
 
 # Starting Vesta service
