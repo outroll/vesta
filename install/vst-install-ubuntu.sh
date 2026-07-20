@@ -482,11 +482,13 @@ fi
 apt-get -y upgrade
 check_result $? 'apt-get upgrade failed'
 
-# Checking universe repository
+# Enabling universe repository (idempotent -- add-apt-repository no-ops if
+# it's already enabled). Some cloud vendor base images ship /etc/apt/sources.list
+# with universe commented out, or omit it entirely, which a plain `grep
+# universe` can't distinguish from "already enabled"; several of our runtime
+# deps (e.g. libonig4, libzip4 for vesta-php) live in universe.
 if [[ ${release:0:2} -gt 16 ]]; then
-    if [ -z "$(grep universe /etc/apt/sources.list)" ]; then
-        add-apt-repository -y universe
-    fi
+    add-apt-repository -y universe
 fi
 
 # Installing nginx repo
