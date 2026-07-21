@@ -9,34 +9,26 @@ Vesta is back under active development as of 25 February 2024. We are commited t
 * Vesta has a clean and focused interface without the clutter.
 * Vesta has the latest of very innovative technologies.
 
-How to install (2 step)
+How to install
 ----------------------------
 Connect to your server as root via SSH
 ```bash
 ssh root@your.server
 ```
 
-Download the installation script, and run it:
+Clone this repository and run the installer for your OS from `install/`:
 ```bash
-curl https://vestacp.com/pub/vst-install.sh | bash
+git clone https://github.com/outroll/vesta.git
+cd vesta/install
+sudo ./vst-install-ubuntu.sh   # or vst-install-debian.sh / vst-install-rhel.sh / vst-install-amazon.sh
 ```
 
-How to install (3 step)
-----------------------------
-If the above example does not work, try this 3 step method:
-Connect to your server as root via SSH
-```bash
-ssh root@your.server
-```
+Run the script with `--help` to see the available options (admin email/password,
+which services to install, etc).
 
-Download the installation script:
-```bash
-curl -O https://vestacp.com/pub/vst-install.sh
-```
-Then run it:
-```bash
-bash vst-install.sh
-```
+> Older versions of this README pointed to `curl https://vestacp.com/pub/vst-install.sh`.
+> That endpoint is hosted separately from this repository and won't reflect any
+> changes made here -- always install from a checkout of this repo instead.
 
 License
 ----------------------------
