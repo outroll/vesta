@@ -38,10 +38,7 @@ fi
 if [ "$package" = "vesta-php" ]; then
     valid=1
 fi
-if [ "$package" = "vesta-ioncube" ]; then 
-    valid=1
-fi
-if [ "$package" = "vesta-softaculous" ]; then
+if [ "$package" = "vesta-ioncube" ]; then
     valid=1
 fi
 if [ $valid -eq 0 ]; then

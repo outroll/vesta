@@ -25,7 +25,6 @@ import { refreshUserSession } from 'src/actions/Session/sessionActions';
 const EditServer = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
-  const { session } = useSelector(state => state.userSession);
   const history = useHistory();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
@@ -79,10 +78,6 @@ const EditServer = props => {
 
     updatedServer['save'] = 'save';
     updatedServer['token'] = token;
-
-    if (updatedServer['v_softaculous'] === 'no' && !session['SOFTACULOUS']) {
-      delete updatedServer['v_softaculous'];
-    }
 
     if (Object.keys(updatedServer).length !== 0 && updatedServer.constructor === Object) {
       setState({ ...state, loading: true });

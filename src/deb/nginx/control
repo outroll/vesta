@@ -6,7 +6,7 @@ Section: admin
 Maintainer: Serghey Rodin <skid@vestacp.com>
 Homepage: http://vestacp.com
 Architecture: amd64
-Depends: vesta
+Depends: vesta, libpcre3, zlib1g, libssl1.1
 Description: Vesta Nginx
  Vesta is an open source hosting control panel.
  Vesta has a clean and focused interface without the clutter.

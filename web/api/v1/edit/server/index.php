@@ -573,32 +573,6 @@ if (!empty($_POST['save'])) {
         }
     }
 
-    // activating softaculous
-    if (empty($_SESSION['error_msg'])) {
-        if($_SESSION['SOFTACULOUS'] != $_POST['v_softaculous'] && $_POST['v_softaculous'] == 'yes'){
-            exec (VESTA_CMD."v-add-vesta-softaculous WEB", $output, $return_var);
-            check_return_code($return_var,$output);
-            unset($output);
-            if (empty($_SESSION['error_msg'])) {
-                $_SESSION['ok_msg'] = __('Softaculous Activated');
-                $_SESSION['SOFTACULOUS'] = 'yes';
-            }
-        }
-    }
-
-    // disable softaculous
-    if (empty($_SESSION['error_msg'])) {
-        if($_SESSION['SOFTACULOUS'] != $_POST['v_softaculous'] && $_POST['v_softaculous'] == 'no'){
-            exec (VESTA_CMD."v-delete-vesta-softaculous", $output, $return_var);
-            check_return_code($return_var,$output);
-            unset($output);
-            if (empty($_SESSION['error_msg'])) {
-                $_SESSION['ok_msg'] = __('Softaculous Disabled');
-                $_SESSION['SOFTACULOUS'] = '';
-            }
-        }
-    }
-
     // Change port
      if ((!empty($_POST['port'])) && ($port != $_POST['port'])) {
         exec (VESTA_CMD."v-change-vesta-port ".escapeshellarg($_POST['port']), $output, $return_var);
@@ -641,7 +615,6 @@ $result = array(
     'mail_certificate' => $_SESSION['MAIL_CERTIFICATE'],
     'dns_system' => $_SESSION['DNS_SYSTEM'],
     'web_system' => $_SESSION['WEB_SYSTEM'],
-    'softaculous' => $_SESSION['SOFTACULOUS'],
     'firewall_system' => $_SESSION['FIREWALL_SYSTEM'],
     'web_backend' => $_SESSION['WEB_BACKEND'],
     'version' => $_SESSION['VERSION'],
@@ -652,7 +625,6 @@ $result = array(
     'web_backend_pool' => $_SESSION['WEB_BACKEND_POOL'],
     'sftpjail_key' => $_SESSION['SFTPJAIL_KEY'],
     'lead' => $_GET['lead'] == 'sftp',
-    'softaculous_lead' => $_GET['lead'] == 'softaculous',
     'fm_lead' => $_GET['lead'] == 'filemanager',
     'sftp_licence_key' => $_GET['sftp_licence_key'],
     'licence_key' => $_GET['sftp_licence_key'] != '' ? $_GET['sftp_licence_key'] : $_SESSION['SFTPJAIL_KEY'],

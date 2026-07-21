@@ -7,10 +7,16 @@
 #----------------------------------------------------------#
 export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
+# The rest of this script assumes HOME=/root (e.g. /root/.my.cnf); sudo
+# doesn't always reset it, so force it rather than inherit the caller's.
+export HOME=/root
 RHOST='apt.vestacp.com'
 CHOST='c.vestacp.com'
 VERSION='ubuntu'
 VESTA='/usr/local/vesta'
+VESTA_SOURCE=${VESTA_SOURCE:-apt}   # apt (default) | github -- see VESTA_SOURCE=github to install
+                                     # the vesta package from GitHub Releases instead of apt.vestacp.com
+GITHUB_REPO=${GITHUB_REPO:-outroll/vesta}   # override to test a fork, e.g. GITHUB_REPO=youruser/vesta
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os='ubuntu'
@@ -28,7 +34,7 @@ software="nginx apache2 apache2.2-common apache2-suexec-custom apache2-utils
     ntpdate php-cgi php-common php-curl php-fpm phpmyadmin php-mysql
     phppgadmin php-pgsql postgresql postgresql-contrib proftpd-basic quota
     roundcube-core roundcube-mysql roundcube-plugins rrdtool rssh spamassassin
-    sudo vesta vesta-ioncube vesta-nginx vesta-php vesta-softaculous
+    sudo vesta vesta-ioncube vesta-nginx vesta-php
     vim-common vsftpd webalizer whois zip net-tools"
 
 # Fix for old releases
@@ -56,7 +62,6 @@ help() {
   -i, --iptables          Install Iptables         [yes|no]  default: yes
   -b, --fail2ban          Install Fail2ban         [yes|no]  default: yes
   -r, --remi              Install Remi repo        [yes|no]  default: yes
-  -o, --softaculous       Install Softaculous      [yes|no]  default: yes
   -q, --quota             Filesystem Quota         [yes|no]  default: no
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install      [yes|no]  default: yes
@@ -144,7 +149,6 @@ for arg; do
         --spamassassin)         args="${args}-t " ;;
         --iptables)             args="${args}-i " ;;
         --fail2ban)             args="${args}-b " ;;
-        --softaculous)          args="${args}-o " ;;
         --remi)                 args="${args}-r " ;;
         --quota)                args="${args}-q " ;;
         --lang)                 args="${args}-l " ;;
@@ -163,7 +167,7 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:o:q:l:y:s:u:e:d:p:fh" Option; do
+while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:q:l:y:s:u:e:d:p:fh" Option; do
     case $Option in
         a) apache=$OPTARG ;;            # Apache
         n) nginx=$OPTARG ;;             # Nginx
@@ -180,7 +184,6 @@ while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:o:q:l:y:s:u:e:d:p:fh" Option; do
         i) iptables=$OPTARG ;;          # Iptables
         b) fail2ban=$OPTARG ;;          # Fail2ban
         r) remi=$OPTARG ;;              # Remi repo
-        o) softaculous=$OPTARG ;;       # Softaculous plugin
         q) quota=$OPTARG ;;             # FS Quota
         l) lang=$OPTARG ;;              # Language
         y) interactive=$OPTARG ;;       # Interactive install
@@ -216,7 +219,6 @@ else
 fi
 set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
-set_default_value 'softaculous' 'yes'
 set_default_value 'quota' 'no'
 set_default_value 'interactive' 'yes'
 set_default_value 'ssl' 'no'
@@ -378,11 +380,6 @@ if [ "$ssl" = 'yes' ]; then
     echo '   - LE SSL for hostname'
 fi
 
-# Softaculous
-if [ "$softaculous" = 'yes' ]; then
-    echo '   - Softaculous Plugin'
-fi
-
 # Firewall stack
 if [ "$iptables" = 'yes' ]; then
     echo -n '   - Iptables Firewall'
@@ -479,11 +476,13 @@ fi
 apt-get -y upgrade
 check_result $? 'apt-get upgrade failed'
 
-# Checking universe repository
+# Enabling universe repository (idempotent -- add-apt-repository no-ops if
+# it's already enabled). Some cloud vendor base images ship /etc/apt/sources.list
+# with universe commented out, or omit it entirely, which a plain `grep
+# universe` can't distinguish from "already enabled"; several of our runtime
+# deps (e.g. libonig4, libzip4 for vesta-php) live in universe.
 if [[ ${release:0:2} -gt 16 ]]; then
-    if [ -z "$(grep universe /etc/apt/sources.list)" ]; then
-        add-apt-repository -y universe
-    fi
+    add-apt-repository -y universe
 fi
 
 # Installing nginx repo
@@ -650,9 +649,6 @@ if [ "$postgresql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/php-pgsql//')
     software=$(echo "$software" | sed -e 's/phppgadmin//')
 fi
-if [ "$softaculous" = 'no' ]; then
-    software=$(echo "$software" | sed -e 's/vesta-softaculous//')
-fi
 if [ "$iptables" = 'no' ] || [ "$fail2ban" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/fail2ban//')
 fi
@@ -669,7 +665,45 @@ apt-get update
 echo -e '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
+# Installing vesta/vesta-nginx/vesta-php/vesta-ioncube packages from GitHub
+# Releases instead of apt.vestacp.com.
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    # Runtime libs our compiled vesta-nginx/vesta-php link against
+    # (libonig4/libcurl4/libssl1.1/libxml2/libzip4 for php, libpcre3/zlib1g
+    # for nginx). Installed BEFORE dpkg -i so it never sees an unmet dependency.
+    apt-get -y install libonig4 libcurl4 libssl1.1 libxml2 libzip4 libpcre3 zlib1g
+    check_result $? "runtime library install failed"
+
+    github_packages="vesta vesta-nginx vesta-php vesta-ioncube"
+    github_debs=""
+    for pkg in $github_packages; do
+        echo "=== Downloading $pkg package from GitHub Releases"
+        wget -q "https://github.com/$GITHUB_REPO/releases/latest/download/${pkg}_amd64.deb" -O "/tmp/${pkg}_amd64.deb"
+        check_result $? "$pkg.deb download from GitHub failed"
+        github_debs="$github_debs /tmp/${pkg}_amd64.deb"
+    done
+    # Installed together (rather than one dpkg -i per package) so dpkg can
+    # resolve the vesta-nginx/vesta-php -> vesta and vesta-ioncube ->
+    # vesta-php Depends: ordering between these off-repo debs.
+    dpkg -i $github_debs
+    check_result $? "vesta package install failed"
+
+    # Held so a later apt-get upgrade/install can't replace these
+    # with apt.vestacp.com's versions.
+    apt-mark hold vesta vesta-nginx vesta-php vesta-ioncube
+fi
+
 # Installing apt packages
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    filtered_software=""
+    for pkg in $software; do
+        case "$pkg" in
+            vesta|vesta-nginx|vesta-php|vesta-ioncube) ;;
+            *) filtered_software="$filtered_software $pkg" ;;
+        esac
+    done
+    software="$filtered_software"
+fi
 apt-get -y install $software
 check_result $? "apt-get install failed"
 
@@ -1004,13 +1038,16 @@ if [ "$mysql" = 'yes' ]; then
 
     # Configuring MySQL/MariaDB
     cp -f $vestacp/mysql/$mycnf /etc/mysql/my.cnf
-    if [ "$release" != '16.04' ]; then
-        mysql_install_db
-    fi
-    if [ "$release" == '18.04' ]; then
-        mkdir /var/lib/mysql
-        chown mysql:mysql /var/lib/mysql
-        mysqld --initialize-insecure
+    # mysql-server's postinst already initializes /var/lib/mysql; only redo it if missing.
+    if [ ! -d /var/lib/mysql/mysql ]; then
+        if [ "$release" != '16.04' ]; then
+            mysql_install_db
+        fi
+        if [ "$release" == '18.04' ]; then
+            mkdir /var/lib/mysql
+            chown mysql:mysql /var/lib/mysql
+            mysqld --initialize-insecure
+        fi
     fi
     update-rc.d mysql defaults
     service mysql start
@@ -1018,13 +1055,15 @@ if [ "$mysql" = 'yes' ]; then
 
     # Securing MySQL/MariaDB installation
     mpass=$(gen_pass)
-    mysqladmin -u root password $mpass
+    # root@localhost defaults to auth_socket; switch it to a real password.
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$mpass';"
+    check_result $? "mysql root password setup failed"
     echo -e "[client]\npassword='$mpass'\n" > /root/.my.cnf
     chmod 600 /root/.my.cnf
     mysql -e "DELETE FROM mysql.user WHERE User=''"
     mysql -e "DROP DATABASE test" >/dev/null 2>&1
     mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
-    mysql -e "DELETE FROM mysql.user WHERE user='' OR password='';"
+    mysql -e "DELETE FROM mysql.user WHERE user='' OR authentication_string='';"
     mysql -e "FLUSH PRIVILEGES"
 
     # Configuring phpMyAdmin
@@ -1345,11 +1384,6 @@ $VESTA/bin/v-update-sys-rrd
 # Enabling file system quota
 if [ "$quota" = 'yes' ]; then
     $VESTA/bin/v-add-sys-quota
-fi
-
-# Enabling softaculous plugin
-if [ "$softaculous" = 'yes' ]; then
-    $VESTA/bin/v-add-vesta-softaculous
 fi
 
 # Starting Vesta service

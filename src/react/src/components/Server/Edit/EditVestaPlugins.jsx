@@ -9,32 +9,6 @@ const EditVestaPluginsOption = ({ data, visible }) => {
   const { session } = useSelector(state => state.userSession);
   const [sftpValue, setSftpValue] = useState(data.lead || session['SFTPJAIL_KEY'] ? 'yes' : 'no');
   const [fmValue, setFmValue] = useState(data.fm_lead || session['FILEMANAGER_KEY'] ? 'yes' : 'no');
-  const [softaculousValue, setSoftaculousValue] = useState(session['SOFTACULOUS'] === 'yes' ? 'yes' : 'no');
-
-  const renderSoftaculous = () => {
-    if (softaculousValue === 'yes') {
-      if (session['SOFTACULOUS'] === 'yes') {
-        return (<div className="soft-module">
-          <div>
-            <span style={{ fontWeight: 'bolder' }}>{i18n['* plugin installation will run in background']}</span>
-            <span>
-              Softaculous is a great Auto Installer having 426 great scripts, 1115 PHP Classes
-              and we are still adding more. Softaculous is ideal for Web Hosting companies and
-              it could give a significant boost to your sales. These scripts cover most of the
-              uses a customer could ever have. We have covered a wide array of Categories so that
-              everyone could find the required script one would need to power their Web Site.
-            </span>
-          </div>
-
-          <div className="buy-license">
-            <a href="https://www.softaculous.com/softaculous/" target="_blank" rel="noopener noreferrer">
-              {i18n['Get Premium License'] ?? 'Get Premium License'}
-            </a>
-          </div>
-        </div>);
-      }
-    }
-  }
 
   const renderSftp = () => {
     if (sftpValue === 'yes') {
@@ -203,20 +177,6 @@ const EditVestaPluginsOption = ({ data, visible }) => {
       </div>
 
       {renderFm()}
-
-      <br />
-
-      <div className="form-group select-group">
-        <label className="label-wrapper" htmlFor="softaculous">
-          {i18n['Softaculous'] ?? 'Softaculous'}
-        </label>
-        <select className="form-control" id="softaculous" name="v_softaculous" onChange={event => setSoftaculousValue(event.target.value)}>
-          <option value="no">{i18n['no']}</option>
-          <option value="yes" selected={data.softaculous_lead || session['SOFTACULOUS'] === 'yes'}>{i18n['yes']}</option>
-        </select>
-      </div>
-
-      {renderSoftaculous()}
     </div>
   );
 }
