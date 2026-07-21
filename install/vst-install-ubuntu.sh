@@ -7,6 +7,9 @@
 #----------------------------------------------------------#
 export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
+# The rest of this script assumes HOME=/root (e.g. /root/.my.cnf); sudo
+# doesn't always reset it, so force it rather than inherit the caller's.
+export HOME=/root
 RHOST='apt.vestacp.com'
 CHOST='c.vestacp.com'
 VERSION='ubuntu'
