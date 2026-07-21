@@ -1035,13 +1035,16 @@ if [ "$mysql" = 'yes' ]; then
 
     # Configuring MySQL/MariaDB
     cp -f $vestacp/mysql/$mycnf /etc/mysql/my.cnf
-    if [ "$release" != '16.04' ]; then
-        mysql_install_db
-    fi
-    if [ "$release" == '18.04' ]; then
-        mkdir /var/lib/mysql
-        chown mysql:mysql /var/lib/mysql
-        mysqld --initialize-insecure
+    # mysql-server's postinst already initializes /var/lib/mysql; only redo it if missing.
+    if [ ! -d /var/lib/mysql/mysql ]; then
+        if [ "$release" != '16.04' ]; then
+            mysql_install_db
+        fi
+        if [ "$release" == '18.04' ]; then
+            mkdir /var/lib/mysql
+            chown mysql:mysql /var/lib/mysql
+            mysqld --initialize-insecure
+        fi
     fi
     update-rc.d mysql defaults
     service mysql start
@@ -1049,13 +1052,15 @@ if [ "$mysql" = 'yes' ]; then
 
     # Securing MySQL/MariaDB installation
     mpass=$(gen_pass)
-    mysqladmin -u root password $mpass
+    # root@localhost defaults to auth_socket; switch it to a real password.
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$mpass';"
+    check_result $? "mysql root password setup failed"
     echo -e "[client]\npassword='$mpass'\n" > /root/.my.cnf
     chmod 600 /root/.my.cnf
     mysql -e "DELETE FROM mysql.user WHERE User=''"
     mysql -e "DROP DATABASE test" >/dev/null 2>&1
     mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
-    mysql -e "DELETE FROM mysql.user WHERE user='' OR password='';"
+    mysql -e "DELETE FROM mysql.user WHERE user='' OR authentication_string='';"
     mysql -e "FLUSH PRIVILEGES"
 
     # Configuring phpMyAdmin
