@@ -1,0 +1,45 @@
+#!/sbin/openrc-run
+# Dedicated OpenRC service for the Vesta admin panel's nginx instance
+# (port 8083) -- separate from the "nginx" service, which serves hosted
+# domains. Not a symlink to Alpine's own nginx init script: that script
+# hardcodes its pidfile path rather than reading it from conf.d, so a
+# symlinked instance would never get its own /run directory created by
+# checkpath. This is a trimmed copy of that script with the paths fixed.
+description="Vesta admin panel (nginx on :8083)"
+
+cfgfile="/usr/local/vesta/nginx/conf/nginx.conf"
+pidfile="/run/vesta-nginx/vesta-nginx.pid"
+command="/usr/sbin/nginx"
+command_args="-c $cfgfile"
+required_files="$cfgfile"
+extra_commands="checkconfig"
+extra_started_commands="reload reopen"
+
+depend() {
+	need net
+	use dns logger netmount
+	after php-fpm83
+}
+
+start_pre() {
+	checkpath --directory --owner root:root --mode 0755 "${pidfile%/*}"
+	$command $command_args -t -q
+}
+
+checkconfig() {
+	ebegin "Checking $RC_SVCNAME configuration"
+	start_pre
+	eend $?
+}
+
+reload() {
+	ebegin "Reloading $RC_SVCNAME configuration"
+	start_pre && start-stop-daemon --signal HUP --pidfile "$pidfile"
+	eend $?
+}
+
+reopen() {
+	ebegin "Reopening $RC_SVCNAME log files"
+	start-stop-daemon --signal USR1 --pidfile "$pidfile"
+	eend $?
+}
