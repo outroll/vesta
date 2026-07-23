@@ -1,12 +1,16 @@
 #!/bin/bash
 
-# Vesta Alpine installer v.05 (MVP)
+# Vesta Alpine installer
 #
-# This is a first cut of Alpine support: nginx + php-fpm (backend) + MariaDB
-# + the Vesta panel itself. Apache, Exim/Dovecot mail, Bind DNS, vsftpd/
-# ProFTPD, ClamAV/SpamAssassin, PostgreSQL, Fail2ban and Roundcube webmail
-# are not wired up yet -- some of these (Roundcube, phpPgAdmin) aren't even
-# packaged for Alpine and will need a different approach later.
+# nginx (default) or Apache, php-fpm/mod_php, MariaDB, vsftpd/ProFTPD,
+# Bind, Exim + Dovecot (+ ClamAV/SpamAssassin), iptables + Fail2ban,
+# phpMyAdmin and Roundcube webmail -- everything the other installers
+# offer except PostgreSQL/phpPgAdmin, which aren't wired up here yet.
+#
+# Roundcube has no apk package, so it's fetched as a version-pinned,
+# checksum-verified upstream release tarball instead (see the Roundcube
+# section below) -- the same "not a distro package" pattern already used
+# for Vesta itself.
 #
 # Unlike the other installers, there is no "vesta" apk package -- this repo
 # checkout IS the panel, so this script copies itself into $VESTA instead of
@@ -26,33 +30,51 @@ os='alpine'
 release=$(cut -d. -f1,2 /etc/alpine-release 2>/dev/null)
 vestacp="$VESTA/install/$VERSION/$release"
 
-# Defining software pack (MVP: nginx + php-fpm + MariaDB only)
-software="nginx php83 php83-fpm php83-cli php83-ctype php83-curl php83-dom
+# Roundcube release pinning -- see the "Configure Roundcube" section.
+ROUNDCUBE_VERSION='1.6.17'
+ROUNDCUBE_SHA256='e1f6c437959cb8dffda1a3e59f0c0a2160b3d669948db69bb02edb218c8e69a1'
+
+# Defining software pack for all distros
+software="openrc nginx php83 php83-fpm php83-cli php83-ctype php83-curl php83-dom
     php83-fileinfo php83-gd php83-iconv php83-mbstring php83-mysqli
     php83-opcache php83-openssl php83-pdo php83-pdo_mysql php83-phar
     php83-session php83-simplexml php83-tokenizer php83-xml php83-xmlwriter
     php83-zip mariadb mariadb-client shadow sudo bash coreutils findutils
     grep sed gawk procps util-linux tzdata rsync curl wget git zip unzip
-    openssl dcron iproute2 logrotate"
+    openssl dcron iproute2 logrotate libidn"
 
 # Defining help function
 help() {
     echo "Usage: $0 [OPTIONS]
-  -m, --mysql             Install MariaDB          [yes|no]  default: yes
-  -l, --lang              Default language                default: en
-  -y, --interactive       Interactive install      [yes|no]  default: yes
-  -s, --hostname          Set hostname
-  -e, --email             Set admin email
-  -d, --port              Set Vesta port
-  -p, --password          Set admin password
-  -f, --force             Force installation
-  -h, --help              Print this help
+  -a, --apache             Install Apache           [yes|no]  default: no
+  -v, --vsftpd             Install vsftpd            [yes|no]  default: yes
+  -j, --proftpd            Install ProFTPD           [yes|no]  default: no
+  -k, --named              Install Bind              [yes|no]  default: yes
+  -m, --mysql              Install MariaDB           [yes|no]  default: yes
+  -x, --exim               Install Exim              [yes|no]  default: yes
+  -z, --dovecot            Install Dovecot           [yes|no]  default: yes
+  -c, --clamav             Install ClamAV            [yes|no]  default: yes on hosts with >=1.5G RAM
+  -t, --spamassassin       Install SpamAssassin      [yes|no]  default: yes on hosts with >=1.5G RAM
+  -i, --iptables           Install iptables          [yes|no]  default: yes
+  -b, --fail2ban           Install Fail2ban          [yes|no]  default: yes
+  -l, --lang               Default language                default: en
+  -y, --interactive        Interactive install      [yes|no]  default: yes
+  -s, --hostname           Set hostname
+  -e, --email              Set admin email
+  -d, --port               Set Vesta port
+  -p, --password           Set admin password
+  -f, --force               Force installation
+  -h, --help                Print this help
 
-  Only nginx + php-fpm + MariaDB are supported on Alpine right now; the
-  Apache/mail/DNS/FTP/antivirus/Fail2ban options the other installers have
-  aren't offered here yet.
+  nginx + php-fpm stays the default web backend; pass --apache yes to also
+  (or instead, with --nginx no if you've scripted this differently) enable
+  Apache with mod_php. PostgreSQL/phpPgAdmin aren't offered here yet.
+  phpMyAdmin is installed automatically whenever --mysql is yes; Roundcube
+  webmail is installed automatically whenever both --exim and --mysql are
+  yes (fetched as a pinned upstream tarball -- see ROUNDCUBE_VERSION in
+  this script).
 
-  Example: bash $0 -e demo@vestacp.com -p p4ssw0rd"
+  Example: bash $0 -e demo@vestacp.com -p p4ssw0rd --apache yes"
     exit 1
 }
 
@@ -111,7 +133,17 @@ set_default_lang() {
 for arg; do
     delim=""
     case "$arg" in
+        --apache)               args="${args}-a " ;;
+        --vsftpd)               args="${args}-v " ;;
+        --proftpd)              args="${args}-j " ;;
+        --named)                args="${args}-k " ;;
         --mysql)                args="${args}-m " ;;
+        --exim)                 args="${args}-x " ;;
+        --dovecot)              args="${args}-z " ;;
+        --clamav)                args="${args}-c " ;;
+        --spamassassin)         args="${args}-t " ;;
+        --iptables)             args="${args}-i " ;;
+        --fail2ban)             args="${args}-b " ;;
         --lang)                 args="${args}-l " ;;
         --interactive)          args="${args}-y " ;;
         --hostname)             args="${args}-s " ;;
@@ -127,9 +159,19 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "m:l:y:s:e:d:p:fh" Option; do
+while getopts "a:v:j:k:m:x:z:c:t:i:b:l:y:s:e:d:p:fh" Option; do
     case $Option in
+        a) apache=$OPTARG ;;            # Apache
+        v) vsftpd=$OPTARG ;;            # vsftpd
+        j) proftpd=$OPTARG ;;           # ProFTPD
+        k) named=$OPTARG ;;             # Bind
         m) mysql=$OPTARG ;;             # MariaDB
+        x) exim=$OPTARG ;;              # Exim
+        z) dovecot=$OPTARG ;;           # Dovecot
+        c) clamav=$OPTARG ;;            # ClamAV
+        t) spamassassin=$OPTARG ;;      # SpamAssassin
+        i) iptables=$OPTARG ;;          # iptables
+        b) fail2ban=$OPTARG ;;          # Fail2ban
         l) lang=$OPTARG ;;              # Language
         y) interactive=$OPTARG ;;       # Interactive install
         s) servername=$OPTARG ;;        # Hostname
@@ -143,9 +185,37 @@ while getopts "m:l:y:s:e:d:p:fh" Option; do
 done
 
 # Defining default software stack
+set_default_value 'apache' 'no'
+set_default_value 'vsftpd' 'yes'
+set_default_value 'proftpd' 'no'
+set_default_value 'named' 'yes'
 set_default_value 'mysql' 'yes'
+set_default_value 'exim' 'yes'
+set_default_value 'dovecot' 'yes'
+if [ $memory -lt 1500000 ]; then
+    set_default_value 'clamav' 'no'
+    set_default_value 'spamassassin' 'no'
+else
+    set_default_value 'clamav' 'yes'
+    set_default_value 'spamassassin' 'yes'
+fi
+set_default_value 'iptables' 'yes'
+set_default_value 'fail2ban' 'yes'
 set_default_value 'interactive' 'yes'
 set_default_lang 'en'
+
+# Checking software conflicts
+if [ "$proftpd" = 'yes' ]; then
+    vsftpd='no'
+fi
+if [ "$exim" = 'no' ]; then
+    clamav='no'
+    spamassassin='no'
+    dovecot='no'
+fi
+if [ "$iptables" = 'no' ]; then
+    fail2ban='no'
+fi
 
 # Checking root permissions
 if [ "x$(id -u)" != 'x0' ]; then
@@ -167,7 +237,7 @@ fi
 
 # Checking conflicts
 conflicts=""
-for pkg in nginx mariadb vesta; do
+for pkg in nginx mariadb vesta apache2 bind exim dovecot vsftpd proftpd; do
     if apk info -e "$pkg" >/dev/null 2>&1; then
         conflicts="$pkg $conflicts"
     fi
@@ -206,9 +276,43 @@ echo -e "\n\n"
 
 echo 'The following software will be installed on your system:'
 echo '   - Nginx Web Server'
-echo '   - PHP-FPM Application Server'
+if [ "$apache" = 'yes' ]; then
+    echo '   - Apache Web Server'
+fi
+echo '   - PHP Application Server'
 if [ "$mysql" = 'yes' ]; then
     echo '   - MariaDB Database Server'
+    echo '   - phpMyAdmin'
+fi
+if [ "$vsftpd" = 'yes' ]; then
+    echo '   - Vsftpd FTP Server'
+fi
+if [ "$proftpd" = 'yes' ]; then
+    echo '   - ProFTPD FTP Server'
+fi
+if [ "$named" = 'yes' ]; then
+    echo '   - Bind DNS Server'
+fi
+if [ "$exim" = 'yes' ]; then
+    echo '   - Exim Mail Server'
+fi
+if [ "$dovecot" = 'yes' ]; then
+    echo '   - Dovecot POP3/IMAP Server'
+fi
+if [ "$clamav" = 'yes' ]; then
+    echo '   - ClamAV Antivirus'
+fi
+if [ "$spamassassin" = 'yes' ]; then
+    echo '   - SpamAssassin Antispam'
+fi
+if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
+    echo '   - Roundcube Webmail'
+fi
+if [ "$iptables" = 'yes' ]; then
+    echo '   - iptables Firewall'
+fi
+if [ "$fail2ban" = 'yes' ]; then
+    echo '   - Fail2ban'
 fi
 echo -e "\n\n"
 
@@ -282,6 +386,46 @@ if [ "$mysql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/mariadb-client//' -e 's/mariadb//' -e 's/php83-mysqli//' -e 's/php83-pdo_mysql//')
 fi
 
+# Web/FTP/DNS/mail/firewall stack, added on top of the base software list
+if [ "$apache" = 'yes' ]; then
+    software="$software apache2 apache2-ssl apache2-ctl php83-apache2"
+fi
+if [ "$vsftpd" = 'yes' ]; then
+    software="$software vsftpd"
+fi
+if [ "$proftpd" = 'yes' ]; then
+    software="$software proftpd"
+fi
+if [ "$named" = 'yes' ]; then
+    software="$software bind"
+fi
+if [ "$exim" = 'yes' ]; then
+    software="$software exim"
+fi
+if [ "$dovecot" = 'yes' ]; then
+    software="$software dovecot dovecot-pop3d"
+fi
+if [ "$clamav" = 'yes' ]; then
+    software="$software clamav-daemon freshclam"
+fi
+if [ "$spamassassin" = 'yes' ]; then
+    software="$software spamassassin"
+fi
+if [ "$iptables" = 'yes' ]; then
+    software="$software iptables"
+fi
+if [ "$fail2ban" = 'yes' ]; then
+    software="$software fail2ban"
+fi
+if [ "$mysql" = 'yes' ]; then
+    software="$software phpmyadmin"
+fi
+if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
+    # Roundcube itself has no apk package (fetched separately below), but
+    # it needs these to run.
+    software="$software php83-intl php83-ldap php83-exif"
+fi
+
 apk update
 check_result $? "apk update failed"
 
@@ -317,6 +461,21 @@ case "$action" in
 esac
 EOF
 chmod +x /usr/sbin/service
+
+# bin/v-update-firewall (and bin/v-add-sys-ip, which calls it internally --
+# so this has to be in place before v-update-sys-ip runs later, not just
+# before the explicit v-update-firewall call in "Configure Admin User")
+# hardcodes /sbin/iptables, /sbin/modprobe and /sbin/sysctl. Alpine's apk
+# packages only provide these under /usr/sbin (no /sbin compat symlinks
+# like Debian/RHEL have), so bridge that here instead of touching the
+# shared script.
+if [ "$iptables" = 'yes' ]; then
+    for fw_bin in iptables iptables-save iptables-restore modprobe sysctl; do
+        if [ ! -e "/sbin/$fw_bin" ] && [ -e "/usr/sbin/$fw_bin" ]; then
+            ln -s "/usr/sbin/$fw_bin" "/sbin/$fw_bin"
+        fi
+    done
+fi
 
 # Installing sudo configuration
 mkdir -p /etc/sudoers.d
@@ -356,15 +515,68 @@ rm -f $VESTA/conf/vesta.conf 2>/dev/null
 touch $VESTA/conf/vesta.conf
 chmod 660 $VESTA/conf/vesta.conf
 
-# Web stack (nginx + php-fpm only)
-echo "WEB_SYSTEM='nginx'" >> $VESTA/conf/vesta.conf
-echo "WEB_PORT='80'" >> $VESTA/conf/vesta.conf
-echo "WEB_SSL_PORT='443'" >> $VESTA/conf/vesta.conf
-echo "WEB_SSL='openssl'"  >> $VESTA/conf/vesta.conf
-echo "WEB_BACKEND='php-fpm'" >> $VESTA/conf/vesta.conf
+# Web stack -- nginx is always installed as the base/panel-UI web server
+# in this installer (there's no --nginx flag to turn it off), so "apache
+# yes" always means the reverse-proxy combo: Apache on 8080/8443 behind
+# nginx on 80/443.
+if [ "$apache" = 'yes' ]; then
+    echo "WEB_SYSTEM='apache2'" >> $VESTA/conf/vesta.conf
+    echo "WEB_RGROUPS='apache'" >> $VESTA/conf/vesta.conf
+    echo "WEB_PORT='8080'" >> $VESTA/conf/vesta.conf
+    echo "WEB_SSL_PORT='8443'" >> $VESTA/conf/vesta.conf
+    echo "WEB_SSL='mod_ssl'" >> $VESTA/conf/vesta.conf
+    echo "PROXY_SYSTEM='nginx'" >> $VESTA/conf/vesta.conf
+    echo "PROXY_PORT='80'" >> $VESTA/conf/vesta.conf
+    echo "PROXY_SSL_PORT='443'" >> $VESTA/conf/vesta.conf
+    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
+else
+    echo "WEB_SYSTEM='nginx'" >> $VESTA/conf/vesta.conf
+    echo "WEB_PORT='80'" >> $VESTA/conf/vesta.conf
+    echo "WEB_SSL_PORT='443'" >> $VESTA/conf/vesta.conf
+    echo "WEB_SSL='openssl'"  >> $VESTA/conf/vesta.conf
+    echo "WEB_BACKEND='php-fpm'" >> $VESTA/conf/vesta.conf
+    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
+fi
+
+# FTP stack
+if [ "$vsftpd" = 'yes' ]; then
+    echo "FTP_SYSTEM='vsftpd'" >> $VESTA/conf/vesta.conf
+fi
+if [ "$proftpd" = 'yes' ]; then
+    echo "FTP_SYSTEM='proftpd'" >> $VESTA/conf/vesta.conf
+fi
+
+# DNS stack -- Alpine's named init script (and bin/v-add-dns-domain's
+# fallback branch) expects /etc/bind/named.conf, and its own package/group
+# name is "named" (not Debian's "bind9"/"bind" convention).
+if [ "$named" = 'yes' ]; then
+    echo "DNS_SYSTEM='named'" >> $VESTA/conf/vesta.conf
+fi
+
+# Mail stack
+if [ "$exim" = 'yes' ]; then
+    echo "MAIL_SYSTEM='exim'" >> $VESTA/conf/vesta.conf
+    if [ "$clamav" = 'yes' ]; then
+        echo "ANTIVIRUS_SYSTEM='clamd'" >> $VESTA/conf/vesta.conf
+    fi
+    if [ "$spamassassin" = 'yes' ]; then
+        echo "ANTISPAM_SYSTEM='spamd'" >> $VESTA/conf/vesta.conf
+    fi
+    if [ "$dovecot" = 'yes' ]; then
+        echo "IMAP_SYSTEM='dovecot'" >> $VESTA/conf/vesta.conf
+    fi
+fi
 
 # Cron daemon
-echo "CRON_SYSTEM='crond'" >> $VESTA/conf/vesta.conf
+echo "CRON_SYSTEM='dcron'" >> $VESTA/conf/vesta.conf
+
+# Firewall stack
+if [ "$iptables" = 'yes' ]; then
+    echo "FIREWALL_SYSTEM='iptables'" >> $VESTA/conf/vesta.conf
+fi
+if [ "$iptables" = 'yes' ] && [ "$fail2ban" = 'yes' ]; then
+    echo "FIREWALL_EXTENSION='fail2ban'" >> $VESTA/conf/vesta.conf
+fi
 
 # Backups
 echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/vesta.conf
@@ -386,8 +598,7 @@ mkdir -p /var/www
 cp $VESTA/data/templates/web/skel/public_html/index.html /var/www/
 sed -i 's/%domain%/It worked!/g' /var/www/index.html
 
-# Installing firewall rules (not enforced yet -- iptables isn't wired up on
-# Alpine in this MVP, this just keeps the data files present for later)
+# Installing firewall rules
 cp -rf $vestacp/firewall $VESTA/data/
 
 # Configuring server hostname
@@ -426,12 +637,55 @@ mkdir -p /etc/nginx/conf.d /var/log/nginx/domains /var/cache/nginx
 rm -f /etc/nginx/http.d/default.conf 2>/dev/null
 cp -f $vestacp/nginx/nginx.conf /etc/nginx/
 cp -f $vestacp/nginx/status.conf /etc/nginx/conf.d/
+if [ "$mysql" = 'yes' ]; then
+    cp -f $vestacp/nginx/phpmyadmin.inc /etc/nginx/conf.d/
+fi
+if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
+    cp -f $vestacp/nginx/webmail.inc /etc/nginx/conf.d/
+fi
 cp -f $vestacp/logrotate/nginx /etc/logrotate.d/
 echo > /etc/nginx/conf.d/vesta.conf
 chown -R nginx:nginx /var/log/nginx /var/cache/nginx
 rc-update add nginx default
 rc-service nginx start
 check_result $? "nginx start failed"
+
+
+#----------------------------------------------------------#
+#                     Configure Apache                     #
+#----------------------------------------------------------#
+
+if [ "$apache" = 'yes' ]; then
+    # Alpine's apache2 build ships everything Vesta's templates need
+    # already compiled in as commented-out LoadModule lines in httpd.conf
+    # -- there's no a2enmod, so just uncomment them. mod_ssl comes from
+    # the separate apache2-ssl package and self-registers via
+    # conf.d/ssl.conf; mod_php comes from php83-apache2 the same way.
+    # Unlike Debian, Alpine has no mod_fcgid/mod_suexec/mod_ruid2 package
+    # at all, so only the mod_php-based templates (default/basedir/hosting)
+    # work here -- the phpcgi/phpfcgid templates are not wired up.
+    sed -i \
+        -e 's/^#LoadModule rewrite_module/LoadModule rewrite_module/' \
+        -e 's/^#LoadModule actions_module/LoadModule actions_module/' \
+        -e 's/^#LoadModule cgi_module/LoadModule cgi_module/' \
+        /etc/apache2/httpd.conf
+
+    mkdir -p /etc/apache2/conf.d /var/log/apache2/domains
+    cp -f $vestacp/apache2/status.conf /etc/apache2/conf.d/
+    echo > /etc/apache2/conf.d/vesta.conf
+    touch /var/log/apache2/access.log /var/log/apache2/error.log
+    chown -R apache:apache /var/log/apache2
+
+    # nginx is always installed as the base web server in this installer,
+    # so Apache always runs in reverse-proxy mode: nginx keeps 80/443,
+    # Apache moves to 8080/8443.
+    sed -i 's/^Listen 80$/Listen 8080/' /etc/apache2/httpd.conf
+    sed -i 's/^Listen 443$/Listen 8443/' /etc/apache2/conf.d/ssl.conf
+
+    rc-update add apache2 default
+    rc-service apache2 start
+    check_result $? "apache2 start failed"
+fi
 
 
 #----------------------------------------------------------#
@@ -460,11 +714,33 @@ ZONE=$(cat /etc/timezone 2>/dev/null)
 if [ -z "$ZONE" ]; then
     ZONE='UTC'
 fi
-for pconf in /etc/php83/php.ini /etc/php83/cli/php.ini; do
+for pconf in /etc/php83/php.ini /etc/php83/cli/php.ini /etc/php83/apache2/php.ini; do
     [ -e "$pconf" ] || continue
     sed -i "s%;date.timezone =%date.timezone = $ZONE%g" $pconf
     sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
 done
+
+
+#----------------------------------------------------------#
+#                     Configure FTP                        #
+#----------------------------------------------------------#
+
+if [ "$vsftpd" = 'yes' ]; then
+    mkdir -p /etc/vsftpd
+    cp -f $vestacp/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf
+    touch /var/log/vsftpd.log
+    rc-update add vsftpd default
+    rc-service vsftpd start
+    check_result $? "vsftpd start failed"
+fi
+
+if [ "$proftpd" = 'yes' ]; then
+    mkdir -p /etc/proftpd
+    cp -f $vestacp/proftpd/proftpd.conf /etc/proftpd/proftpd.conf
+    rc-update add proftpd default
+    rc-service proftpd start
+    check_result $? "proftpd start failed"
+fi
 
 
 #----------------------------------------------------------#
@@ -506,6 +782,163 @@ if [ "$mysql" = 'yes' ]; then
     mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
     mysql -e "DELETE FROM mysql.user WHERE user='' OR authentication_string='';" 2>/dev/null
     mysql -e "FLUSH PRIVILEGES"
+
+    # Configuring phpMyAdmin -- Alpine's phpmyadmin package serves from
+    # /usr/share/webapps/phpmyadmin (not Debian's /usr/share/phpmyadmin);
+    # nginx's webroot alias for it was already dropped in above.
+    blowfish=$(gen_pass)$(gen_pass)$(gen_pass)
+    sed "s/%blowfish_secret%/$blowfish/" $vestacp/pma/config.inc.php \
+        > /etc/phpmyadmin/config.inc.php
+    if [ "$apache" = 'yes' ]; then
+        echo "Alias /phpmyadmin /usr/share/webapps/phpmyadmin" \
+            >> /etc/apache2/conf.d/vesta.conf
+    fi
+fi
+
+
+#----------------------------------------------------------#
+#                      Configure Bind                      #
+#----------------------------------------------------------#
+
+if [ "$named" = 'yes' ]; then
+    mkdir -p /etc/bind /var/bind /run/named
+    cp -f $vestacp/bind/named.conf /etc/bind/named.conf
+    # Alpine's bind package/group is "named", but bin/v-add-dns-domain's
+    # /etc/bind/named.conf branch (the one that applies here) hardcodes
+    # "chown root:bind" on every zone file it creates -- add a "bind"
+    # group and put the "named" user in it so that chown keeps working
+    # without touching that shared script.
+    addgroup bind 2>/dev/null
+    adduser named bind 2>/dev/null
+    chown root:named /etc/bind/named.conf
+    chmod 640 /etc/bind/named.conf
+    chown named:named /run/named /var/bind
+    rc-update add named default
+    rc-service named start
+    check_result $? "named start failed"
+fi
+
+
+#----------------------------------------------------------#
+#                      Configure Exim                      #
+#----------------------------------------------------------#
+
+if [ "$exim" = 'yes' ]; then
+    mkdir -p /etc/exim
+    cp -f $vestacp/exim/exim.conf /etc/exim/exim.conf
+    cp -f $vestacp/exim/dnsbl.conf /etc/exim/dnsbl.conf
+    cp -f $vestacp/exim/spam-blocks.conf /etc/exim/spam-blocks.conf
+    touch /etc/exim/white-blocks.conf
+    rm -rf /etc/exim/domains
+    mkdir -p /etc/exim/domains
+
+    # See exim.conf's ${lookup{...}lsearch*,ret=key{/etc/exim/detaint}}
+    # uses -- Exim 4.94+ taint-tracks $local_part (it comes straight off
+    # the SMTP envelope) and refuses to use it in a maildir path without
+    # this. Needs to be world-readable: the local_delivery transport reads
+    # it as the destination mailbox's own system user, not as exim.
+    echo '*' > /etc/exim/detaint
+    chmod 444 /etc/exim/detaint
+
+    if [ "$spamassassin" = 'yes' ]; then
+        sed -i "s/#SPAMASSASSIN/SPAMASSASSIN/g" /etc/exim/exim.conf
+    fi
+    if [ "$clamav" = 'yes' ]; then
+        sed -i "s/#CLAMD/CLAMD/g" /etc/exim/exim.conf
+    fi
+
+    chown root:root /etc/exim/exim.conf
+    chmod 644 /etc/exim/exim.conf
+
+    rc-update add exim default
+    rc-service exim start
+    check_result $? "exim start failed"
+fi
+
+
+#----------------------------------------------------------#
+#                     Configure Dovecot                    #
+#----------------------------------------------------------#
+
+if [ "$dovecot" = 'yes' ]; then
+    mkdir -p /etc/dovecot
+    cp -f $vestacp/dovecot/dovecot.conf /etc/dovecot/dovecot.conf
+    rc-update add dovecot default
+    rc-service dovecot start
+    check_result $? "dovecot start failed"
+fi
+
+
+#----------------------------------------------------------#
+#                     Configure ClamAV                     #
+#----------------------------------------------------------#
+
+if [ "$clamav" = 'yes' ]; then
+    mkdir -p /var/log/clamav /run/clamav /var/lib/clamav
+    cp -f $vestacp/clamav/clamd.conf /etc/clamav/clamd.conf
+    cp -f $vestacp/clamav/freshclam.conf /etc/clamav/freshclam.conf
+    chown -R clamav:clamav /var/log/clamav /run/clamav /var/lib/clamav
+    freshclam
+    rc-update add clamd default
+    rc-update add freshclam default
+    rc-service clamd start
+    # Not fatal: the db update above can fail on a network-restricted
+    # host, in which case clamd will (correctly) refuse to start until a
+    # database exists.
+fi
+
+
+#----------------------------------------------------------#
+#                  Configure SpamAssassin                  #
+#----------------------------------------------------------#
+
+if [ "$spamassassin" = 'yes' ]; then
+    mkdir -p /etc/mail/spamassassin
+    cp -f $vestacp/spamassassin/local.cf /etc/mail/spamassassin/local.cf
+    cp -f $vestacp/spamassassin/spamd.conf.d /etc/conf.d/spamd
+    sa-update >/dev/null 2>&1
+    rc-update add spamd default
+    rc-service spamd start
+    check_result $? "spamd start failed"
+fi
+
+
+#----------------------------------------------------------#
+#                   Configure Roundcube                    #
+#----------------------------------------------------------#
+
+if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
+    rc_tarball="/tmp/roundcubemail-$ROUNDCUBE_VERSION-complete.tar.gz"
+    curl -fsSL -o "$rc_tarball" \
+        "https://github.com/roundcube/roundcubemail/releases/download/$ROUNDCUBE_VERSION/roundcubemail-$ROUNDCUBE_VERSION-complete.tar.gz"
+    check_result $? "roundcube download failed"
+    echo "$ROUNDCUBE_SHA256  $rc_tarball" | sha256sum -c -
+    check_result $? "roundcube tarball checksum mismatch"
+
+    rm -rf /var/lib/roundcube
+    mkdir -p /var/lib/roundcube
+    tar -xzf "$rc_tarball" -C /var/lib/roundcube --strip-components=1
+    rm -f "$rc_tarball"
+
+    rpass=$(gen_pass)
+    deskey=$(gen_pass)$(gen_pass)$(head -c4 /dev/urandom |base64|head -c4)
+    sed -e "s/%password%/$rpass/" -e "s/%des_key%/$deskey/" \
+        $vestacp/roundcube/config.inc.php \
+        > /var/lib/roundcube/config/config.inc.php
+    cp -f $vestacp/roundcube/password.inc.php \
+        /var/lib/roundcube/plugins/password/config.inc.php
+    cp -f $vestacp/roundcube/vesta.php \
+        /var/lib/roundcube/plugins/password/drivers/vesta.php
+
+    mkdir -p /var/log/roundcube
+    chown -R nginx:nginx /var/lib/roundcube/temp /var/lib/roundcube/logs \
+        /var/log/roundcube 2>/dev/null
+    chmod 640 /var/lib/roundcube/config/config.inc.php
+    chown root:nginx /var/lib/roundcube/config/config.inc.php
+
+    mysql -e "CREATE DATABASE roundcube"
+    mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost IDENTIFIED BY '$rpass'"
+    mysql roundcube < /var/lib/roundcube/SQL/mysql.initial.sql
 fi
 
 
@@ -516,6 +949,42 @@ fi
 rc-update add dcron default
 rc-service dcron start
 check_result $? "dcron start failed"
+
+
+#----------------------------------------------------------#
+#                    Configure Fail2ban                    #
+#----------------------------------------------------------#
+
+if [ "$fail2ban" = 'yes' ]; then
+    cp -f $vestacp/fail2ban/jail.local /etc/fail2ban/jail.local
+    if [ "$vsftpd" = 'yes' ]; then
+        sed -i '/^\[vsftpd\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local
+    fi
+    if [ "$proftpd" = 'yes' ]; then
+        sed -i '/^\[proftpd\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local
+    fi
+    if [ "$dovecot" = 'yes' ]; then
+        sed -i '/^\[dovecot\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local
+    fi
+    if [ "$exim" = 'yes' ]; then
+        sed -i '/^\[exim\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local
+        sed -i '/^\[exim-spam\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local
+    fi
+    if [ "$named" = 'yes' ]; then
+        sed -i '/^\[named-refused\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local
+    fi
+    if [ "$mysql" = 'yes' ]; then
+        sed -i '/^\[mysqld-auth\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local
+    fi
+    if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
+        sed -i '/^\[roundcube-auth\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local
+    fi
+    sed -i '/^\[nginx-http-auth\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local
+
+    rc-update add fail2ban default
+    rc-service fail2ban start
+    check_result $? "fail2ban start failed"
+fi
 
 
 #----------------------------------------------------------#
@@ -594,6 +1063,12 @@ fi
 $VESTA/bin/v-add-domain admin $servername
 check_result $? "can't create $servername domain"
 
+# Configuring firewall
+if [ "$iptables" = 'yes' ]; then
+    rc-update add iptables default
+    $VESTA/bin/v-update-firewall
+fi
+
 # Adding cron jobs
 command="sudo $VESTA/bin/v-update-sys-queue disk"
 $VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command"
@@ -647,9 +1122,6 @@ Vesta Control Panel
     https://$ip:$port
     username: admin
     password: $vpass
-
-This is an MVP Alpine install -- nginx, php-fpm and MariaDB only. Mail, DNS,
-FTP, antivirus and Fail2ban support are not available on Alpine yet.
 "
 
 # Congrats

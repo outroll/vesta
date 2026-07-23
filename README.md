@@ -32,7 +32,7 @@ Clone this repository and run the installer for your OS from `install/`:
 ```bash
 git clone https://github.com/outroll/vesta.git
 cd vesta/install
-sudo ./vst-install-ubuntu.sh   # or vst-install-debian.sh / vst-install-rhel.sh / vst-install-amazon.sh
+sudo ./vst-install-ubuntu.sh   # or vst-install-debian.sh / vst-install-rhel.sh / vst-install-amazon.sh / vst-install-alpine.sh
 ```
 
 Run the script with `--help` to see the available options (admin email/password,
