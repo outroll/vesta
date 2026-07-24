@@ -1,0 +1,62 @@
+name: Release vesta Alpine installer
+
+on:
+  push:
+    tags:
+      - 'alpine-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # vst-install-alpine.sh copies this checkout wholesale into
+      # /usr/local/vesta (there's no separate "vesta" apk package -- this
+      # repo checkout IS the panel, see the comment at the top of that
+      # script), so the release artifact is just the repo source, trimmed
+      # of the other distros' install/ trees to keep the download
+      # Alpine-sized.
+      - name: Build install source tarball
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          version="${REF_NAME#alpine-v}"
+          tarball="vesta-alpine-${version}.tar.gz"
+          mkdir -p /tmp/pkg/vesta
+          rsync -a --exclude='.git' --exclude='.github' \
+            --exclude='install/debian' --exclude='install/ubuntu' \
+            --exclude='install/rhel' \
+            ./ /tmp/pkg/vesta/
+          tar -czf "$tarball" -C /tmp/pkg vesta
+          echo "$tarball" > tarball_name.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vesta-alpine-tarball
+          path: |
+            vesta-alpine-*.tar.gz
+            tarball_name.txt
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: vesta-alpine-tarball
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tarball=$(cat tarball_name.txt)
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$tarball" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$tarball" --title "$GITHUB_REF_NAME" --generate-notes
+          fi
