@@ -6,19 +6,19 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import Password from '../../ControlPanel/AddItemLayout/Form/Password/Password';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 import './AddDatabase.scss'
 
 const AddDatabase = memo(props => {
   const { i18n } = useSelector(state => state.session);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     loading: false,
     okMessage: '',
@@ -143,7 +143,7 @@ const AddDatabase = memo(props => {
 
             <span className="prefix">{HtmlParser(state.prefixI18N)}</span>
 
-            <div className="form-group database">
+            <div className="form-group database mb-3">
               <label htmlFor="database">{i18n.Database}</label>
               <div className="input-wrapper">
                 <input
@@ -157,7 +157,7 @@ const AddDatabase = memo(props => {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <div className="label-wrapper">
                 <label htmlFor="user">{i18n.User}</label>
                 <span className="italic">({state.maxCharLength})</span>
@@ -176,28 +176,28 @@ const AddDatabase = memo(props => {
 
             <Password name={'v_password'} />
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label htmlFor="dbTypes">{i18n.Type}</label>
               <select class="form-control" id="dbTypes" name="v_type">
                 {renderDatabaseTypesOptions()}
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label htmlFor="dbHosts">{i18n.Host}</label>
               <select class="form-control" id="dbHosts" name="v_host">
                 {renderDatabaseHostsOptions()}
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label htmlFor="dbCharset">{i18n.Charset}</label>
               <select class="form-control" id="dbCharset" name="v_charset">
                 {renderDatabaseCharsetOptions()}
               </select>
             </div>
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="sendLoginCredentialsToEmailAddress">{i18n['Send login credentials to email address']}</label>
               <input
                 type="email"
@@ -208,7 +208,7 @@ const AddDatabase = memo(props => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Add}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/db/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/db/')}>{i18n.Back}</button>
             </div>
           </form>
         )}

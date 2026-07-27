@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import FileManager from '../FileManager/FileManager';
-import { Route, Switch, useHistory, Redirect } from "react-router";
+import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import Preview from '../../components/Preview/Preview';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import * as Icon from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap/dist/js/bootstrap.min';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './App.scss';
 import ControlPanelContent from '../ControlPanelContent/ControlPanelContent';
 import WebLogs from '../WebLogs/WebLogs';
@@ -62,7 +62,7 @@ library.add(
 );
 
 const App = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const session = useSelector(state => state.session);
   const [loading, setLoading] = useState(true);
@@ -74,19 +74,10 @@ const App = () => {
           setLoading(false);
         }, (error) => {
           console.error(error);
-          return history.push('/login');
+          return navigate('/login');
         });
     }
-  }, [dispatch, history, session]);
-
-  const AuthenticatedRoute = ({ authenticated, ...rest }) => {
-    return (
-      <Route {...rest} render={props =>
-        authenticated
-          ? <rest.component {...props} />
-          : <Redirect to="/login" />} />
-    );
-  }
+  }, [dispatch, navigate, session]);
 
   return (
     <div className="App">
@@ -94,32 +85,25 @@ const App = () => {
         loading
           ? <Spinner />
           : (
-            <Switch>
-              <Route path="/login" exact component={LoginForm} />
-              <Route path="/reset" exact component={ForgotPassword} />
+            <Routes>
+              <Route path="/login" element={<LoginForm />} />
+              <Route path="/reset" element={<ForgotPassword />} />
               <Route
                 path="/list/directory/"
-                exact
-                component={FileManager} />
+                element={<FileManager />} />
               <Route
                 path="/list/directory/preview/"
-                exact
-                component={Preview} />
-              <AuthenticatedRoute
+                element={<Preview />} />
+              <Route
                 path="/list/server/service/"
-                authenticated={session.userName}
-                component={ServiceInfo} />
-              <AuthenticatedRoute
+                element={session.userName ? <ServiceInfo /> : <Navigate to="/login" replace />} />
+              <Route
                 path="/list/web-log/"
-                exact
-                authenticated={session.userName}
-                component={WebLogs} />
-              <AuthenticatedRoute
-                path="/"
-                authenticated={session.userName}
-                loading={loading}
-                component={ControlPanelContent} />
-            </Switch>
+                element={session.userName ? <WebLogs /> : <Navigate to="/login" replace />} />
+              <Route
+                path="/*"
+                element={session.userName ? <ControlPanelContent /> : <Navigate to="/login" replace />} />
+            </Routes>
           )
       }
     </div>

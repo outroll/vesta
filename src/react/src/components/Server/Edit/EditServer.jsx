@@ -14,18 +14,18 @@ import EditDatabaseOption from './EditDatabaseOption';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import EditBackupOption from './EditBackupOption';
 import EditMailOption from './EditMailOption';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './EditServer.scss';
-import { Helmet } from 'react-helmet';
-import HtmlParser from 'react-html-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 import { refreshUserSession } from 'src/actions/Session/sessionActions';
 
 const EditServer = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');
@@ -138,7 +138,7 @@ const EditServer = props => {
 
             {
               state.data.timezones && (
-                <div className="form-group select-group">
+                <div className="form-group select-group mb-3">
                   <label className="label-wrapper" htmlFor="timezone">
                     {i18n['Time Zone']}
                   </label>
@@ -224,7 +224,7 @@ const EditServer = props => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Save}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/server/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/server/')}>{i18n.Back}</button>
             </div>
 
           </form>

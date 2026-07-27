@@ -13,7 +13,7 @@ import Modal from '../../components/ControlPanel/Modal/Modal';
 import Spinner from '../../components/Spinner/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import Backup from '../../components/Backup/Backup';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import './Backups.scss';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';

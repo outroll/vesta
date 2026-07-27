@@ -12,15 +12,14 @@ const Modal = ({ show, text, onSave, onCancel, showSaveButton = true, showCancel
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLabel">{i18n.Confirmation}</h5>
-              <button type="button" onClick={() => onCancel()} className="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+              <button type="button" onClick={() => onCancel()} className="btn-close" data-bs-dismiss="modal" aria-label="Close">
               </button>
             </div>
             <div className="modal-body">
               {text}
             </div>
             <div className="modal-footer">
-              {showCancelButton ? <button onClick={() => onCancel()} type="button" className="btn btn-secondary" data-dismiss="modal">{i18n.Cancel}</button> : ''}
+              {showCancelButton ? <button onClick={() => onCancel()} type="button" className="btn btn-secondary" data-bs-dismiss="modal">{i18n.Cancel}</button> : ''}
               {showSaveButton ? <button onClick={() => onSave()} type="button" className="btn btn-primary">{i18n.OK}</button> : ''}
             </div>
           </div>

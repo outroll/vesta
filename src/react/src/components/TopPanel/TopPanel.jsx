@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { addActiveElement } from 'src/actions/MainNavigation/mainNavigationActions';
 import { logout } from 'src/actions/Session/sessionActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Spinner from '../Spinner/Spinner';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
@@ -13,7 +13,7 @@ const TopPanel = ({ menuItems = [], extraMenuItems = [] }) => {
   const [loading, setLoading] = useState(false);
   const { i18n, userName } = useSelector(state => state.session);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const className = cls => {
     let className = 'nav-link';
@@ -51,7 +51,7 @@ const TopPanel = ({ menuItems = [], extraMenuItems = [] }) => {
 
   const handleState = (event, route) => {
     event.preventDefault();
-    history.push(route);
+    navigate(route);
     dispatch(addActiveElement(route));
   }
 
@@ -60,7 +60,7 @@ const TopPanel = ({ menuItems = [], extraMenuItems = [] }) => {
 
     dispatch(logout())
       .then(() => {
-        history.push('/login/');
+        navigate('/login/');
         setLoading(false);
       },
         error => {

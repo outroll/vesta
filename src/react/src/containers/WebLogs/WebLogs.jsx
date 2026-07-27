@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 
 import { addActiveElement } from 'src/actions/MainNavigation/mainNavigationActions';
 import TopPanel from 'src/components/TopPanel/TopPanel';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import QueryString from 'qs';
 
 import './WebLogs.scss';
 import { getWebLogs } from 'src/ControlPanelService/WebLogs';
 import Spinner from 'src/components/Spinner/Spinner';
-import { Helmet } from 'react-helmet';
-import HtmlParser from 'react-html-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 export default function WebLogs() {
   const { i18n, userName } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const mainNavigation = useSelector(state => state.mainNavigation);
   const [domain, setDomain] = useState();
@@ -26,16 +27,16 @@ export default function WebLogs() {
 
   useEffect(() => {
     if (!userName) {
-      history.push('/login/');
+      navigate('/login/');
     }
   }, []);
 
   useEffect(() => {
-    let parsedQueryString = QueryString.parse(history.location.search, { ignoreQueryPrefix: true });
+    let parsedQueryString = QueryString.parse(location.search, { ignoreQueryPrefix: true });
     const { domain, type } = parsedQueryString;
 
     if (!parsedQueryString && !domain && !type) {
-      return history.goBack();
+      return navigate(-1);
     }
 
     setDomain(domain);

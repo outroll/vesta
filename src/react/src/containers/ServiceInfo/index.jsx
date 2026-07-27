@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 
 import { addActiveElement } from 'src/actions/MainNavigation/mainNavigationActions';
 import TopPanel from 'src/components/TopPanel/TopPanel';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getServiceLogs } from 'src/ControlPanelService/Server';
 import Spinner from 'src/components/Spinner/Spinner';
-import { Helmet } from 'react-helmet';
-import ReactHtmlParser from 'react-html-parser';
+import { Helmet } from 'react-helmet-async';
+import ReactHtmlParser from 'html-react-parser';
 
 import './styles.scss';
 import QueryString from 'qs';
@@ -16,7 +16,8 @@ import QueryString from 'qs';
 const ServiceInfo = () => {
   const { i18n, userName } = useSelector(state => state.session);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [state, setState] = useState({
     data: "",
     loading: false
@@ -24,12 +25,12 @@ const ServiceInfo = () => {
 
   useEffect(() => {
     if (!userName) {
-      history.push('/login/');
+      navigate('/login/');
     }
   }, [userName]);
 
   useEffect(() => {
-    let queryParams = QueryString.parse(history.location.search, { ignoreQueryPrefix: true });
+    let queryParams = QueryString.parse(location.search, { ignoreQueryPrefix: true });
 
     if (!queryParams.srv) {
       fetchData('cpu');
@@ -39,13 +40,13 @@ const ServiceInfo = () => {
 
     if (!menuItems.find(item => item.service === queryParams.srv)) {
       dispatch(addActiveElement('/list/server/service/?srv=cpu'));
-      history.push('/list/server/service/?srv=cpu');
+      navigate('/list/server/service/?srv=cpu');
       return;
     }
 
     fetchData(queryParams.srv);
     dispatch(addActiveElement(`/list/server/service/?srv=${queryParams.srv}`));
-  }, [history.location.search]);
+  }, [location.search]);
 
   const fetchData = serviceName => {
     setState({ ...state, loading: true });

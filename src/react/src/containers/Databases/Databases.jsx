@@ -15,7 +15,7 @@ import Database from '../../components/Database/Database';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
 import './Databases.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 import { Link } from 'react-router-dom';
 

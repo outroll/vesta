@@ -16,7 +16,7 @@ export default function SecondTabSelects() {
       <input type="hidden" name="h_month" value="*" />
       <input type="hidden" name="h_wday" value="*" />
 
-      <div className="form-group minute">
+      <div className="form-group minute mb-3">
         <label htmlFor="run-command">{i18n.Minute ?? 'Minute'}:</label>
         <select className="form-control" name="h_min">
           {renderOptions()}

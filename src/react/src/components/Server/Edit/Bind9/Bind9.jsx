@@ -7,17 +7,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getServiceInfo, updateService } from 'src/ControlPanelService/Server';
 import Spinner from '../../../../components/Spinner/Spinner';
 import Toolbar from '../../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './Bind9.scss';
-import { Helmet } from 'react-helmet';
-import HtmlParser from 'react-html-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 const Bind9 = () => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');
@@ -38,7 +38,7 @@ const Bind9 = () => {
     getServiceInfo('bind9')
       .then(response => {
         if (response.data.config.includes('Error')) {
-          history.push('/list/server');
+          navigate('/list/server');
         }
 
         setState({ ...state, data: response.data, loading: false });
@@ -127,7 +127,7 @@ const Bind9 = () => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Save}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/server/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/server/')}>{i18n.Back}</button>
             </div>
 
           </form>

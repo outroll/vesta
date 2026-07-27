@@ -7,18 +7,19 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import QS from 'qs';
 
 import './EditFirewall.scss';
-import { Helmet } from 'react-helmet';
-import HtmlParser from 'react-html-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 const EditFirewall = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');
@@ -28,7 +29,7 @@ const EditFirewall = props => {
   });
 
   useEffect(() => {
-    let queryParams = QS.parse(history.location.search, { ignoreQueryPrefix: true });
+    let queryParams = QS.parse(location.search, { ignoreQueryPrefix: true });
     const { rule } = queryParams;
 
     dispatch(addActiveElement('/list/firewall/'));
@@ -105,7 +106,7 @@ const EditFirewall = props => {
             <input type="hidden" name="save" value="save" />
             <input type="hidden" name="token" value={token} />
 
-            <div className="form-group select-group">
+            <div className="form-group select-group mb-3">
               <label className="label-wrapper" htmlFor="action">
                 {i18n['Action']}
               </label>
@@ -115,7 +116,7 @@ const EditFirewall = props => {
               </select>
             </div>
 
-            <div className="form-group select-group">
+            <div className="form-group select-group mb-3">
               <label className="label-wrapper" htmlFor="protocol">
                 {i18n['Protocol']}
               </label>
@@ -149,7 +150,7 @@ const EditFirewall = props => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Save}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/firewall/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/firewall/')}>{i18n.Back}</button>
             </div>
 
           </form>

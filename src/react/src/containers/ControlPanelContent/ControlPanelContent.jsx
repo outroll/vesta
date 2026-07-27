@@ -6,7 +6,7 @@ import AddInternetProtocol from '../../components/InternetProtocol/Add/AddIntern
 import EditServerNginx from 'src/components/Server/Edit/Nginx/EditServerNginx';
 import Postgresql from 'src/components/Server/Edit/Postgresql/Postgresql';
 import EditBackupExclusions from 'src/components/Backup/Exclusion/Edit';
-import { Route, Switch, Redirect, useHistory } from "react-router-dom";
+import { Route, Routes, Navigate, useNavigate, useLocation } from "react-router-dom";
 import InternetProtocols from '../InternetProtocols/InternetProtocols';
 import AddWebDomain from '../../components/WebDomain/Add/AddWebDomain';
 import EditDatabase from '../../components/Database/Edit/EditDatabase';
@@ -59,7 +59,8 @@ import './ControlPanelContent.scss';
 
 const ControlPanelContent = props => {
   const { userName } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
   const [hotkeysList, setHotkeysList] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -67,7 +68,7 @@ const ControlPanelContent = props => {
 
   useEffect(() => {
     if (!userName) {
-      return history.push('/login');
+      return navigate('/login');
     } else {
       setLoading(false);
     }
@@ -92,13 +93,13 @@ const ControlPanelContent = props => {
     }
 
     switch (event.keyCode) {
-      case 49: return history.push('/list/user/');
-      case 50: return history.push('/list/web/');
-      case 51: return history.push('/list/dns/');
-      case 52: return history.push('/list/mail/');
-      case 53: return history.push('/list/db/');
-      case 54: return history.push('/list/cron/');
-      case 55: return history.push('/list/backup/');
+      case 49: return navigate('/list/user/');
+      case 50: return navigate('/list/web/');
+      case 51: return navigate('/list/dns/');
+      case 52: return navigate('/list/mail/');
+      case 53: return navigate('/list/db/');
+      case 54: return navigate('/list/cron/');
+      case 55: return navigate('/list/backup/');
       default: break;
     }
   }
@@ -111,16 +112,16 @@ const ControlPanelContent = props => {
     }
 
     if (event.keyCode === 65) {
-      switch (history.location.pathname) {
-        case '/list/web/': return history.push('/add/web/');
-        case '/list/dns/': return history.push('/add/dns/');
-        case '/list/mail/': return history.push('/add/mail/');
-        case '/list/db/': return history.push('/add/db/');
-        case '/list/cron/': return history.push('/add/cron/');
-        case '/list/backup/exclusions': return history.push('/edit/backup/exclusions/');
-        case '/list/package/': return history.push('/add/package/');
-        case '/list/ip/': return history.push('/add/ip/');
-        case '/list/firewall/': return history.push('/add/firewall/');
+      switch (location.pathname) {
+        case '/list/web/': return navigate('/add/web/');
+        case '/list/dns/': return navigate('/add/dns/');
+        case '/list/mail/': return navigate('/add/mail/');
+        case '/list/db/': return navigate('/add/db/');
+        case '/list/cron/': return navigate('/add/cron/');
+        case '/list/backup/exclusions': return navigate('/edit/backup/exclusions/');
+        case '/list/package/': return navigate('/add/package/');
+        case '/list/ip/': return navigate('/add/ip/');
+        case '/list/firewall/': return navigate('/add/firewall/');
         default: break;
       }
     }
@@ -128,7 +129,7 @@ const ControlPanelContent = props => {
 
   const handleSearchTerm = searchTerm => {
     setSearchTerm(searchTerm);
-    history.push({
+    navigate({
       pathname: '/search/',
       search: `?q=${searchTerm}`
     });
@@ -138,6 +139,8 @@ const ControlPanelContent = props => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  const historyShim = { push: navigate };
+
   return (
     <div>
       <MainNav />
@@ -146,70 +149,70 @@ const ControlPanelContent = props => {
           loading
             ? <Spinner />
             : (
-              <Switch>
-                <Redirect from="/" exact to="/list/user/" />
-                <Route path="/list/package" component={props => <Packages {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/add/package" component={() => <AddPackage />} />
-                <Route path="/edit/package" component={() => <EditPackage />} />
-                <Route path="/list/ip" component={props => <InternetProtocols {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/add/ip" component={() => <AddInternetProtocol />} />
-                <Route path="/edit/ip" component={() => <EditInternetProtocol />} />
-                <Route path="/list/rrd" component={props => <RRDs {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/stats" component={props => <Statistics {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/log" component={props => <Logs {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/updates" component={props => <Updates {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/firewall" exact component={props => <Firewalls {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/firewall/banlist" exact component={props => <BanList {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/add/firewall/banlist" component={AddBanIP} />
-                <Route path="/add/firewall" component={() => <AddFirewall />} />
-                <Route path="/edit/firewall" component={() => <EditFirewall />} />
-                <Route path="/list/server/" exact component={props => <Servers {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/edit/server/" exact component={() => <EditServer />} />
-                <Route path="/edit/server/nginx" exact component={() => <EditServerNginx />} />
-                <Route path="/edit/server/php" exact component={() => <EditPhp serviceName="php" />} />
-                <Route path="/edit/server/php-fpm" exact component={() => <EditPhp serviceName="php-fpm" />} />
-                <Route path="/edit/server/php5-fpm" exact component={() => <EditPhp serviceName="php5-fpm" />} />
-                <Route path="/edit/server/httpd" exact component={() => <EditHttpd />} />
-                <Route path="/edit/server/dovecot" exact component={() => <Dovecot />} />
-                <Route path="/edit/server/bind9" exact component={() => <Bind9 />} />
-                <Route path="/edit/server/postgresql" exact component={() => <Postgresql />} />
-                <Route path="/edit/server/mysql" exact component={() => <Mysql serviceName="mysql" />} />
-                <Route path="/edit/server/mariadb" exact component={() => <Mysql serviceName="mariadb" />} />
-                <Route path="/edit/server/mysqld" exact component={() => <Mysql serviceName="mysqld" />} />
+              <Routes>
+                <Route path="/" element={<Navigate to="/list/user/" replace />} />
+                <Route path="/list/package" element={<Packages history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/add/package" element={<AddPackage />} />
+                <Route path="/edit/package" element={<EditPackage />} />
+                <Route path="/list/ip" element={<InternetProtocols history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/add/ip" element={<AddInternetProtocol />} />
+                <Route path="/edit/ip" element={<EditInternetProtocol />} />
+                <Route path="/list/rrd" element={<RRDs history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/stats" element={<Statistics history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/log" element={<Logs history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/updates" element={<Updates history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/firewall" element={<Firewalls history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/firewall/banlist" element={<BanList history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/add/firewall/banlist" element={<AddBanIP />} />
+                <Route path="/add/firewall" element={<AddFirewall />} />
+                <Route path="/edit/firewall" element={<EditFirewall />} />
+                <Route path="/list/server/" element={<Servers history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/edit/server/" element={<EditServer />} />
+                <Route path="/edit/server/nginx" element={<EditServerNginx />} />
+                <Route path="/edit/server/php" element={<EditPhp serviceName="php" />} />
+                <Route path="/edit/server/php-fpm" element={<EditPhp serviceName="php-fpm" />} />
+                <Route path="/edit/server/php5-fpm" element={<EditPhp serviceName="php5-fpm" />} />
+                <Route path="/edit/server/httpd" element={<EditHttpd />} />
+                <Route path="/edit/server/dovecot" element={<Dovecot />} />
+                <Route path="/edit/server/bind9" element={<Bind9 />} />
+                <Route path="/edit/server/postgresql" element={<Postgresql />} />
+                <Route path="/edit/server/mysql" element={<Mysql serviceName="mysql" />} />
+                <Route path="/edit/server/mariadb" element={<Mysql serviceName="mariadb" />} />
+                <Route path="/edit/server/mysqld" element={<Mysql serviceName="mysqld" />} />
 
                 {
                   !!services.length && services.map((service, index) => {
                     if (service === 'iptables') {
-                      return <Redirect key={index} from="/edit/server/iptables" exact to="/list/firewall" />
+                      return <Route key={index} path="/edit/server/iptables" element={<Navigate to="/list/firewall" replace />} />
                     } else {
-                      return <Route key={index} path={`/edit/server/${service}`} exact component={() => <Service serviceName={service} />} />
+                      return <Route key={index} path={`/edit/server/${service}`} element={<Service serviceName={service} />} />
                     }
                   })
                 }
 
-                <Route path="/list/user" component={props => <Users changeSearchTerm={handleSearchTerm} {...props} />} />
-                <Route path="/add/user" component={() => <AddUser />} />
-                <Route path="/edit/user" component={() => <EditUser />} />
-                <Route path="/list/web" component={props => <Web {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/add/web" component={() => <AddWebDomain />} />
-                <Route path="/edit/web" component={() => <EditWeb />} />
-                <Route path="/list/dns" component={props => <DNSWrapper {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/add/dns" component={() => <AddDNSWrapper />} />
-                <Route path="/edit/dns" component={() => <EditDNSWrapper />} />
-                <Route path="/list/mail" component={props => <MailWrapper {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/add/mail" component={() => <AddMailWrapper />} />
-                <Route path="/edit/mail" component={() => <EditMailWrapper />} />
-                <Route path="/list/db" component={props => <Databases {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/add/db" component={() => <AddDatabase />} />
-                <Route path="/edit/db" component={() => <EditDatabase />} />
-                <Route path="/list/cron" component={props => <CronJobs {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/add/cron" component={() => <AddCronJob />} />
-                <Route path="/edit/cron" component={() => <EditCronJob />} />
-                <Route exact path="/list/backup" component={props => <BackupWrapper {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route exact path="/list/backup/exclusions" component={props => <BackupExclusions {...props} changeSearchTerm={handleSearchTerm} />} />
-                <Route exact path="/edit/backup/exclusions" component={EditBackupExclusions} />
-                <Route path="/search/" component={props => <Search {...props} changeSearchTerm={handleSearchTerm} searchTerm={searchTerm} />} />
-              </Switch>
+                <Route path="/list/user" element={<Users changeSearchTerm={handleSearchTerm} history={historyShim} />} />
+                <Route path="/add/user" element={<AddUser />} />
+                <Route path="/edit/user" element={<EditUser />} />
+                <Route path="/list/web" element={<Web history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/add/web" element={<AddWebDomain />} />
+                <Route path="/edit/web" element={<EditWeb />} />
+                <Route path="/list/dns" element={<DNSWrapper history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/add/dns" element={<AddDNSWrapper />} />
+                <Route path="/edit/dns" element={<EditDNSWrapper />} />
+                <Route path="/list/mail" element={<MailWrapper history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/add/mail" element={<AddMailWrapper />} />
+                <Route path="/edit/mail" element={<EditMailWrapper />} />
+                <Route path="/list/db" element={<Databases history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/add/db" element={<AddDatabase />} />
+                <Route path="/edit/db" element={<EditDatabase />} />
+                <Route path="/list/cron" element={<CronJobs history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/add/cron" element={<AddCronJob />} />
+                <Route path="/edit/cron" element={<EditCronJob />} />
+                <Route path="/list/backup" element={<BackupWrapper history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/backup/exclusions" element={<BackupExclusions history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/edit/backup/exclusions" element={<EditBackupExclusions />} />
+                <Route path="/search/" element={<Search history={historyShim} changeSearchTerm={handleSearchTerm} searchTerm={searchTerm} />} />
+              </Routes>
             )}
       </div>
       <div className="fixed-buttons">

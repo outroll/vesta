@@ -7,7 +7,7 @@ import LeftButton from 'src/components/MainNav/Toolbar/LeftButton/LeftButton';
 import Toolbar from 'src/components/MainNav/Toolbar/Toolbar';
 import Spinner from 'src/components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import Exclusion from 'src/components/Backup/Exclusion';
 import { getBackupExclusions } from 'src/ControlPanelService/Backup';
 

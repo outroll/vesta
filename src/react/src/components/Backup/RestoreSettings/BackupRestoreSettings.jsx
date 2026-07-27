@@ -12,7 +12,7 @@ import Modal from 'src/components/ControlPanel/Modal/Modal';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 import './BackupRestoreSettings.scss';
 

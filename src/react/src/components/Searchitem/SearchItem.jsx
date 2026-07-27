@@ -4,20 +4,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Container from '../ControlPanel/Container/Container';
 import ListItem from '../ControlPanel/ListItem/ListItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './SearchItem.scss';
 
 const SearchItem = ({ data, handleModal }) => {
   const { i18n, userName } = useSelector(state => state.session);
   const dispatch = useDispatch();
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const signInAs = user => {
-    dispatch(loginAs(user)).then(() => history.push('/'));
+    dispatch(loginAs(user)).then(() => navigate('/'));
   }
 
   const signOut = () => {
-    dispatch(logout()).then(() => history.push('/'));
+    dispatch(logout()).then(() => navigate('/'));
   }
 
   const handleDelete = () => {

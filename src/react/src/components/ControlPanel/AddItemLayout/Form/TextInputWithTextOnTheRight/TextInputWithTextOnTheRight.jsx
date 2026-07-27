@@ -12,7 +12,7 @@ const TextInputWithTextOnTheRight = ({ id, title, name, defaultValue = '', optio
   }, [defaultValue]);
 
   return (
-    <div className="form-group text-on-the-right">
+    <div className="form-group text-on-the-right mb-3">
       <label className="label-wrapper" htmlFor={id}>
         {title}
         <span>{optionalTitle || ''}</span>

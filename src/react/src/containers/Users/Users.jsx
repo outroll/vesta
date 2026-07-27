@@ -14,10 +14,10 @@ import Modal from '../../components/ControlPanel/Modal/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
 import User from '../../components/User/User';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import './Users.scss';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import { useHistory } from 'react-router';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { loginAs, logout } from 'src/actions/Session/sessionActions';
 
 const Users = props => {
@@ -26,7 +26,8 @@ const Users = props => {
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
@@ -74,8 +75,8 @@ const Users = props => {
     }
 
     if (event.keyCode === 65) {
-      switch (history.location.pathname) {
-        case '/list/user/': return session.look ? history.push('/add/web/') : history.push('/add/user/');
+      switch (location.pathname) {
+        case '/list/user/': return session.look ? navigate('/add/web/') : navigate('/add/user/');
         default: break;
       }
     }
@@ -116,14 +117,14 @@ const Users = props => {
 
   const handleLogin = () => {
     if (userName === controlPanelFocusedElement) {
-      props.history.push('/logout');
+      props.navigate('/logout');
     } else {
-      props.history.push(`/login/?loginas=${controlPanelFocusedElement}`);
+      props.navigate(`/login/?loginas=${controlPanelFocusedElement}`);
     }
   }
 
   const handleEdit = () => {
-    props.history.push(`/edit/user?user=${controlPanelFocusedElement}`);
+    props.navigate(`/edit/user?user=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

@@ -12,14 +12,14 @@ import Modal from 'src/components/ControlPanel/Modal/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
 import Ban from 'src/components/Firewall/Ban';
-import { Helmet } from 'react-helmet';
-import { useHistory } from 'react-router';
+import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 
 import './styles.scss';
 
 const BanLists = props => {
   const { i18n } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { controlPanelFocusedElement } = useSelector(state => state.controlPanelContent);
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
@@ -291,7 +291,7 @@ const BanLists = props => {
             {banIps()}
             <div className="buttons-wrapper">
               <div className="total">{state.totalAmount}</div>
-              <button type="button" className="back" onClick={() => history.push('/list/firewall/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/firewall/')}>{i18n.Back}</button>
             </div>
           </div>
         </>)

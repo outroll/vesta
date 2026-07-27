@@ -14,10 +14,10 @@ import WebDomain from '../../components/WebDomain/WebDomain';
 import Spinner from '../../components/Spinner/Spinner';
 import Modal from '../../components/ControlPanel/Modal/Modal';
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import './Web.scss';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Web = props => {
   const { i18n } = useSelector(state => state.session);
@@ -26,7 +26,7 @@ const Web = props => {
   const { panel } = useSelector(state => state.panel);
   const { userName } = useSelector(state => state.session);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
@@ -45,7 +45,7 @@ const Web = props => {
 
   useEffect(() => {
     if (panel[userName]['WEB_DOMAINS'] === '0') {
-      return history.push('/');
+      return navigate('/');
     }
 
     dispatch(addActiveElement('/list/web/'));
@@ -153,11 +153,11 @@ const Web = props => {
   }
 
   const handleLogs = () => {
-    props.history.push(`/list/web-log?domain=${controlPanelFocusedElement}&type=access`);
+    props.navigate(`/list/web-log?domain=${controlPanelFocusedElement}&type=access`);
   }
 
   const handleEdit = () => {
-    props.history.push(`/edit/web?domain=${controlPanelFocusedElement}`);
+    props.navigate(`/edit/web?domain=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

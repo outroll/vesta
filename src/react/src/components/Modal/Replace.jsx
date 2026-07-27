@@ -16,7 +16,7 @@ const Replace = (props) => {
         }
       </div>
       <div className="modal-footer">
-        <button type="button" className="btn btn-primary mr-auto" onClick={props.close}>Cancel</button>
+        <button type="button" className="btn btn-primary me-auto" onClick={props.close}>Cancel</button>
         <button type="button" className="btn btn-danger" onClick={() => props.replace(props.files)}>Overwrite</button>
       </div>
     </div>

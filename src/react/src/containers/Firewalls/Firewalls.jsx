@@ -15,7 +15,7 @@ import Firewall from '../../components/Firewall/Firewall';
 import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import './Firewalls.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 

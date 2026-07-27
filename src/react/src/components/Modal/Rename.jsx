@@ -13,7 +13,7 @@ const Rename = (props) => {
         <input type="text" autoFocus defaultValue={props.fName} onChange={props.onChange} ref={props.reference}></input>
       </div>
       <div className="modal-footer">
-        <button type="button" className="btn btn-danger mr-auto" onClick={props.close}>{i18n['Cancel']}</button>
+        <button type="button" className="btn btn-danger me-auto" onClick={props.close}>{i18n['Cancel']}</button>
         <button type="button" className="btn btn-primary" onClick={props.save}>{i18n['Rename']}</button>
       </div>
     </div>

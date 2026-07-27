@@ -4,18 +4,18 @@ import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/
 import Password from 'src/components/ControlPanel/AddItemLayout/Form/Password/Password';
 import LoginLayout from 'src/components/ControlPanel/LoginLayout/LoginLayout';
 import { resetPassword } from 'src/ControlPanelService/ResetPassword';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { reset } from 'src/actions/Session/sessionActions';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
-import ReactHtmlParser from 'react-html-parser';
-import { Helmet } from 'react-helmet';
+import ReactHtmlParser from 'html-react-parser';
+import { Helmet } from 'react-helmet-async';
 import QueryString from 'qs';
 
 export default function ForgotPassword() {
   const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState({
     action: '',
@@ -44,7 +44,7 @@ export default function ForgotPassword() {
     }
 
     if (session.token && session.userName) {
-      history.push('/list/user/');
+      navigate('/list/user/');
     }
   }, [session]);
 
@@ -75,7 +75,7 @@ export default function ForgotPassword() {
         if (res.error) {
           setErrorMessage(res.error);
         } else {
-          history.push('/login');
+          navigate('/login');
           setErrorMessage('');
         }
 
@@ -136,7 +136,7 @@ export default function ForgotPassword() {
 
                     <div className="buttons-wrapper">
                       <button className="add" type="button" onClick={completeStep1}>{i18n.Submit}</button>
-                      <button className="back" type="button" onClick={() => history.push('/login')}>{i18n.Back}</button>
+                      <button className="back" type="button" onClick={() => navigate('/login')}>{i18n.Back}</button>
                     </div>
                   </>
                 )

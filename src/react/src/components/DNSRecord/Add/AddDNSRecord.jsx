@@ -7,20 +7,20 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addDomainNameSystemRecord } from '../../../ControlPanelService/Dns';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddDNSRecord.scss'
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 
 export default function AddDNSRecord(props) {
   const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
-  const history = useHistory();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     data: {},
     selectOptions: [
@@ -135,7 +135,7 @@ export default function AddDNSRecord(props) {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Add}</button>
-              <button type="button" className="back" onClick={() => history.push(`/list/dns/?domain=${props.domain}`)}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate(`/list/dns/?domain=${props.domain}`)}>{i18n.Back}</button>
             </div>
           </form>
         )}

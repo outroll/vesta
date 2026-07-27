@@ -38,7 +38,7 @@ const RunCommandSelect = props => {
   }
 
   return (
-    <div class="form-group run-command">
+    <div class="form-group run-command mb-3">
       <label htmlFor="run-command">{i18n['Run Command']}:</label>
       <select className="form-control" name={selectName()}>
         {renderOptions()}

@@ -6,11 +6,12 @@ import MobileTopNav from '../MainNav/Mobile/MobileTopNav';
 import Menu from '../MainNav/Stat-menu/Menu';
 import Panel from '../MainNav/Panel/Panel';
 import './MainNav.scss';
-import { useHistory } from 'react-router';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Spinner from '../Spinner/Spinner';
 
 const MainNav = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState({
     menuHeight: 135,
@@ -27,17 +28,17 @@ const MainNav = () => {
 
   useEffect(() => {
     if (!userName || !Object.entries(user).length || !Object.entries(session).length) {
-      return history.push('/login');
+      return navigate('/login');
     }
 
     if (session.look) {
       const commonUserRoutes = ['package', 'ip', 'rrd', 'updates', 'firewall', 'server'];
-      const splitPath = history.location.pathname.split('/')[2];
+      const splitPath = location.pathname.split('/')[2];
 
-      if (history.location.pathname === '/add/user/') return history.push('/');
+      if (location.pathname === '/add/user/') return navigate('/');
 
       if (commonUserRoutes.includes(splitPath)) {
-        return history.push('/');
+        return navigate('/');
       }
     }
 
@@ -45,7 +46,7 @@ const MainNav = () => {
     setState({ ...state, tabs });
 
     setLoading(false);
-  }, [userName, user, history, session]);
+  }, [userName, user, location, session]);
 
   const controlFocusedTabWithCallback = useCallback(event => {
     let isSearchInputFocused = document.querySelector('input:focus') || document.querySelector('textarea:focus') || document.querySelector('textarea:focus');
@@ -80,7 +81,7 @@ const MainNav = () => {
       dispatch(addFocusedElement(newFocusedMenuTab));
     } else if (event.keyCode === 13) {
       if (!controlPanelFocusedElement && focusedElement && (focusedElement !== activeElement)) {
-        history.push({ pathname: focusedElement });
+        navigate({ pathname: focusedElement });
         dispatch(addActiveElement(focusedElement));
         dispatch(removeFocusedElement());
       }
@@ -104,7 +105,7 @@ const MainNav = () => {
   }, [activeElement]);
 
   useEffect(() => {
-    dispatch(addActiveElement(history.location.pathname));
+    dispatch(addActiveElement(location.pathname));
   }, []);
 
   const handleLeftArrowKey = (array, indexInArray) => {

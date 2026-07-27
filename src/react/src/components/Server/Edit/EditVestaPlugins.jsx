@@ -106,7 +106,7 @@ const EditVestaPluginsOption = ({ data, visible }) => {
         id="version"
         disabled />
 
-      <div className="form-group select-group">
+      <div className="form-group select-group mb-3">
         <label className="label-wrapper" htmlFor="quota">
           {i18n['FileSystem Disk Quota']}
         </label>
@@ -118,7 +118,7 @@ const EditVestaPluginsOption = ({ data, visible }) => {
 
       <br />
 
-      <div className="form-group select-group">
+      <div className="form-group select-group mb-3">
         <label className="label-wrapper" htmlFor="firewall">
           {i18n['Firewall']}
         </label>
@@ -142,7 +142,7 @@ const EditVestaPluginsOption = ({ data, visible }) => {
         id="backup_manager"
         disabled />
 
-      <div className="form-group select-group">
+      <div className="form-group select-group mb-3">
         <label className="label-wrapper" htmlFor="sftp">
           {i18n['SFTP Chroot']}
         </label>
@@ -161,7 +161,7 @@ const EditVestaPluginsOption = ({ data, visible }) => {
 
       <br />
 
-      <div className="form-group select-group">
+      <div className="form-group select-group mb-3">
         <label className="label-wrapper" htmlFor="filemanager">
           {i18n['File Manager']}
         </label>

@@ -8,17 +8,17 @@ import AddItemLayout from '../../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../../components/Spinner/Spinner';
 import Toolbar from '../../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './Mysql.scss';
-import { Helmet } from 'react-helmet';
-import HtmlParser from 'react-html-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 const Mysql = ({ serviceName = '' }) => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');
@@ -35,7 +35,7 @@ const Mysql = ({ serviceName = '' }) => {
     dispatch(removeFocusedElement());
 
     if (!serviceName) {
-      history.push('/list/server');
+      navigate('/list/server');
     }
 
     setState({ ...state, loading: true });
@@ -46,7 +46,7 @@ const Mysql = ({ serviceName = '' }) => {
     getServiceInfo('mysql')
       .then(response => {
         if (response.data.config.includes('Error')) {
-          history.push('/list/server');
+          navigate('/list/server');
         }
 
         setState({ ...state, data: response.data, loading: false });
@@ -213,7 +213,7 @@ const Mysql = ({ serviceName = '' }) => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Save}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/server/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/server/')}>{i18n.Back}</button>
             </div>
 
           </form>

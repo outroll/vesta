@@ -2,7 +2,7 @@ import React from 'react';
 
 const TextArea = ({ id, name, defaultValue = '', title, optionalTitle = '', rows = '3', disabled = false, ...rest }) => {
   return (
-    <div className="form-group">
+    <div className="form-group mb-3">
       <label className="label-wrapper" htmlFor={id}>
         {title}
         <span>{optionalTitle}</span>

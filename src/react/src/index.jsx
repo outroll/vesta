@@ -1,19 +1,21 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux'
+import { HelmetProvider } from 'react-helmet-async';
 import configureStore from './store';
 import './index.css';
 import App from './containers/App/App';
 import * as serviceWorker from './containers/App/serviceWorker';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-ReactDOM.render(
+createRoot(document.getElementById('root')).render(
   <Provider store={configureStore()}>
-    <Router>
-      <App />
-    </Router>
-  </Provider>,
-  document.getElementById('root')
+    <HelmetProvider>
+      <Router>
+        <App />
+      </Router>
+    </HelmetProvider>
+  </Provider>
 );
 
 // If you want your app to work offline and load faster, you can change

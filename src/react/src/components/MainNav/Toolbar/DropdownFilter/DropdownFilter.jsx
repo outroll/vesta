@@ -55,7 +55,7 @@ const DropdownFilter = props => {
 
   return (
     <div className="btn-group">
-      <button className="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button className="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         {i18n['sort by']}: <b>{props.sorting}</b>
         {button()}
       </button>

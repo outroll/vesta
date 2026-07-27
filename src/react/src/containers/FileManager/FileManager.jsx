@@ -5,11 +5,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import Hotkeys from '../../components/Hotkeys/Hotkeys';
 import Modal from '../../components/Modal/Modal';
 import 'react-toastify/dist/ReactToastify.css';
-import { withRouter } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Menu from '../../components/Menu/Menu';
 import * as FM from '../../FileManagerHelper';
 import axios from 'axios';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'src/containers/App/App.scss';
 import { connect } from 'react-redux';
@@ -483,4 +483,10 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(withRouter(FileManager));
+function FileManagerWithRouter(props) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  return <FileManager {...props} history={{ push: navigate, location }} />;
+}
+
+export default connect(mapStateToProps)(FileManagerWithRouter);

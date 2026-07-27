@@ -66,7 +66,7 @@ export default function MailInfoBlock({ webMail, hostName, domain, userName = ''
 
   return (
     <div className="mail-info-block">
-      <div class="form-group select-group">
+      <div class="form-group select-group mb-3">
         <select class="form-control" onChange={event => setSelectedOption(event.target.value)}>
           {renderSelectOptions()}
         </select>

@@ -8,12 +8,13 @@ import Modal from '../../components/ControlPanel/Modal/Modal';
 import Spinner from '../../components/Spinner/Spinner';
 import './Search.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Search = props => {
   const { i18n } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState({
@@ -30,7 +31,7 @@ const Search = props => {
   });
 
   useEffect(() => {
-    const { search } = history.location;
+    const { search } = location;
 
     if (search) {
       let searchTerm = search.split('=')[1];
@@ -38,12 +39,12 @@ const Search = props => {
       if (searchTerm !== '') {
         fetchData(searchTerm).then(() => setLoading(false));
       } else {
-        return history.push({ pathname: '/list/user/', search: '' });
+        return navigate({ pathname: '/list/user/', search: '' });
       }
     } else if (props.searchTerm !== '') {
       fetchData(props.searchTerm).then(() => setLoading(false));
     } else {
-      return history.push({ pathname: '/list/user/', search: '' });
+      return navigate({ pathname: '/list/user/', search: '' });
     }
   }, []);
 

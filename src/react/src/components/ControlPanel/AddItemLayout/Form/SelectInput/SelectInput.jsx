@@ -17,7 +17,7 @@ const SelectInput = ({ options = [], id, name, title, optionalTitle = '', select
       {
         options
           ? (
-            <div className="form-group select-group">
+            <div className="form-group select-group mb-3">
               <label className="label-wrapper" htmlFor={id}>
                 {title}
                 <span>{optionalTitle}</span>
