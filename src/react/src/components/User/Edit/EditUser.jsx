@@ -9,7 +9,7 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
 import HtmlParser from 'html-react-parser';

@@ -14,7 +14,7 @@ import EditDatabaseOption from './EditDatabaseOption';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import EditBackupOption from './EditBackupOption';
 import EditMailOption from './EditMailOption';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './EditServer.scss';

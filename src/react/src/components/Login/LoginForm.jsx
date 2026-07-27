@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import Spinner from '../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../actions/Session/sessionActions';

@@ -11,7 +11,7 @@ import { addMailAccount, getMailList } from '../../../ControlPanelService/Mail';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MailInfoBlock from '../MailInfoBlock/MailInfoBlock';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 

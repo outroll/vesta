@@ -7,7 +7,7 @@ import { updateDNS, getDNSRecordInfo } from 'src/ControlPanelService/Dns';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import QS from 'qs';
 import { Helmet } from 'react-helmet-async';

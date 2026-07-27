@@ -8,7 +8,7 @@ import { getServiceInfo, updateService } from 'src/ControlPanelService/Server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../../components/Spinner/Spinner';
 import Toolbar from '../../../MainNav/Toolbar/Toolbar';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './EditServerNginx.scss';

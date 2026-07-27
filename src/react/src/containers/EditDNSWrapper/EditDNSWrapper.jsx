@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import EditDomainNameSystem from 'src/components/DomainNameSystem/Edit/EditDomainNameSystem';
 import EditDNSRecord from 'src/components/DNSRecord/Edit/EditDNSRecord';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import QueryString from 'qs';
 import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';

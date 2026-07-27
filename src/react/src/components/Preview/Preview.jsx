@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import Editor from './Editor/Editor';
 import Photo from './Photo/Photo';
 import Video from './Video/Video';

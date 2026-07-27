@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
 import './Web.scss';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const Web = props => {
   const { i18n } = useSelector(state => state.session);

@@ -6,7 +6,7 @@ import AddItemLayout from 'src/components/ControlPanel/AddItemLayout/AddItemLayo
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Toolbar from 'src/components/MainNav/Toolbar/Toolbar';
 import Spinner from 'src/components/Spinner/Spinner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
 

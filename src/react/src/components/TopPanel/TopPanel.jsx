@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { addActiveElement } from 'src/actions/MainNavigation/mainNavigationActions';
 import { logout } from 'src/actions/Session/sessionActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import Spinner from '../Spinner/Spinner';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 

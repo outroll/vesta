@@ -12,7 +12,7 @@ import Modal from 'src/components/ControlPanel/Modal/Modal';
 import DnsRecord from 'src/components/DNSRecord/DNSRecord';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router';
 import QueryString from 'qs';
 
 import './DNSRecords.scss';

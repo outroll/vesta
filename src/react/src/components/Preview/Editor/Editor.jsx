@@ -8,7 +8,7 @@ import { html } from '@codemirror/lang-html';
 import './Editor.scss';
 import axios from 'axios';
 import Spinner from '../../Spinner/Spinner';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';
 import { useSelector } from 'react-redux';
 

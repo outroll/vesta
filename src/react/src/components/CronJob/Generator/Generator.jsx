@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import RunCommandSelect from './RunCommandSelect/RunCommandSelect';
 import SelectsWrapper from './OtherSelects/SelectsWrapper';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router';
 import QS from 'qs';
 
 import './Generator.scss';

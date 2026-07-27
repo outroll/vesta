@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { addActiveElement } from 'src/actions/MainNavigation/mainNavigationActions';
 import TopPanel from 'src/components/TopPanel/TopPanel';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import QueryString from 'qs';
 

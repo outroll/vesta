@@ -8,7 +8,7 @@ import AdvancedOptions from './AdvancedOptions/AdvancedOptions';
 import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
 import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/TextArea';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 

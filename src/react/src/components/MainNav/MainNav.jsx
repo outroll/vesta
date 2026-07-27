@@ -6,7 +6,7 @@ import MobileTopNav from '../MainNav/Mobile/MobileTopNav';
 import Menu from '../MainNav/Stat-menu/Menu';
 import Panel from '../MainNav/Panel/Panel';
 import './MainNav.scss';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import Spinner from '../Spinner/Spinner';
 
 const MainNav = () => {

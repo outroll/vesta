@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import FileManager from '../FileManager/FileManager';
-import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, Navigate } from 'react-router';
 import Preview from '../../components/Preview/Preview';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import * as Icon from '@fortawesome/free-solid-svg-icons';

@@ -6,7 +6,7 @@ import AddInternetProtocol from '../../components/InternetProtocol/Add/AddIntern
 import EditServerNginx from 'src/components/Server/Edit/Nginx/EditServerNginx';
 import Postgresql from 'src/components/Server/Edit/Postgresql/Postgresql';
 import EditBackupExclusions from 'src/components/Backup/Exclusion/Edit';
-import { Route, Routes, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { Route, Routes, Navigate, useNavigate, useLocation } from "react-router";
 import InternetProtocols from '../InternetProtocols/InternetProtocols';
 import AddWebDomain from '../../components/WebDomain/Add/AddWebDomain';
 import EditDatabase from '../../components/Database/Edit/EditDatabase';

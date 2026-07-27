@@ -5,7 +5,7 @@ import { logout } from 'src/actions/Session/sessionActions';
 import Notifications from './Notifications/Notifications';
 import { useSelector, useDispatch } from "react-redux";
 import Spinner from 'src/components/Spinner/Spinner';
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import './Panel.scss';
 
 const Panel = props => {

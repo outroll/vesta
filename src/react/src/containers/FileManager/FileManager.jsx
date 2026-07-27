@@ -5,7 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import Hotkeys from '../../components/Hotkeys/Hotkeys';
 import Modal from '../../components/Modal/Modal';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import Menu from '../../components/Menu/Menu';
 import * as FM from '../../FileManagerHelper';
 import axios from 'axios';

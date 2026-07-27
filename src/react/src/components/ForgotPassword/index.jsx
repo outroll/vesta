@@ -4,7 +4,7 @@ import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/
 import Password from 'src/components/ControlPanel/AddItemLayout/Form/Password/Password';
 import LoginLayout from 'src/components/ControlPanel/LoginLayout/LoginLayout';
 import { resetPassword } from 'src/ControlPanelService/ResetPassword';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { reset } from 'src/actions/Session/sessionActions';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';

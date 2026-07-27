@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addCronJob } from '../../../ControlPanelService/Cron';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import Generator from '../Generator/Generator';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 

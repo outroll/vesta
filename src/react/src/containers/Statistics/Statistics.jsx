@@ -9,7 +9,7 @@ import Toolbar from '../../components/MainNav/Toolbar/Toolbar';
 import Statistic from '../../components/Statistic/Statistic';
 import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import './Statistics.scss';
 import { Helmet } from 'react-helmet-async';
 

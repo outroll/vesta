@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BackupRestoreSettings from '../../components/Backup/RestoreSettings/BackupRestoreSettings';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import Backups from '../Backups/Backups';
 import QueryString from 'qs';
 import { Helmet } from 'react-helmet-async';

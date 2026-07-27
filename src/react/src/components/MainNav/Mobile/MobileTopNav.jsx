@@ -2,7 +2,7 @@ import React from 'react';
 import Menu from '../../MainNav/Stat-menu/Menu';
 import { addActiveElement } from '../../../actions/MainNavigation/mainNavigationActions';
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import './MobileTopNav.scss';
 
 const MobileTopNav = props => {

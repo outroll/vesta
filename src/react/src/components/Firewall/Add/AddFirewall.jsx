@@ -7,7 +7,7 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { addFirewall } from '../../../ControlPanelService/Firewalls';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddFirewall.scss';

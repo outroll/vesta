@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MailAccounts from '../MailAccounts/MailAccounts';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import Mails from '../Mails/Mails';
 import QueryString from 'qs';
 import { Helmet } from 'react-helmet-async';

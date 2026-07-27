@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import SslSupport from './SslSupport/SslSupport';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import GenerateSSL from 'src/containers/GenerateCSR';
 import 'src/components/Modal/Modal.scss';

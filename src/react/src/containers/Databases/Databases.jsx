@@ -17,7 +17,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import './Databases.scss';
 import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 const Databases = props => {
   const { i18n } = useSelector(state => state.session);

@@ -6,7 +6,7 @@ import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/Te
 import { generateCSR, getCsrInitialData } from 'src/ControlPanelService/Web';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import HtmlParser from 'html-react-parser';
 
 const GenerateSSL = props => {

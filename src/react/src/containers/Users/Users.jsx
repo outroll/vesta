@@ -17,7 +17,7 @@ import User from '../../components/User/User';
 import { Helmet } from 'react-helmet-async';
 import './Users.scss';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { loginAs, logout } from 'src/actions/Session/sessionActions';
 
 const Users = props => {

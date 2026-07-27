@@ -2,7 +2,7 @@ import QueryString from 'qs';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import DnsRecords from '../DNSRecords/DNSRecords';
 import DomainNameSystems from '../DomainNameSystems/DomainNameSystems';
 

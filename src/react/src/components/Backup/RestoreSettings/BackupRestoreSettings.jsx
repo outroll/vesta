@@ -11,7 +11,7 @@ import RestoreSetting from '../RestoreSetting/RestoreSetting';
 import Modal from 'src/components/ControlPanel/Modal/Modal';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Helmet } from 'react-helmet-async';
 
 import './BackupRestoreSettings.scss';

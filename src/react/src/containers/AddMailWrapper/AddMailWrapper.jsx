@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AddMailAccount from 'src/components/MailAccount/Add/AddMailAccount';
 import AddMail from 'src/components/Mail/Add/AddMail';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import QueryString from 'qs';
 import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';

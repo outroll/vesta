@@ -8,7 +8,7 @@ import Modal from '../../components/ControlPanel/Modal/Modal';
 import Spinner from '../../components/Spinner/Spinner';
 import './Search.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Search = props => {

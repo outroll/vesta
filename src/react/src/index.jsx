@@ -6,7 +6,7 @@ import configureStore from './store';
 import './index.css';
 import App from './containers/App/App';
 import * as serviceWorker from './containers/App/serviceWorker';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router';
 
 createRoot(document.getElementById('root')).render(
   <Provider store={configureStore()}>
