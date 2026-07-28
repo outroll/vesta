@@ -153,11 +153,7 @@ generate_password() {
     if [ -z "$lenght" ]; then
         lenght=10
     fi
-    i=1
-    while [ $i -le $lenght ]; do
-        pass="$pass${matrix:$(($RANDOM%${#matrix})):1}"
-       ((i++))
-    done
+    pass=$(LC_ALL=C tr -dc "$matrix" < /dev/urandom | head -c "$lenght")
     echo "$pass"
 }
 
