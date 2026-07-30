@@ -16,9 +16,9 @@ import Mail from '../../components/Mail/Mail';
 import './Mails.scss';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 const Mails = props => {
   const { i18n } = useSelector(state => state.session);

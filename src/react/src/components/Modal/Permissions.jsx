@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import classNames from 'classname';
+import classNames from 'classnames';
 import { connect } from 'react-redux';
 
 const defaultPermissions = {
@@ -134,7 +134,7 @@ class Permissions extends Component {
         </form>
         <input type="text" className={inputClasses} defaultValue={this.encode()} ref={(ref) => this.inputRef = ref} onChange={this.handleInputChange} maxLength="3" />
         <div className="modal-footer">
-          <button type="button" className="btn btn-danger mr-auto" onClick={close}>{i18n['Cancel']}</button>
+          <button type="button" className="btn btn-danger me-auto" onClick={close}>{i18n['Cancel']}</button>
           <button type="button" className="btn btn-primary" onClick={save} disabled={inputInvalid}>{i18n['OK']}</button>
         </div>
       </div>

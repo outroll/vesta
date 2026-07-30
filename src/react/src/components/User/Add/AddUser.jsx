@@ -8,18 +8,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addUser } from '../../../ControlPanelService/Users';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddUser.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 
 const AddUser = props => {
   const { i18n } = useSelector(state => state.session);
   const { session } = useSelector(state => state.userSession);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [state, setState] = useState({
     vEmail: '',
@@ -145,14 +145,14 @@ const AddUser = props => {
       <AddItemLayout>
         {state.loading ? <Spinner /> :
           <form onSubmit={event => submitFormHandler(event)} id="add-user">
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="username">{i18n.Username}</label>
               <input type="text" className="form-control" id="username" name="v_username" />
             </div>
 
             <Password name='v_password' />
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="email">
                 {i18n.Email} /
                 <div>
@@ -173,31 +173,31 @@ const AddUser = props => {
                 onBlur={() => onBlurEmail()} />
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label htmlFor="package">{i18n.Package}</label>
               <select class="form-control" id="package" name="v_package">
                 {renderPackageOptions()}
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label htmlFor="language">{i18n.Language}</label>
               <select class="form-control" id="language" name="v_language">
                 {renderLanguageOptions()}
               </select>
             </div>
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="firstName">{i18n['First Name']}</label>
               <input type="text" className="form-control" id="firstName" name="v_fname" />
             </div>
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="lastName">{i18n['Last Name']}</label>
               <input type="text" className="form-control" id="lastName" name="v_lname" />
             </div>
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="sendLoginCredentialsToEmailAddress">{i18n['Send login credentials to email address']}</label>
               <input
                 type="email"
@@ -210,7 +210,7 @@ const AddUser = props => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Add}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/user/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/user/')}>{i18n.Back}</button>
             </div>
 
           </form>

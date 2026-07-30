@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import Dropdown from './Dropdown/Dropdown';
 import './Path.scss';
 
 const Path = ({ path, isActive, className, openDirectory, changeSorting, sorting, order }) => {
   const { user } = useSelector(state => state.menuCounters);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) return history.push('/login');
+    if (!user) return navigate('/login');
   }, [user]);
 
   const clickablePath = () => {

@@ -33,7 +33,7 @@ const AddDirectory = (props) => {
         {hasError && <small className='error'>{i18n['Directory name cannot be empty']}</small>}
       </div>
       <div className="modal-footer">
-        <button type="button" className="btn btn-danger mr-auto" onClick={cancel}>{i18n.Cancel}</button>
+        <button type="button" className="btn btn-danger me-auto" onClick={cancel}>{i18n.Cancel}</button>
         <button type="button" className="btn btn-primary" onClick={save}>{i18n.Create}</button>
       </div>
     </div>

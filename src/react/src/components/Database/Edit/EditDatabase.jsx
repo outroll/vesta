@@ -8,19 +8,20 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import QS from 'qs';
 
 import './EditDatabase.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 
 const EditDatabase = props => {
   const token = localStorage.getItem("token");
   const { i18n, userName } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');
@@ -31,7 +32,7 @@ const EditDatabase = props => {
   });
 
   useEffect(() => {
-    let queryParams = QS.parse(history.location.search, { ignoreQueryPrefix: true });
+    let queryParams = QS.parse(location.search, { ignoreQueryPrefix: true });
     const { database } = queryParams;
 
     dispatch(addActiveElement('/list/db/'));
@@ -125,7 +126,7 @@ const EditDatabase = props => {
 
             <TextInputWithTextOnTheRight id="database" name="v_database" title={i18n['Database']} defaultValue={state.data.database} disabled />
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <div className="label-wrapper">
                 <label htmlFor="user">{i18n.User}</label>
               </div>
@@ -151,7 +152,7 @@ const EditDatabase = props => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Save}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/db/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/db/')}>{i18n.Back}</button>
             </div>
 
           </form>

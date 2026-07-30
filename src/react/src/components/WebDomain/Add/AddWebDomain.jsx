@@ -8,16 +8,16 @@ import AdvancedOptions from './AdvancedOptions/AdvancedOptions';
 import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
 import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/TextArea';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddWebDomain.scss';
 import GenerateSSL from 'src/containers/GenerateCSR';
 import 'src/components/Modal/Modal.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 
 const AddWebDomain = props => {
   const { i18n, userName } = useSelector(state => state.session);
@@ -26,7 +26,7 @@ const AddWebDomain = props => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const [modalVisible, setModalVisible] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     loading: false,
     dnsSupport: true,
@@ -162,7 +162,7 @@ const AddWebDomain = props => {
             <input type="hidden" name="ok" value="add" />
             <input type="hidden" name="token" value={token} />
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="domain">{i18n.Domain}</label>
               <input
                 type="text"
@@ -173,14 +173,14 @@ const AddWebDomain = props => {
                 onBlur={event => onBlurChangeAliases(event.target.value)} />
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label htmlFor="package">{i18n['IP Address']}</label>
               <select class="form-control" id="ip" name="v_ip">
                 {renderInternetProtocolsOptions()}
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label htmlFor="aliases">{i18n.Aliases}</label>
               <textarea
                 class="form-control"
@@ -236,7 +236,7 @@ const AddWebDomain = props => {
               )
             }
 
-            <div className="form-group advanced-options-button">
+            <div className="form-group advanced-options-button mb-3">
               <button type="button" onClick={() => showAdvancedOption()}>
                 {i18n['Advanced options']}
                 {state.showAdvancedOptions ? <FontAwesomeIcon icon="caret-down" /> : <FontAwesomeIcon icon="caret-up" />}
@@ -247,7 +247,7 @@ const AddWebDomain = props => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Add}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/web/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/web/')}>{i18n.Back}</button>
             </div>
           </form>
         )}
@@ -257,8 +257,7 @@ const AddWebDomain = props => {
           <div className="modal-content">
             <div className="modal-header">
               <h5>{i18n['Generating CSR']}</h5>
-              <button type="button" onClick={() => setModalVisible(false)} className="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+              <button type="button" onClick={() => setModalVisible(false)} className="btn-close" data-bs-dismiss="modal" aria-label="Close">
               </button>
             </div>
             <GenerateSSL

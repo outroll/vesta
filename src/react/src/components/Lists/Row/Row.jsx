@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faJs, faCss3, faPhp, faHtml5, faSass } from '@fortawesome/free-brands-svg-icons';
@@ -202,4 +202,9 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(withRouter(Row));
+function RowWithRouter(props) {
+  const navigate = useNavigate();
+  return <Row {...props} history={{ push: navigate }} />;
+}
+
+export default connect(mapStateToProps)(RowWithRouter);

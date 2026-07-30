@@ -6,13 +6,13 @@ import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/Te
 import { generateCSR, getCsrInitialData } from 'src/ControlPanelService/Web';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
-import { useHistory } from 'react-router-dom';
-import HtmlParser from 'react-html-parser';
+import { useNavigate } from 'react-router';
+import HtmlParser from 'html-react-parser';
 
 const GenerateSSL = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');

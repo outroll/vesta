@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { addActiveElement } from '../../../actions/MainNavigation/mainNavigationActions';
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import './Menu.scss';
 import Spinner from 'src/components/Spinner/Spinner';

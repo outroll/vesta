@@ -39,7 +39,7 @@ const Password = ({ defaultValue, onChange = () => { }, id, name, title, showGen
   }
 
   return (
-    <div className="form-group">
+    <div className="form-group mb-3">
       <label htmlFor="password">
         {title ? title : i18n.Password}
         {

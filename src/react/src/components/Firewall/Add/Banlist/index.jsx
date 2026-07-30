@@ -5,15 +5,15 @@ import { getBanIps, addBanIp } from 'src/ControlPanelService/Firewalls';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from 'src/components/Spinner/Spinner';
 import Toolbar from '../../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
-import HtmlParser from 'react-html-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 const AddBanIP = () => {
   const { i18n } = useSelector(state => state.session);
   const userLanguage = localStorage.getItem("language");
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [state, setState] = useState({
     banIps: [],
@@ -86,14 +86,14 @@ const AddBanIP = () => {
           <form onSubmit={event => submitFormHandler(event)} id="add-user">
             <input type="hidden" name="ok" value="add" />
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label htmlFor="chain">{i18n.Banlist}</label>
               <select class="form-control" id="chain" name="v_chain">
                 {renderChainOptions()}
               </select>
             </div>
 
-            <div className="form-group exp-date">
+            <div className="form-group exp-date mb-3">
               <label htmlFor="ip">
                 {i18n['IP address']}
                 <span className="optional">({i18n['CIDR format is supported']})</span>
@@ -108,7 +108,7 @@ const AddBanIP = () => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Add}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/firewall/banlist')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/firewall/banlist')}>{i18n.Back}</button>
             </div>
 
           </form>

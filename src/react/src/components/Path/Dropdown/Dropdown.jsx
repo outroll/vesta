@@ -28,14 +28,14 @@ const Dropdown = (props) => {
   const button = (sorting, order) => {
     if (order === "descending") {
       return (
-        <button type="button" className="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button type="button" className="btn btn-secondary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {sort(sorting)}
           <span className="arrow-down">&#8595;</span>
         </button>
       );
     } else {
       return (
-        <button type="button" className="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button type="button" className="btn btn-secondary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {sort(sorting)}
           <span>&#8593;</span>
         </button>

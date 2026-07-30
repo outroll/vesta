@@ -8,20 +8,20 @@ import Checkbox from '../../ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
 import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddInternetProtocol.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 
 const AddInternetProtocol = props => {
   const token = localStorage.getItem("token");
   const { i18n, userName } = useSelector(state => state.session);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     loading: false,
     dedicated: true,
@@ -139,7 +139,7 @@ const AddInternetProtocol = props => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Add}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/ip/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/ip/')}>{i18n.Back}</button>
             </div>
           </form>
         )}

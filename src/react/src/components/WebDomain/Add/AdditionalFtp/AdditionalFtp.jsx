@@ -22,7 +22,7 @@ const AdditionalFtp = ({ domain, data = {}, onDeleteAdditionalFtp, prefixI18N })
       </div>
 
       <div className="form-transform">
-        <div className="form-group username">
+        <div className="form-group username mb-3">
           <label htmlFor={`username_${data.id}`}>{i18n.Username}</label>
           <span className="prefix-note">{prefixI18N}</span>
           <div className="input-wrapper">
@@ -39,7 +39,7 @@ const AdditionalFtp = ({ domain, data = {}, onDeleteAdditionalFtp, prefixI18N })
 
         <Password name={`v_ftp_user[${data.id}][v_ftp_password]`} id={data.id} />
 
-        <div className="form-group">
+        <div className="form-group mb-3">
           <label htmlFor={`path${data.id}`}>{i18n.Path}</label>
           <input
             type="text"
@@ -51,7 +51,7 @@ const AdditionalFtp = ({ domain, data = {}, onDeleteAdditionalFtp, prefixI18N })
           <span className="path-note">{`/web/${domain ? domain + '/' : ''}${state.path}`}</span>
         </div>
 
-        <div className="form-group">
+        <div className="form-group mb-3">
           <label htmlFor={`sendLoginCredentialsToEmailAddress_${data.id}`}>{i18n['Send login credentials to email address']}</label>
           <input
             type="email"

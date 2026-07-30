@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { mailInfoBlockSelectOptions } from 'src/ControlPanelService/Mail';
 
 import './MailInfoBlock.scss';
@@ -66,7 +66,7 @@ export default function MailInfoBlock({ webMail, hostName, domain, userName = ''
 
   return (
     <div className="mail-info-block">
-      <div class="form-group select-group">
+      <div class="form-group select-group mb-3">
         <select class="form-control" onChange={event => setSelectedOption(event.target.value)}>
           {renderSelectOptions()}
         </select>

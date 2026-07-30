@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import CodeMirror from 'react-codemirror';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { markdown } from '@codemirror/lang-markdown';
+import { php } from '@codemirror/lang-php';
+import { css } from '@codemirror/lang-css';
+import { html } from '@codemirror/lang-html';
 import './Editor.scss';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/mode/markdown/markdown';
-import 'codemirror/mode/php/php';
-import 'codemirror/mode/css/css';
-import 'codemirror/mode/htmlmixed/htmlmixed';
 import axios from 'axios';
 import Spinner from '../../Spinner/Spinner';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';
 import { useSelector } from 'react-redux';
 
 const Editor = ({ close, name }) => {
   const { i18n } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [state, setState] = useState({
     code: '',
     loading: false
@@ -24,7 +24,7 @@ const Editor = ({ close, name }) => {
   useEffect(() => {
     document.addEventListener("keydown", hotKey);
 
-    let path = `${history.location.search.substring(6, history.location.search.lastIndexOf('/'))}/${name}`;
+    let path = `${location.search.substring(6, location.search.lastIndexOf('/'))}/${name}`;
     setState({ ...state, loading: true });
 
     checkFileType(path)
@@ -66,7 +66,7 @@ const Editor = ({ close, name }) => {
 
   const save = () => {
     let formData = new FormData();
-    let path = history.location.search.substring(6, history.location.search.lastIndexOf('/'));
+    let path = location.search.substring(6, location.search.lastIndexOf('/'));
 
     formData.append('save', 'Save');
     formData.append('contents', state.code);
@@ -99,24 +99,19 @@ const Editor = ({ close, name }) => {
     setState({ ...state, code: newCode });
   }
 
-  const getModeFromFileName = () => {
+  const getLanguageExtensionFromFileName = () => {
     const fileExtension = name.split('.').pop();
 
     switch (fileExtension) {
-      case 'js': return 'javascript';
-      case 'jsx': return 'javascript';
-      case 'php': return 'php';
-      case 'css': return 'css';
-      case 'scss': return 'css';
-      case 'html': return 'htmlmixed';
-      default: return 'markdown';
+      case 'js': return javascript();
+      case 'jsx': return javascript({ jsx: true });
+      case 'php': return php();
+      case 'css': return css();
+      case 'scss': return css();
+      case 'html': return html();
+      default: return markdown();
     }
   }
-
-  let options = {
-    mode: getModeFromFileName(),
-    lineNumbers: true
-  };
 
   return (
     <div className="editor">
@@ -125,7 +120,13 @@ const Editor = ({ close, name }) => {
         <button type="button" className="btn btn-primary" onClick={save}>{i18n.Save}</button>
         <button type="button" className="btn btn-danger" onClick={close}>{i18n.Close}</button>
       </div>
-      {state.loading ? <Spinner /> : <CodeMirror value={state.code} onChange={updateCode} options={options} autoFocus />}
+      {state.loading ? <Spinner /> : (
+        <CodeMirror
+          value={state.code}
+          onChange={updateCode}
+          extensions={[getLanguageExtensionFromFileName()]}
+          autoFocus />
+      )}
     </div>
   );
 }

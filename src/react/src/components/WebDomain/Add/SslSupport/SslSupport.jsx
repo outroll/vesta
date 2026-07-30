@@ -10,7 +10,7 @@ const SslSupport = props => {
 
   return (
     <div className="ssl-support">
-      <div className="form-group">
+      <div className="form-group mb-3">
         <div className="checkbox-wrapper">
           <input
             type="checkbox"
@@ -32,12 +32,12 @@ const SslSupport = props => {
         disabled={letsEncrypt}
         optionalTitle={<>/ <button type="button" onClick={() => props.setModalVisible(true)} className="generate-csr">{i18n['Generate CSR']}</button></>} />
 
-      <div class="form-group">
+      <div class="form-group mb-3">
         <label htmlFor="aliases">{i18n['SSL Key']}</label>
         <textarea class="form-control" id="ssl_key" rows="3" name="v_ssl_key" defaultValue={props.sslKey} disabled={letsEncrypt}></textarea>
       </div>
 
-      <div class="form-group">
+      <div class="form-group mb-3">
         <label htmlFor="aliases">{i18n['SSL Certificate Authority / Intermediate']}</label>
         <textarea class="form-control" id="ssl_ca" rows="3" name="v_ssl_ca" disabled={letsEncrypt}></textarea>
       </div>

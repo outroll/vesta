@@ -5,20 +5,20 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addMail } from '../../../ControlPanelService/Mail';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddMail.scss'
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 
 const AddMail = props => {
   const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
-  const history = useHistory();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     loading: false,
     antiSpamChecked: true,
@@ -87,12 +87,12 @@ const AddMail = props => {
             <input type="hidden" name="ok" value="add" />
             <input type="hidden" name="token" value={token} />
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="domain">{i18n.Domain}</label>
               <input type="text" className="form-control" id="domain" name="v_domain" />
             </div>
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <div className="checkbox-wrapper">
                 <input
                   type="checkbox"
@@ -104,7 +104,7 @@ const AddMail = props => {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <div className="checkbox-wrapper">
                 <input
                   type="checkbox"
@@ -116,7 +116,7 @@ const AddMail = props => {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <div className="checkbox-wrapper">
                 <input
                   type="checkbox"
@@ -130,7 +130,7 @@ const AddMail = props => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Add}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/mail/')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/mail/')}>{i18n.Back}</button>
             </div>
           </form>
         )}

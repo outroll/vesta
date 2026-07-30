@@ -41,7 +41,7 @@ const AdvancedOptions = ({ prefixI18N, prePath, ...props }) => {
 
   return (
     <div style={{ transform: 'translateX(3rem)' }}>
-      <div className="form-group">
+      <div className="form-group mb-3">
         <div className="checkbox-wrapper">
           <input
             type="checkbox"
@@ -55,7 +55,7 @@ const AdvancedOptions = ({ prefixI18N, prePath, ...props }) => {
 
       {renderSslSupport()}
 
-      <div class="form-group">
+      <div class="form-group mb-3">
         <label htmlFor="web-stats">{i18n['Web Statistics']}</label>
         <select class="form-control" id="web-stats" name="v_stats" onChange={event => onChangeWebStatsSelect(event.target.value)}>
           {renderWebStats()}
@@ -75,7 +75,7 @@ const AdvancedOptions = ({ prefixI18N, prePath, ...props }) => {
       </div>
 
       <div className={state.statisticsAuthCheckbox ? 'show web-stats-wrapper' : 'hide'}>
-        <div className="form-group">
+        <div className="form-group mb-3">
           <label htmlFor="stats-user">{i18n.Username}</label>
           <input type="text" className="form-control" id="stats-user" name="v_stats_user" />
         </div>

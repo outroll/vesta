@@ -70,7 +70,7 @@ const Select = ({ cronReports, ...props }) => {
 
   return (
     <div className="select-wrapper">
-      <select className="custom-select" id="inputGroupSelect04" onChange={handleSelect}>
+      <select className="form-select" id="inputGroupSelect04" onChange={handleSelect}>
         <option defaultValue={defaultValue()} value={defaultValue()}>{props.list === "statisticsList" ? i18n['show per user'] : i18n['apply to selected']}</option>
         {renderOptions()}
       </select>

@@ -11,19 +11,19 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MailInfoBlock from '../MailInfoBlock/MailInfoBlock';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 
 export default function EditMailAccount(props) {
   const [autoreplyChecked, setAutoreplyChecked] = useState(false);
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');
   const [state, setState] = useState({
@@ -99,7 +99,7 @@ export default function EditMailAccount(props) {
   }
 
   const goBack = () => {
-    history.push(`/list/mail/?domain=${props.domain}`);
+    navigate(`/list/mail/?domain=${props.domain}`);
   }
 
   return (

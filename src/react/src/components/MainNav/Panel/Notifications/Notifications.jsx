@@ -5,7 +5,7 @@ import Bell from './Bell';
 import BellUnread from './BellUnread';
 import { useDispatch, useSelector } from 'react-redux';
 import './Notifications.scss';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 
 const Notifications = () => {
   const { i18n } = useSelector(state => state.session);
@@ -71,7 +71,7 @@ const Notifications = () => {
 
   return (
     <div className="btn-group">
-      <button type="button" className="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button type="button" className="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <div className="bell">
           {
             notifications.length

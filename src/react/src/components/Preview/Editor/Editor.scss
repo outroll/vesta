@@ -42,15 +42,15 @@
     }
   }
 
-  .CodeMirror {
+  .cm-editor {
     height: 100vh;
     padding-top: 4vh;
 
-    .CodeMirror-selected {
+    .cm-selectionBackground {
       background:#ACCEF7;
     }
 
-    .CodeMirror-scroll {
+    .cm-scroller {
       font-size: 14px;
     }
   }

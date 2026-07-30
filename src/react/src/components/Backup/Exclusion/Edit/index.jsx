@@ -6,17 +6,17 @@ import AddItemLayout from 'src/components/ControlPanel/AddItemLayout/AddItemLayo
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Toolbar from 'src/components/MainNav/Toolbar/Toolbar';
 import Spinner from 'src/components/Spinner/Spinner';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 import './style.scss';
-import HtmlParser from 'react-html-parser';
+import HtmlParser from 'html-react-parser';
 
 const EditBackupExclusions = () => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');
@@ -121,7 +121,7 @@ const EditBackupExclusions = () => {
 
             <div className="buttons-wrapper">
               <button type="submit" className="add">{i18n.Save}</button>
-              <button type="button" className="back" onClick={() => history.push('/list/backup/exclusions')}>{i18n.Back}</button>
+              <button type="button" className="back" onClick={() => navigate('/list/backup/exclusions')}>{i18n.Back}</button>
             </div>
           </form>
         }

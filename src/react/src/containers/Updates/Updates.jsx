@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
 import Update from '../../components/Update/Update';
 import './Updates.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 const Updates = props => {
   const { i18n } = useSelector(state => state.session);

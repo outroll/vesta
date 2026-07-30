@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import MailAccounts from '../MailAccounts/MailAccounts';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import Mails from '../Mails/Mails';
 import QueryString from 'qs';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
 
 export default function MailWrapper(props) {
   const { i18n } = useSelector(state => state.session);
   const [mailDomain, setMailDomain] = useState('');
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const parsedQueryString = QueryString.parse(history.location.search, { ignoreQueryPrefix: true });
+    const parsedQueryString = QueryString.parse(location.search, { ignoreQueryPrefix: true });
 
     if (parsedQueryString.domain) {
       setMailDomain(parsedQueryString.domain);
     } else {
       setMailDomain('');
     }
-  }, [history.location]);
+  }, [location]);
 
   return (
     <>
