@@ -415,7 +415,7 @@ if [ "$iptables" = 'yes' ]; then
     software="$software iptables"
 fi
 if [ "$fail2ban" = 'yes' ]; then
-    software="$software fail2ban"
+    software="$software fail2ban busybox-openrc"
 fi
 if [ "$mysql" = 'yes' ]; then
     software="$software phpmyadmin"
@@ -801,7 +801,7 @@ fi
 #----------------------------------------------------------#
 
 if [ "$named" = 'yes' ]; then
-    mkdir -p /etc/bind /var/bind /run/named
+    mkdir -p /etc/bind /var/bind /run/named /var/log/named
     cp -f $vestacp/bind/named.conf /etc/bind/named.conf
     # Alpine's bind package/group is "named", but bin/v-add-dns-domain's
     # /etc/bind/named.conf branch (the one that applies here) hardcodes
@@ -812,7 +812,7 @@ if [ "$named" = 'yes' ]; then
     adduser named bind 2>/dev/null
     chown root:named /etc/bind/named.conf
     chmod 640 /etc/bind/named.conf
-    chown named:named /run/named /var/bind
+    chown named:named /run/named /var/bind /var/log/named
     rc-update add named default
     rc-service named start
     check_result $? "named start failed"
@@ -893,6 +893,7 @@ fi
 #----------------------------------------------------------#
 
 if [ "$spamassassin" = 'yes' ]; then
+    chmod o+rx /etc/mail
     mkdir -p /etc/mail/spamassassin
     cp -f $vestacp/spamassassin/local.cf /etc/mail/spamassassin/local.cf
     cp -f $vestacp/spamassassin/spamd.conf.d /etc/conf.d/spamd
@@ -956,6 +957,25 @@ check_result $? "dcron start failed"
 #----------------------------------------------------------#
 
 if [ "$fail2ban" = 'yes' ]; then
+    # fail2ban's init script needs the "logger" service (see the
+    # busybox-openrc install above). busybox syslogd defaults to dumping
+    # everything into one /var/log/messages with no facility split, but
+    # the sshd jail below expects a real /var/log/auth.log -- point it at
+    # a syslog.conf that splits the auth facility out, like every other
+    # syslog implementation does by default.
+    cp -f $vestacp/syslog/syslog.conf /etc/syslog.conf
+    cp -f $vestacp/syslog/syslog.conf.d /etc/conf.d/syslog
+    # fail2ban refuses to start if an enabled jail's logpath doesn't exist
+    # yet -- true here on a fresh install for anything that only creates
+    # its log file lazily on first write (busybox syslogd for
+    # /var/log/auth.log; PHP's error_log for roundcube's).
+    touch /var/log/auth.log
+    if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
+        touch /var/log/roundcube/errors
+        chown nginx:nginx /var/log/roundcube/errors
+    fi
+    rc-update add syslog default
+    rc-service syslog start
     cp -f $vestacp/fail2ban/jail.local /etc/fail2ban/jail.local
     if [ "$vsftpd" = 'yes' ]; then
         sed -i '/^\[vsftpd\]/,/^\[/ s/enabled = false/enabled = true/' /etc/fail2ban/jail.local

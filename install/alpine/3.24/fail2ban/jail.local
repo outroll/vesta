@@ -60,7 +60,7 @@ logpath = /var/log/named/named.log
 enabled = false
 filter = mysqld-auth
 port = 3306
-logpath = /var/log/mysql/mariadb.log
+logpath = /var/log/mysql/error.log
 
 [nginx-http-auth]
 enabled = false
