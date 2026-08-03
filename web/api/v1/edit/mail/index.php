@@ -273,7 +273,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (!empty($_GET['acco
     }
 
     // Delete FWD_ONLY flag
-    if (($v_fwd_only == 'yes') && (empty($_POST['v_fwd_only'])) && (empty($_SESSION['error_msg']))) {
+    if (($v_fwd_only == 'yes') && (empty($_POST['v_fwd_only']) or empty($forward)) && (empty($_SESSION['error_msg']))) {
         exec (VESTA_CMD."v-delete-mail-account-fwd-only ".$v_username." ".$v_domain." ".$v_account, $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
