@@ -26,9 +26,13 @@ source "$REPO_ROOT/src/deb/versions.env"
 VERSION="${1:-0.0.0+$(git -C "$REPO_ROOT" rev-parse --short HEAD)}"
 OUTPUT_SUFFIX="${2:-}"
 
-# Depends: is for bionic's runtime libs; libsqlite3-0 was missing (PHP auto-links it).
+# PHP_VERSION is picked per OS target, not shared -- see the comment in
+# versions.env. Depends: is for bionic's runtime libs; libsqlite3-0 was
+# missing (PHP auto-links it).
+PHP_VERSION="$PHP_VERSION_BIONIC"
 DEPENDS='vesta, libonig4, libcurl4, libssl1.1, libxml2, libzip4, libsqlite3-0'
 if [ "$OUTPUT_SUFFIX" = '_noble' ]; then
+    PHP_VERSION="$PHP_VERSION_NOBLE"
     DEPENDS='vesta, libonig5, libcurl4t64, libssl3t64, libxml2, libzip4t64, libsqlite3-0'
 fi
 
