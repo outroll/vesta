@@ -27,13 +27,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build vesta-ioncube_amd64.deb
+      - name: Build vesta-ioncube_amd64.deb (bionic PHP ABI)
         run: src/deb/ioncube/build.sh "${GITHUB_REF_NAME#v}"
+
+      - name: Build vesta-ioncube_noble_amd64.deb (noble PHP ABI)
+        run: src/deb/ioncube/build.sh "${GITHUB_REF_NAME#v}" "_noble"
 
       - uses: actions/upload-artifact@v4
         with:
           name: vesta-ioncube-deb
-          path: vesta-ioncube_amd64.deb
+          path: |
+            vesta-ioncube_amd64.deb
+            vesta-ioncube_noble_amd64.deb
 
   # nginx and php are compiled from source and dynamically link against the
   # host's OpenSSL/libc, so they must be built against the oldest Ubuntu
@@ -127,7 +132,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          assets="vesta_amd64.deb vesta-ioncube_amd64.deb vesta-nginx_amd64.deb vesta-php_amd64.deb vesta-nginx_noble_amd64.deb vesta-php_noble_amd64.deb"
+          assets="vesta_amd64.deb vesta-ioncube_amd64.deb vesta-ioncube_noble_amd64.deb vesta-nginx_amd64.deb vesta-php_amd64.deb vesta-nginx_noble_amd64.deb vesta-php_noble_amd64.deb"
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" $assets --clobber
           else
