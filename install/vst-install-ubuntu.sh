@@ -29,12 +29,16 @@ else
 fi
 vestacp="$VESTA/install/$VERSION/$release"
 
-# apt (default) | github. apt.vestacp.com has no 'noble' component, so 24.04 defaults to github.
-if [ "$release" = '24.04' ]; then
-    VESTA_SOURCE=${VESTA_SOURCE:-github}
-else
-    VESTA_SOURCE=${VESTA_SOURCE:-apt}
-fi
+# apt (default) | github. apt.vestacp.com has a 'focal' component but no
+# 'jammy' or 'noble' one -- and even where a component exists, this repo's
+# own GitHub-built vesta-nginx/vesta-php (which now differ per release, see
+# src/deb/versions.env) are the only ones actually verified to match each
+# release's library sonames, so every release added since apt.vestacp.com
+# defaults to github rather than trusting that external repo's contents.
+case "$release" in
+    22.04|24.04) VESTA_SOURCE=${VESTA_SOURCE:-github} ;;
+    *)           VESTA_SOURCE=${VESTA_SOURCE:-apt} ;;
+esac
 
 # Defining software pack for all distros
 software="nginx apache2 apache2.2-common apache2-suexec-custom apache2-utils
@@ -686,16 +690,29 @@ if [ "$iptables" = 'no' ] || [ "$fail2ban" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/fail2ban//')
 fi
 
-# Package names dropped from Ubuntu's repos as of 24.04, no direct successor.
-if [ "$release" = '24.04' ]; then
-    software=$(echo "$software" | sed -e "s/e2fslibs //")
-    software=$(echo "$software" | sed -e "s/rssh//")
-    software=$(echo "$software" | sed -e "s/proftpd-basic/proftpd-core/")
-    # iptables itself: 24.04's default image no longer ships it.
-    if [ "$iptables" = 'yes' ]; then
-        software="$software iptables"
-    fi
-fi
+# Package names dropped from Ubuntu's repos over time, no direct successor
+# (confirmed per-release against the real archive, not assumed: e2fslibs
+# survives on 20.04 but not 22.04+; rssh is gone as of 20.04; proftpd-basic
+# is gone only as of 24.04 -- still installable on 20.04/22.04).
+case "$release" in
+    20.04)
+        software=$(echo "$software" | sed -e "s/rssh//")
+        ;;
+    22.04)
+        software=$(echo "$software" | sed -e "s/e2fslibs //" -e "s/rssh//")
+        ;;
+    24.04)
+        software=$(echo "$software" | sed -e "s/e2fslibs //" -e "s/rssh//" -e "s/proftpd-basic/proftpd-core/")
+        ;;
+esac
+# iptables itself: these releases' default images don't ship it.
+case "$release" in
+    20.04|22.04|24.04)
+        if [ "$iptables" = 'yes' ]; then
+            software="$software iptables"
+        fi
+        ;;
+esac
 
 
 #----------------------------------------------------------#
@@ -712,26 +729,33 @@ chmod a+x /usr/sbin/policy-rc.d
 # Installing vesta/vesta-nginx/vesta-php/vesta-ioncube packages from GitHub
 # Releases instead of apt.vestacp.com.
 if [ "$VESTA_SOURCE" = 'github' ]; then
-    # Runtime libs our compiled vesta-nginx/vesta-php link against (24.04 renamed several).
-    if [ "$release" = '24.04' ]; then
-        apt-get -y install libonig5 libcurl4t64 libssl3t64 libxml2 libzip4t64 libpcre3 zlib1g libsqlite3-0
-    else
-        apt-get -y install libonig4 libcurl4 libssl1.1 libxml2 libzip4 libpcre3 zlib1g libsqlite3-0
-    fi
+    # Runtime libs our compiled vesta-nginx/vesta-php link against -- library
+    # sonames drift release to release (see the comment in src/deb/php/build.sh).
+    case "$release" in
+        24.04) apt-get -y install libonig5 libcurl4t64 libssl3t64 libxml2 libzip4t64 libpcre3 zlib1g libsqlite3-0 ;;
+        22.04) apt-get -y install libonig5 libcurl4 libssl3 libxml2 libzip4 libpcre3 zlib1g libsqlite3-0 ;;
+        20.04) apt-get -y install libonig5 libcurl4 libssl1.1 libxml2 libzip5 libpcre3 zlib1g libsqlite3-0 ;;
+        *)     apt-get -y install libonig4 libcurl4 libssl1.1 libxml2 libzip4 libpcre3 zlib1g libsqlite3-0 ;;
+    esac
     check_result $? "runtime library install failed"
 
-    # vesta-nginx/vesta-php get a separate build per release; vesta/vesta-ioncube don't need one.
+    # vesta-nginx/vesta-php/vesta-ioncube get a separate build per release
+    # (vesta-ioncube's loader is PHP-ABI-specific, and bionic/focal/jammy/
+    # noble pin different PHP versions/library sonames -- see
+    # src/deb/versions.env); vesta doesn't need one.
     github_suffix=""
-    if [ "$release" = '24.04' ]; then
-        github_suffix="_noble"
-    fi
+    case "$release" in
+        20.04) github_suffix="_focal" ;;
+        22.04) github_suffix="_jammy" ;;
+        24.04) github_suffix="_noble" ;;
+    esac
 
     github_packages="vesta vesta-nginx vesta-php vesta-ioncube"
     github_debs=""
     for pkg in $github_packages; do
         case "$pkg" in
-            vesta-nginx|vesta-php) asset="${pkg}${github_suffix}_amd64.deb" ;;
-            *)                     asset="${pkg}_amd64.deb" ;;
+            vesta-nginx|vesta-php|vesta-ioncube) asset="${pkg}${github_suffix}_amd64.deb" ;;
+            *)                                   asset="${pkg}_amd64.deb" ;;
         esac
         echo "=== Downloading $pkg package from GitHub Releases"
         wget -q "https://github.com/$GITHUB_REPO/releases/latest/download/${asset}" -O "/tmp/${pkg}_amd64.deb"
@@ -1102,7 +1126,7 @@ if [ "$mysql" = 'yes' ]; then
         if [ "$release" != '16.04' ] && command -v mysql_install_db >/dev/null 2>&1; then
             mysql_install_db
         fi
-        if [ "$release" == '18.04' ] || [ "$release" == '24.04' ]; then
+        if [ "$release" == '18.04' ] || [ "$release" == '20.04' ] || [ "$release" == '22.04' ] || [ "$release" == '24.04' ]; then
             mkdir -p /var/lib/mysql
             chown mysql:mysql /var/lib/mysql
             mysqld --initialize-insecure
@@ -1133,8 +1157,11 @@ if [ "$mysql" = 'yes' ]; then
     if [[ ${release:0:2} -ge 18 ]]; then
         mysql < /usr/share/phpmyadmin/sql/create_tables.sql
         p=$(grep dbpass /etc/phpmyadmin/config-db.php |cut -f 2 -d "'")
-        if [ "$release" = '24.04' ]; then
-            # MySQL 8.0 dropped combined GRANT ... IDENTIFIED BY syntax.
+        # mysql-server has meant real MySQL (not MariaDB) as of 20.04, and
+        # MySQL 8.0 dropped combined GRANT ... IDENTIFIED BY syntax (confirmed
+        # against 20.04/22.04/24.04's actual mysql-server-8.0 package; 18.04
+        # is MySQL 5.7, unaffected).
+        if [[ ${release:0:2} -ge 20 ]]; then
             mysql -e "CREATE USER IF NOT EXISTS phpmyadmin@localhost IDENTIFIED BY '$p'"
             mysql -e "GRANT ALL ON phpmyadmin.* TO phpmyadmin@localhost"
         else
@@ -1318,7 +1345,8 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     cp -f $vestacp/roundcube/config.inc.php /etc/roundcube/plugins/password/
 
     mysql -e "CREATE DATABASE roundcube"
-    if [ "$release" = '24.04' ]; then
+    # See the same check in the phpMyAdmin section above.
+    if [[ ${release:0:2} -ge 20 ]]; then
         # MySQL 8.0 dropped combined GRANT ... IDENTIFIED BY syntax.
         mysql -e "CREATE USER IF NOT EXISTS roundcube@localhost IDENTIFIED BY '$r'"
         mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost"
