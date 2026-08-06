@@ -14,11 +14,52 @@ VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os='debian'
-release=$(cat /etc/debian_version|grep -o [0-9]|head -n1)
-codename="$(cat /etc/os-release |grep VERSION= |cut -f 2 -d \(|cut -f 1 -d \))"
+# /etc/debian_version digit-scraping only grabs the first single digit
+# (e.g. "12.11" -> "1"), so it breaks on any 2-digit release; os-release's
+# VERSION_ID/VERSION_CODENAME are the reliable source on every release. One
+# subshell (not two) so os-release's own VERSION doesn't leak out and clobber
+# ours if sourced directly into this shell.
+os_release_info="$(. /etc/os-release && echo "${VERSION_ID%%.*} $VERSION_CODENAME")"
+release="${os_release_info% *}"
+codename="${os_release_info#* }"
 vestacp="$VESTA/install/$VERSION/$release"
+GITHUB_REPO=${GITHUB_REPO:-outroll/vesta}   # override to test a fork, e.g. GITHUB_REPO=youruser/vesta
 
-if [ "$release" -eq 9 ]; then
+# apt (default) | github. apt.vestacp.com has no bookworm/trixie component,
+# so 12/13 default to github.
+if [ "$release" -ge 12 ]; then
+    VESTA_SOURCE=${VESTA_SOURCE:-github}
+else
+    VESTA_SOURCE=${VESTA_SOURCE:-apt}
+fi
+
+if [ "$release" -ge 12 ]; then
+    # libapache2-mod-ruid2, e2fslibs and rssh no longer exist in the Debian
+    # archive as of bookworm/trixie (mod_ruid2 has no successor -- see the
+    # --apache yes block below; e2fslibs is superseded by e2fsprogs's own
+    # libs; rssh was removed archive-wide in 2019). mysql-server is gone too,
+    # default-mysql-server is the metapackage that pulls MariaDB instead.
+    software="nginx apache2 apache2-utils apache2-suexec-custom
+        libapache2-mod-fcgid libapache2-mod-php php
+        php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
+        webalizer vsftpd proftpd-basic bind9 exim4 exim4-daemon-heavy
+        clamav-daemon spamassassin dovecot-imapd dovecot-pop3d roundcube-core
+        roundcube-mysql roundcube-plugins default-mysql-server mysql-common
+        default-mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
+        flex whois git idn zip sudo bc ftp lsof ntpdate rrdtool quota
+        bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
+        bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
+        unrar-free vim-common vesta-ioncube net-tools unzip"
+
+    # trixie dropped both webalizer (no replacement) and the ntpdate
+    # transitional package (ntpsec-ntpdate is the real package there, and
+    # still provides the /usr/sbin/ntpdate binary the NTP cron job below
+    # expects).
+    if [ "$release" -ge 13 ]; then
+        software=$(echo "$software" | sed -e 's/webalizer//')
+        software=$(echo "$software" | sed -e 's/ntpdate/ntpsec-ntpdate/')
+    fi
+elif [ "$release" -eq 9 ]; then
     software="nginx apache2 apache2-utils apache2-suexec-custom
         libapache2-mod-ruid2 libapache2-mod-fcgid libapache2-mod-php php
         php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
@@ -214,8 +255,15 @@ done
 
 # Defining default software stack
 set_default_value 'nginx' 'yes'
-set_default_value 'apache' 'yes'
-set_default_value 'phpfpm' 'no'
+if [ "$release" -ge 12 ]; then
+    # libapache2-mod-ruid2 has no package on bookworm/trixie, so default to
+    # Nginx+PHP-FPM (see the --apache yes rejection below).
+    set_default_value 'apache' 'no'
+    set_default_value 'phpfpm' 'yes'
+else
+    set_default_value 'apache' 'yes'
+    set_default_value 'phpfpm' 'no'
+fi
 set_default_value 'vsftpd' 'yes'
 set_default_value 'proftpd' 'no'
 set_default_value 'named' 'yes'
@@ -255,6 +303,16 @@ if [ "$iptables" = 'no' ]; then
     fail2ban='no'
 fi
 
+# Reject --apache yes on bookworm/trixie up front instead of a confusing
+# apt-get failure.
+if [ "$release" -ge 12 ] && [ "$apache" = 'yes' ]; then
+    echo "Error: --apache yes is not supported on Debian 12+."
+    echo "libapache2-mod-ruid2 has no package on bookworm/trixie, so Apache"
+    echo "can't get per-site PHP user isolation there. Use --phpfpm yes"
+    echo "(the default here) for Nginx + PHP-FPM instead."
+    exit 1
+fi
+
 # Checking root permissions
 if [ "x$(id -u)" != 'x0' ]; then
     check_error 1 "Script can be run executed only by root"
@@ -272,6 +330,13 @@ fi
 if [ ! -e '/usr/bin/wget' ]; then
     apt-get -y install wget
     check_result $? "Can't install wget"
+fi
+
+# Checking gnupg -- minimal bookworm/trixie cloud images don't ship it, but
+# apt-key/gpg --dearmor (used below to trust the nginx.org repo) need it.
+if ! command -v gpg >/dev/null 2>&1; then
+    apt-get -y install gnupg
+    check_result $? "Can't install gnupg"
 fi
 
 # Checking repository availability
@@ -480,14 +545,25 @@ check_result $? 'apt-get upgrade failed'
 
 # Installing nginx repo
 apt=/etc/apt/sources.list.d
-echo "deb http://nginx.org/packages/debian/ $codename nginx" > $apt/nginx.list
 wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
-apt-key add /tmp/nginx_signing.key
+signed_by=""
+if [ "$release" -ge 12 ]; then
+    # apt-key is deprecated on bookworm and gone entirely on trixie; use a
+    # dearmored keyring + signed-by= instead.
+    mkdir -p /usr/share/keyrings
+    gpg --dearmor < /tmp/nginx_signing.key > /usr/share/keyrings/nginx-archive-keyring.gpg
+    signed_by="[signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] "
+else
+    apt-key add /tmp/nginx_signing.key
+fi
+echo "deb ${signed_by}http://nginx.org/packages/debian/ $codename nginx" > $apt/nginx.list
 
-# Installing vesta repo
-echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
-wget $CHOST/deb_signing.key -O deb_signing.key
-apt-key add deb_signing.key
+# Installing vesta repo (skipped for VESTA_SOURCE=github)
+if [ "$VESTA_SOURCE" != 'github' ]; then
+    echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
+    wget $CHOST/deb_signing.key -O deb_signing.key
+    apt-key add deb_signing.key
+fi
 
 # Installing jessie backports
 if [ "$release" -eq 8 ]; then
@@ -498,6 +574,13 @@ if [ "$release" -eq 8 ]; then
         echo "deb http://archive.debian.org/debian jessie-backports main" >\
             /etc/apt/sources.list.d/backports.list
     fi
+fi
+
+# Installing bookworm-backports (phppgadmin is only in backports on 12,
+# it moved back into main by 13; only needed when PostgreSQL is requested).
+if [ "$release" -eq 12 ] && [ "$postgresql" = 'yes' ]; then
+    echo "deb http://deb.debian.org/debian bookworm-backports main" \
+        > /etc/apt/sources.list.d/backports.list
 fi
 
 
@@ -625,6 +708,8 @@ if [ "$dovecot" = 'no' ]; then
     software=$(echo "$software" | sed -e "s/dovecot-pop3d//")
 fi
 if [ "$mysql" = 'no' ]; then
+    software=$(echo "$software" | sed -e 's/default-mysql-server//')
+    software=$(echo "$software" | sed -e 's/default-mysql-client//')
     software=$(echo "$software" | sed -e 's/mysql-server//')
     software=$(echo "$software" | sed -e 's/mysql-client//')
     software=$(echo "$software" | sed -e 's/mysql-common//')
@@ -643,6 +728,12 @@ if [ "$iptables" = 'no' ] || [ "$fail2ban" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/fail2ban//')
 fi
 
+# Minimal bookworm/trixie cloud images don't ship iptables by default
+# (nftables is the default backend); install it explicitly when needed.
+if [ "$release" -ge 12 ] && [ "$iptables" = 'yes' ]; then
+    software="$software iptables"
+fi
+
 
 #----------------------------------------------------------#
 #                     Install packages                     #
@@ -655,7 +746,60 @@ apt-get update
 echo -e '#!/bin/sh \nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
+# Installing vesta/vesta-nginx/vesta-php/vesta-ioncube packages from GitHub
+# Releases instead of apt.vestacp.com.
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    # Runtime libs our compiled vesta-nginx/vesta-php link against. trixie
+    # dropped libpcre3 (PCRE1) entirely -- the trixie vesta-nginx build
+    # links against libpcre2 instead (see src/deb/nginx/build.sh).
+    if [ "$codename" = 'trixie' ]; then
+        apt-get -y install libonig5 libcurl4t64 libssl3t64 libxml2 libzip5 libpcre2-8-0 zlib1g libsqlite3-0
+    else
+        apt-get -y install libonig5 libcurl4 libssl3 libxml2 libzip4 libpcre3 zlib1g libsqlite3-0
+    fi
+    check_result $? "runtime library install failed"
+
+    # vesta-nginx/vesta-php get a separate build per release; vesta/vesta-ioncube
+    # don't need one. $codename is already "bookworm"/"trixie" at this release.
+    github_suffix=""
+    if [ "$release" -ge 12 ]; then
+        github_suffix="_$codename"
+    fi
+
+    github_packages="vesta vesta-nginx vesta-php vesta-ioncube"
+    github_debs=""
+    for pkg in $github_packages; do
+        case "$pkg" in
+            vesta-nginx|vesta-php) asset="${pkg}${github_suffix}_amd64.deb" ;;
+            *)                     asset="${pkg}_amd64.deb" ;;
+        esac
+        echo "=== Downloading $pkg package from GitHub Releases"
+        wget -q "https://github.com/$GITHUB_REPO/releases/latest/download/${asset}" -O "/tmp/${pkg}_amd64.deb"
+        check_result $? "$pkg.deb download from GitHub failed"
+        github_debs="$github_debs /tmp/${pkg}_amd64.deb"
+    done
+    # Installed together (rather than one dpkg -i per package) so dpkg can
+    # resolve the vesta-nginx/vesta-php -> vesta and vesta-ioncube ->
+    # vesta-php Depends: ordering between these off-repo debs.
+    dpkg -i $github_debs
+    check_result $? "vesta package install failed"
+
+    # Held so a later apt-get upgrade/install can't replace these
+    # with apt.vestacp.com's versions.
+    apt-mark hold vesta vesta-nginx vesta-php vesta-ioncube
+fi
+
 # Install apt packages
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    filtered_software=""
+    for pkg in $software; do
+        case "$pkg" in
+            vesta|vesta-nginx|vesta-php|vesta-ioncube) ;;
+            *) filtered_software="$filtered_software $pkg" ;;
+        esac
+    done
+    software="$filtered_software"
+fi
 apt-get -y install $software
 check_result $? "apt-get install failed"
 
@@ -687,14 +831,16 @@ echo "$(which ntpdate) -s pool.ntp.org" >> /etc/cron.daily/ntpdate
 chmod 775 /etc/cron.daily/ntpdate
 ntpdate -s pool.ntp.org
 
-# Setup rssh
-if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
-    echo /usr/bin/rssh >> /etc/shells
+# Setup rssh (not installed on bookworm/trixie+, removed archive-wide)
+if [ -e '/usr/bin/rssh' ]; then
+    if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
+        echo /usr/bin/rssh >> /etc/shells
+    fi
+    sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
+    sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
+    sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
+    chmod 755 /usr/bin/rssh
 fi
-sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
-sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
-sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
-chmod 755 /usr/bin/rssh
 
 
 #----------------------------------------------------------#
@@ -762,7 +908,7 @@ if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
     echo "WEB_PORT='80'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL_PORT='443'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL='openssl'"  >> $VESTA/conf/vesta.conf
-    if [ "$release" -eq 9 ]; then
+    if [ "$release" -ge 9 ]; then
         if [ "$phpfpm" = 'yes' ]; then
             echo "WEB_BACKEND='php-fpm'" >> $VESTA/conf/vesta.conf
         fi
@@ -771,7 +917,12 @@ if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
             echo "WEB_BACKEND='php5-fpm'" >> $VESTA/conf/vesta.conf
         fi
     fi
-    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
+    # webalizer was dropped from the Debian archive entirely as of trixie.
+    if [ "$release" -ge 13 ]; then
+        echo "STATS_SYSTEM='awstats'" >> $VESTA/conf/vesta.conf
+    else
+        echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
+    fi
 fi
 
 # FTP stack
@@ -919,7 +1070,15 @@ fi
 #----------------------------------------------------------#
 
 if [ "$phpfpm" = 'yes' ]; then
-    if [ "$release" -eq 9 ]; then
+    if [ "$release" -ge 12 ]; then
+        php_fpm_ver="8.2"
+        [ "$release" -ge 13 ] && php_fpm_ver="8.4"
+        cp -f $vestacp/php-fpm/www.conf /etc/php/$php_fpm_ver/fpm/pool.d/www.conf
+        update-rc.d php$php_fpm_ver-fpm defaults 2>/dev/null
+        systemctl enable php$php_fpm_ver-fpm 2>/dev/null
+        service php$php_fpm_ver-fpm start
+        check_result $? "php-fpm start failed"
+    elif [ "$release" -eq 9 ]; then
         cp -f $vestacp/php-fpm/www.conf /etc/php/7.0/fpm/pool.d/www.conf
         update-rc.d php7.0-fpm defaults
         service php7.0-fpm start
@@ -990,9 +1149,16 @@ if [ "$mysql" = 'yes' ]; then
 
     # MySQL configuration
     cp -f $vestacp/mysql/$mycnf /etc/mysql/my.cnf
-    mysql_install_db
-    update-rc.d mysql defaults
-    service mysql start
+    # mysql_install_db is gone from default-mysql-server's (MariaDB) packaging
+    # on bookworm/trixie; the package's own postinst already initializes it.
+    if command -v mysql_install_db >/dev/null 2>&1; then
+        mysql_install_db
+    fi
+    update-rc.d mysql defaults 2>/dev/null
+    # default-mysql-server ships a mariadb.service; mysql.service is normally
+    # an alias for it, but fall back explicitly in case the alias is absent.
+    systemctl enable mysql 2>/dev/null || systemctl enable mariadb 2>/dev/null
+    service mysql start 2>/dev/null || service mariadb start
     check_result $? "mysql start failed"
 
     # Securing MySQL installation
@@ -1137,13 +1303,20 @@ fi
 #----------------------------------------------------------#
 
 if [ "$spamd" = 'yes' ]; then
-    update-rc.d spamassassin defaults
-    sed -i "s/ENABLED=0/ENABLED=1/" /etc/default/spamassassin
-    service spamassassin start
+    update-rc.d spamassassin defaults 2>/dev/null
+    # /etc/default/spamassassin (the old SysV ENABLED= flag) doesn't exist
+    # on bookworm/trixie -- the spamd.service unit doesn't consult it.
+    [ -e /etc/default/spamassassin ] && sed -i "s/ENABLED=0/ENABLED=1/" /etc/default/spamassassin
+    # Debian's spamassassin package ships a spamd.service unit, not
+    # spamassassin.service -- true on bookworm/trixie at least (confirmed
+    # live), possibly older releases too; this was just never reached
+    # before due to the bind9/dovecot issues above halting earlier runs.
+    service spamassassin start 2>/dev/null || service spamd start
     check_result $? "spamassassin start failed"
-    unit_files="$(systemctl list-unit-files |grep spamassassin)"
+    unit_files="$(systemctl list-unit-files |grep -E 'spamassassin|spamd')"
     if [[ "$unit_files" =~ "disabled" ]]; then
-        systemctl enable spamassassin
+        systemctl enable spamassassin 2>/dev/null
+        systemctl enable spamd 2>/dev/null
     fi
 fi
 

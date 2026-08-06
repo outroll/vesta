@@ -114,8 +114,75 @@ jobs:
             vesta-nginx_noble_amd64.deb
             vesta-php_noble_amd64.deb
 
+  build-nginx-php-bookworm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build vesta-nginx/vesta-php inside a Debian 12 container
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" -w /workspace \
+            -e VERSION="${REF_NAME#v}" \
+            -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
+            debian:12 bash -c '
+              set -e
+              apt-get update
+              DEBIAN_FRONTEND=noninteractive apt-get -y install \
+                ca-certificates curl build-essential libpcre3-dev zlib1g-dev \
+                libssl-dev libxml2-dev libcurl4-openssl-dev libonig-dev \
+                libzip-dev libsqlite3-dev pkg-config bison re2c autoconf
+              src/deb/nginx/build.sh "$VERSION" "_bookworm"
+              src/deb/php/build.sh "$VERSION" "_bookworm"
+              chown "$HOST_UID:$HOST_GID" vesta-nginx_bookworm_amd64.deb vesta-php_bookworm_amd64.deb
+            '
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nginx-php-debs-bookworm
+          path: |
+            vesta-nginx_bookworm_amd64.deb
+            vesta-php_bookworm_amd64.deb
+
+  build-nginx-php-trixie:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build vesta-nginx/vesta-php inside a Debian 13 container
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" -w /workspace \
+            -e VERSION="${REF_NAME#v}" \
+            -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
+            debian:13 bash -c '
+              set -e
+              apt-get update
+              # trixie dropped libpcre3(-dev) from the archive; nginx builds
+              # against libpcre2-dev there instead (see --with-pcre2 in
+              # src/deb/nginx/build.sh).
+              DEBIAN_FRONTEND=noninteractive apt-get -y install \
+                ca-certificates curl build-essential libpcre2-dev zlib1g-dev \
+                libssl-dev libxml2-dev libcurl4-openssl-dev libonig-dev \
+                libzip-dev libsqlite3-dev pkg-config bison re2c autoconf
+              src/deb/nginx/build.sh "$VERSION" "_trixie"
+              src/deb/php/build.sh "$VERSION" "_trixie"
+              chown "$HOST_UID:$HOST_GID" vesta-nginx_trixie_amd64.deb vesta-php_trixie_amd64.deb
+            '
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nginx-php-debs-trixie
+          path: |
+            vesta-nginx_trixie_amd64.deb
+            vesta-php_trixie_amd64.deb
+
   release:
-    needs: [build-vesta, build-ioncube, build-nginx-php-bionic, build-nginx-php-noble]
+    needs: [build-vesta, build-ioncube, build-nginx-php-bionic, build-nginx-php-noble, build-nginx-php-bookworm, build-nginx-php-trixie]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -127,7 +194,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          assets="vesta_amd64.deb vesta-ioncube_amd64.deb vesta-nginx_amd64.deb vesta-php_amd64.deb vesta-nginx_noble_amd64.deb vesta-php_noble_amd64.deb"
+          assets="vesta_amd64.deb vesta-ioncube_amd64.deb vesta-nginx_amd64.deb vesta-php_amd64.deb vesta-nginx_noble_amd64.deb vesta-php_noble_amd64.deb vesta-nginx_bookworm_amd64.deb vesta-php_bookworm_amd64.deb vesta-nginx_trixie_amd64.deb vesta-php_trixie_amd64.deb"
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" $assets --clobber
           else

@@ -20,10 +20,20 @@ source "$REPO_ROOT/src/deb/versions.env"
 VERSION="${1:-0.0.0+$(git -C "$REPO_ROOT" rev-parse --short HEAD)}"
 OUTPUT_SUFFIX="${2:-}"
 
-# Depends: is for bionic's runtime libs; 24.04 renamed libssl1.1 -> libssl3t64.
+# Depends: is for bionic's runtime libs; 24.04 renamed libssl1.1 ->
+# libssl3t64, bookworm uses the untransitioned libssl3. trixie dropped
+# libpcre3 (PCRE1) from the archive entirely; nginx auto-detects and prefers
+# system PCRE2 (via libpcre2-dev) with no special configure flag needed --
+# `./configure --with-pcre2` is not a real option (that was a wrong guess,
+# caught by actually compiling this in a debian:13 container: "invalid
+# option"). Only --without-pcre2 exists, to force the *other* direction.
 DEPENDS='vesta, libpcre3, zlib1g, libssl1.1'
 if [ "$OUTPUT_SUFFIX" = '_noble' ]; then
     DEPENDS='vesta, libpcre3, zlib1g, libssl3t64'
+elif [ "$OUTPUT_SUFFIX" = '_bookworm' ]; then
+    DEPENDS='vesta, libpcre3, zlib1g, libssl3'
+elif [ "$OUTPUT_SUFFIX" = '_trixie' ]; then
+    DEPENDS='vesta, libpcre2-8-0, zlib1g, libssl3t64'
 fi
 
 NGINX_URL="https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"
