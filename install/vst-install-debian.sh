@@ -651,8 +651,17 @@ mv -f /root/.my.cnf $vst_backups/mysql > /dev/null 2>&1
 # Backup vesta
 service vesta stop > /dev/null 2>&1
 cp -r $VESTA/* $vst_backups/vesta > /dev/null 2>&1
-apt-get -y remove vesta vesta-nginx vesta-php > /dev/null 2>&1
-apt-get -y purge vesta vesta-nginx vesta-php > /dev/null 2>&1
+# --allow-change-held-packages: on a re-run, the github-source install below
+# apt-mark holds these to stop apt.vestacp.com from clobbering them -- without
+# this flag, remove/purge silently fail on a held package (exit 100, swallowed
+# by the redirect below), dpkg's database still shows them installed, and the
+# rm -rf right after this deletes their files anyway. The next dpkg -i then
+# sees an "upgrade" of an already-installed package whose conffiles (e.g.
+# vesta-nginx's nginx.conf) are missing from disk, which dpkg treats as an
+# intentional admin deletion and refuses to recreate (see --force-confmiss
+# on the dpkg -i call below, which is the other half of this fix).
+apt-get -y --allow-change-held-packages remove vesta vesta-nginx vesta-php vesta-ioncube > /dev/null 2>&1
+apt-get -y --allow-change-held-packages purge vesta vesta-nginx vesta-php vesta-ioncube > /dev/null 2>&1
 rm -rf $VESTA > /dev/null 2>&1
 
 
@@ -781,7 +790,12 @@ if [ "$VESTA_SOURCE" = 'github' ]; then
     # Installed together (rather than one dpkg -i per package) so dpkg can
     # resolve the vesta-nginx/vesta-php -> vesta and vesta-ioncube ->
     # vesta-php Depends: ordering between these off-repo debs.
-    dpkg -i $github_debs
+    # --force-confmiss: safety net for the same issue --allow-change-held-
+    # packages above already prevents -- if dpkg ever sees this as an
+    # "upgrade" of an already-installed package with a conffile missing
+    # from disk (e.g. vesta-nginx's nginx.conf), it assumes that was a
+    # deliberate admin deletion and silently skips recreating it otherwise.
+    dpkg -i --force-confmiss $github_debs
     check_result $? "vesta package install failed"
 
     # Held so a later apt-get upgrade/install can't replace these
