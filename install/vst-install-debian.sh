@@ -660,8 +660,9 @@ cp -r $VESTA/* $vst_backups/vesta > /dev/null 2>&1
 # vesta-nginx's nginx.conf) are missing from disk, which dpkg treats as an
 # intentional admin deletion and refuses to recreate (see --force-confmiss
 # on the dpkg -i call below, which is the other half of this fix).
-apt-get -y --allow-change-held-packages remove vesta vesta-nginx vesta-php vesta-ioncube > /dev/null 2>&1
-apt-get -y --allow-change-held-packages purge vesta vesta-nginx vesta-php vesta-ioncube > /dev/null 2>&1
+held_pkgs="vesta vesta-nginx vesta-php vesta-ioncube"
+apt-get -y --allow-change-held-packages remove $held_pkgs > /dev/null 2>&1
+apt-get -y --allow-change-held-packages purge $held_pkgs > /dev/null 2>&1
 rm -rf $VESTA > /dev/null 2>&1
 
 
