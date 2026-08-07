@@ -98,10 +98,14 @@ jobs:
             ubuntu:24.04 bash -c '
               set -e
               apt-get update
+              # libcrypt-dev: lets vesta-php link against the system libxcrypt
+              # (--with-external-libcrypt) instead of its own bundled crypt()
+              # implementation, which has no yescrypt support -- noble
+              # defaults new /etc/shadow entries to yescrypt.
               DEBIAN_FRONTEND=noninteractive apt-get -y install \
                 ca-certificates curl build-essential libpcre3-dev zlib1g-dev \
                 libssl-dev libxml2-dev libcurl4-openssl-dev libonig-dev \
-                libzip-dev libsqlite3-dev pkg-config bison re2c autoconf
+                libzip-dev libsqlite3-dev libcrypt-dev pkg-config bison re2c autoconf
               src/deb/nginx/build.sh "$VERSION" "_noble"
               src/deb/php/build.sh "$VERSION" "_noble"
               chown "$HOST_UID:$HOST_GID" vesta-nginx_noble_amd64.deb vesta-php_noble_amd64.deb
@@ -130,10 +134,11 @@ jobs:
             debian:12 bash -c '
               set -e
               apt-get update
+              # libcrypt-dev: see the matching comment in build-nginx-php-noble.
               DEBIAN_FRONTEND=noninteractive apt-get -y install \
                 ca-certificates curl build-essential libpcre3-dev zlib1g-dev \
                 libssl-dev libxml2-dev libcurl4-openssl-dev libonig-dev \
-                libzip-dev libsqlite3-dev pkg-config bison re2c autoconf
+                libzip-dev libsqlite3-dev libcrypt-dev pkg-config bison re2c autoconf
               src/deb/nginx/build.sh "$VERSION" "_bookworm"
               src/deb/php/build.sh "$VERSION" "_bookworm"
               chown "$HOST_UID:$HOST_GID" vesta-nginx_bookworm_amd64.deb vesta-php_bookworm_amd64.deb
@@ -164,11 +169,12 @@ jobs:
               apt-get update
               # trixie dropped libpcre3(-dev) from the archive; nginx builds
               # against libpcre2-dev there instead (see --with-pcre2 in
-              # src/deb/nginx/build.sh).
+              # src/deb/nginx/build.sh). libcrypt-dev: see the matching
+              # comment in build-nginx-php-noble.
               DEBIAN_FRONTEND=noninteractive apt-get -y install \
                 ca-certificates curl build-essential libpcre2-dev zlib1g-dev \
                 libssl-dev libxml2-dev libcurl4-openssl-dev libonig-dev \
-                libzip-dev libsqlite3-dev pkg-config bison re2c autoconf
+                libzip-dev libsqlite3-dev libcrypt-dev pkg-config bison re2c autoconf
               src/deb/nginx/build.sh "$VERSION" "_trixie"
               src/deb/php/build.sh "$VERSION" "_trixie"
               chown "$HOST_UID:$HOST_GID" vesta-nginx_trixie_amd64.deb vesta-php_trixie_amd64.deb

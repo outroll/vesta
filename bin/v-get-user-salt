@@ -77,12 +77,19 @@ shadow=$(grep "^$user:" /etc/shadow | cut -f 2 -d :)
 
 if echo "$shadow" | grep -qE '^\$[0-9a-z]+\$[^\$]+\$'
 then
-    salt=$(echo "$shadow" |cut -f 3 -d \$)
     method=$(echo "$shadow" |cut -f 2 -d \$)
-    if [ "$method" -eq '1' ]; then
+    if [ "$method" = '1' ]; then
         method='md5'
-    elif [ "$method" -eq '6' ]; then
+        salt=$(echo "$shadow" |cut -f 3 -d \$)
+    elif [ "$method" = '6' ]; then
         method='sha-512'
+        salt=$(echo "$shadow" |cut -f 3 -d \$)
+    elif [ "$method" = 'y' ]; then
+        # yescrypt: $y$<params>$<salt>$<hash> -- unlike md5/sha-512, the
+        # params field isn't a fixed default we can hardcode (see the
+        # rounds=5000 handling below), so it has to travel with the salt.
+        method='yescrypt'
+        salt=$(echo "$shadow" |cut -f 3,4 -d \$ --output-delimiter='$')
     else
         echo "Error: password missmatch"
         echo "$date $time $user $ip failed to login" >> $VESTA/log/auth.log
