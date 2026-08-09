@@ -285,6 +285,45 @@ is_hash_valid() {
     fi
 }
 
+# Parse an /etc/shadow entry for $user into $method/$salt (md5, sha-512,
+# yescrypt, or des). Callers must set $user/$ip/$date/$time first. Logs a
+# "password missmatch" to auth.log and exits 9 on an unrecognized method or
+# empty salt -- same behavior as each of this function's call sites had
+# inline before it was factored out, so it's a drop-in replacement.
+parse_shadow_hash() {
+    shadow=$(grep "^$user:" /etc/shadow | cut -f 2 -d :)
+
+    if echo "$shadow" | grep -qE '^\$[0-9a-z]+\$[^\$]+\$'
+    then
+        method=$(echo "$shadow" |cut -f 2 -d \$)
+        salt=$(echo "$shadow" |cut -f 3 -d \$)
+        if [ "$method" = '1' ]; then
+            method='md5'
+        elif [ "$method" = '6' ]; then
+            method='sha-512'
+        elif [ "$method" = 'y' ]; then
+            # yescrypt: $y$<params>$<salt>$<hash> -- unlike md5/sha-512, the
+            # params field isn't a fixed default we can hardcode, so it has
+            # to travel with the salt.
+            method='yescrypt'
+            salt=$(echo "$shadow" |cut -f 3,4 -d \$ --output-delimiter='$')
+        else
+            echo "Error: password missmatch"
+            echo "$date $time $user $ip failed to login" >> $VESTA/log/auth.log
+            exit 9
+        fi
+    else
+        salt=${shadow:0:2}
+        method='des'
+    fi
+
+    if [ -z "$salt" ]; then
+        echo "Error: password missmatch"
+        echo "$date $time $user $ip failed to login" >> $VESTA/log/auth.log
+        exit 9
+    fi
+}
+
 # Check if directory is a symlink
 is_dir_symlink() {
     if [[ -L "$1" ]]; then

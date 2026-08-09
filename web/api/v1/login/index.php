@@ -68,6 +68,13 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
                 if ($method == 'des' ) {
                     $hash = crypt($password, $salt);
                 }
+                if ($method == 'yescrypt' ) {
+                    // $salt here is "<params>$<salt>" (see v-get-user-salt),
+                    // unlike sha-512's hardcoded rounds=5000 -- yescrypt's
+                    // params aren't a fixed default, so they have to come
+                    // from the actual shadow entry rather than being assumed.
+                    $hash = crypt($password, '$y$'.$salt.'$');
+                }
 
                 // Send hash via tmp file
                 $v_hash = exec('mktemp -p /tmp');

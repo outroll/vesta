@@ -27,9 +27,33 @@ VERSION="${1:-0.0.0+$(git -C "$REPO_ROOT" rev-parse --short HEAD)}"
 OUTPUT_SUFFIX="${2:-}"
 
 # Depends: is for bionic's runtime libs; libsqlite3-0 was missing (PHP auto-links it).
+# bookworm keeps libcurl4/libssl3/libzip4 untransitioned; trixie renamed
+# libcurl4->libcurl4t64, libssl1.1->libssl3t64 (time_t64 transition) and
+# separately bumped libzip's soname 4->5 (unrelated to that transition).
 DEPENDS='vesta, libonig4, libcurl4, libssl1.1, libxml2, libzip4, libsqlite3-0'
 if [ "$OUTPUT_SUFFIX" = '_noble' ]; then
     DEPENDS='vesta, libonig5, libcurl4t64, libssl3t64, libxml2, libzip4t64, libsqlite3-0'
+elif [ "$OUTPUT_SUFFIX" = '_bookworm' ]; then
+    DEPENDS='vesta, libonig5, libcurl4, libssl3, libxml2, libzip4, libsqlite3-0'
+elif [ "$OUTPUT_SUFFIX" = '_trixie' ]; then
+    DEPENDS='vesta, libonig5, libcurl4t64, libssl3t64, libxml2, libzip5, libsqlite3-0'
+fi
+
+# --with-external-libcrypt: bionic's PHP keeps its own bundled crypt()
+# implementation (bionic predates yescrypt, so its /etc/shadow hashes are
+# still md5/sha-512-crypt, which the bundled implementation already covers,
+# and bionic doesn't have a libcrypt-dev package to build against anyway).
+# noble/bookworm/trixie all default new /etc/shadow entries to yescrypt
+# ($y$) -- PHP's bundled crypt() doesn't implement that algorithm at all
+# (crypt() just returns the "*0" failure sentinel for it), so the admin
+# panel's own login (web/api/v1/login/index.php, via bin/v-get-user-salt +
+# bin/v-check-user-hash) can never succeed there without linking against
+# the system's real libxcrypt instead. Verified: with this flag, crypt()
+# output exactly matches chpasswd's /etc/shadow yescrypt hash for the same
+# password+salt.
+EXTERNAL_LIBCRYPT_FLAG=""
+if [ -n "$OUTPUT_SUFFIX" ]; then
+    EXTERNAL_LIBCRYPT_FLAG="--with-external-libcrypt"
 fi
 
 PHP_URL="https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz"
@@ -54,7 +78,8 @@ tar -xzf "$WORKDIR/php.tar.gz" -C "$WORKDIR"
         --with-openssl \
         --enable-zip \
         --with-mysqli \
-        --with-pdo-mysql
+        --with-pdo-mysql \
+        $EXTERNAL_LIBCRYPT_FLAG
     make -j"$(nproc)"
     make install INSTALL_ROOT="$PKGROOT"
 )
