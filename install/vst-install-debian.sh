@@ -1419,8 +1419,27 @@ if [ "$iptables" = 'yes' ]; then
     $VESTA/bin/v-update-firewall
 fi
 
-# Get public ip
-pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
+# Get public ip. The response is validated: vestacp.com/what-is-my-ip/
+# currently answers with a Cloudflare 301 page, and an unvalidated $pub_ip
+# lands that HTML in v-change-sys-ip-nat and then in $ip itself, so the
+# address printed at the end of the install is a block of markup. Falls
+# back to two plain-text services if the first answer is not an IPv4
+# address, and leaves $ip alone if none of them are reachable.
+get_public_ip() {
+    local url answer
+    for url in "https://vestacp.com/what-is-my-ip/"                "https://api.ipify.org"                "https://icanhazip.com"; do
+        answer=$(curl -fsS --max-time 10 "$url" 2>/dev/null | tr -d '[:space:]')
+        case "$answer" in
+            *[!0-9.]*|"") continue ;;
+        esac
+        if [ "$(echo "$answer" | awk -F. 'NF==4')" = "$answer" ]; then
+            echo "$answer"
+            return 0
+        fi
+    done
+    return 1
+}
+pub_ip=$(get_public_ip)
 
 if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
     $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
