@@ -794,14 +794,19 @@ echo "$(which ntpdate) -s pool.ntp.org" >> /etc/cron.daily/ntpdate
 chmod 775 /etc/cron.daily/ntpdate
 ntpdate -s pool.ntp.org
 
-# Setup rssh
-if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
-    echo /usr/bin/rssh >> /etc/shells
+# Setup rssh. Removed from Debian after buster (CVE-2019-3463) and dropped
+# from the software list on 11+, so only configured where it exists.
+if [ -e '/usr/bin/rssh' ]; then
+    if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
+        echo /usr/bin/rssh >> /etc/shells
+    fi
+    if [ -e '/etc/rssh.conf' ]; then
+        sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
+        sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
+        sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
+    fi
+    chmod 755 /usr/bin/rssh
 fi
-sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
-sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
-sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
-chmod 755 /usr/bin/rssh
 
 
 #----------------------------------------------------------#
@@ -869,16 +874,21 @@ if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
     echo "WEB_PORT='80'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL_PORT='443'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL='openssl'"  >> $VESTA/conf/vesta.conf
-    if [ "$release" -eq 9 ]; then
-        if [ "$phpfpm" = 'yes' ]; then
-            echo "WEB_BACKEND='php-fpm'" >> $VESTA/conf/vesta.conf
-        fi
-    else
-        if [ "$phpfpm" = 'yes' ]; then
-            echo "WEB_BACKEND='php5-fpm'" >> $VESTA/conf/vesta.conf
-        fi
+    if [ "$phpfpm" = 'yes' ]; then
+        # WEB_BACKEND names a directory under data/templates/web, and the
+        # only one shipped is php-fpm. Writing 'php5-fpm' here -- which the
+        # pre-9 branch did, and which every release from 10 on fell into --
+        # makes v-add-domain fail with "default backend template doesn't
+        # exist" and no domain can be created at all.
+        echo "WEB_BACKEND='php-fpm'" >> $VESTA/conf/vesta.conf
     fi
-    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
+    # webalizer has no package on bullseye, so it is not in the software
+    # list there and must not be named as a stats backend either.
+    if [ "${release:-0}" -eq 11 ] 2>/dev/null; then
+        echo "STATS_SYSTEM='awstats'" >> $VESTA/conf/vesta.conf
+    else
+        echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
+    fi
 fi
 
 # FTP stack
@@ -1028,7 +1038,19 @@ fi
 #----------------------------------------------------------#
 
 if [ "$phpfpm" = 'yes' ]; then
-    if [ "$release" -eq 9 ]; then
+    if [ "${release:-0}" -ge 11 ] 2>/dev/null; then
+        # bullseye ships PHP 7.4 and bookworm 8.2, and the next release will
+        # ship something else again, so the pool directory and the init
+        # script are discovered rather than named. Same approach as the
+        # Ubuntu installer.
+        pool=$(find /etc/php* -type d \( -name "pool.d" -o -name "*fpm.d" \))
+        cp -f $vestacp/php-fpm/www.conf $pool/
+        php_fpm=$(ls /etc/init.d/php*-fpm* | cut -f 4 -d /)
+        ln -s /etc/init.d/$php_fpm /etc/init.d/php-fpm > /dev/null 2>&1
+        update-rc.d $php_fpm defaults
+        service $php_fpm start
+        check_result $? "php-fpm start failed"
+    elif [ "$release" -eq 9 ]; then
         cp -f $vestacp/php-fpm/www.conf /etc/php/7.0/fpm/pool.d/www.conf
         update-rc.d php7.0-fpm defaults
         service php7.0-fpm start
