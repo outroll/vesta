@@ -26,6 +26,8 @@ case "$OUTPUT_SUFFIX" in
     _focal) DEPENDS='vesta, libpcre3, zlib1g, libssl1.1' ;;
     _jammy) DEPENDS='vesta, libpcre3, zlib1g, libssl3' ;;
     _noble) DEPENDS='vesta, libpcre3, zlib1g, libssl3t64' ;;
+    _bullseye) DEPENDS='vesta, libpcre3, zlib1g, libssl1.1' ;;
+    _bookworm) DEPENDS='vesta, libpcre3, zlib1g, libssl3' ;;
 esac
 
 NGINX_URL="https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"

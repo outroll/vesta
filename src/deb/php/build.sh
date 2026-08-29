@@ -37,6 +37,10 @@ case "$OUTPUT_SUFFIX" in
     _jammy) DEPENDS='vesta, libonig5, libcurl4, libssl3, libxml2, libzip4, libsqlite3-0' ;;
     # noble renamed the time_t-64 ABI packages with a t64 suffix.
     _noble) DEPENDS='vesta, libonig5, libcurl4t64, libssl3t64, libxml2, libzip4t64, libsqlite3-0' ;;
+    # Debian: bullseye still has libssl1.1, bookworm moved to libssl3.
+    # Both carry libonig5 and libzip4.
+    _bullseye) DEPENDS='vesta, libonig5, libcurl4, libssl1.1, libxml2, libzip4, libsqlite3-0' ;;
+    _bookworm) DEPENDS='vesta, libonig5, libcurl4, libssl3, libxml2, libzip4, libsqlite3-0' ;;
 esac
 
 PHP_URL="https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz"

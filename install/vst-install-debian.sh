@@ -14,11 +14,53 @@ VESTA='/usr/local/vesta'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os='debian'
-release=$(cat /etc/debian_version|grep -o [0-9]|head -n1)
+# grep -o '[0-9]' | head -n1 took the first digit *character*, so every
+# release from 10 on collapsed to "1" and $vestacp pointed at
+# install/debian/1, which has never existed. os-release carries the major
+# version directly; /etc/debian_version is the fallback, cut at the first
+# dot rather than the first digit.
+release=""
+[ -f /etc/os-release ] && release="$(. /etc/os-release && echo "$VERSION_ID")"
+[ -z "$release" ] && release=$(cut -d. -f1 /etc/debian_version)
+release=${release%%.*}
 codename="$(cat /etc/os-release |grep VERSION= |cut -f 2 -d \(|cut -f 1 -d \))"
 vestacp="$VESTA/install/$VERSION/$release"
+GITHUB_REPO=${GITHUB_REPO:-outroll/vesta}   # override to test a fork, e.g. GITHUB_REPO=youruser/vesta
 
-if [ "$release" -eq 9 ]; then
+# apt (default) | github. apt.vestacp.com carries no bullseye or bookworm
+# component, so Debian 11+ defaults to this repo's GitHub Releases.
+if [ "${release:-0}" -ge 11 ] 2>/dev/null; then
+    VESTA_SOURCE=${VESTA_SOURCE:-github}
+else
+    VESTA_SOURCE=${VESTA_SOURCE:-apt}
+fi
+
+if [ "${release:-0}" -ge 11 ] 2>/dev/null; then
+    # Debian 11/12. Differences from the 9 list, each checked against the
+    # bullseye and bookworm archives:
+    #   mysql-server/-client/-common  -> no candidate at all; MariaDB is the
+    #                                    only database server Debian ships
+    #   libapache2-mod-ruid2          -> gone, so no per-site PHP user
+    #                                    isolation under Apache (see below)
+    #   phppgadmin                    -> gone from both
+    #   rssh                          -> removed after buster (CVE-2019-3463)
+    #   e2fslibs                      -> transitional, no candidate
+    #   webalizer                     -> absent on bullseye, back on bookworm
+    software="nginx apache2 apache2-utils apache2-suexec-custom
+        libapache2-mod-fcgid libapache2-mod-php php
+        php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
+        vsftpd proftpd-basic bind9 exim4 exim4-daemon-heavy
+        clamav-daemon spamassassin dovecot-imapd dovecot-pop3d roundcube-core
+        roundcube-mysql roundcube-plugins mariadb-server mariadb-client
+        postgresql postgresql-contrib phpmyadmin mc
+        flex whois git idn zip sudo bc ftp lsof ntpdate rrdtool quota
+        bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
+        bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
+        unrar-free vim-common vesta-ioncube net-tools unzip"
+    if [ "$release" -ge 12 ]; then
+        software="$software webalizer"
+    fi
+elif [ "$release" -eq 9 ]; then
     software="nginx apache2 apache2-utils apache2-suexec-custom
         libapache2-mod-ruid2 libapache2-mod-fcgid libapache2-mod-php php
         php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
@@ -214,8 +256,16 @@ done
 
 # Defining default software stack
 set_default_value 'nginx' 'yes'
-set_default_value 'apache' 'yes'
-set_default_value 'phpfpm' 'no'
+if [ "${release:-0}" -ge 11 ] 2>/dev/null; then
+    # libapache2-mod-ruid2 has no package on bullseye or bookworm, and
+    # without it Apache cannot give each site its own PHP user, so default
+    # to Nginx + PHP-FPM there.
+    set_default_value 'apache' 'no'
+    set_default_value 'phpfpm' 'yes'
+else
+    set_default_value 'apache' 'yes'
+    set_default_value 'phpfpm' 'no'
+fi
 set_default_value 'vsftpd' 'yes'
 set_default_value 'proftpd' 'no'
 set_default_value 'named' 'yes'
@@ -253,6 +303,16 @@ if [ "$exim" = 'no' ]; then
 fi
 if [ "$iptables" = 'no' ]; then
     fail2ban='no'
+fi
+
+# Reject --apache yes on Debian 11+ up front instead of a confusing
+# apt-get failure later on.
+if [ "${release:-0}" -ge 11 ] 2>/dev/null && [ "$apache" = 'yes' ]; then
+    echo "Error: --apache yes is not supported on Debian $release."
+    echo "libapache2-mod-ruid2 has no package on bullseye or bookworm, so"
+    echo "Apache can't give each site its own PHP user there. Use"
+    echo "--phpfpm yes (the default on Debian 11+) for Nginx + PHP-FPM."
+    exit 1
 fi
 
 # Checking root permissions
@@ -484,10 +544,14 @@ echo "deb http://nginx.org/packages/debian/ $codename nginx" > $apt/nginx.list
 wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
 apt-key add /tmp/nginx_signing.key
 
-# Installing vesta repo
-echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
-wget $CHOST/deb_signing.key -O deb_signing.key
-apt-key add deb_signing.key
+# Installing vesta repo. Skipped when the vesta packages come from GitHub
+# Releases -- apt.vestacp.com has no bullseye or bookworm component, so
+# adding it there only makes apt-get update fail.
+if [ "$VESTA_SOURCE" != 'github' ]; then
+    echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
+    wget $CHOST/deb_signing.key -O deb_signing.key
+    apt-key add deb_signing.key
+fi
 
 # Installing jessie backports
 if [ "$release" -eq 8 ]; then
@@ -654,6 +718,49 @@ apt-get update
 # Disable daemon autostart /usr/share/doc/sysv-rc/README.policy-rc.d.gz
 echo -e '#!/bin/sh \nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
+
+# Installing vesta/vesta-nginx/vesta-php/vesta-ioncube from GitHub Releases
+# instead of apt.vestacp.com.
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    # Runtime libs the compiled vesta-nginx/vesta-php link against.
+    # bookworm dropped libssl1.1 for libssl3; both carry libonig5/libzip4.
+    if [ "$release" -ge 12 ]; then
+        runtime_libs="libonig5 libcurl4 libssl3 libxml2 libzip4"
+        github_suffix="_bookworm"
+    else
+        runtime_libs="libonig5 libcurl4 libssl1.1 libxml2 libzip4"
+        github_suffix="_bullseye"
+    fi
+    apt-get -y install $runtime_libs libpcre3 zlib1g libsqlite3-0
+    check_result $? "runtime library install failed"
+
+    github_debs=""
+    for pkg in vesta vesta-nginx vesta-php vesta-ioncube; do
+        case "$pkg" in
+            vesta-nginx|vesta-php) asset="${pkg}${github_suffix}_amd64.deb" ;;
+            *)                     asset="${pkg}_amd64.deb" ;;
+        esac
+        echo "=== Downloading $pkg package from GitHub Releases"
+        wget -q "https://github.com/$GITHUB_REPO/releases/latest/download/${asset}" -O "/tmp/${pkg}_amd64.deb"
+        check_result $? "$pkg.deb download from GitHub failed"
+        github_debs="$github_debs /tmp/${pkg}_amd64.deb"
+    done
+    # Installed together so dpkg can resolve the vesta-nginx/vesta-php ->
+    # vesta and vesta-ioncube -> vesta-php Depends: ordering between these
+    # off-repo debs.
+    dpkg -i $github_debs
+    check_result $? "vesta package install failed"
+    apt-mark hold vesta vesta-nginx vesta-php vesta-ioncube
+
+    filtered_software=""
+    for pkg in $software; do
+        case "$pkg" in
+            vesta|vesta-nginx|vesta-php|vesta-ioncube) ;;
+            *) filtered_software="$filtered_software $pkg" ;;
+        esac
+    done
+    software="$filtered_software"
+fi
 
 # Install apt packages
 apt-get -y install $software
@@ -869,7 +976,9 @@ if [ "$nginx" = 'yes' ]; then
     cp -f $vestacp/nginx/nginx.conf /etc/nginx/
     cp -f $vestacp/nginx/status.conf /etc/nginx/conf.d/
     cp -f $vestacp/nginx/phpmyadmin.inc /etc/nginx/conf.d/
-    cp -f $vestacp/nginx/phppgadmin.inc /etc/nginx/conf.d/
+    if [ -d /etc/phppgadmin ]; then
+        cp -f $vestacp/nginx/phppgadmin.inc /etc/nginx/conf.d/
+    fi
     cp -f $vestacp/nginx/webmail.inc /etc/nginx/conf.d/
     cp -f $vestacp/logrotate/nginx /etc/logrotate.d/
     echo > /etc/nginx/conf.d/vesta.conf
@@ -990,14 +1099,36 @@ if [ "$mysql" = 'yes' ]; then
 
     # MySQL configuration
     cp -f $vestacp/mysql/$mycnf /etc/mysql/my.cnf
-    mysql_install_db
-    update-rc.d mysql defaults
-    service mysql start
-    check_result $? "mysql start failed"
+    # Debian 11+ ships MariaDB, whose packaging differs from MySQL's:
+    # there is no /etc/init.d/mysql at all (only mariadb), and the postinst
+    # has already initialised /var/lib/mysql, so re-running mysql_install_db
+    # there is unnecessary.
+    if [ -e '/etc/init.d/mariadb' ]; then
+        db_service='mariadb'
+    else
+        db_service='mysql'
+    fi
+    if [ ! -d /var/lib/mysql/mysql ]; then
+        mysql_install_db
+    fi
+    update-rc.d $db_service defaults
+    service $db_service start
+    check_result $? "$db_service start failed"
 
     # Securing MySQL installation
     mpass=$(gen_pass)
-    mysqladmin -u root password $mpass
+    if [ "$db_service" = 'mariadb' ]; then
+        # root@localhost authenticates via unix_socket out of the box, so
+        # `mysqladmin -u root password` sets a password that can never be
+        # used to log in. Switch the plugin and set the password together.
+        # This is MariaDB's spelling; MySQL 8's `IDENTIFIED WITH ... BY`
+        # is rejected here, so the two cannot share one statement.
+        mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('$mpass');"
+        check_result $? "mysql root password setup failed"
+        mysql -e "FLUSH PRIVILEGES"
+    else
+        mysqladmin -u root password $mpass
+    fi
     echo -e "[client]\npassword='$mpass'\n" > /root/.my.cnf
     chmod 600 /root/.my.cnf
     mysql -e "DELETE FROM mysql.user WHERE User=''"
@@ -1025,11 +1156,15 @@ if [ "$postgresql" = 'yes' ]; then
     service postgresql restart
     sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$ppass'"
 
-    # Configuring phpPgAdmin
-    if [ "$apache" = 'yes' ]; then
-        cp -f $vestacp/pga/phppgadmin.conf /etc/apache2/conf.d/
+    # Configuring phpPgAdmin. Debian dropped the phppgadmin package after
+    # buster, so on 11+ PostgreSQL is installed without a web front end and
+    # there is nothing here to configure.
+    if [ -d /etc/phppgadmin ]; then
+        if [ "$apache" = 'yes' ]; then
+            cp -f $vestacp/pga/phppgadmin.conf /etc/apache2/conf.d/
+        fi
+        cp -f $vestacp/pga/config.inc.php /etc/phppgadmin/
     fi
-    cp -f $vestacp/pga/config.inc.php /etc/phppgadmin/
 fi
 
 
