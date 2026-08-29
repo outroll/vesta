@@ -1,7 +1,7 @@
 import React from 'react';
 
 import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/TextInput';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
 
 const EditServerWebOption = ({ proxySystem, webSystem, webBackend, webBackendPool, visible = false }) => {

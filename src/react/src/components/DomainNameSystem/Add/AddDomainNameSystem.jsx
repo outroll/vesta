@@ -5,16 +5,16 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { getUserNS } from '../../../ControlPanelService/UserNS';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddDomainNameSystem.scss';
 import AdvancedOptions from './AdvancedOptions/AdvancedOptions';
 import { addDomainNameSystem } from '../../../ControlPanelService/Dns';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 const AddDomainNameSystem = props => {
   const { i18n } = useSelector(state => state.session);
@@ -98,7 +98,7 @@ const AddDomainNameSystem = props => {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span>{state.okMessage ? parse(state.okMessage) : ''}</span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>
@@ -109,7 +109,7 @@ const AddDomainNameSystem = props => {
             <input type="hidden" name="ok" value="add" />
             <input type="hidden" name="token" value={token} />
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="domain">{i18n.Domain ?? 'Domain'}</label>
               <input
                 type="text"
@@ -119,7 +119,7 @@ const AddDomainNameSystem = props => {
                 name="v_domain" />
             </div>
 
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label htmlFor="ip_address">{i18n['IP address'] ?? 'IP address'}</label>
               <input
                 type="text"
@@ -129,7 +129,7 @@ const AddDomainNameSystem = props => {
                 name="v_ip" />
             </div>
 
-            <div className="form-group advanced-options-button">
+            <div className="form-group advanced-options-button mb-3">
               <button type="button" onClick={() => showAdvancedOption()}>
                 {i18n['Advanced options'] ?? 'Advanced options'}
                 {state.showAdvancedOptions ? <FontAwesomeIcon icon="caret-down" /> : <FontAwesomeIcon icon="caret-up" />}

@@ -6,7 +6,7 @@ import AddInternetProtocol from '../../components/InternetProtocol/Add/AddIntern
 import EditServerNginx from 'src/components/Server/Edit/Nginx/EditServerNginx';
 import Postgresql from 'src/components/Server/Edit/Postgresql/Postgresql';
 import EditBackupExclusions from 'src/components/Backup/Exclusion/Edit';
-import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import { Route, Routes, Navigate, useNavigate, useLocation } from "react-router";
 import InternetProtocols from '../InternetProtocols/InternetProtocols';
 import AddWebDomain from '../../components/WebDomain/Add/AddWebDomain';
 import EditDatabase from '../../components/Database/Edit/EditDatabase';
@@ -60,6 +60,7 @@ import './ControlPanelContent.scss';
 const ControlPanelContent = props => {
   const { userName } = useSelector(state => state.session);
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
   const [hotkeysList, setHotkeysList] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -71,7 +72,7 @@ const ControlPanelContent = props => {
     } else {
       setLoading(false);
     }
-  }, [userName, navigate]);
+  }, [userName]);
 
   useEffect(() => {
     dispatch(removeFocusedElement());
@@ -111,7 +112,7 @@ const ControlPanelContent = props => {
     }
 
     if (event.keyCode === 65) {
-      switch (window.location.pathname) {
+      switch (location.pathname) {
         case '/list/web/': return navigate('/add/web/');
         case '/list/dns/': return navigate('/add/dns/');
         case '/list/mail/': return navigate('/add/mail/');
@@ -138,6 +139,8 @@ const ControlPanelContent = props => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  const historyShim = { push: navigate };
+
   return (
     <div>
       <MainNav />
@@ -148,22 +151,22 @@ const ControlPanelContent = props => {
             : (
               <Routes>
                 <Route path="/" element={<Navigate to="/list/user/" replace />} />
-                <Route path="/list/package" element={<Packages changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/package" element={<Packages history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/add/package" element={<AddPackage />} />
                 <Route path="/edit/package" element={<EditPackage />} />
-                <Route path="/list/ip" element={<InternetProtocols changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/ip" element={<InternetProtocols history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/add/ip" element={<AddInternetProtocol />} />
                 <Route path="/edit/ip" element={<EditInternetProtocol />} />
-                <Route path="/list/rrd" element={<RRDs changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/stats" element={<Statistics changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/log" element={<Logs changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/updates" element={<Updates changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/firewall" element={<Firewalls changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/firewall/banlist" element={<BanList changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/rrd" element={<RRDs history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/stats" element={<Statistics history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/log" element={<Logs history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/updates" element={<Updates history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/firewall" element={<Firewalls history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/firewall/banlist" element={<BanList history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/add/firewall/banlist" element={<AddBanIP />} />
                 <Route path="/add/firewall" element={<AddFirewall />} />
                 <Route path="/edit/firewall" element={<EditFirewall />} />
-                <Route path="/list/server/" element={<Servers changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/server/" element={<Servers history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/edit/server/" element={<EditServer />} />
                 <Route path="/edit/server/nginx" element={<EditServerNginx />} />
                 <Route path="/edit/server/php" element={<EditPhp serviceName="php" />} />
@@ -187,28 +190,28 @@ const ControlPanelContent = props => {
                   })
                 }
 
-                <Route path="/list/user" element={<Users changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/user" element={<Users changeSearchTerm={handleSearchTerm} history={historyShim} />} />
                 <Route path="/add/user" element={<AddUser />} />
                 <Route path="/edit/user" element={<EditUser />} />
-                <Route path="/list/web" element={<Web changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/web" element={<Web history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/add/web" element={<AddWebDomain />} />
                 <Route path="/edit/web" element={<EditWeb />} />
-                <Route path="/list/dns" element={<DNSWrapper changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/dns" element={<DNSWrapper history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/add/dns" element={<AddDNSWrapper />} />
                 <Route path="/edit/dns" element={<EditDNSWrapper />} />
-                <Route path="/list/mail" element={<MailWrapper changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/mail" element={<MailWrapper history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/add/mail" element={<AddMailWrapper />} />
                 <Route path="/edit/mail" element={<EditMailWrapper />} />
-                <Route path="/list/db" element={<Databases changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/db" element={<Databases history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/add/db" element={<AddDatabase />} />
                 <Route path="/edit/db" element={<EditDatabase />} />
-                <Route path="/list/cron" element={<CronJobs changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/cron" element={<CronJobs history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/add/cron" element={<AddCronJob />} />
                 <Route path="/edit/cron" element={<EditCronJob />} />
-                <Route path="/list/backup" element={<BackupWrapper changeSearchTerm={handleSearchTerm} />} />
-                <Route path="/list/backup/exclusions" element={<BackupExclusions changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/backup" element={<BackupWrapper history={historyShim} changeSearchTerm={handleSearchTerm} />} />
+                <Route path="/list/backup/exclusions" element={<BackupExclusions history={historyShim} changeSearchTerm={handleSearchTerm} />} />
                 <Route path="/edit/backup/exclusions" element={<EditBackupExclusions />} />
-                <Route path="/search/" element={<Search changeSearchTerm={handleSearchTerm} searchTerm={searchTerm} />} />
+                <Route path="/search/" element={<Search history={historyShim} changeSearchTerm={handleSearchTerm} searchTerm={searchTerm} />} />
               </Routes>
             )}
       </div>

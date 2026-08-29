@@ -7,18 +7,19 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import QS from 'qs';
 
 import './EditFirewall.scss';
-import { Helmet } from 'react-helmet';
-import parse from 'html-react-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 const EditFirewall = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');
@@ -28,7 +29,7 @@ const EditFirewall = props => {
   });
 
   useEffect(() => {
-    let queryParams = QS.parse(window.location.search, { ignoreQueryPrefix: true });
+    let queryParams = QS.parse(location.search, { ignoreQueryPrefix: true });
     const { rule } = queryParams;
 
     dispatch(addActiveElement('/list/firewall/'));
@@ -95,7 +96,7 @@ const EditFirewall = props => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{okMessage ? parse(okMessage) : ''}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>
@@ -105,7 +106,7 @@ const EditFirewall = props => {
             <input type="hidden" name="save" value="save" />
             <input type="hidden" name="token" value={token} />
 
-            <div className="form-group select-group">
+            <div className="form-group select-group mb-3">
               <label className="label-wrapper" htmlFor="action">
                 {i18n['Action']}
               </label>
@@ -115,7 +116,7 @@ const EditFirewall = props => {
               </select>
             </div>
 
-            <div className="form-group select-group">
+            <div className="form-group select-group mb-3">
               <label className="label-wrapper" htmlFor="protocol">
                 {i18n['Protocol']}
               </label>

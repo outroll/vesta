@@ -14,18 +14,17 @@ import EditDatabaseOption from './EditDatabaseOption';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import EditBackupOption from './EditBackupOption';
 import EditMailOption from './EditMailOption';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './EditServer.scss';
-import { Helmet } from 'react-helmet';
-import parse from 'html-react-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 import { refreshUserSession } from 'src/actions/Session/sessionActions';
 
 const EditServer = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
-  const { session } = useSelector(state => state.userSession);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
@@ -80,10 +79,6 @@ const EditServer = props => {
     updatedServer['save'] = 'save';
     updatedServer['token'] = token;
 
-    if (updatedServer['v_softaculous'] === 'no' && !session['SOFTACULOUS']) {
-      delete updatedServer['v_softaculous'];
-    }
-
     if (Object.keys(updatedServer).length !== 0 && updatedServer.constructor === Object) {
       setState({ ...state, loading: true });
 
@@ -128,7 +123,7 @@ const EditServer = props => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{okMessage ? parse(okMessage) : ''}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>
@@ -143,7 +138,7 @@ const EditServer = props => {
 
             {
               state.data.timezones && (
-                <div className="form-group select-group">
+                <div className="form-group select-group mb-3">
                   <label className="label-wrapper" htmlFor="timezone">
                     {i18n['Time Zone']}
                   </label>

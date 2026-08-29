@@ -61,7 +61,7 @@ const NameServers = props => {
 
   return (
     <>
-      <div className="form-group name-servers">
+      <div className="form-group name-servers mb-3">
         <label htmlFor="v_ns1">{i18n['Name servers'] ?? 'Name servers'}</label>
         {renderNameServerInputs()}
       </div>

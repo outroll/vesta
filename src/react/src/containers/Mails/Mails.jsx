@@ -16,8 +16,9 @@ import Mail from '../../components/Mail/Mail';
 import './Mails.scss';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
+import { Link } from 'react-router';
 
 const Mails = props => {
   const { i18n } = useSelector(state => state.session);
@@ -148,15 +149,15 @@ const Mails = props => {
   }
 
   const handleAddRecord = () => {
-    props.navigate(`/add/mail/?domain=${controlPanelFocusedElement}`);
+    props.history.push(`/add/mail/?domain=${controlPanelFocusedElement}`);
   }
 
   const handleLogs = () => {
-    props.navigate(`/list/mail?domain=${controlPanelFocusedElement}&type=access`);
+    props.history.push(`/list/mail?domain=${controlPanelFocusedElement}&type=access`);
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/mail?domain=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/mail?domain=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {
@@ -394,13 +395,13 @@ const Mails = props => {
         <LeftButton name="Add Mail Domain" href="/add/mail" showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
-            {state.webmail && <a
-              href={state.webmail}
+            {state.webmail && <Link
+              to={{ pathname: `http://${window.location.hostname}${state.webmail}` }}
               target="_blank"
-              rel="noopener noreferrer"
-              className="button-extra">
+              className="button-extra"
+              type="submit">
               {i18n['open webmail']}
-            </a>}
+            </Link>}
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />
             <Select list='mailList' bulkAction={bulk} />
             <DropdownFilter changeSorting={changeSorting} sorting={state.sorting} order={state.order} list="mailList" />

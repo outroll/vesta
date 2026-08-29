@@ -21,7 +21,7 @@ const TextInputWithExtraButton = props => {
   }
 
   return (
-    <div class="form-group">
+    <div class="form-group mb-3">
       <label className="label-wrapper" htmlFor={props.id}>
         {props.title}
         <span className="lowercase">{props.optionalTitle ? `(${props.optionalTitle})` : ''}</span>

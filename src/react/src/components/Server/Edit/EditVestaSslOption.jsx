@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import SelectInput from 'src/components/ControlPanel/AddItemLayout/Form/SelectInput/SelectInput';
 import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/TextArea';
 import Checkbox from 'src/components/ControlPanel/AddItemLayout/Form/Checkbox/Checkbox';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
 
 const EditVestaSslOption = ({ data, visible }) => {

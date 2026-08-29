@@ -12,7 +12,7 @@ import Modal from 'src/components/ControlPanel/Modal/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
 import Ban from 'src/components/Firewall/Ban';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
 
 import './styles.scss';

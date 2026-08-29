@@ -7,7 +7,7 @@ export function validateAction(url) {
 }
 
 export function cacheData(currentUser, history, rootDir) {
-  const parsedQueryString = QueryString.parse(window.location.search, { ignoreQueryPrefix: true });
+  const parsedQueryString = QueryString.parse(history.location.search, { ignoreQueryPrefix: true });
 
   if (parsedQueryString.path) {
     localStorage.setItem("activeWindow", "left");
@@ -25,7 +25,7 @@ export function cacheData(currentUser, history, rootDir) {
   }
 
   if (localStorage.getItem("activeWindow") === null || localStorage.getItem("leftListPath") === null || localStorage.getItem("rightListPath") === null) {
-    let path = window.location.search.substring(6).split('/');
+    let path = history.location.search.substring(6).split('/');
     localStorage.setItem("activeWindow", "left");
     localStorage.setItem("leftListPath", path);
     localStorage.setItem("rightListPath", rootDir);

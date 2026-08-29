@@ -1,15 +1,10 @@
 import axios from "axios";
-import { getAuthToken } from "src/utils/token";
 
 const BASE_URL = window.location.origin;
 const webApiUri = '/api/v1/list/rrd/index.php';
 
 export const getRrdList = () => {
-  return axios.get(BASE_URL + webApiUri, {
-    params: {
-      token: getAuthToken()
-    }
-  });
+  return axios.get(BASE_URL + webApiUri);
 }
 
 export function generateImagePath(period, type, rrd) {

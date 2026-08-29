@@ -15,8 +15,8 @@ import Firewall from '../../components/Firewall/Firewall';
 import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import './Firewalls.scss';
-import { Helmet } from 'react-helmet';
-import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Firewalls = props => {
@@ -146,7 +146,7 @@ const Firewalls = props => {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/firewall?rule=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/firewall?rule=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

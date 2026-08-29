@@ -19,7 +19,6 @@ const INITIAL_STATE = {
     '/list/updates/',
     '/list/firewall/',
     '/list/directory/',
-    '/softaculous/',
     '/list/server/'
   ],
   userMenuTabs: [
@@ -33,7 +32,6 @@ const INITIAL_STATE = {
     '/list/stats/',
     '/list/log/',
     '/list/directory/',
-    '/softaculous/',
   ]
 };
 

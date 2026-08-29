@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import './Menu.scss'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 const Menu = (props) => {
   const { i18n } = useSelector((state) => state.session)

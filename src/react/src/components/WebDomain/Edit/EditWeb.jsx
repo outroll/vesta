@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import SslSupport from './SslSupport/SslSupport';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import GenerateSSL from 'src/containers/GenerateCSR';
 import 'src/components/Modal/Modal.scss';
@@ -19,15 +19,16 @@ import QS from 'qs';
 
 import './EditWeb.scss';
 import TextArea from '../../ControlPanel/AddItemLayout/Form/TextArea/TextArea';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 const EditWeb = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
   const { session } = useSelector(state => state.userSession);
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -45,7 +46,7 @@ const EditWeb = props => {
   });
 
   useEffect(() => {
-    let queryParams = QS.parse(window.location.search, { ignoreQueryPrefix: true });
+    let queryParams = QS.parse(location.search, { ignoreQueryPrefix: true });
     const { domain } = queryParams;
 
     dispatch(addActiveElement('/list/web/'));
@@ -175,7 +176,7 @@ const EditWeb = props => {
         <div className="search-toolbar-name">{i18n['Editing Domain']}</div>
         <div className="error"><span className="error-message">{errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {errorMessage}</span></div>
         <div className="success">
-          <span className="ok-message">{okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{okMessage ? parse(okMessage) : ''}</span> </span>
+          <span className="ok-message">{okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span> </span>
         </div>
       </Toolbar>
       <AddItemLayout date={state.data.date} time={state.data.time} status={state.data.status}>
@@ -337,8 +338,7 @@ const EditWeb = props => {
           <div className="modal-content">
             <div className="modal-header">
               <h5>{i18n['Generating CSR']}</h5>
-              <button type="button" onClick={() => setModalVisible(false)} className="close" data-bs-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+              <button type="button" onClick={() => setModalVisible(false)} className="btn-close" data-bs-dismiss="modal" aria-label="Close">
               </button>
             </div>
             <GenerateSSL

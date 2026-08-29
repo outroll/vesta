@@ -2,7 +2,7 @@ import React from 'react';
 import Menu from '../../MainNav/Stat-menu/Menu';
 import { addActiveElement } from '../../../actions/MainNavigation/mainNavigationActions';
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import './MobileTopNav.scss';
 
 const MobileTopNav = props => {
@@ -63,8 +63,6 @@ const MobileTopNav = props => {
         </>)}
         {session.FILEMANAGER_KEY && <div className={className("/list/directory/")}>
           <Link to="/list/directory/">{i18n['File Manager']}</Link>
-        </div>}
-        {session.SOFTACULOUS === "yes" && <div className={className("/softaculous/")}><Link to="/softaculous/" target="_blank">{i18n.Apps ?? 'Apps'}</Link>
         </div>}
         {userName === 'admin' && (
           <div className={className("/list/server/")}>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import RunCommandSelect from './RunCommandSelect/RunCommandSelect';
 import SelectsWrapper from './OtherSelects/SelectsWrapper';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router';
 import QS from 'qs';
 
 import './Generator.scss';
@@ -12,16 +12,17 @@ const Generator = props => {
   const formElement = useRef(null);
   const { i18n } = useSelector(state => state.session);
   const navigate = useNavigate();
+  const location = useLocation();
   const [state, setState] = useState({
     activeTab: '1'
   });
 
   useEffect(() => {
-    let parsedQuery = QS.parse(window.location.search, { ignoreQueryPrefix: true });
+    let parsedQuery = QS.parse(location.search, { ignoreQueryPrefix: true });
     let activeTab = parsedQuery.activeTab || '1';
 
     setState({ ...state, activeTab });
-  }, [window.location.search]);
+  }, [location.search]);
 
   const activeClassName = tab => {
     return state.activeTab === tab ? 'active' : '';

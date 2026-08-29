@@ -12,8 +12,8 @@ import ServerSys from '../../components/Server/ServerSys';
 import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import Server from '../../components/Server/Server';
-import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Link } from 'react-router';
+import { Helmet } from 'react-helmet-async';
 import './Servers.scss';
 
 const Servers = props => {
@@ -141,9 +141,9 @@ const Servers = props => {
 
   const handleConfigure = () => {
     if (controlPanelFocusedElement.NAME !== state.servers[0].NAME) {
-      props.navigate(`/edit/server/${controlPanelFocusedElement.NAME}`);
+      props.history.push(`/edit/server/${controlPanelFocusedElement.NAME}`);
     } else {
-      props.navigate('/edit/server/');
+      props.history.push('/edit/server/');
     }
   }
 

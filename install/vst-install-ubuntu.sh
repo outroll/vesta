@@ -7,16 +7,42 @@
 #----------------------------------------------------------#
 export PATH=$PATH:/sbin
 export DEBIAN_FRONTEND=noninteractive
+# The rest of this script assumes HOME=/root (e.g. /root/.my.cnf); sudo
+# doesn't always reset it, so force it rather than inherit the caller's.
+export HOME=/root
 RHOST='apt.vestacp.com'
 CHOST='c.vestacp.com'
 VERSION='ubuntu'
 VESTA='/usr/local/vesta'
+GITHUB_REPO=${GITHUB_REPO:-outroll/vesta}   # override to test a fork, e.g. GITHUB_REPO=youruser/vesta
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os='ubuntu'
-release="$(lsb_release -s -r)"
-codename="$(lsb_release -s -c)"
+# lsb-release isn't preinstalled on every image; fall back to /etc/os-release.
+if command -v lsb_release >/dev/null 2>&1; then
+    release="$(lsb_release -s -r)"
+    codename="$(lsb_release -s -c)"
+else
+    # Subshell -- os-release's own VERSION would clobber ours otherwise.
+    release="$(. /etc/os-release && echo "$VERSION_ID")"
+    codename="$(. /etc/os-release && echo "$VERSION_CODENAME")"
+fi
 vestacp="$VESTA/install/$VERSION/$release"
+
+# Zero-padded numeric form of $release for range comparisons: 18.04 -> 1804,
+# 20.04 -> 2004, 24.04 -> 2404. Empty/odd values collapse to 0 so the
+# comparisons below simply fall through to the pre-16.04 behaviour.
+release_num=$(echo "$release" | awk -F. '{printf "%d%02d", $1+0, $2+0}')
+[ -z "$release_num" ] && release_num=0
+
+# apt (default) | github. apt.vestacp.com stops at 'focal' and its packages
+# were last rebuilt in 2022, so every LTS from 20.04 on defaults to the
+# GitHub Releases build of this repo instead. Override with VESTA_SOURCE=apt.
+if [ "$release_num" -ge 2004 ]; then
+    VESTA_SOURCE=${VESTA_SOURCE:-github}
+else
+    VESTA_SOURCE=${VESTA_SOURCE:-apt}
+fi
 
 # Defining software pack for all distros
 software="nginx apache2 apache2.2-common apache2-suexec-custom apache2-utils
@@ -28,7 +54,7 @@ software="nginx apache2 apache2.2-common apache2-suexec-custom apache2-utils
     ntpdate php-cgi php-common php-curl php-fpm phpmyadmin php-mysql
     phppgadmin php-pgsql postgresql postgresql-contrib proftpd-basic quota
     roundcube-core roundcube-mysql roundcube-plugins rrdtool rssh spamassassin
-    sudo vesta vesta-ioncube vesta-nginx vesta-php vesta-softaculous
+    sudo vesta vesta-ioncube vesta-nginx vesta-php
     vim-common vsftpd webalizer whois zip net-tools"
 
 # Fix for old releases
@@ -56,7 +82,6 @@ help() {
   -i, --iptables          Install Iptables         [yes|no]  default: yes
   -b, --fail2ban          Install Fail2ban         [yes|no]  default: yes
   -r, --remi              Install Remi repo        [yes|no]  default: yes
-  -o, --softaculous       Install Softaculous      [yes|no]  default: yes
   -q, --quota             Filesystem Quota         [yes|no]  default: no
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install      [yes|no]  default: yes
@@ -144,7 +169,6 @@ for arg; do
         --spamassassin)         args="${args}-t " ;;
         --iptables)             args="${args}-i " ;;
         --fail2ban)             args="${args}-b " ;;
-        --softaculous)          args="${args}-o " ;;
         --remi)                 args="${args}-r " ;;
         --quota)                args="${args}-q " ;;
         --lang)                 args="${args}-l " ;;
@@ -163,7 +187,7 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:o:q:l:y:s:u:e:d:p:fh" Option; do
+while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:q:l:y:s:u:e:d:p:fh" Option; do
     case $Option in
         a) apache=$OPTARG ;;            # Apache
         n) nginx=$OPTARG ;;             # Nginx
@@ -180,7 +204,6 @@ while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:o:q:l:y:s:u:e:d:p:fh" Option; do
         i) iptables=$OPTARG ;;          # Iptables
         b) fail2ban=$OPTARG ;;          # Fail2ban
         r) remi=$OPTARG ;;              # Remi repo
-        o) softaculous=$OPTARG ;;       # Softaculous plugin
         q) quota=$OPTARG ;;             # FS Quota
         l) lang=$OPTARG ;;              # Language
         y) interactive=$OPTARG ;;       # Interactive install
@@ -197,8 +220,14 @@ done
 
 # Defining default software stack
 set_default_value 'nginx' 'yes'
-set_default_value 'apache' 'yes'
-set_default_value 'phpfpm' 'no'
+if [ "$release" = '24.04' ]; then
+    # libapache2-mod-ruid2 has no package on 24.04, so default to Nginx+PHP-FPM.
+    set_default_value 'apache' 'no'
+    set_default_value 'phpfpm' 'yes'
+else
+    set_default_value 'apache' 'yes'
+    set_default_value 'phpfpm' 'no'
+fi
 set_default_value 'vsftpd' 'yes'
 set_default_value 'proftpd' 'no'
 set_default_value 'named' 'yes'
@@ -216,7 +245,6 @@ else
 fi
 set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
-set_default_value 'softaculous' 'yes'
 set_default_value 'quota' 'no'
 set_default_value 'interactive' 'yes'
 set_default_value 'ssl' 'no'
@@ -237,6 +265,15 @@ if [ "$exim" = 'no' ]; then
 fi
 if [ "$iptables" = 'no' ]; then
     fail2ban='no'
+fi
+
+# Reject --apache yes on 24.04 up front instead of a confusing apt-get failure.
+if [ "$release" = '24.04' ] && [ "$apache" = 'yes' ]; then
+    echo "Error: --apache yes is not supported on Ubuntu 24.04."
+    echo "libapache2-mod-ruid2 has no package on 24.04, so Apache can't get"
+    echo "per-site PHP user isolation there. Use --phpfpm yes (the default"
+    echo "on 24.04) for Nginx + PHP-FPM instead."
+    exit 1
 fi
 
 # Checking root permissions
@@ -378,11 +415,6 @@ if [ "$ssl" = 'yes' ]; then
     echo '   - LE SSL for hostname'
 fi
 
-# Softaculous
-if [ "$softaculous" = 'yes' ]; then
-    echo '   - Softaculous Plugin'
-fi
-
 # Firewall stack
 if [ "$iptables" = 'yes' ]; then
     echo -n '   - Iptables Firewall'
@@ -479,11 +511,17 @@ fi
 apt-get -y upgrade
 check_result $? 'apt-get upgrade failed'
 
-# Checking universe repository
+# Enabling universe repository (idempotent -- add-apt-repository no-ops if
+# it's already enabled). Some cloud vendor base images ship /etc/apt/sources.list
+# with universe commented out, or omit it entirely, which a plain `grep
+# universe` can't distinguish from "already enabled"; several of our runtime
+# deps (e.g. libonig4, libzip4 for vesta-php) live in universe.
 if [[ ${release:0:2} -gt 16 ]]; then
-    if [ -z "$(grep universe /etc/apt/sources.list)" ]; then
-        add-apt-repository -y universe
+    # Some minimal images don't ship add-apt-repository itself either.
+    if ! command -v add-apt-repository >/dev/null 2>&1; then
+        apt-get -y install software-properties-common
     fi
+    add-apt-repository -y universe
 fi
 
 # Installing nginx repo
@@ -493,10 +531,12 @@ echo "deb http://nginx.org/packages/mainline/ubuntu/ $codename nginx" \
 wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
 apt-key add /tmp/nginx_signing.key
 
-# Installing vesta repo
-echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
-wget $CHOST/deb_signing.key -O deb_signing.key
-apt-key add deb_signing.key
+# Installing vesta repo (skipped for VESTA_SOURCE=github)
+if [ "$VESTA_SOURCE" != 'github' ]; then
+    echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
+    wget $CHOST/deb_signing.key -O deb_signing.key
+    apt-key add deb_signing.key
+fi
 
 
 #----------------------------------------------------------#
@@ -650,11 +690,29 @@ if [ "$postgresql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/php-pgsql//')
     software=$(echo "$software" | sed -e 's/phppgadmin//')
 fi
-if [ "$softaculous" = 'no' ]; then
-    software=$(echo "$software" | sed -e 's/vesta-softaculous//')
-fi
 if [ "$iptables" = 'no' ] || [ "$fail2ban" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/fail2ban//')
+fi
+
+# Package names dropped or renamed in Ubuntu's repos, no direct successor.
+# Checked against the archives for focal/jammy/noble; each removal is the
+# first release where the package stopped resolving.
+if [ "$release_num" -ge 2004 ]; then
+    # rssh was removed after bionic (unmaintained upstream, CVE-2019-3463).
+    software=$(echo "$software" | sed -e "s/rssh//")
+fi
+if [ "$release_num" -ge 2204 ]; then
+    # e2fslibs became an empty transitional package and then vanished.
+    software=$(echo "$software" | sed -e "s/e2fslibs //")
+fi
+if [ "$release_num" -ge 2404 ]; then
+    # proftpd-basic is a no-candidate transitional package as of noble.
+    # jammy still ships a real proftpd-basic, so it is left alone there.
+    software=$(echo "$software" | sed -e "s/proftpd-basic/proftpd-core/")
+    # iptables itself: 24.04's default image no longer ships it.
+    if [ "$iptables" = 'yes' ]; then
+        software="$software iptables"
+    fi
 fi
 
 
@@ -669,7 +727,74 @@ apt-get update
 echo -e '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d
 chmod a+x /usr/sbin/policy-rc.d
 
+# Installing vesta/vesta-nginx/vesta-php/vesta-ioncube packages from GitHub
+# Releases instead of apt.vestacp.com.
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    # Runtime libs our compiled vesta-nginx/vesta-php link against. Every
+    # release since bionic renamed or dropped at least one of them:
+    #   focal  libonig4 -> libonig5, libzip4 -> libzip5
+    #   jammy  libssl1.1 -> libssl3, libzip5 -> libzip4
+    #   noble  the time_t-64 rename (libcurl4t64/libssl3t64/libzip4t64)
+    # Ranges rather than exact matches, so a release newer than the last one
+    # we know about gets the newest lib set instead of bionic's.
+    if [ "$release_num" -ge 2404 ]; then
+        runtime_libs="libonig5 libcurl4t64 libssl3t64 libxml2 libzip4t64"
+    elif [ "$release_num" -ge 2204 ]; then
+        runtime_libs="libonig5 libcurl4 libssl3 libxml2 libzip4"
+    elif [ "$release_num" -ge 2004 ]; then
+        runtime_libs="libonig5 libcurl4 libssl1.1 libxml2 libzip5"
+    else
+        runtime_libs="libonig4 libcurl4 libssl1.1 libxml2 libzip4"
+    fi
+    apt-get -y install $runtime_libs libpcre3 zlib1g libsqlite3-0
+    check_result $? "runtime library install failed"
+
+    # vesta-nginx/vesta-php get a separate build per release, because they are
+    # compiled binaries linking the libs above; vesta/vesta-ioncube don't.
+    if [ "$release_num" -ge 2404 ]; then
+        github_suffix="_noble"
+    elif [ "$release_num" -ge 2204 ]; then
+        github_suffix="_jammy"
+    elif [ "$release_num" -ge 2004 ]; then
+        github_suffix="_focal"
+    else
+        github_suffix=""
+    fi
+
+    github_packages="vesta vesta-nginx vesta-php vesta-ioncube"
+    github_debs=""
+    for pkg in $github_packages; do
+        case "$pkg" in
+            vesta-nginx|vesta-php) asset="${pkg}${github_suffix}_amd64.deb" ;;
+            *)                     asset="${pkg}_amd64.deb" ;;
+        esac
+        echo "=== Downloading $pkg package from GitHub Releases"
+        wget -q "https://github.com/$GITHUB_REPO/releases/latest/download/${asset}" -O "/tmp/${pkg}_amd64.deb"
+        check_result $? "$pkg.deb download from GitHub failed"
+        github_debs="$github_debs /tmp/${pkg}_amd64.deb"
+    done
+    # Installed together (rather than one dpkg -i per package) so dpkg can
+    # resolve the vesta-nginx/vesta-php -> vesta and vesta-ioncube ->
+    # vesta-php Depends: ordering between these off-repo debs.
+    dpkg -i $github_debs
+    check_result $? "vesta package install failed"
+
+    # Held so a later apt-get upgrade/install can't replace these
+    # with apt.vestacp.com's versions.
+    apt-mark hold vesta vesta-nginx vesta-php vesta-ioncube
+fi
+
 # Installing apt packages
+if [ "$VESTA_SOURCE" = 'github' ]; then
+    filtered_software=""
+    for pkg in $software; do
+        case "$pkg" in
+            vesta|vesta-nginx|vesta-php|vesta-ioncube) ;;
+            *) filtered_software="$filtered_software $pkg" ;;
+        esac
+    done
+    software="$filtered_software"
+fi
 apt-get -y install $software
 check_result $? "apt-get install failed"
 
@@ -702,14 +827,16 @@ echo "$(which ntpdate) -s ntp.ubuntu.com" >> /etc/cron.daily/ntpdate
 chmod 775 /etc/cron.daily/ntpdate
 ntpdate -s ntp.ubuntu.com
 
-# Adding rssh
-if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
-    echo /usr/bin/rssh >> /etc/shells
+# Adding rssh (not installed on 24.04+, see the package-name fixups above)
+if [ -e '/usr/bin/rssh' ]; then
+    if [ -z "$(grep /usr/bin/rssh /etc/shells)" ]; then
+        echo /usr/bin/rssh >> /etc/shells
+    fi
+    sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
+    sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
+    sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
+    chmod 755 /usr/bin/rssh
 fi
-sed -i 's/#allowscp/allowscp/' /etc/rssh.conf
-sed -i 's/#allowsftp/allowsftp/' /etc/rssh.conf
-sed -i 's/#allowrsync/allowrsync/' /etc/rssh.conf
-chmod 755 /usr/bin/rssh
 
 
 #----------------------------------------------------------#
@@ -1004,13 +1131,17 @@ if [ "$mysql" = 'yes' ]; then
 
     # Configuring MySQL/MariaDB
     cp -f $vestacp/mysql/$mycnf /etc/mysql/my.cnf
-    if [ "$release" != '16.04' ]; then
-        mysql_install_db
-    fi
-    if [ "$release" == '18.04' ]; then
-        mkdir /var/lib/mysql
-        chown mysql:mysql /var/lib/mysql
-        mysqld --initialize-insecure
+    # mysql-server's postinst already initializes /var/lib/mysql; only redo it if missing.
+    if [ ! -d /var/lib/mysql/mysql ]; then
+        # mysql_install_db is gone from mysql-server's packaging by 24.04.
+        if [ "$release" != '16.04' ] && command -v mysql_install_db >/dev/null 2>&1; then
+            mysql_install_db
+        fi
+        if [ "$release" = '18.04' ] || [ "$release_num" -ge 2004 ]; then
+            mkdir -p /var/lib/mysql
+            chown mysql:mysql /var/lib/mysql
+            mysqld --initialize-insecure
+        fi
     fi
     update-rc.d mysql defaults
     service mysql start
@@ -1018,13 +1149,15 @@ if [ "$mysql" = 'yes' ]; then
 
     # Securing MySQL/MariaDB installation
     mpass=$(gen_pass)
-    mysqladmin -u root password $mpass
+    # root@localhost defaults to auth_socket; switch it to a real password.
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$mpass';"
+    check_result $? "mysql root password setup failed"
     echo -e "[client]\npassword='$mpass'\n" > /root/.my.cnf
     chmod 600 /root/.my.cnf
     mysql -e "DELETE FROM mysql.user WHERE User=''"
     mysql -e "DROP DATABASE test" >/dev/null 2>&1
     mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
-    mysql -e "DELETE FROM mysql.user WHERE user='' OR password='';"
+    mysql -e "DELETE FROM mysql.user WHERE user='' OR authentication_string='';"
     mysql -e "FLUSH PRIVILEGES"
 
     # Configuring phpMyAdmin
@@ -1035,8 +1168,15 @@ if [ "$mysql" = 'yes' ]; then
     if [[ ${release:0:2} -ge 18 ]]; then
         mysql < /usr/share/phpmyadmin/sql/create_tables.sql
         p=$(grep dbpass /etc/phpmyadmin/config-db.php |cut -f 2 -d "'")
-        mysql -e "GRANT ALL ON phpmyadmin.*
-            TO phpmyadmin@localhost IDENTIFIED BY '$p'"
+        if [ "$release_num" -ge 2004 ]; then
+            # MySQL 8.0 (the default from focal on) dropped the combined
+            # GRANT ... IDENTIFIED BY syntax.
+            mysql -e "CREATE USER IF NOT EXISTS phpmyadmin@localhost IDENTIFIED BY '$p'"
+            mysql -e "GRANT ALL ON phpmyadmin.* TO phpmyadmin@localhost"
+        else
+            mysql -e "GRANT ALL ON phpmyadmin.*
+                TO phpmyadmin@localhost IDENTIFIED BY '$p'"
+        fi
     else
         cp -f $vestacp/pma/config.inc.php /etc/phpmyadmin/
     fi
@@ -1214,8 +1354,15 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     cp -f $vestacp/roundcube/config.inc.php /etc/roundcube/plugins/password/
 
     mysql -e "CREATE DATABASE roundcube"
-    mysql -e "GRANT ALL ON roundcube.*
-        TO roundcube@localhost IDENTIFIED BY '$r'"
+    if [ "$release_num" -ge 2004 ]; then
+        # MySQL 8.0 (the default from focal on) dropped the combined
+        # GRANT ... IDENTIFIED BY syntax.
+        mysql -e "CREATE USER IF NOT EXISTS roundcube@localhost IDENTIFIED BY '$r'"
+        mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost"
+    else
+        mysql -e "GRANT ALL ON roundcube.*
+            TO roundcube@localhost IDENTIFIED BY '$r'"
+    fi
     mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
 
     chmod 640 /etc/roundcube/debian-db*
@@ -1345,11 +1492,6 @@ $VESTA/bin/v-update-sys-rrd
 # Enabling file system quota
 if [ "$quota" = 'yes' ]; then
     $VESTA/bin/v-add-sys-quota
-fi
-
-# Enabling softaculous plugin
-if [ "$softaculous" = 'yes' ]; then
-    $VESTA/bin/v-add-vesta-softaculous
 fi
 
 # Starting Vesta service

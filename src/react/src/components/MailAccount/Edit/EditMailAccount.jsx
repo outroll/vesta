@@ -11,12 +11,12 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MailInfoBlock from '../MailInfoBlock/MailInfoBlock';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 export default function EditMailAccount(props) {
   const [autoreplyChecked, setAutoreplyChecked] = useState(false);
@@ -118,7 +118,7 @@ export default function EditMailAccount(props) {
         <div className="success">
           <span className="ok-message">
             {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span>{okMessage ? parse(okMessage) : ''}</span>
+            <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

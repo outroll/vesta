@@ -8,12 +8,13 @@ import Modal from '../../components/ControlPanel/Modal/Modal';
 import Spinner from '../../components/Spinner/Spinner';
 import './Search.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const Search = props => {
   const { i18n } = useSelector(state => state.session);
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState({
@@ -30,7 +31,7 @@ const Search = props => {
   });
 
   useEffect(() => {
-    const { search } = window.location;
+    const { search } = location;
 
     if (search) {
       let searchTerm = search.split('=')[1];

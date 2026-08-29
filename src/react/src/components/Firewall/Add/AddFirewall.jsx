@@ -7,13 +7,13 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { addFirewall } from '../../../ControlPanelService/Firewalls';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddFirewall.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 const AddFirewall = props => {
   const token = localStorage.getItem("token");
@@ -84,7 +84,7 @@ const AddFirewall = props => {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span>{state.okMessage ? parse(state.okMessage) : ''}</span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

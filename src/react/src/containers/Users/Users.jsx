@@ -14,10 +14,10 @@ import Modal from '../../components/ControlPanel/Modal/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
 import User from '../../components/User/User';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import './Users.scss';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import { loginAs, logout } from 'src/actions/Session/sessionActions';
 
 const Users = props => {
@@ -27,6 +27,7 @@ const Users = props => {
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
@@ -74,7 +75,7 @@ const Users = props => {
     }
 
     if (event.keyCode === 65) {
-      switch (window.location.pathname) {
+      switch (location.pathname) {
         case '/list/user/': return session.look ? navigate('/add/web/') : navigate('/add/user/');
         default: break;
       }

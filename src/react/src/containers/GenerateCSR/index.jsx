@@ -6,8 +6,8 @@ import TextArea from 'src/components/ControlPanel/AddItemLayout/Form/TextArea/Te
 import { generateCSR, getCsrInitialData } from 'src/ControlPanelService/Web';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
-import { useNavigate } from 'react-router-dom';
-import parse from 'html-react-parser';
+import { useNavigate } from 'react-router';
+import HtmlParser from 'html-react-parser';
 
 const GenerateSSL = props => {
   const token = localStorage.getItem("token");
@@ -142,7 +142,7 @@ const GenerateSSL = props => {
 
             <div className="error"><span className="error-message">{errorMessage}</span></div>
             <div className="success">
-              <span className="ok-message"><span>{okMessage ? parse(okMessage) : ''}</span> </span>
+              <span className="ok-message"><span>{HtmlParser(okMessage)}</span> </span>
             </div>
           </form>
         }

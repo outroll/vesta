@@ -16,7 +16,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import './DomainNameSystems.scss';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const DomainNameSystems = props => {
@@ -147,15 +147,15 @@ const DomainNameSystems = props => {
   }
 
   const handleAddRecord = () => {
-    props.navigate(`/add/dns/?domain=${controlPanelFocusedElement}`);
+    props.history.push(`/add/dns/?domain=${controlPanelFocusedElement}`);
   }
 
   const handleLogs = () => {
-    props.navigate(`/list/dns?domain=${controlPanelFocusedElement}&type=access`);
+    props.history.push(`/list/dns?domain=${controlPanelFocusedElement}&type=access`);
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/dns?domain=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/dns?domain=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

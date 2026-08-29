@@ -1,0 +1,75 @@
+# Vesta Control Panel -- Fail2ban jail overrides for Alpine.
+#
+# Alpine's fail2ban package already ships working filter.d definitions for
+# every service Vesta cares about (vsftpd.conf, proftpd.conf, dovecot.conf,
+# exim.conf/exim-spam.conf, named-refused.conf, mysqld-auth.conf,
+# alpine-sshd.conf) -- unlike Debian/Ubuntu, there's no need to port custom
+# filter/action files, just enable the jails that apply to what this
+# install actually turned on. The vst-install-alpine.sh installer flips the
+# "enabled" lines below to match the -x/--flag choices made at install time.
+
+[DEFAULT]
+banaction = iptables-multiport
+bantime = 3600
+findtime = 600
+maxretry = 5
+
+[sshd]
+enabled = true
+filter = alpine-sshd
+port = ssh
+logpath = /var/log/auth.log
+
+[vsftpd]
+enabled = false
+filter = vsftpd
+port = ftp,ftp-data,ftps,ftps-data
+logpath = /var/log/vsftpd.log
+
+[proftpd]
+enabled = false
+filter = proftpd
+port = ftp,ftp-data,ftps,ftps-data
+logpath = /var/log/proftpd/proftpd.log
+
+[dovecot]
+enabled = false
+filter = dovecot
+port = imap,imaps,pop3,pop3s
+logpath = /var/log/maillog
+
+[exim]
+enabled = false
+filter = exim
+port = smtp,ssmtp,submission
+logpath = /var/log/exim/mainlog
+
+[exim-spam]
+enabled = false
+filter = exim-spam
+port = smtp,ssmtp,submission
+logpath = /var/log/exim/mainlog
+
+[named-refused]
+enabled = false
+filter = named-refused
+port = domain,953
+logpath = /var/log/named/named.log
+
+[mysqld-auth]
+enabled = false
+filter = mysqld-auth
+port = 3306
+logpath = /var/log/mysql/error.log
+
+[nginx-http-auth]
+enabled = false
+filter = nginx-http-auth
+port = http,https
+logpath = /var/log/nginx/*error.log
+
+[roundcube-auth]
+enabled = false
+filter = roundcube-auth
+port = http,https
+logpath = /var/log/roundcube/errors

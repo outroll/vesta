@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './LeftButton.scss';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 const LeftButton = ({ showLeftMenu, list, name, href, onClick = () => { } }) => {
   const leftMenuClassName = () => {

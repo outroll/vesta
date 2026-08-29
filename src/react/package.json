@@ -5,60 +5,51 @@
   "version": "1.0.0",
   "private": false,
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.7.2",
-    "@fortawesome/fontawesome-svg-core": "^6.7.2",
-    "@fortawesome/free-brands-svg-icons": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^6.7.2",
-    "@fortawesome/react-fontawesome": "^0.2.2",
-    "@popperjs/core": "^2.11.8",
-    "axios": "^1.7.9",
-    "bootstrap": "^5.3.3",
+    "@fortawesome/fontawesome-free": "^7.3.1",
+    "@fortawesome/fontawesome-svg-core": "^7.3.1",
+    "@fortawesome/free-brands-svg-icons": "^7.3.1",
+    "@fortawesome/free-solid-svg-icons": "^7.3.1",
+    "@fortawesome/react-fontawesome": "^3.5.0",
+    "axios": "^1.18.1",
+    "bootstrap": "^5.3.8",
     "classnames": "^2.5.1",
-    "dayjs": "^1.11.13",
-    "html-react-parser": "^5.2.1",
-    "jquery": "^3.7.1",
-    "perfect-scrollbar": "^1.5.5",
+    "dayjs": "^1.11.21",
+    "sass": "^1.77.8",
+    "perfect-scrollbar": "^1.5.6",
     "prop-types": "^15.8.1",
-    "qs": "^6.13.1",
-    "react": "^18.3.1",
-    "react-codemirror": "^1.0.0",
-    "react-dom": "^18.3.1",
-    "react-helmet": "^6.1.0",
+    "qs": "^6.15.3",
+    "react": "^19.2.8",
+    "@uiw/react-codemirror": "^4.25.11",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/lang-php": "^6.0.2",
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-html": "^6.4.11",
+    "@codemirror/lang-markdown": "^6.5.1",
+    "react-dom": "^19.2.8",
+    "react-helmet-async": "^3.0.0",
+    "html-react-parser": "^6.1.5",
     "react-perfect-scrollbar": "^1.5.8",
-    "react-redux": "^9.2.0",
-    "react-router-dom": "^6.28.0",
-    "react-scripts": "^5.0.1",
-    "react-toastify": "^10.0.6",
+    "react-redux": "^9.3.0",
+    "react-router": "^8.3.0",
+    "react-toastify": "^11.1.0",
     "redux": "^5.0.1",
-    "redux-devtools-extension": "^2.13.9",
-    "redux-thunk": "^3.1.0",
-    "sass": "^1.83.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "@redux-devtools/extension": "^4.0.0",
+    "redux-thunk": "^3.1.0"
   },
   "devDependencies": {
-    "buffer": "^6.0.3"
+    "@vitejs/plugin-react": "^6.0.4",
+    "vite": "^8.1.5"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

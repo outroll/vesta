@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Container from '../ControlPanel/Container/Container';
 import ListItem from '../ControlPanel/ListItem/ListItem';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import './Mail.scss';
 import { useSelector } from 'react-redux';
 

@@ -15,9 +15,9 @@ import Database from '../../components/Database/Database';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
 import './Databases.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 const Databases = props => {
   const { i18n } = useSelector(state => state.session);
@@ -149,7 +149,7 @@ const Databases = props => {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/database?domain=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/database?domain=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {
@@ -392,8 +392,8 @@ const Databases = props => {
         <LeftButton name="Add Database" href="/add/db" showLeftMenu={true} />
         <div className="r-menu">
           <div className="input-group input-group-sm">
-            {state.db_myadmin_link && <a href={state.db_myadmin_link} className="button-extra" target="_blank" rel="noopener noreferrer">phpMyAdmin</a>}
-            {state.db_pgadmin_link && <a href={state.db_pgadmin_link} className="button-extra" target="_blank" rel="noopener noreferrer">phpPgAdmin</a>}
+            {state.db_myadmin_link && <Link to={{ pathname: state.db_myadmin_link }} className="button-extra" type="submit" target="_blank">phpMyAdmin</Link>}
+            {state.db_pgadmin_link && <Link to={{ pathname: state.db_pgadmin_link }} className="button-extra" type="submit" target="_blank">phpPgAdmin</Link>}
             <Checkbox toggleAll={toggleAll} toggled={state.toggledAll} />
             <Select list='dbList' bulkAction={bulk} />
             <DropdownFilter changeSorting={changeSorting} sorting={state.sorting} order={state.order} list="dbList" />

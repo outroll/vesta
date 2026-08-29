@@ -15,7 +15,7 @@ import Modal from '../../components/ControlPanel/Modal/Modal';
 import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import './InternetProtocols.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const InternetProtocols = props => {
@@ -143,7 +143,7 @@ const InternetProtocols = props => {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/ip/?ip=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/ip/?ip=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {

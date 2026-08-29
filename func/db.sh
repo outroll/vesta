@@ -198,6 +198,34 @@ decrease_dbhost_values() {
     sed -i "s/$old_users/$new_users/g" $VESTA/conf/$TYPE.conf
 }
 
+# Grants ALL on $2 to $1@$3 with password $4. MySQL 8.0 dropped combined
+# GRANT ... IDENTIFIED BY syntax (MariaDB kept it), so that case needs a
+# separate CREATE USER first.
+mysql_grant_user() {
+    local user="$1" db="$2" host="$3" pass="$4"
+    if [ "$mysql_fork" = 'mysql' ] && [ "$(echo $mysql_ver |cut -d '.' -f1)" -ge 8 ]; then
+        mysql_query "CREATE USER IF NOT EXISTS \`$user\`@\`$host\` IDENTIFIED BY '$pass'" > /dev/null
+        mysql_query "GRANT ALL ON \`$db\`.* TO \`$user\`@\`$host\`" > /dev/null
+    else
+        query="GRANT ALL ON \`$db\`.* TO \`$user\`@\`$host\`
+            IDENTIFIED BY '$pass'"
+        mysql_query "$query" > /dev/null
+    fi
+}
+
+# Sets $md5 to $1's auth hash, for storage in db.conf.
+mysql_user_hash() {
+    local user="$1"
+    if [ "$(echo $mysql_ver |cut -d '.' -f1)" -ge 8 ] || [ "$(echo $mysql_ver |cut -d '.' -f2)" -ge 7 ]; then
+        md5=$(mysql_query "SHOW CREATE USER \`$user\`" 2>/dev/null)
+        # 8.0's `user`@`host` quoting shifts cut -f8's field count; anchor on AS '...' instead.
+        md5=$(echo "$md5" |grep -oP "AS '\K[^']+")
+    else
+        md5=$(mysql_query "SHOW GRANTS FOR \`$user\`" 2>/dev/null)
+        md5=$(echo "$md5" |grep PASSW|tr ' ' '\n' |tail -n1 |cut -f 2 -d \')
+    fi
+}
+
 # Create MySQL database
 add_mysql_database() {
     mysql_connect $host
@@ -205,21 +233,9 @@ add_mysql_database() {
     query="CREATE DATABASE \`$database\` CHARACTER SET $charset"
     mysql_query "$query" > /dev/null
 
-    query="GRANT ALL ON \`$database\`.* TO \`$dbuser\`@\`%\`
-        IDENTIFIED BY '$dbpass'"
-    mysql_query "$query" > /dev/null
-
-    query="GRANT ALL ON \`$database\`.* TO \`$dbuser\`@localhost
-        IDENTIFIED BY '$dbpass'"
-    mysql_query "$query" > /dev/null
-
-    if [ "$(echo $mysql_ver |cut -d '.' -f2)" -ge 7 ]; then
-        md5=$(mysql_query "SHOW CREATE USER \`$dbuser\`" 2>/dev/null)
-        md5=$(echo "$md5" |grep password |cut -f8 -d \')
-    else
-        md5=$(mysql_query "SHOW GRANTS FOR \`$dbuser\`" 2>/dev/null)
-        md5=$(echo "$md5" |grep PASSW|tr ' ' '\n' |tail -n1 |cut -f 2 -d \')
-    fi
+    mysql_grant_user "$dbuser" "$database" '%' "$dbpass"
+    mysql_grant_user "$dbuser" "$database" 'localhost' "$dbpass"
+    mysql_user_hash "$dbuser"
 }
 
 # Create PostgreSQL database
@@ -267,22 +283,10 @@ get_database_values() {
 # Change MySQL database password
 change_mysql_password() {
     mysql_connect $HOST
-    query="GRANT ALL ON \`$database\`.* TO \`$DBUSER\`@\`%\`
-        IDENTIFIED BY '$dbpass'"
-    mysql_query "$query" > /dev/null
 
-    query="GRANT ALL ON \`$database\`.* TO \`$DBUSER\`@localhost
-        IDENTIFIED BY '$dbpass'"
-    mysql_query "$query" > /dev/null
-    
-if [ "$(echo $mysql_ver |cut -d '.' -f2)" -ge 7 ]; then
- 
-    md5=$(mysql_query "SHOW CREATE USER \`$DBUSER\`" 2>/dev/null)
-    md5=$(echo "$md5" |grep password |cut -f8 -d \')
-else
-    md5=$(mysql_query "SHOW GRANTS FOR \`$DBUSER\`" 2>/dev/null)
-    md5=$(echo "$md5" |grep PASSW|tr ' ' '\n' |tail -n1 |cut -f 2 -d \')
-fi
+    mysql_grant_user "$DBUSER" "$database" '%' "$dbpass"
+    mysql_grant_user "$DBUSER" "$database" 'localhost' "$dbpass"
+    mysql_user_hash "$DBUSER"
 }
 
 # Change PostgreSQL database password

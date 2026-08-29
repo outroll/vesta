@@ -13,10 +13,10 @@ import Toolbar from '../../components/MainNav/Toolbar/Toolbar';
 import Modal from '../../components/ControlPanel/Modal/Modal';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import './MailAccounts.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 export default function MailAccounts(props) {
@@ -144,7 +144,7 @@ export default function MailAccounts(props) {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/mail?domain=${props.domain}&account=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/mail?domain=${props.domain}&account=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

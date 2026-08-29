@@ -11,14 +11,14 @@ import { addMailAccount, getMailList } from '../../../ControlPanelService/Mail';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MailInfoBlock from '../MailInfoBlock/MailInfoBlock';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddMailAccount.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 export default function AddMailAccount(props) {
   const { i18n } = useSelector(state => state.session);
@@ -125,7 +125,7 @@ export default function AddMailAccount(props) {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span>{state.okMessage ? parse(state.okMessage) : ''}</span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

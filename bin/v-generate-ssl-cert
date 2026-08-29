@@ -78,8 +78,9 @@ is_format_valid 'domain' 'alias' 'format'
 workdir=$(mktemp -d)
 cd $workdir
 
-# Generate private key
-openssl genrsa $KEY_SIZE > $domain.key 2>/dev/null
+# -traditional keeps the legacy "BEGIN RSA PRIVATE KEY" header callers grep for (OpenSSL 3.x defaults to PKCS#8).
+openssl genrsa -traditional $KEY_SIZE > $domain.key 2>/dev/null \
+    || openssl genrsa $KEY_SIZE > $domain.key 2>/dev/null
 
 # Generate the CSR
 subj="/C=$country/ST=$state/localityName=$city/O=$org"

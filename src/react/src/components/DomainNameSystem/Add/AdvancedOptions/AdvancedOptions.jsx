@@ -67,7 +67,7 @@ const AdvancedOptions = props => {
 
   return (
     <div>
-      <div className="form-group exp-date">
+      <div className="form-group exp-date mb-3">
         <label htmlFor="exp_date">
           {i18n['Expiration Date'] ?? 'Expiration Date'}
           <span className="optional">({i18n['YYYY-MM-DD'] ?? 'YYYY-MM-DD'})</span>
@@ -81,7 +81,7 @@ const AdvancedOptions = props => {
           name="v_exp" />
       </div>
 
-      <div className="form-group">
+      <div className="form-group mb-3">
         <label htmlFor="name_servers">TTL</label>
         <input
           type="text"
@@ -92,7 +92,7 @@ const AdvancedOptions = props => {
           name="v_ttl" />
       </div>
 
-      <div className="form-group name-servers">
+      <div className="form-group name-servers mb-3">
         <label htmlFor="v_ns1">{i18n['Name servers'] ?? 'Name servers'}</label>
         {renderNameServerInputs()}
       </div>

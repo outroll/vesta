@@ -15,7 +15,7 @@ import CronJob from '../../components/CronJob/CronJob';
 import Spinner from '../../components/Spinner/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import './CronJobs.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const CronJobs = props => {
@@ -145,7 +145,7 @@ const CronJobs = props => {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/cron?job=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/cron?job=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

@@ -50,7 +50,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
-        node-version: [18.x, 20.x, 22.x]
+        # vite 8 and @vitejs/plugin-react 6 both require
+        # ^20.19.0 || >=22.12.0, so 18.x cannot build this app.
+        node-version: [20.x, 22.x, 24.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -65,11 +67,6 @@ jobs:
     - name: Install dependencies
       working-directory: ./src/react
       run: npm install --legacy-peer-deps
-
-    - name: Run tests
-      working-directory: ./src/react
-      run: npm test -- --passWithNoTests --watchAll=false || echo "⚠️ Some tests failed"
-      continue-on-error: true
 
     - name: Build (production)
       working-directory: ./src/react

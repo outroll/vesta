@@ -6,12 +6,12 @@ import AddItemLayout from 'src/components/ControlPanel/AddItemLayout/AddItemLayo
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Toolbar from 'src/components/MainNav/Toolbar/Toolbar';
 import Spinner from 'src/components/Spinner/Spinner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 import './style.scss';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 const EditBackupExclusions = () => {
   const token = localStorage.getItem("token");
@@ -88,7 +88,7 @@ const EditBackupExclusions = () => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{okMessage ? parse(okMessage) : ''}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

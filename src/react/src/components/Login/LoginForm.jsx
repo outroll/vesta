@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import Spinner from '../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../actions/Session/sessionActions';
@@ -8,7 +8,7 @@ import LoginLayout from '../ControlPanel/LoginLayout/LoginLayout';
 import TextInput from '../ControlPanel/AddItemLayout/Form/TextInput/TextInput';
 
 import './Login.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 export default function LoginForm() {
   const { i18n } = useSelector(state => state.session);

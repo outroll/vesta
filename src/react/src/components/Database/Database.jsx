@@ -2,7 +2,7 @@ import React from 'react';
 import ListItem from '../ControlPanel/ListItem/ListItem';
 import Container from '../ControlPanel/Container/Container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
 
 const Database = props => {

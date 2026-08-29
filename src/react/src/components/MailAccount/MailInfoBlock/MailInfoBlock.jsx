@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router';
 import { mailInfoBlockSelectOptions } from 'src/ControlPanelService/Mail';
 
 import './MailInfoBlock.scss';
@@ -58,14 +59,14 @@ export default function MailInfoBlock({ webMail, hostName, domain, userName = ''
     result += `${i18n['SMTP port']}:${state.smtpPort}\n`;
     result += `${i18n['SMTP security']}:${state.smtpEncryption}\n`;
     result += `${i18n['SMTP auth method']}:${i18n['Normal password']}\n`;
-    result += `${i18n['Webmail URL']}:${webMail}\n`;
+    result += `${i18n['Webmail URL']}:${`http://${window.location.hostname}${webMail}`}\n`;
 
     return result;
   }
 
   return (
     <div className="mail-info-block">
-      <div class="form-group select-group">
+      <div class="form-group select-group mb-3">
         <select class="form-control" onChange={event => setSelectedOption(event.target.value)}>
           {renderSelectOptions()}
         </select>
@@ -123,7 +124,7 @@ export default function MailInfoBlock({ webMail, hostName, domain, userName = ''
 
           <div>
             <span>{i18n['Webmail URL']}:</span>
-            <span><a href={webMail} target="_blank" rel="noopener noreferrer">{webMail}</a></span>
+            <span><Link to={{ pathname: `http://${window.location.hostname}${webMail}` }} target="_blank">{webMail}</Link></span>
           </div>
 
           <input type="hidden" name="v_credentials" value={getCredentials()} />

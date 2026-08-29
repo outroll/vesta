@@ -1,14 +1,19 @@
 #!/bin/bash
-# Vesta installation wrapper v2.0
-# https://github.com/Dennis-SEG/vesta
+# Vesta installation wrapper
+# https://github.com/outroll/vesta
 #
-# Supported Operating Systems:
-#   Ubuntu 20.04, 22.04, 24.04 LTS
-#   Debian 10, 11, 12
-#   RHEL/Rocky/Alma 8, 9
+# Detects the running distribution and hands over to the matching installer
+# next to this script. Run the per-distro script directly if you want to pick
+# one yourself.
 #
-
-set -e
+# Currently Supported Operating Systems:
+#
+#   RHEL / CentOS / Rocky / AlmaLinux
+#   Debian
+#   Ubuntu 12.04 - 18.10, 20.04, 22.04, 24.04
+#   Alpine
+#   Amazon Linux 2017
+#
 
 # Am I root?
 if [ "x$(id -u)" != 'x0' ]; then
@@ -36,68 +41,72 @@ if [ ! -z "$(grep ^admin: /etc/group)" ] && [ -z "$1" ]; then
     exit 1
 fi
 
-# Get script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Detect OS and version
+# Detect OS
 if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    os=$ID
-    version=$VERSION_ID
+    # Subshell -- os-release sets VERSION/NAME which we do not want to inherit.
+    os="$(. /etc/os-release && echo "$ID")"
+    id_like="$(. /etc/os-release && echo "$ID_LIKE")"
+    release="$(. /etc/os-release && echo "$VERSION_ID")"
 else
-    echo "Error: Cannot detect operating system"
-    exit 1
+    # Pre-os-release systems (Ubuntu 12.04, RHEL 5/6) still ship /etc/issue.
+    case $(head -n1 /etc/issue | cut -f 1 -d ' ') in
+        Debian)     os="debian" ;;
+        Ubuntu)     os="ubuntu" ;;
+        Amazon)     os="amzn" ;;
+        *)          os="rhel" ;;
+    esac
+    id_like=""
+    release=""
 fi
 
-echo "Detected: $os $version"
-
-# Select appropriate installer
-case $os in
-    ubuntu)
-        case $version in
-            20.04|22.04|24.04)
-                installer="vst-install-ubuntu-modern.sh"
-                ;;
-            *)
-                installer="vst-install-ubuntu.sh"
-                ;;
-        esac
-        ;;
-    debian)
-        case $version in
-            10|11|12)
-                installer="vst-install-debian-modern.sh"
-                ;;
-            *)
-                installer="vst-install-debian.sh"
-                ;;
-        esac
-        ;;
-    rhel|centos|rocky|almalinux)
-        case ${version%%.*} in
-            8|9)
-                installer="vst-install-rhel-modern.sh"
-                ;;
-            *)
-                installer="vst-install-rhel.sh"
-                ;;
-        esac
-        ;;
-    amzn)
-        installer="vst-install-amazon.sh"
-        ;;
+case "$os" in
+    ubuntu)                             type="ubuntu" ;;
+    debian)                             type="debian" ;;
+    alpine)                             type="alpine" ;;
+    amzn)                               type="amazon" ;;
+    rhel|centos|rocky|almalinux|fedora) type="rhel" ;;
     *)
-        echo "Error: Unsupported operating system: $os"
-        echo "Supported: Ubuntu 20.04+, Debian 10+, RHEL/Rocky/Alma 8+"
-        exit 1
+        # Unknown ID -- fall back to the family it declares.
+        case " $id_like " in
+            *" rhel "*|*" fedora "*) type="rhel" ;;
+            *" debian "*)            type="debian" ;;
+            *)
+                echo "Error: unsupported operating system: $os $release"
+                echo 'Supported: Ubuntu, Debian, RHEL/CentOS/Rocky/AlmaLinux, Alpine, Amazon Linux'
+                exit 1
+                ;;
+        esac
         ;;
 esac
 
-# Check if installer exists locally
-if [ -f "$SCRIPT_DIR/$installer" ]; then
+echo "Detected: ${os:-unknown} ${release}"
+
+installer="vst-install-$type.sh"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Prefer the installer shipped alongside this script (git checkout), otherwise
+# download it -- keeps `curl https://vestacp.com/pub/vst-install.sh | bash`
+# working the way it always has.
+if [ -f "$script_dir/$installer" ]; then
     echo "Using local installer: $installer"
-    bash "$SCRIPT_DIR/$installer" "$@"
-else
-    echo "Error: Installer not found: $SCRIPT_DIR/$installer"
+    bash "$script_dir/$installer" "$@"
+    exit
+fi
+
+if [ ! -e '/usr/bin/wget' ]; then
+    echo "Error: wget is not installed"
+    echo 'Please install wget and run this script again:'
+    case "$type" in
+        rhel)   echo 'yum -y install wget' ;;
+        alpine) echo 'apk add wget' ;;
+        *)      echo 'apt-get -y install wget' ;;
+    esac
     exit 1
 fi
+
+wget "http://vestacp.com/pub/$installer" -O "$installer"
+if [ "$?" -ne '0' ]; then
+    echo "Error: $installer download failed."
+    exit 1
+fi
+bash "$installer" "$@"

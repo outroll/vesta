@@ -9,9 +9,9 @@ import Toolbar from '../../components/MainNav/Toolbar/Toolbar';
 import Statistic from '../../components/Statistic/Statistic';
 import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import './Statistics.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 const Statistics = props => {
   const { i18n } = useSelector(state => state.session);
@@ -161,7 +161,7 @@ const Statistics = props => {
 
   const bulkAction = value => {
     let user = value !== '' ? `?user=${value}` : '';
-    props.navigate({ search: user });
+    props.history.push({ search: user });
     fetchData();
   };
 
