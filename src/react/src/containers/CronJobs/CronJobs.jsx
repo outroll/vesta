@@ -145,7 +145,7 @@ const CronJobs = props => {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/cron?job=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/cron?job=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

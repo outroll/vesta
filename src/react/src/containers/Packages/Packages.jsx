@@ -143,7 +143,7 @@ const Packages = props => {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/package/?package=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/package/?package=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {

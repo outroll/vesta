@@ -143,7 +143,7 @@ const InternetProtocols = props => {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/ip/?ip=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/ip/?ip=${controlPanelFocusedElement}`);
   }
 
   const handleDelete = () => {

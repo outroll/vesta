@@ -141,9 +141,9 @@ const Servers = props => {
 
   const handleConfigure = () => {
     if (controlPanelFocusedElement.NAME !== state.servers[0].NAME) {
-      props.navigate(`/edit/server/${controlPanelFocusedElement.NAME}`);
+      props.history.push(`/edit/server/${controlPanelFocusedElement.NAME}`);
     } else {
-      props.navigate('/edit/server/');
+      props.history.push('/edit/server/');
     }
   }
 

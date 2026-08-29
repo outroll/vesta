@@ -147,15 +147,15 @@ const DomainNameSystems = props => {
   }
 
   const handleAddRecord = () => {
-    props.navigate(`/add/dns/?domain=${controlPanelFocusedElement}`);
+    props.history.push(`/add/dns/?domain=${controlPanelFocusedElement}`);
   }
 
   const handleLogs = () => {
-    props.navigate(`/list/dns?domain=${controlPanelFocusedElement}&type=access`);
+    props.history.push(`/list/dns?domain=${controlPanelFocusedElement}&type=access`);
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/dns?domain=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/dns?domain=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

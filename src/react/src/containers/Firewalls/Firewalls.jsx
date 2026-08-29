@@ -146,7 +146,7 @@ const Firewalls = props => {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/firewall?rule=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/firewall?rule=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

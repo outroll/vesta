@@ -78,12 +78,12 @@ class DirectoryList extends Component {
   }
 
   toggleActiveList = () => {
-    const { navigate, path, list, onClick, changePathAfterToggle, isActive } = this.props;
+    const { history, path, list, onClick, changePathAfterToggle, isActive } = this.props;
 
     if (!isActive) {
       onClick(list);
       changePathAfterToggle(path);
-      navigate({
+      history.push({
         pathname: '/list/directory/',
         search: `?path=${path}`
       });
@@ -177,9 +177,9 @@ class DirectoryList extends Component {
   }
 
   openDirectory = (name) => {
-    const { navigate, path, addToPath, openDirectory } = this.props;
+    const { history, path, addToPath, openDirectory } = this.props;
 
-    navigate({
+    history.push({
       pathname: '/list/directory/',
       search: `?path=${path}/${name}`
     });
@@ -189,13 +189,13 @@ class DirectoryList extends Component {
   }
 
   openCertainDirectory = (path) => {
-    const { navigate, openCertainDirectory, changePath } = this.props;
+    const { history, openCertainDirectory, changePath } = this.props;
 
     if (this.isHomeDirectory()) {
       return;
     }
 
-    navigate({
+    history.push({
       pathname: '/list/directory/',
       search: `?path=${path}`
     });

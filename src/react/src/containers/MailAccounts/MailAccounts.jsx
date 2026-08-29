@@ -144,7 +144,7 @@ export default function MailAccounts(props) {
   }
 
   const handleEdit = () => {
-    props.navigate(`/edit/mail?domain=${props.domain}&account=${controlPanelFocusedElement}`);
+    props.history.push(`/edit/mail?domain=${props.domain}&account=${controlPanelFocusedElement}`);
   }
 
   const handleSuspend = () => {

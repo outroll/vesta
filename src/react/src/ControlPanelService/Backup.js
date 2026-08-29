@@ -11,11 +11,7 @@ const backupRestoreSettingUri = '/api/v1/schedule/restore/index.php';
 const bulkRestoreUri = '/api/v1/bulk/restore/index.php';
 
 export const getBackupList = () => {
-  return axios.get(BASE_URL + webApiUri, {
-    params: {
-      token: getAuthToken()
-    }
-  });
+  return axios.get(BASE_URL + webApiUri);
 }
 
 export const bulkAction = (action, backups) => {
@@ -39,24 +35,15 @@ export const handleAction = uri => {
 }
 
 export const scheduleBackup = () => {
-  return axios.get(BASE_URL + scheduleBackupUri, {
-    params: {
-      token: getAuthToken()
-    }
-  });
+  return axios.get(BASE_URL + scheduleBackupUri);
 }
 
 export const getBackupDetails = backup => {
-  return axios.get(BASE_URL + backupDetailsUri, {
-    params: {
-      backup: backup,
-      token: getAuthToken()
-    }
-  });
+  return axios.get(BASE_URL + `${backupDetailsUri}?backup=${backup}`);
 }
 
 export const restoreBackupSetting = params => {
-  return axios.get(BASE_URL + backupRestoreSettingUri + params + '&token=' + getAuthToken());
+  return axios.get(BASE_URL + `${backupRestoreSettingUri}${params}`);
 }
 
 export const bulkRestore = (action, selection, backup) => {
@@ -73,19 +60,11 @@ export const bulkRestore = (action, selection, backup) => {
 }
 
 export const getBackupExclusions = () => {
-  return axios.get(BASE_URL + backupExclusionsUri, {
-    params: {
-      token: getAuthToken()
-    }
-  });
+  return axios.get(BASE_URL + `${backupExclusionsUri}`);
 }
 
 export const getBackupExclusionsInfo = () => {
-  return axios.get(BASE_URL + backupExclusionsInfoUri, {
-    params: {
-      token: getAuthToken()
-    }
-  });
+  return axios.get(BASE_URL + `${backupExclusionsInfoUri}`);
 }
 
 export const updateBackupExclusions = data => {

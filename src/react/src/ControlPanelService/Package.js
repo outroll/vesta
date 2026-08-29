@@ -9,11 +9,7 @@ const packageInfoUri = '/api/v1/edit/package/index.php';
 const updatePackageUri = '/api/v1/edit/package/index.php';
 
 export const getPackageList = () => {
-  return axios.get(BASE_URL + webApiUri, {
-    params: {
-      token: getAuthToken()
-    }
-  });
+  return axios.get(BASE_URL + webApiUri);
 }
 
 export const bulkAction = (action, backups) => {
@@ -43,18 +39,11 @@ export const addPackage = data => {
     formDataObject.append(key, data[key]);
   }
 
-  formDataObject.append("token", getAuthToken());
-  formDataObject.append("ok", "Add");
-
   return axios.post(BASE_URL + addPackageUri, formDataObject);
 }
 
 export const getAdditionalPackageInfo = () => {
-  return axios.get(BASE_URL + additionalPackageInfoUri, {
-    params: {
-      token: getAuthToken()
-    }
-  });
+  return axios.get(BASE_URL + additionalPackageInfoUri);
 }
 
 export const getPackageInfo = item => {
@@ -73,13 +62,9 @@ export const updatePackage = (data, item) => {
     formDataObject.append(key, data[key]);
   }
 
-  formDataObject.append("token", getAuthToken());
-  formDataObject.append("ok", "Save");
-
   return axios.post(BASE_URL + updatePackageUri, formDataObject, {
     params: {
-      package: item,
-      token: getAuthToken()
+      package: item
     }
   });
 }
