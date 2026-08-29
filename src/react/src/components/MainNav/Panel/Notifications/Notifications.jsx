@@ -5,7 +5,7 @@ import Bell from './Bell';
 import BellUnread from './BellUnread';
 import { useDispatch, useSelector } from 'react-redux';
 import './Notifications.scss';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 const Notifications = () => {
   const { i18n } = useSelector(state => state.session);
@@ -55,7 +55,7 @@ const Notifications = () => {
               <span className="title"><b>{item.TOPIC}</b></span>
               <span className="delete-notification" onClick={() => removeNotification(item.ID)}></span>
             </div>
-            <div>{item.NOTICE ? parse(item.NOTICE) : ''}</div>
+            <div>{HtmlParser(item.NOTICE)}</div>
             <div className="dropdown-divider"></div>
           </>
         );

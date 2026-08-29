@@ -6,11 +6,12 @@ import MobileTopNav from '../MainNav/Mobile/MobileTopNav';
 import Menu from '../MainNav/Stat-menu/Menu';
 import Panel from '../MainNav/Panel/Panel';
 import './MainNav.scss';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import Spinner from '../Spinner/Spinner';
 
 const MainNav = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState({
     menuHeight: 135,
@@ -26,22 +27,15 @@ const MainNav = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Only redirect if we have confirmed the user is not logged in
-    // (user and session are explicitly empty objects, not just unloaded)
-    if (!userName) {
+    if (!userName || !Object.entries(user).length || !Object.entries(session).length) {
       return navigate('/login');
-    }
-
-    // Don't redirect if data is still loading (user/session undefined or not objects)
-    if (!user || !session || typeof user !== 'object' || typeof session !== 'object') {
-      return;
     }
 
     if (session.look) {
       const commonUserRoutes = ['package', 'ip', 'rrd', 'updates', 'firewall', 'server'];
-      const splitPath = window.location.pathname.split('/')[2];
+      const splitPath = location.pathname.split('/')[2];
 
-      if (window.location.pathname === '/add/user/') return navigate('/');
+      if (location.pathname === '/add/user/') return navigate('/');
 
       if (commonUserRoutes.includes(splitPath)) {
         return navigate('/');
@@ -52,7 +46,7 @@ const MainNav = () => {
     setState({ ...state, tabs });
 
     setLoading(false);
-  }, [userName, user, navigate, session]);
+  }, [userName, user, location, session]);
 
   const controlFocusedTabWithCallback = useCallback(event => {
     let isSearchInputFocused = document.querySelector('input:focus') || document.querySelector('textarea:focus') || document.querySelector('textarea:focus');
@@ -111,7 +105,7 @@ const MainNav = () => {
   }, [activeElement]);
 
   useEffect(() => {
-    dispatch(addActiveElement(window.location.pathname));
+    dispatch(addActiveElement(location.pathname));
   }, []);
 
   const handleLeftArrowKey = (array, indexInArray) => {

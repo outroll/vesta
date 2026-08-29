@@ -6,14 +6,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addCronJob } from '../../../ControlPanelService/Cron';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
 import Generator from '../Generator/Generator';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddCronJob.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 const AddCronJob = props => {
   const { i18n } = useSelector(state => state.session);
@@ -101,7 +101,7 @@ const AddCronJob = props => {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span>{state.okMessage ? parse(state.okMessage) : ''}</span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>
@@ -111,7 +111,7 @@ const AddCronJob = props => {
             <input type="hidden" name="ok" value="add" />
             <input type="hidden" name="token" value={token} />
 
-            <div className="form-group command">
+            <div className="form-group command mb-3">
               <label htmlFor="command">{i18n.Command ?? 'Command'}</label>
               <input
                 type="text"
@@ -123,7 +123,7 @@ const AddCronJob = props => {
             <div className="cron-form-body">
 
               <div className="body-col-1">
-                <div className="form-group">
+                <div className="form-group mb-3">
                   <label htmlFor="h_min">{i18n.Minute ?? 'Minute'}</label>
                   <input
                     type="text"
@@ -134,7 +134,7 @@ const AddCronJob = props => {
                     name="v_min" />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mb-3">
                   <label htmlFor="h_hour">{i18n.Hour ?? 'Hour'}</label>
                   <input
                     type="text"
@@ -145,7 +145,7 @@ const AddCronJob = props => {
                     name="v_hour" />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mb-3">
                   <label htmlFor="h_day">{i18n.Day ?? 'Day'}</label>
                   <input
                     type="text"
@@ -156,7 +156,7 @@ const AddCronJob = props => {
                     name="v_day" />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mb-3">
                   <label htmlFor="h_month">{i18n.Month ?? 'Month'}</label>
                   <input
                     type="text"
@@ -167,7 +167,7 @@ const AddCronJob = props => {
                     name="v_month" />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mb-3">
                   <label htmlFor="h_wday">{i18n['Day of week'] ?? 'Days of week'}</label>
                   <input
                     type="text"

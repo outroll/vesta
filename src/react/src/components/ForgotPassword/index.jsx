@@ -4,12 +4,12 @@ import TextInput from 'src/components/ControlPanel/AddItemLayout/Form/TextInput/
 import Password from 'src/components/ControlPanel/AddItemLayout/Form/Password/Password';
 import LoginLayout from 'src/components/ControlPanel/LoginLayout/LoginLayout';
 import { resetPassword } from 'src/ControlPanelService/ResetPassword';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { reset } from 'src/actions/Session/sessionActions';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'src/components/Spinner/Spinner';
-import parse from 'html-react-parser';
-import { Helmet } from 'react-helmet';
+import ReactHtmlParser from 'html-react-parser';
+import { Helmet } from 'react-helmet-async';
 import QueryString from 'qs';
 
 export default function ForgotPassword() {
@@ -145,7 +145,7 @@ export default function ForgotPassword() {
               {
                 state.action === 'code' && (
                   <>
-                    <span>{i18n['RESET_CODE_SENT'] ? parse(i18n['RESET_CODE_SENT']) : ''}</span><br />
+                    <span>{ReactHtmlParser(i18n['RESET_CODE_SENT'])}</span><br />
 
                     <TextInput
                       onChange={changeInputHandler}

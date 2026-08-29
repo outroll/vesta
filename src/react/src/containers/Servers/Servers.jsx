@@ -12,8 +12,8 @@ import ServerSys from '../../components/Server/ServerSys';
 import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import Server from '../../components/Server/Server';
-import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Link } from 'react-router';
+import { Helmet } from 'react-helmet-async';
 import './Servers.scss';
 
 const Servers = props => {

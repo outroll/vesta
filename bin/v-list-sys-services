@@ -229,6 +229,10 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB_SYSTEM" != 'remote' ]; then
                 service='mysqld'
                 proc_name='mysqld'
             fi
+            # Alpine's mariadb package runs the daemon as mariadbd, not mysql/mysqld
+            if [ -e "/etc/alpine-release" ]; then
+                proc_name='mariadbd'
+            fi
         fi
         if [ "$service" == 'pgsql' ]; then
             service='postgresql'
@@ -256,7 +260,12 @@ fi
 
 # Checking CRON system
 if [ ! -z "$CRON_SYSTEM" ] && [ "$CRON_SYSTEM" != 'remote' ]; then
-    get_srv_state $CRON_SYSTEM
+    proc_name=''
+    # Alpine's dcron package runs the daemon as crond, not dcron
+    if [ "$CRON_SYSTEM" = 'dcron' ] && [ -e "/etc/alpine-release" ]; then
+        proc_name='crond'
+    fi
+    get_srv_state $CRON_SYSTEM $proc_name
     data="$data\nNAME='$CRON_SYSTEM' SYSTEM='job scheduler' STATE='$state'"
     data="$data CPU='$cpu' MEM='$mem' RTIME='$rtime'"
 fi

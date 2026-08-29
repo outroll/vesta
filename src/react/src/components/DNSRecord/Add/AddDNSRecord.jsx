@@ -7,14 +7,14 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addDomainNameSystemRecord } from '../../../ControlPanelService/Dns';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Spinner from '../../Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './AddDNSRecord.scss'
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 export default function AddDNSRecord(props) {
   const { i18n } = useSelector(state => state.session);
@@ -97,7 +97,7 @@ export default function AddDNSRecord(props) {
         <div className="success">
           <span className="ok-message">
             {state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''}
-            <span>{state.okMessage ? parse(state.okMessage) : ''}</span>
+            <span>{HtmlParser(state.okMessage)}</span>
           </span>
         </div>
       </Toolbar>

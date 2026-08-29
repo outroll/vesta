@@ -8,12 +8,12 @@ import AddItemLayout from '../../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../../components/Spinner/Spinner';
 import Toolbar from '../../../MainNav/Toolbar/Toolbar';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './EditPhp.scss';
-import { Helmet } from 'react-helmet';
-import parse from 'html-react-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 const EditPhp = ({ serviceName = '' }) => {
   const token = localStorage.getItem("token");
@@ -117,7 +117,7 @@ const EditPhp = ({ serviceName = '' }) => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{okMessage ? parse(okMessage) : ''}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

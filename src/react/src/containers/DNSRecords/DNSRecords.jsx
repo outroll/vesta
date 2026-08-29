@@ -12,11 +12,11 @@ import Modal from 'src/components/ControlPanel/Modal/Modal';
 import DnsRecord from 'src/components/DNSRecord/DNSRecord';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router';
 import QueryString from 'qs';
 
 import './DNSRecords.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 export default function DnsRecords(props) {
@@ -25,6 +25,7 @@ export default function DnsRecords(props) {
   const { focusedElement } = useSelector(state => state.mainNavigation);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     text: '',
@@ -155,7 +156,7 @@ export default function DnsRecords(props) {
   }
 
   const fetchData = () => {
-    let parsedQueryString = QueryString.parse(window.location.search, { ignoreQueryPrefix: true });
+    let parsedQueryString = QueryString.parse(location.search, { ignoreQueryPrefix: true });
     setLoading(true);
     return new Promise((resolve, reject) => {
       getDNSRecordsList(parsedQueryString.domain || '')

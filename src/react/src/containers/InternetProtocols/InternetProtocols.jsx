@@ -15,7 +15,7 @@ import Modal from '../../components/ControlPanel/Modal/Modal';
 import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import './InternetProtocols.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const InternetProtocols = props => {

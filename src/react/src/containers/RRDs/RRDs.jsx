@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Timer from '../../components/RRD/Timer/Timer';
 import RRD from '../../components/RRD/RRD';
 import './RRDs.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 const RRDs = props => {
   const { i18n } = useSelector(state => state.session);

@@ -5,10 +5,10 @@ import { getBanIps, addBanIp } from 'src/ControlPanelService/Firewalls';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from 'src/components/Spinner/Spinner';
 import Toolbar from '../../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
-import parse from 'html-react-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 const AddBanIP = () => {
   const { i18n } = useSelector(state => state.session);
@@ -78,7 +78,7 @@ const AddBanIP = () => {
         <div className="search-toolbar-name">{i18n['Adding IP Address to Banlist']}</div>
         <div className="error"><span className="error-message">{state.errorMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} {state.errorMessage}</span></div>
         <div className="success">
-          <span className="ok-message">{state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{state.okMessage ? parse(state.okMessage) : ''}</span> </span>
+          <span className="ok-message">{state.okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(state.okMessage)}</span> </span>
         </div>
       </Toolbar>
       <AddItemLayout>
@@ -86,14 +86,14 @@ const AddBanIP = () => {
           <form onSubmit={event => submitFormHandler(event)} id="add-user">
             <input type="hidden" name="ok" value="add" />
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label htmlFor="chain">{i18n.Banlist}</label>
               <select class="form-control" id="chain" name="v_chain">
                 {renderChainOptions()}
               </select>
             </div>
 
-            <div className="form-group exp-date">
+            <div className="form-group exp-date mb-3">
               <label htmlFor="ip">
                 {i18n['IP address']}
                 <span className="optional">({i18n['CIDR format is supported']})</span>

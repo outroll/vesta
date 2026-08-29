@@ -36,7 +36,7 @@ class Photo extends Component {
     const gallery = this.state.photoGallery;
     return gallery.map((item, i) => {
       const imageClasses = classNames({ 'control-photo': true, 'active': i === this.state.activeSlide });
-      const result = (<div data-bs-target="#photoGallery" data-slide-to={i} key={i} className="indicator">
+      const result = (<div data-bs-target="#photoGallery" data-bs-slide-to={i} key={i} className="indicator">
         <img src={`${window.location.origin}/api/v1/view/file/${this.formatPath(this.props.path)}/${item}&raw=true`} alt={i} className={imageClasses} />
       </div>);
       return result;

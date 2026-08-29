@@ -1,0 +1,135 @@
+name: Release vesta .deb
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-vesta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build vesta_amd64.deb
+        run: src/deb/build.sh "${GITHUB_REF_NAME#v}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vesta-deb
+          path: vesta_amd64.deb
+
+  build-ioncube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build vesta-ioncube_amd64.deb
+        run: src/deb/ioncube/build.sh "${GITHUB_REF_NAME#v}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vesta-ioncube-deb
+          path: vesta-ioncube_amd64.deb
+
+  # nginx and php are compiled from source and dynamically link against the
+  # host's OpenSSL/libc, so they must be built against the oldest Ubuntu
+  # release the installer still supports (18.04) -- building on
+  # ubuntu-latest's newer OpenSSL (libssl.so.3) produces binaries that
+  # can't even run on 18.04 (which only has libssl.so.1.1). 24.04 gets its
+  # own build below instead, since it dropped libssl1.1/libonig4/libzip4/
+  # libcurl4 outright -- no package satisfies bionic's deps there either way.
+  #
+  # This can't use GitHub Actions' job-level `container:` for 18.04: every
+  # container gets GitHub's Node runtime injected to run JS-based actions
+  # (checkout, upload-artifact), and Node 24 requires glibc >= 2.28, which
+  # 18.04 (glibc 2.27) doesn't have -- actions/checkout itself fails before
+  # anything of ours even runs. So checkout/upload-artifact run on the host
+  # runner as usual, and only the compilation happens inside a manually
+  # invoked `docker run ubuntu:18.04`, which never needs Node.
+  build-nginx-php-bionic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build vesta-nginx/vesta-php inside an Ubuntu 18.04 container
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" -w /workspace \
+            -e VERSION="${REF_NAME#v}" \
+            -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
+            ubuntu:18.04 bash -c '
+              set -e
+              apt-get update
+              DEBIAN_FRONTEND=noninteractive apt-get -y install \
+                ca-certificates curl build-essential libpcre3-dev zlib1g-dev \
+                libssl-dev libxml2-dev libcurl4-openssl-dev libonig-dev \
+                libzip-dev libsqlite3-dev pkg-config bison re2c autoconf
+              src/deb/nginx/build.sh "$VERSION"
+              src/deb/php/build.sh "$VERSION"
+              chown "$HOST_UID:$HOST_GID" vesta-nginx_amd64.deb vesta-php_amd64.deb
+            '
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nginx-php-debs-bionic
+          path: |
+            vesta-nginx_amd64.deb
+            vesta-php_amd64.deb
+
+  build-nginx-php-noble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build vesta-nginx/vesta-php inside an Ubuntu 24.04 container
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" -w /workspace \
+            -e VERSION="${REF_NAME#v}" \
+            -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
+            ubuntu:24.04 bash -c '
+              set -e
+              apt-get update
+              DEBIAN_FRONTEND=noninteractive apt-get -y install \
+                ca-certificates curl build-essential libpcre3-dev zlib1g-dev \
+                libssl-dev libxml2-dev libcurl4-openssl-dev libonig-dev \
+                libzip-dev libsqlite3-dev pkg-config bison re2c autoconf
+              src/deb/nginx/build.sh "$VERSION" "_noble"
+              src/deb/php/build.sh "$VERSION" "_noble"
+              chown "$HOST_UID:$HOST_GID" vesta-nginx_noble_amd64.deb vesta-php_noble_amd64.deb
+            '
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nginx-php-debs-noble
+          path: |
+            vesta-nginx_noble_amd64.deb
+            vesta-php_noble_amd64.deb
+
+  release:
+    needs: [build-vesta, build-ioncube, build-nginx-php-bionic, build-nginx-php-noble]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          assets="vesta_amd64.deb vesta-ioncube_amd64.deb vesta-nginx_amd64.deb vesta-php_amd64.deb vesta-nginx_noble_amd64.deb vesta-php_noble_amd64.deb"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" $assets --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" $assets --title "$GITHUB_REF_NAME" --generate-notes
+          fi

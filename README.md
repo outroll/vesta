@@ -1,306 +1,48 @@
-# Vesta Control Panel
+[Vesta Control Panel](http://vestacp.com/)
+==================================================
 
-<!-- Version & Release -->
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/Dennis-SEG/vesta/releases)
-[![Release](https://img.shields.io/github/v/release/Dennis-SEG/vesta?include_prereleases)](https://github.com/Dennis-SEG/vesta/releases)
-[![Release Date](https://img.shields.io/github/release-date/Dennis-SEG/vesta)](https://github.com/Dennis-SEG/vesta/releases)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+Vesta is back under active development as of 25 February 2024. We are commited to open source, and will engage with the community to identify the new roadmap for Vesta. Stay tuned!
 
-<!-- Technology Stack -->
-[![PHP](https://img.shields.io/badge/PHP-8.0%20|%208.1%20|%208.2%20|%208.3%20|%208.4-777BB4?logo=php&logoColor=white)](https://www.php.net)
-[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react&logoColor=white)](https://react.dev)
-[![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?logo=bootstrap&logoColor=white)](https://getbootstrap.com)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org)
-
-<!-- Platform Support -->
-[![Ubuntu](https://img.shields.io/badge/Ubuntu-20.04%20|%2022.04%20|%2024.04-E95420?logo=ubuntu&logoColor=white)](https://ubuntu.com)
-[![Debian](https://img.shields.io/badge/Debian-10%20|%2011%20|%2012-A81D33?logo=debian&logoColor=white)](https://www.debian.org)
-[![RHEL](https://img.shields.io/badge/RHEL-8%20|%209-EE0000?logo=redhat&logoColor=white)](https://www.redhat.com)
-[![Rocky Linux](https://img.shields.io/badge/Rocky%20Linux-8%20|%209-10B981?logo=rockylinux&logoColor=white)](https://rockylinux.org)
-
-<!-- Repository Stats -->
-[![GitHub stars](https://img.shields.io/github/stars/Dennis-SEG/vesta?style=social)](https://github.com/Dennis-SEG/vesta/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/Dennis-SEG/vesta?style=social)](https://github.com/Dennis-SEG/vesta/network/members)
-[![GitHub issues](https://img.shields.io/github/issues/Dennis-SEG/vesta)](https://github.com/Dennis-SEG/vesta/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/Dennis-SEG/vesta)](https://github.com/Dennis-SEG/vesta/pulls)
-[![Last commit](https://img.shields.io/github/last-commit/Dennis-SEG/vesta)](https://github.com/Dennis-SEG/vesta/commits/master)
-
-<!-- Build & Security -->
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Dennis-SEG/vesta)
-[![Security](https://img.shields.io/badge/security-hardened-success)](SECURITY.md)
-[![Dependencies](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)](package.json)
-[![Code Quality](https://img.shields.io/badge/code%20quality-production%20ready-success)](https://github.com/Dennis-SEG/vesta)
-
-<!-- Community -->
 [![Join the chat at https://gitter.im/vesta-cp/Lobby](https://badges.gitter.im/vesta-cp/Lobby.svg)](https://gitter.im/vesta-cp/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Forum](https://img.shields.io/badge/forum-vestacp.com-blue)](https://forum.vestacp.com)
-[![Documentation](https://img.shields.io/badge/docs-available-blue)](https://vestacp.com/docs/)
-[![Contributors](https://img.shields.io/github/contributors/Dennis-SEG/vesta)](https://github.com/Dennis-SEG/vesta/graphs/contributors)
 
-Vesta is back under active development as of February 25, 2024. We are committed to open source and will engage with the community to identify the new roadmap for Vesta.
+* Vesta is an open source hosting control panel.
+* Vesta has a clean and focused interface without the clutter.
+* Vesta has the latest of very innovative technologies.
 
-## ✅ Modernization Complete (January 2025)
-
-**Vesta now features fully modernized installation scripts with:**
-- ✅ PHP 8.2, 8.3, 8.4 support (default: 8.3)
-- ✅ Modern OS support (Ubuntu 20.04+, Debian 10+, RHEL 8+)
-- ✅ MariaDB 10.11+ and MySQL 8.0+
-- ✅ Security hardening with fail2ban
-- ✅ Let's Encrypt SSL automation via acme.sh
-- ✅ Production-ready configurations
-
-**For upgrading from old Vesta installations:**
-- See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for complete migration procedures
-- Backup your data before upgrading
-- Test PHP 8 compatibility of your applications
-
-## About
-
-Vesta is a comprehensive open-source hosting control panel designed for system administrators and web hosting providers. It provides a clean, focused interface for managing web servers without unnecessary complexity.
-
-### Key Features
-
-- **Web Server Management** - Apache, Nginx, or hybrid configurations
-- **Database Administration** - MySQL/MariaDB and PostgreSQL support
-- **DNS Management** - Full DNS zone control with template support
-- **Mail Server** - Complete email solution with Exim, Dovecot, SpamAssassin
-- **SSL/TLS Certificates** - Automated Let's Encrypt integration
-- **Firewall Management** - iptables-based firewall with fail2ban
-- **File Manager** - Web-based file management interface
-- **Backup System** - Automated backup scheduling and remote storage
-- **Multi-user Support** - User isolation and resource quotas
-- **Modern UI** - React-based control panel with REST API
-
-### Supported Operating Systems
-
-**Fully Supported (Modern Installers):**
-- ✅ **Ubuntu**: 20.04 LTS (Focal), 22.04 LTS (Jammy), 24.04 LTS (Noble)
-- ✅ **Debian**: 10 (Buster), 11 (Bullseye), 12 (Bookworm)
-- ✅ **RHEL Family**: RHEL 8/9, Rocky Linux 8/9, AlmaLinux 8/9
-
-**End-of-Life (Not Supported):**
-- ❌ Ubuntu < 20.04, Debian < 10, RHEL < 8
-- ❌ CentOS (all versions - project discontinued)
-- ❌ Amazon Linux < 2023
-
-The modern installers automatically detect your OS and reject unsupported versions with clear error messages.
-
-## Installation
-
-### System Requirements
-
-**Minimum:**
-- 1 CPU core
-- 2GB RAM (4GB recommended)
-- 20GB free disk space
-- Fresh OS installation recommended
-
-**Software:**
-- Ubuntu 20.04+, Debian 10+, or RHEL 8+
-- Root access via SSH
-- Internet connection
-
-### Quick Install
-
-**1. Connect to your server as root:**
+How to install (2 step)
+----------------------------
+Connect to your server as root via SSH
 ```bash
 ssh root@your.server
 ```
 
-**2. Download the modern installer:**
+Download the installation script, and run it:
 ```bash
-wget https://github.com/outroll/vesta/raw/master/install/INSTALL_COMPLETE.sh
+curl https://vestacp.com/pub/vst-install.sh | bash
 ```
 
-**3. Run the installation:**
+How to install (BETA and in-progress work versions)
+----------------------------
+Connect to your server as root via SSH
 ```bash
-# Basic installation with PHP 8.3 (default)
-bash INSTALL_COMPLETE.sh -e admin@example.com
-
-# With custom PHP version
-bash INSTALL_COMPLETE.sh --php 8.3 -e admin@example.com
-
-# With custom password and SSL
-bash INSTALL_COMPLETE.sh \
-  --php 8.3 \
-  -e admin@example.com \
-  -p mypassword \
-  -s server.example.com \
-  --ssl yes
+ssh root@your.server
 ```
 
-### Installation Options
-
+Clone this repository and run the installer for your OS from `install/`:
 ```bash
-Options:
-  --php VERSION          PHP version (8.2, 8.3, 8.4) - default: 8.3
-  -e, --email EMAIL      Admin email address (required)
-  -p, --password PASS    Admin password (auto-generated if not provided)
-  -s, --hostname NAME    Server hostname
-  --ssl yes|no           Request Let's Encrypt SSL for hostname
-  -h, --help             Show help message
-
-Examples:
-  # Minimal installation
-  bash INSTALL_COMPLETE.sh -e admin@example.com
-
-  # Full installation with SSL
-  bash INSTALL_COMPLETE.sh --php 8.3 -e admin@example.com -s vesta.example.com --ssl yes
+git clone https://github.com/outroll/vesta.git
+cd vesta/install
+sudo ./vst-install-ubuntu.sh   # or vst-install-debian.sh / vst-install-rhel.sh / vst-install-amazon.sh / vst-install-alpine.sh
 ```
 
-### Installation Time
+Run the script with `--help` to see the available options (admin email/password,
+which services to install, etc).
 
-- **Expected duration:** 10-20 minutes
-- **Depends on:** Server specs and internet connection
-- **Progress:** Detailed output during installation
+> Older versions of this README pointed to `curl https://vestacp.com/pub/vst-install.sh`.
+> That endpoint is hosted separately from this repository and won't reflect any
+> changes made here -- always install from a checkout of this repo instead.
 
-### Post-Installation
+License
+----------------------------
+Vesta is licensed under  [GPL v3 ](https://github.com/outroll/vesta/blob/master/LICENSE) license
 
-**1. Access the control panel:**
-```
-https://your-server-ip:8083
-https://your-hostname:8083
-```
-
-**2. Credentials:**
-- Username: `admin`
-- Password: Displayed at end of installation
-- Also saved to: `/root/vesta_install_info.txt`
-
-**3. First Steps:**
-- Change admin password (recommended)
-- Create your first user account
-- Add your first domain
-- Configure backups
-- Review firewall rules
-
-### Upgrading from Old Vesta
-
-If you're running an old Vesta installation with PHP 5.x/7.x:
-
-**See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for:**
-- Two migration strategies (fresh install vs. in-place upgrade)
-- PHP 8 compatibility testing procedures
-- Database migration steps
-- Application-specific migration guides
-- Rollback procedures
-
-**⚠️ Important:** Always backup before upgrading!
-
-## Development
-
-### Prerequisites
-
-- Bash 4.0+
-- PHP 7.4+
-- Node.js 18+ (for React UI development)
-- Git
-
-### Building the React UI
-
-```bash
-cd src/react
-npm install
-npm run build
-```
-
-### Project Structure
-
-```
-vesta/
-├── bin/          # CLI commands (v-add-*, v-delete-*, etc.)
-├── func/         # Bash function libraries
-├── install/      # Installation scripts
-├── src/          # Source code (React UI, C utilities)
-├── web/          # PHP web interface
-├── test/         # Test scripts
-└── upd/          # Update scripts
-```
-
-## Architecture
-
-Vesta uses a modular architecture with three main components:
-
-1. **CLI Tools** - 385+ bash scripts for all operations
-2. **Web Interface** - PHP-based traditional interface
-3. **React UI** - Modern control panel built with React 18
-
-All operations go through the CLI tools, ensuring consistency and security.
-
-## Documentation
-
-### Installation & Migration
-- [Migration Guide](MIGRATION_GUIDE.md) - Complete guide for upgrading from old Vesta
-- [System Requirements](SYSTEM_REQUIREMENTS.md) - Detailed dependency analysis
-- [Installer Update Plan](INSTALLER_UPDATE_PLAN.md) - Modernization roadmap
-- [Upgrade Notes](UPGRADE_NOTES.md) - React/JavaScript upgrade guide
-
-### Development
-- [Contributing Guide](CONTRIBUTING.md) - How to contribute to Vesta
-- [Changelog](CHANGELOG.md) - Version history and changes
-- [Security Policy](SECURITY.md) - Security practices and reporting
-
-### Online Resources
-- [Official Website](https://vestacp.com/)
-- [API Documentation](https://vestacp.com/docs/)
-- [User Manual](https://vestacp.com/docs/)
-- [Forum](https://forum.vestacp.com/)
-
-## Community
-
-- **Website:** [vestacp.com](http://vestacp.com/)
-- **Forum:** [forum.vestacp.com](https://forum.vestacp.com/)
-- **Gitter Chat:** [vesta-cp/Lobby](https://gitter.im/vesta-cp/Lobby)
-- **Issues:** [GitHub Issues](https://github.com/outroll/vesta/issues)
-
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-## Security
-
-If you discover a security vulnerability, please email dev@vestacp.com. Do not use the public issue tracker for security issues.
-
-## License
-
-Vesta Control Panel is licensed under the [GNU General Public License v3.0](LICENSE).
-
-## Acknowledgments
-
-Vesta is built on the shoulders of many excellent open-source projects:
-
-- Nginx, Apache
-- PHP, Node.js
-- MySQL/MariaDB, PostgreSQL
-- Exim, Dovecot
-- React, Redux
-- And many more...
-
-## What's New in 2025
-
-### Installation System Modernization ✨
-
-**Major Update - January 2025:**
-- 🎯 **Full PHP 8.x support** (8.2, 8.3, 8.4)
-- 🚀 **Modern OS support** (Ubuntu 20.04+, Debian 10+, RHEL 8+)
-- 🔒 **Enhanced security** with fail2ban and modern TLS
-- 🤖 **Automated SSL** via Let's Encrypt (acme.sh)
-- 📦 **Production-ready** configurations for all services
-- 📚 **Comprehensive documentation** and migration guides
-
-**For Developers:**
-- ⚛️ React 18.3 with latest dependencies
-- 🔄 Modern build tools and CI/CD
-- 🎨 Bootstrap 5 ready
-- 🛠️ Comprehensive testing framework
-
-See [CHANGELOG.md](CHANGELOG.md) for complete release notes.
-
----
-
-**Version:** 2.0.0 (Modernized)
-**Release Date:** January 2025
-**Status:** Active Development
-**Maintained by:** The Vesta Community
-
-**License:** GNU General Public License v3.0

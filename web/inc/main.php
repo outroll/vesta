@@ -248,8 +248,10 @@ function humanize_usage_measure($usage) {
 
 
 function get_percentage($used,$total) {
-    $total = isset($total) ? (float)$total : 0;
-    $used = isset($used) ? (float)$used : 0;
+    // PHP 8 removed the loose coercion that used to make "unlimited" == 0 true,
+    // so normalise both values to numbers before dividing.
+    $total = (isset($total) && is_numeric($total)) ? (float)$total : 0;
+    $used  = (isset($used)  && is_numeric($used))  ? (float)$used  : 0;
     if ( $total == 0 ) {
         $percent = 0;
     } else {

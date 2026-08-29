@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import AddMailAccount from 'src/components/MailAccount/Add/AddMailAccount';
 import AddMail from 'src/components/Mail/Add/AddMail';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import QueryString from 'qs';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
 
 export default function AddMailWrapper() {
   const { i18n } = useSelector(state => state.session);
   const navigate = useNavigate();
+  const location = useLocation();
   const [domain, setDomain] = useState(false);
 
   useEffect(() => {
-    const parsedQueryString = QueryString.parse(window.location.search, { ignoreQueryPrefix: true });
+    const parsedQueryString = QueryString.parse(location.search, { ignoreQueryPrefix: true });
 
     if (parsedQueryString.domain) {
       setDomain(parsedQueryString.domain);
     } else {
       setDomain('');
     }
-  }, [window.location]);
+  }, [location]);
 
   return (
     <>

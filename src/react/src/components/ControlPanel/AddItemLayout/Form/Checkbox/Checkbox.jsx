@@ -13,7 +13,7 @@ const Checkbox = ({ name, id, title, defaultChecked = false, onChange = () => { 
   }
 
   return (
-    <div className="form-group">
+    <div className="form-group mb-3">
       <div className="checkbox-wrapper">
         <input
           type="checkbox"

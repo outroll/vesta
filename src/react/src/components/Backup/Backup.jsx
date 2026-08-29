@@ -4,7 +4,7 @@ import ListItem from '../ControlPanel/ListItem/ListItem';
 import Container from '../ControlPanel/Container/Container';
 import { faFileDownload } from '@fortawesome/free-solid-svg-icons'
 import './Backup.scss';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
 
 const Backup = props => {

@@ -7,12 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getServiceInfo, updateService } from 'src/ControlPanelService/Server';
 import Spinner from '../../../../components/Spinner/Spinner';
 import Toolbar from '../../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './Service.scss';
-import { Helmet } from 'react-helmet';
-import parse from 'html-react-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 const Service = ({ serviceName = '' }) => {
   const token = localStorage.getItem("token");
@@ -94,7 +94,7 @@ const Service = ({ serviceName = '' }) => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{okMessage ? parse(okMessage) : ''}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

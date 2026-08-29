@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 
 import { addActiveElement } from 'src/actions/MainNavigation/mainNavigationActions';
 import TopPanel from 'src/components/TopPanel/TopPanel';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import QueryString from 'qs';
 
 import './WebLogs.scss';
 import { getWebLogs } from 'src/ControlPanelService/WebLogs';
 import Spinner from 'src/components/Spinner/Spinner';
-import { Helmet } from 'react-helmet';
-import parse from 'html-react-parser';
+import { Helmet } from 'react-helmet-async';
+import HtmlParser from 'html-react-parser';
 
 export default function WebLogs() {
   const { i18n, userName } = useSelector(state => state.session);
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const mainNavigation = useSelector(state => state.mainNavigation);
   const [domain, setDomain] = useState();
@@ -31,7 +32,7 @@ export default function WebLogs() {
   }, []);
 
   useEffect(() => {
-    let parsedQueryString = QueryString.parse(window.location.search, { ignoreQueryPrefix: true });
+    let parsedQueryString = QueryString.parse(location.search, { ignoreQueryPrefix: true });
     const { domain, type } = parsedQueryString;
 
     if (!parsedQueryString && !domain && !type) {
@@ -101,7 +102,7 @@ export default function WebLogs() {
             ? <Spinner />
             : (
               <pre>
-                {state.data ? parse(state.data) : ''}
+                {HtmlParser(state.data)}
               </pre>
             )
         }

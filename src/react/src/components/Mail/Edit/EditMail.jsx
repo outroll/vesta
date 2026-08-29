@@ -7,19 +7,20 @@ import AddItemLayout from '../../ControlPanel/AddItemLayout/AddItemLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../components/Spinner/Spinner';
 import Toolbar from '../../MainNav/Toolbar/Toolbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import QS from 'qs';
 
 import './EditMail.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
-import parse from 'html-react-parser';
+import HtmlParser from 'html-react-parser';
 
 const EditMail = props => {
   const token = localStorage.getItem("token");
   const { i18n } = useSelector(state => state.session);
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState('');
   const [okMessage, setOkMessage] = useState('');
@@ -29,7 +30,7 @@ const EditMail = props => {
   });
 
   useEffect(() => {
-    let queryParams = QS.parse(window.location.search, { ignoreQueryPrefix: true });
+    let queryParams = QS.parse(location.search, { ignoreQueryPrefix: true });
     const { domain } = queryParams;
 
     dispatch(addActiveElement('/list/mail/'));
@@ -105,7 +106,7 @@ const EditMail = props => {
         </div>
         <div className="success">
           <span className="ok-message">
-            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{okMessage ? parse(okMessage) : ''}</span>
+            {okMessage ? <FontAwesomeIcon icon="long-arrow-alt-right" /> : ''} <span>{HtmlParser(okMessage)}</span>
           </span>
         </div>
       </Toolbar>

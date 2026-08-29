@@ -10,7 +10,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import Log from '../../components/Log/Log';
 import './Logs.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 const Logs = props => {
   const { i18n } = useSelector(state => state.session);

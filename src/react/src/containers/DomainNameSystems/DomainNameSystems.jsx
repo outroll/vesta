@@ -16,7 +16,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import './DomainNameSystems.scss';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { refreshCounters } from 'src/actions/MenuCounters/menuCounterActions';
 
 const DomainNameSystems = props => {

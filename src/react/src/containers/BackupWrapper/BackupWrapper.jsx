@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import BackupRestoreSettings from '../../components/Backup/RestoreSettings/BackupRestoreSettings';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import Backups from '../Backups/Backups';
 import QueryString from 'qs';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
 
 export default function BackupWrapper(props) {
   const { i18n } = useSelector(state => state.session);
   const navigate = useNavigate();
-  const parsedQueryString = QueryString.parse(window.location.search, { ignoreQueryPrefix: true });
+  const location = useLocation();
+  const parsedQueryString = QueryString.parse(location.search, { ignoreQueryPrefix: true });
   const [isBackupSettings, setIsBackupSettings] = useState(false);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ export default function BackupWrapper(props) {
     } else {
       setIsBackupSettings(false);
     }
-  }, [window.location]);
+  }, [location]);
 
   return (
     <>

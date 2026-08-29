@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import Editor from './Editor/Editor';
 import Photo from './Photo/Photo';
 import Video from './Video/Video';
@@ -8,6 +8,7 @@ import Video from './Video/Video';
 const Preview = (props) => {
   const {userName} = useSelector(state => state.session);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!userName) navigate('/login');
@@ -26,7 +27,7 @@ const Preview = (props) => {
   }
 
   const onClose = () => {
-    let lastOpenedDirectory = window.location.search.substring(6, window.location.search.lastIndexOf('/'));
+    let lastOpenedDirectory = location.search.substring(6, location.search.lastIndexOf('/'));
     navigate({
       pathname: '/list/directory',
       search: `?path=${lastOpenedDirectory}`
@@ -34,17 +35,17 @@ const Preview = (props) => {
   }
 
   const content = () => {
-    let split = window.location.search.split('/');
+    let split = location.search.split('/');
     let name = split[split.length - 1];
 
-    if (window.location.pathname !== '/list/directory/preview/') {
+    if (location.pathname !== '/list/directory/preview/') {
       return;
     }
 
     if (name.match('.mp4')) {
       return <Video closeModal={onClose} />;
     } else if (name.match(/png|jpg|jpeg|gif/g)) {
-      return <Photo closeModal={onClose} close={onClose} path={window.location.search} activeImage={name} />;
+      return <Photo closeModal={onClose} close={onClose} path={location.search} activeImage={name} />;
     } else {
       return <Editor close={onClose} name={name} />;
     }
