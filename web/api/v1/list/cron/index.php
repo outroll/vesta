@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 $TAB = 'CRON';
 header('Content-Type: application/json');
 
@@ -11,13 +11,14 @@ top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB
 // Data
 exec (VESTA_CMD."v-list-cron-jobs $user json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 $data = array_reverse($data,true);
 unset($output);
 
 // Render page
 // render_page($user, $TAB, 'list_cron');
 
-if($panel[$user]['CRON_REPORTS'] == 'yes') {
+if(isset($panel[$user]['CRON_REPORTS']) && $panel[$user]['CRON_REPORTS'] == 'yes') {
   $cron_reports = __('turn off notifications');
 } else {
   $cron_reports = __('turn on notifications');
@@ -51,9 +52,9 @@ $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 $object = (object)[];
 $object->data = $data;
 $object->user = $user;
-$object->panel = $panel;
-$object->totalAmount = $total_amount;
-$object->cron_reports = $panel[$user]['CRON_REPORTS'];
-$object->cron_fav = $_SESSION['favourites']['CRON'];
+$object->panel = $panel ?? [];
+$object->totalAmount = $total_amount ?? __('0 cron jobs');
+$object->cron_reports = $panel[$user]['CRON_REPORTS'] ?? 'no';
+$object->cron_fav = $_SESSION['favourites']['CRON'] ?? [];
 
 print json_encode($object);

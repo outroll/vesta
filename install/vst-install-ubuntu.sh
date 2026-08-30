@@ -29,8 +29,16 @@ else
 fi
 vestacp="$VESTA/install/$VERSION/$release"
 
-# apt (default) | github. apt.vestacp.com has no 'noble' component, so 24.04 defaults to github.
-if [ "$release" = '24.04' ]; then
+# Zero-padded numeric form of $release for range comparisons: 18.04 -> 1804,
+# 20.04 -> 2004, 24.04 -> 2404. Empty/odd values collapse to 0 so the
+# comparisons below simply fall through to the pre-16.04 behaviour.
+release_num=$(echo "$release" | awk -F. '{printf "%d%02d", $1+0, $2+0}')
+[ -z "$release_num" ] && release_num=0
+
+# apt (default) | github. apt.vestacp.com stops at 'focal' and its packages
+# were last rebuilt in 2022, so every LTS from 20.04 on defaults to the
+# GitHub Releases build of this repo instead. Override with VESTA_SOURCE=apt.
+if [ "$release_num" -ge 2004 ]; then
     VESTA_SOURCE=${VESTA_SOURCE:-github}
 else
     VESTA_SOURCE=${VESTA_SOURCE:-apt}
@@ -686,10 +694,20 @@ if [ "$iptables" = 'no' ] || [ "$fail2ban" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/fail2ban//')
 fi
 
-# Package names dropped from Ubuntu's repos as of 24.04, no direct successor.
-if [ "$release" = '24.04' ]; then
-    software=$(echo "$software" | sed -e "s/e2fslibs //")
+# Package names dropped or renamed in Ubuntu's repos, no direct successor.
+# Checked against the archives for focal/jammy/noble; each removal is the
+# first release where the package stopped resolving.
+if [ "$release_num" -ge 2004 ]; then
+    # rssh was removed after bionic (unmaintained upstream, CVE-2019-3463).
     software=$(echo "$software" | sed -e "s/rssh//")
+fi
+if [ "$release_num" -ge 2204 ]; then
+    # e2fslibs became an empty transitional package and then vanished.
+    software=$(echo "$software" | sed -e "s/e2fslibs //")
+fi
+if [ "$release_num" -ge 2404 ]; then
+    # proftpd-basic is a no-candidate transitional package as of noble.
+    # jammy still ships a real proftpd-basic, so it is left alone there.
     software=$(echo "$software" | sed -e "s/proftpd-basic/proftpd-core/")
     # iptables itself: 24.04's default image no longer ships it.
     if [ "$iptables" = 'yes' ]; then
@@ -712,18 +730,35 @@ chmod a+x /usr/sbin/policy-rc.d
 # Installing vesta/vesta-nginx/vesta-php/vesta-ioncube packages from GitHub
 # Releases instead of apt.vestacp.com.
 if [ "$VESTA_SOURCE" = 'github' ]; then
-    # Runtime libs our compiled vesta-nginx/vesta-php link against (24.04 renamed several).
-    if [ "$release" = '24.04' ]; then
-        apt-get -y install libonig5 libcurl4t64 libssl3t64 libxml2 libzip4t64 libpcre3 zlib1g libsqlite3-0
+    # Runtime libs our compiled vesta-nginx/vesta-php link against. Every
+    # release since bionic renamed or dropped at least one of them:
+    #   focal  libonig4 -> libonig5, libzip4 -> libzip5
+    #   jammy  libssl1.1 -> libssl3, libzip5 -> libzip4
+    #   noble  the time_t-64 rename (libcurl4t64/libssl3t64/libzip4t64)
+    # Ranges rather than exact matches, so a release newer than the last one
+    # we know about gets the newest lib set instead of bionic's.
+    if [ "$release_num" -ge 2404 ]; then
+        runtime_libs="libonig5 libcurl4t64 libssl3t64 libxml2 libzip4t64"
+    elif [ "$release_num" -ge 2204 ]; then
+        runtime_libs="libonig5 libcurl4 libssl3 libxml2 libzip4"
+    elif [ "$release_num" -ge 2004 ]; then
+        runtime_libs="libonig5 libcurl4 libssl1.1 libxml2 libzip5"
     else
-        apt-get -y install libonig4 libcurl4 libssl1.1 libxml2 libzip4 libpcre3 zlib1g libsqlite3-0
+        runtime_libs="libonig4 libcurl4 libssl1.1 libxml2 libzip4"
     fi
+    apt-get -y install $runtime_libs libpcre3 zlib1g libsqlite3-0
     check_result $? "runtime library install failed"
 
-    # vesta-nginx/vesta-php get a separate build per release; vesta/vesta-ioncube don't need one.
-    github_suffix=""
-    if [ "$release" = '24.04' ]; then
+    # vesta-nginx/vesta-php get a separate build per release, because they are
+    # compiled binaries linking the libs above; vesta/vesta-ioncube don't.
+    if [ "$release_num" -ge 2404 ]; then
         github_suffix="_noble"
+    elif [ "$release_num" -ge 2204 ]; then
+        github_suffix="_jammy"
+    elif [ "$release_num" -ge 2004 ]; then
+        github_suffix="_focal"
+    else
+        github_suffix=""
     fi
 
     github_packages="vesta vesta-nginx vesta-php vesta-ioncube"
@@ -1102,7 +1137,7 @@ if [ "$mysql" = 'yes' ]; then
         if [ "$release" != '16.04' ] && command -v mysql_install_db >/dev/null 2>&1; then
             mysql_install_db
         fi
-        if [ "$release" == '18.04' ] || [ "$release" == '24.04' ]; then
+        if [ "$release" = '18.04' ] || [ "$release_num" -ge 2004 ]; then
             mkdir -p /var/lib/mysql
             chown mysql:mysql /var/lib/mysql
             mysqld --initialize-insecure
@@ -1133,8 +1168,9 @@ if [ "$mysql" = 'yes' ]; then
     if [[ ${release:0:2} -ge 18 ]]; then
         mysql < /usr/share/phpmyadmin/sql/create_tables.sql
         p=$(grep dbpass /etc/phpmyadmin/config-db.php |cut -f 2 -d "'")
-        if [ "$release" = '24.04' ]; then
-            # MySQL 8.0 dropped combined GRANT ... IDENTIFIED BY syntax.
+        if [ "$release_num" -ge 2004 ]; then
+            # MySQL 8.0 (the default from focal on) dropped the combined
+            # GRANT ... IDENTIFIED BY syntax.
             mysql -e "CREATE USER IF NOT EXISTS phpmyadmin@localhost IDENTIFIED BY '$p'"
             mysql -e "GRANT ALL ON phpmyadmin.* TO phpmyadmin@localhost"
         else
@@ -1318,8 +1354,9 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     cp -f $vestacp/roundcube/config.inc.php /etc/roundcube/plugins/password/
 
     mysql -e "CREATE DATABASE roundcube"
-    if [ "$release" = '24.04' ]; then
-        # MySQL 8.0 dropped combined GRANT ... IDENTIFIED BY syntax.
+    if [ "$release_num" -ge 2004 ]; then
+        # MySQL 8.0 (the default from focal on) dropped the combined
+        # GRANT ... IDENTIFIED BY syntax.
         mysql -e "CREATE USER IF NOT EXISTS roundcube@localhost IDENTIFIED BY '$r'"
         mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost"
     else
@@ -1409,8 +1446,27 @@ if [ "$iptables" = 'yes' ]; then
     $VESTA/bin/v-update-firewall
 fi
 
-# Get public IP
-pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
+# Get public IP. The response is validated: vestacp.com/what-is-my-ip/
+# currently answers with a Cloudflare 301 page, and an unvalidated $pub_ip
+# lands that HTML in v-change-sys-ip-nat and then in $ip itself, so the
+# address printed at the end of the install is a block of markup. Falls
+# back to two plain-text services if the first answer is not an IPv4
+# address, and leaves $ip alone if none of them are reachable.
+get_public_ip() {
+    local url answer
+    for url in "https://vestacp.com/what-is-my-ip/"                "https://api.ipify.org"                "https://icanhazip.com"; do
+        answer=$(curl -fsS --max-time 10 "$url" 2>/dev/null | tr -d '[:space:]')
+        case "$answer" in
+            *[!0-9.]*|"") continue ;;
+        esac
+        if [ "$(echo "$answer" | awk -F. 'NF==4')" = "$answer" ]; then
+            echo "$answer"
+            return 0
+        fi
+    done
+    return 1
+}
+pub_ip=$(get_public_ip)
 if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
     echo "$VESTA/bin/v-update-sys-ip" >> /etc/rc.local
     $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip

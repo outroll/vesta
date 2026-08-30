@@ -1,14 +1,17 @@
 #!/bin/bash
 # Vesta installation wrapper
-# http://vestacp.com
-
+# https://github.com/outroll/vesta
+#
+# Detects the running distribution and hands over to the matching installer
+# next to this script. Run the per-distro script directly if you want to pick
+# one yourself.
 #
 # Currently Supported Operating Systems:
 #
-#   RHEL 5, 6, 7
-#   CentOS 5, 6, 7
-#   Debian 7, 8
-#   Ubuntu 12.04 - 18.10, 24.04
+#   RHEL / CentOS / Rocky / AlmaLinux
+#   Debian
+#   Ubuntu 12.04 - 18.10, 20.04, 22.04, 24.04
+#   Alpine
 #   Amazon Linux 2017
 #
 
@@ -39,35 +42,71 @@ if [ ! -z "$(grep ^admin: /etc/group)" ] && [ -z "$1" ]; then
 fi
 
 # Detect OS
-case $(head -n1 /etc/issue | cut -f 1 -d ' ') in
-    Debian)     type="debian" ;;
-    Ubuntu)     type="ubuntu" ;;
-    Amazon)     type="amazon" ;;
-    *)          type="rhel" ;;
+if [ -f /etc/os-release ]; then
+    # Subshell -- os-release sets VERSION/NAME which we do not want to inherit.
+    os="$(. /etc/os-release && echo "$ID")"
+    id_like="$(. /etc/os-release && echo "$ID_LIKE")"
+    release="$(. /etc/os-release && echo "$VERSION_ID")"
+else
+    # Pre-os-release systems (Ubuntu 12.04, RHEL 5/6) still ship /etc/issue.
+    case $(head -n1 /etc/issue | cut -f 1 -d ' ') in
+        Debian)     os="debian" ;;
+        Ubuntu)     os="ubuntu" ;;
+        Amazon)     os="amzn" ;;
+        *)          os="rhel" ;;
+    esac
+    id_like=""
+    release=""
+fi
+
+case "$os" in
+    ubuntu)                             type="ubuntu" ;;
+    debian)                             type="debian" ;;
+    alpine)                             type="alpine" ;;
+    amzn)                               type="amazon" ;;
+    rhel|centos|rocky|almalinux|fedora) type="rhel" ;;
+    *)
+        # Unknown ID -- fall back to the family it declares.
+        case " $id_like " in
+            *" rhel "*|*" fedora "*) type="rhel" ;;
+            *" debian "*)            type="debian" ;;
+            *)
+                echo "Error: unsupported operating system: $os $release"
+                echo 'Supported: Ubuntu, Debian, RHEL/CentOS/Rocky/AlmaLinux, Alpine, Amazon Linux'
+                exit 1
+                ;;
+        esac
+        ;;
 esac
 
-# Check wget
-if [ -e '/usr/bin/wget' ]; then
-    wget http://vestacp.com/pub/vst-install-$type.sh -O vst-install-$type.sh
-    if [ "$?" -eq '0' ]; then
-        bash vst-install-$type.sh $*
-        exit
-    else
-        echo "Error: vst-install-$type.sh download failed."
-        exit 1
-    fi
+echo "Detected: ${os:-unknown} ${release}"
+
+installer="vst-install-$type.sh"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Prefer the installer shipped alongside this script (git checkout), otherwise
+# download it -- keeps `curl https://vestacp.com/pub/vst-install.sh | bash`
+# working the way it always has.
+if [ -f "$script_dir/$installer" ]; then
+    echo "Using local installer: $installer"
+    bash "$script_dir/$installer" "$@"
+    exit
 fi
 
-# Check curl
-if [ -e '/usr/bin/curl' ]; then
-    curl -O http://vestacp.com/pub/vst-install-$type.sh
-    if [ "$?" -eq '0' ]; then
-        bash vst-install-$type.sh $*
-        exit
-    else
-        echo "Error: vst-install-$type.sh download failed."
-        exit 1
-    fi
+if [ ! -e '/usr/bin/wget' ]; then
+    echo "Error: wget is not installed"
+    echo 'Please install wget and run this script again:'
+    case "$type" in
+        rhel)   echo 'yum -y install wget' ;;
+        alpine) echo 'apk add wget' ;;
+        *)      echo 'apt-get -y install wget' ;;
+    esac
+    exit 1
 fi
 
-exit
+wget "http://vestacp.com/pub/$installer" -O "$installer"
+if [ "$?" -ne '0' ]; then
+    echo "Error: $installer download failed."
+    exit 1
+fi
+bash "$installer" "$@"

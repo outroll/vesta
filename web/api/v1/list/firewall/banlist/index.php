@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 $TAB = 'FIREWALL';
 
 header('Content-Type: application/json');
@@ -15,8 +15,10 @@ if ($_SESSION['user'] != 'admin') {
 // Data
 exec (VESTA_CMD."v-list-firewall-ban json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 $data = array_reverse($data, true);
 unset($output);
+$i = 0;
 
 foreach ($data as $key => $value) {
 	++$i;

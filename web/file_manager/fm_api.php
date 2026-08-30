@@ -1,6 +1,6 @@
 <?php
 // Init
-//error_reporting(NULL);
+//error_reporting(0);
 
 header('Content-Type: application/json');
 

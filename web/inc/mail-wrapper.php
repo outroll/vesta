@@ -1,6 +1,6 @@
 #!/usr/local/vesta/php/bin/php
 <?php
-error_reporting(NULL);
+error_reporting(0);
 if (empty($argv[1])) {
     echo "ERROR: not enough arguments\n";
     echo "USAGE: mail-wrapper.php -s SUBJECT EMAIL [NOTIFY]\n";

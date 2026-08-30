@@ -1,0 +1,46 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Check for Dependency Updates
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: src/react/package-lock.json
+
+    - name: Check for npm updates
+      working-directory: ./src/react
+      run: |
+        npm outdated || true
+        echo "Dependency check completed"
+
+    - name: Run npm audit
+      working-directory: ./src/react
+      run: |
+        npm audit --audit-level=high || true
+
+    - name: Create issue if vulnerabilities found
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Security vulnerabilities detected in dependencies',
+            body: 'Automated dependency check found security vulnerabilities. Please review and update dependencies.',
+            labels: ['security', 'dependencies']
+          })

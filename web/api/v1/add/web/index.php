@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 ob_start();
 $TAB = 'WEB';
 header('Content-Type: application/json');
@@ -346,17 +346,19 @@ if (!empty($_POST['ok'])) {
 }
 
 // Define user variables
-$v_ftp_user_prepath = $panel[$user]['HOME'] . "/web";
-$v_ftp_email = $panel[$user]['CONTACT'];
+$v_ftp_user_prepath = (isset($panel[$user]['HOME']) ? $panel[$user]['HOME'] : '') . "/web";
+$v_ftp_email = $panel[$user]['CONTACT'] ?? '';
 
 // List IP addresses
 exec (VESTA_CMD."v-list-user-ips ".$user." json", $output, $return_var);
 $ips = json_decode(implode('', $output), true);
+if (!is_array($ips)) $ips = array();
 unset($output);
 
 // List web stat engines
 exec (VESTA_CMD."v-list-web-stats json", $output, $return_var);
 $stats = json_decode(implode('', $output), true);
+if (!is_array($stats)) $stats = array();
 unset($output);
 
 $result = array(
@@ -366,8 +368,8 @@ $result = array(
   'stats' => $stats,
   'proxy_ext' => 'jpeg, jpg, png, gif, bmp, ico, svg, tif, tiff, css, js, htm, html, ttf, otf, webp, woff, txt, csv, rtf, doc, docx, xls, xlsx, ppt, pptx, odf, odp, ods, odt, pdf, psd, ai, eot, eps, ps, zip, tar, tgz, gz, rar, bz2, 7z, aac, m4a, mp3, mp4, ogg, wav, wma, 3gp, avi, flv, m4v, mkv, mov, mp4, mpeg, mpg, wmv, exe, iso, dmg, swf',
   'ips' => $ips,
-  'error_msg' => $_SESSION['error_msg'],
-  'ok_msg' => $_SESSION['ok_msg']
+  'error_msg' => $_SESSION['error_msg'] ?? null,
+  'ok_msg' => $_SESSION['ok_msg'] ?? null
 );
 
 echo json_encode($result);

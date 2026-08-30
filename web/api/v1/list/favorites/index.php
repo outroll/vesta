@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
     include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
     echo '<br> Favorites: <br>';
@@ -14,6 +14,7 @@ error_reporting(NULL);
 
 
     $data = json_decode(implode('', $output).'}', true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data,true);
 
     print_r($data);

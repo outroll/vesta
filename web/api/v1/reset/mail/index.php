@@ -3,7 +3,7 @@
 define('NO_AUTH_REQUIRED',true);
 define('NO_AUTH_REQUIRED2',true);
 
-error_reporting(NULL);
+error_reporting(0);
 
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 

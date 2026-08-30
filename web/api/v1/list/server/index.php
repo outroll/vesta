@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 $TAB = 'SERVER';
 
 // Main include
@@ -61,16 +61,22 @@ if (isset($_GET['db'])) {
     exec (VESTA_CMD.'v-list-sys-db-status', $output, $return_var);
 }
 
-foreach($output as $file) {
-    $service_log .= $file . "\n";
+$service_log = '';
+if (is_array($output)) {
+    foreach($output as $file) {
+        $service_log .= $file . "\n";
+    }
 }
 
 // Data
+$output = [];
 exec (VESTA_CMD."v-list-sys-info json", $output, $return_var);
 $sys = json_decode(implode('', $output), true);
+if (!is_array($sys)) $sys = array();
 unset($output);
 exec (VESTA_CMD."v-list-sys-services json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 unset($output);
 
 foreach ($data as $key => $value) {
@@ -102,7 +108,7 @@ $object = (object)[];
 $object->data = $data;
 $object->user = $user;
 $object->sys = $sys;
-$object->service_log = $service_log;
-$object->panel = $panel;
+$object->service_log = $service_log ?? '';
+$object->panel = $panel ?? [];
 
 print json_encode($object);

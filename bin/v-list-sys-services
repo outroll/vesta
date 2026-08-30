@@ -220,12 +220,14 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB_SYSTEM" != 'remote' ]; then
         proc_name=''
         service="$db"
         if [ "$service" = 'mysql' ]; then
-            if [ -d "/etc/sysconfig" ]; then
+            # Check for MariaDB on any system
+            if [ -e "/lib/systemd/system/mariadb.service" ] || [ -e "/usr/lib/systemd/system/mariadb.service" ]; then
+                service='mariadb'
+                proc_name='mariadbd'
+            elif [ -d "/etc/sysconfig" ]; then
+                # RHEL/CentOS
                 service='mysqld'
                 proc_name='mysqld'
-                if [ -e "/usr/lib/systemd/system/mariadb.service" ]; then
-                    service='mariadb'
-                fi
             fi
             # Alpine's mariadb package runs the daemon as mariadbd, not mysql/mysqld
             if [ -e "/etc/alpine-release" ]; then

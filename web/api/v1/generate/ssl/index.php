@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 $TAB = 'WEB';
 header('Content-Type: application/json');
 

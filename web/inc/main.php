@@ -1,8 +1,9 @@
 <?php
 
+putenv("VESTA=/usr/local/vesta");
 session_start();
 
-define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
+define('VESTA_CMD', 'VESTA=/usr/local/vesta /usr/bin/sudo /usr/local/vesta/bin/');
 define('JS_LATEST_UPDATE', '1491697868');
 
 $i = 0;
@@ -100,16 +101,22 @@ function get_favourites(){
     exec (VESTA_CMD."v-list-user-favourites ".$_SESSION['user']." json", $output, $return_var);
 //    $data = json_decode(implode('', $output).'}', true);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) {
+        $_SESSION['favourites'] = array();
+        return;
+    }
     $data = array_reverse($data,true);
     $favourites = array();
 
-    foreach($data['Favourites'] as $key => $favourite){
-        $favourites[$key] = array();
+    if (isset($data['Favourites']) && is_array($data['Favourites'])) {
+        foreach($data['Favourites'] as $key => $favourite){
+            $favourites[$key] = array();
 
-        $items = explode(',', $favourite);
-        foreach($items as $item){
-            if($item)
-                $favourites[$key][trim($item)] = 1;
+            $items = explode(',', $favourite);
+            foreach($items as $item){
+                if($item)
+                    $favourites[$key][trim($item)] = 1;
+            }
         }
     }
 
@@ -141,6 +148,7 @@ function top_panel($user, $TAB) {
         exit;
     }
     $panel = json_decode(implode('', $output), true);
+    if (!is_array($panel)) $panel = array();
     unset($output);
 
 
@@ -148,10 +156,12 @@ function top_panel($user, $TAB) {
     $command = VESTA_CMD."v-list-user-notifications '".$user."' 'json'";
     exec ($command, $output, $return_var);
     $notifications = json_decode(implode('', $output), true);
-    foreach($notifications as $message){
-        if($message['ACK'] == 'no'){
-            $panel[$user]['NOTIFICATIONS'] = 'yes';
-            break;
+    if (is_array($notifications)) {
+        foreach($notifications as $message){
+            if(isset($message['ACK']) && $message['ACK'] == 'no'){
+                $panel[$user]['NOTIFICATIONS'] = 'yes';
+                break;
+            }
         }
     }
     unset($output);
@@ -163,6 +173,7 @@ function translate_date($date){
 }
 
 function humanize_time($usage) {
+    $usage = (float)$usage;
     if ( $usage > 60 ) {
         $usage = $usage / 60;
         if ( $usage > 24 ) {
@@ -193,6 +204,7 @@ function humanize_time($usage) {
 }
 
 function humanize_usage_size($usage) {
+    $usage = (float)$usage;
     if ( $usage > 1024 ) {
         $usage = $usage / 1024;
         if ( $usage > 1024 ) {
@@ -212,6 +224,7 @@ function humanize_usage_size($usage) {
 }
 
 function humanize_usage_measure($usage) {
+    $usage = (float)$usage;
     $measure = 'kb';
 
     if ( $usage > 1024 ) {
@@ -235,10 +248,11 @@ function humanize_usage_measure($usage) {
 
 
 function get_percentage($used,$total) {
-    if (!isset($total)) $total =  0;
-    if (!isset($used)) $used =  0;
-    // PHP 8 removed the loose coercion that used to make "unlimited" == 0 true.
-    if ( $total == 0 || !is_numeric($total) ) {
+    // PHP 8 removed the loose coercion that used to make "unlimited" == 0 true,
+    // so normalise both values to numbers before dividing.
+    $total = (isset($total) && is_numeric($total)) ? (float)$total : 0;
+    $used  = (isset($used)  && is_numeric($used))  ? (float)$used  : 0;
+    if ( $total == 0 ) {
         $percent = 0;
     } else {
         $percent = $used / $total;
@@ -310,11 +324,11 @@ function list_timezones() {
     foreach($timezone_offsets as $timezone => $offset){
         $offset_prefix = $offset < 0 ? '-' : '+';
         $offset_formatted = gmdate( 'H:i', abs($offset) );
-        $pretty_offset = "UTC${offset_prefix}${offset_formatted}";
+        $pretty_offset = "UTC{$offset_prefix}{$offset_formatted}";
         $t = new DateTimeZone($timezone);
         $c = new DateTime(null, $t);
         $current_time = $c->format('H:i:s');
-        $timezone_list[$timezone] = "$timezone [ $current_time ] ${pretty_offset}";
+        $timezone_list[$timezone] = "{$timezone} [ {$current_time} ] {$pretty_offset}";
     }
     return $timezone_list;
 }

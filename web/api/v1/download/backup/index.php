@@ -1,6 +1,6 @@
 <?php
 // Init
-error_reporting(NULL);
+error_reporting(0);
 session_start();
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 $backup = basename($_GET['backup']);

@@ -11,8 +11,8 @@
     "url": "https://github.com/can3p/iviewer/issues"
   },
   "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-version": "~0.2.2",
-    "grunt-contrib-uglify": "~0.2.7"
+    "grunt": "^1.6.1",
+    "grunt-version": "^2.0.0",
+    "grunt-contrib-uglify": "^5.2.2"
   }
 }

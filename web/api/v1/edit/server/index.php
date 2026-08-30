@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 $TAB = 'SERVER';
 
 header('Content-Type: application/json');
@@ -105,7 +105,7 @@ $v_sys_ssl_pub_key = $v_sys_ssl_str['VESTA']['PUB_KEY'];
 $v_sys_ssl_issuer = $v_sys_ssl_str['VESTA']['ISSUER'];
 
 // List mail ssl certificate info
-if (!empty($_SESSION['VESTA_CERTIFICATE'])); {
+if (!empty($_SESSION['VESTA_CERTIFICATE'])) {
     exec (VESTA_CMD."v-list-sys-mail-ssl json", $output, $return_var);
     $v_mail_ssl_str = json_decode(implode('', $output), true);
     unset($output);

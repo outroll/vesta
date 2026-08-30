@@ -1,4 +1,5 @@
 <?php
+error_reporting(0);
 
 define('NO_AUTH_REQUIRED',true);
 header('Content-Type: application/json');
@@ -12,6 +13,10 @@ $TAB = 'LOGIN';
 if (isset($_GET['logout'])) {
     session_destroy();
 }
+
+// Initialize variables
+$users = null;
+$error = null;
 
 // Login as someone else
 if (isset($_SESSION['user'])) {
@@ -34,6 +39,7 @@ if (isset($_SESSION['user'])) {
         $users = json_decode(implode('', $output), true);
     }
 }
+if (!isset($_SESSION['language'])) $_SESSION['language'] = 'en';
 
 // Basic auth
 if (isset($_POST['user']) && isset($_POST['password'])) {
@@ -55,8 +61,8 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
             } else {
                 $user = $_POST['user'];
                 $password = $_POST['password'];
-                $salt = $pam[$user]['SALT'];
-                $method = $pam[$user]['METHOD'];
+                $salt = $pam[$user]['SALT'] ?? null;
+                $method = $pam[$user]['METHOD'] ?? null;
 
                 if ($method == 'md5' ) {
                     $hash = crypt($password, '$1$'.$salt.'$');
@@ -106,7 +112,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
                     $output = '';
                     exec (VESTA_CMD."v-list-sys-languages json", $output, $return_var);
                     $languages = json_decode(implode('', $output), true);
-                    if (in_array($users[$v_user]['LANGUAGE'], $languages)){
+                    if (is_array($languages) && isset($users[$v_user]['LANGUAGE']) && in_array($users[$v_user]['LANGUAGE'], $languages)){
                         $_SESSION['language'] = $users[$v_user]['LANGUAGE'];
                     } else {
                         $_SESSION['language'] = 'en';
@@ -125,7 +131,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
 // Check system configuration
 exec (VESTA_CMD . "v-list-sys-config json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
-$sys_arr = $data['config'];
+$sys_arr = $data['config'] ?? [];
 foreach ($sys_arr as $key => $value) {
     $_SESSION[$key] = $value;
 }
@@ -135,12 +141,12 @@ if (empty($_SESSION['language'])) {
     $output = '';
     exec (VESTA_CMD."v-list-sys-config json", $output, $return_var);
     $config = json_decode(implode('', $output), true);
-    $lang = $config['config']['LANGUAGE'];
+    $lang = $config['config']['LANGUAGE'] ?? 'en';
 
     $output = '';
     exec (VESTA_CMD."v-list-sys-languages json", $output, $return_var);
     $languages = json_decode(implode('', $output), true);
-    if(in_array($lang, $languages)){
+    if(is_array($languages) && in_array($lang, $languages)){
         $_SESSION['language'] = $lang;
     }
     else {
@@ -156,23 +162,30 @@ if (empty($_SESSION['token'])) {
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/inc/i18n/'.$_SESSION['language'].'.php');
 
-$v_user = empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'];
-top_panel($v_user, $TAB);
+// Only set v_user if actually logged in
+$v_user = null;
+if (isset($_SESSION['user'])) {
+    $v_user = empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'];
+    top_panel($v_user, $TAB);
 
-$panel[$v_user]['U_BANDWIDTH_MEASURE'] = humanize_usage_measure($panel[$v_user]['U_BANDWIDTH']);
-$panel[$v_user]['U_BANDWIDTH'] = humanize_usage_size($panel[$v_user]['U_BANDWIDTH']);
+    // Only process panel data if user is logged in
+    if (isset($panel[$v_user])) {
+        $panel[$v_user]['U_BANDWIDTH_MEASURE'] = humanize_usage_measure($panel[$v_user]['U_BANDWIDTH']);
+        $panel[$v_user]['U_BANDWIDTH'] = humanize_usage_size($panel[$v_user]['U_BANDWIDTH']);
 
-$panel[$v_user]['U_DISK_MEASURE'] = humanize_usage_measure($panel[$v_user]['U_DISK']);
-$panel[$v_user]['U_DISK'] = humanize_usage_size($panel[$v_user]['U_DISK']);
+        $panel[$v_user]['U_DISK_MEASURE'] = humanize_usage_measure($panel[$v_user]['U_DISK']);
+        $panel[$v_user]['U_DISK'] = humanize_usage_size($panel[$v_user]['U_DISK']);
+    }
+}
 
 $result = array(
-    'token' => $_SESSION['token'],
-    'panel' => $panel,
-    'data' => $users[$v_user],
+    'token' => $_SESSION['token'] ?? '',
+    'panel' => $panel ?? (object)[],
+    'data' => (isset($users) && is_array($users) && $v_user && isset($users[$v_user])) ? $users[$v_user] : (object)[],
     'user' => $v_user,
-    'session' => $_SESSION,
-    'i18n' => $LANG[$_SESSION['language']],
-    'error' => $error,
+    'session' => $_SESSION ?? (object)[],
+    'i18n' => isset($LANG[$_SESSION['language']]) ? $LANG[$_SESSION['language']] : (object)[],
+    'error' => $error ?? null,
 );
 
 echo json_encode($result);

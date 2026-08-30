@@ -1,7 +1,6 @@
-<?
+<?php
 
-error_reporting(NULL);
-session_start();
+error_reporting(0);
 
 
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");

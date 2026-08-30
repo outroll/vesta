@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 $TAB = 'STATS';
 
 // Main include
@@ -8,26 +8,31 @@ top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB
 header('Content-Type: application/json');
 
 // Data
+$users = array();
 if ($user == 'admin') {
     if (empty($_GET['user'])) {
         exec (VESTA_CMD."v-list-users-stats json", $output, $return_var);
         $data = json_decode(implode('', $output), true);
+        if (!is_array($data)) $data = array();
         $data = array_reverse($data, true);
         unset($output);
     } else {
         $v_user = escapeshellarg($_GET['user']);
         exec (VESTA_CMD."v-list-user-stats $v_user json", $output, $return_var);
         $data = json_decode(implode('', $output), true);
+        if (!is_array($data)) $data = array();
         $data = array_reverse($data, true);
         unset($output);
     }
 
     exec (VESTA_CMD."v-list-sys-users 'json'", $output, $return_var);
     $users = json_decode(implode('', $output), true);
+    if (!is_array($users)) $users = array();
     unset($output);
 } else {
     exec (VESTA_CMD."v-list-user-stats $user json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data, true);
     unset($output);
 }
@@ -54,8 +59,8 @@ $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 $object = (object)[];
 $object->data = $data;
 $object->user = $user;
-$object->panel = $panel;
+$object->panel = $panel ?? [];
 $object->users = $users;
-$object->totalAmount = $total_amount;
+$object->totalAmount = $total_amount ?? __('0 months');
 
 print json_encode($object);

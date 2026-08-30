@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 $TAB = 'BACKUP';
 
 header('Content-Type: application/json');
@@ -10,6 +10,7 @@ include($_SERVER['DOCUMENT_ROOT'].'/inc/main.php');
 // Data
 exec (VESTA_CMD."v-list-user-backup-exclusions $user json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 unset($output);
 
 // Render page

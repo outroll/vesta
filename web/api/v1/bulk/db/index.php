@@ -1,6 +1,6 @@
 <?php
 // Init
-error_reporting(NULL);
+error_reporting(0);
 ob_start();
 session_start();
 

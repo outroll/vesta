@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 $TAB = 'FIREWALL';
 
 // Main include
@@ -16,6 +16,7 @@ if ($_SESSION['user'] != 'admin') {
 // Data
 exec (VESTA_CMD."v-list-firewall json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 $data = array_reverse($data, true);
 unset($output);
 
@@ -50,9 +51,9 @@ $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 $object = (object)[];
 $object->data = $data;
 $object->user = $user;
-$object->panel = $panel;
-$object->totalAmount = $total_amount;
+$object->panel = $panel ?? [];
+$object->totalAmount = $total_amount ?? __('0 rules');
 $object->firewallExtension = !empty($_SESSION['FIREWALL_EXTENSION']);
-$object->firewallFav = $_SESSION['favourites']['FIREWALL'];
+$object->firewallFav = $_SESSION['favourites']['FIREWALL'] ?? [];
 
 print json_encode($object);

@@ -1,5 +1,5 @@
 <?php
-error_reporting(NULL);
+error_reporting(0);
 $TAB = 'UPDATES';
 
 // Main include
@@ -16,9 +16,10 @@ if ($_SESSION['user'] != 'admin') {
 // Data
 exec (VESTA_CMD."v-list-sys-vesta-updates json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 unset($output);
 exec (VESTA_CMD."v-list-sys-vesta-autoupdate plain", $output, $return_var);
-$autoupdate = $output[0];
+$autoupdate = $output[0] ?? 'no';
 unset($output);
 
 // Render page
@@ -31,6 +32,6 @@ $object = (object)[];
 $object->data = $data;
 $object->user = $user;
 $object->autoUpdate = $autoupdate;
-$object->panel = $panel;
+$object->panel = $panel ?? [];
 
 print json_encode($object);

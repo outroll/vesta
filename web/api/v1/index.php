@@ -1,5 +1,5 @@
 <?php
-define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
+define('VESTA_CMD', 'VESTA=/usr/local/vesta /usr/bin/sudo /usr/local/vesta/bin/');
 
 if (isset($_POST['user']) || isset($_POST['hash'])) {
 

@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-error_reporting(NULL);
+error_reporting(0);
 define('NO_AUTH_REQUIRED', true);
 include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 
