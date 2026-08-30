@@ -110,8 +110,8 @@ for ip in $ips; do
 done
 
 # Updating NAT
-pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
-if [ ! -e "$VESTA/data/ips/$pub_ip" ]; then
+pub_ip=$(get_public_ip)
+if [ ! -z "$pub_ip" ] && [ ! -e "$VESTA/data/ips/$pub_ip" ]; then
     if [ -z "$(grep -R "$pub_ip" $VESTA/data/ips/)" ]; then
         ip=$(ls -t $VESTA/data/ips/ |head -n1)
         $BIN/v-change-sys-ip-nat $ip $pub_ip

@@ -59,7 +59,7 @@ shell=$(grep -w "$shell_conf" /etc/shells |head -n1)
 check_result $? "user creation failed" $E_INVALID
 
 # Adding password
-echo "$user:$password" | /usr/sbin/chpasswd
+set_system_password "$user" "$password"
 
 # Building directory tree
 mkdir $HOMEDIR/$user/conf

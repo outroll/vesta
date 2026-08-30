@@ -88,7 +88,7 @@ fi
     -M -d "$ftp_path_a"  > /dev/null 2>&1
 
 # Set ftp user password
-echo "$ftp_user:$password" | /usr/sbin/chpasswd
+set_system_password "$ftp_user" "$password"
 ftp_md5=$(awk -v user=$ftp_user -F : 'user == $1 {print $2}' /etc/shadow)
 
 # Adding jailed sftp env

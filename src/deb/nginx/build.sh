@@ -26,6 +26,8 @@ case "$OUTPUT_SUFFIX" in
     _focal) DEPENDS='vesta, libpcre3, zlib1g, libssl1.1' ;;
     _jammy) DEPENDS='vesta, libpcre3, zlib1g, libssl3' ;;
     _noble) DEPENDS='vesta, libpcre3, zlib1g, libssl3t64' ;;
+    _bullseye) DEPENDS='vesta, libpcre3, zlib1g, libssl1.1' ;;
+    _bookworm) DEPENDS='vesta, libpcre3, zlib1g, libssl3' ;;
 esac
 
 NGINX_URL="https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"
@@ -64,6 +66,10 @@ mkdir -p "$PKGROOT/etc/init.d"
 cp "$REPO_ROOT/src/deb/nginx/vesta" "$PKGROOT/etc/init.d/vesta"
 chmod 755 "$PKGROOT/etc/init.d/vesta"
 
-dpkg-deb --build --root-owner-group "$PKGROOT" "$REPO_ROOT/vesta-nginx${OUTPUT_SUFFIX}_amd64.deb"
+# -Zxz because dpkg on the build host defaults to zstd, which Debian's
+# dpkg cannot read before 1.21 -- a zstd .deb fails to unpack on
+# bullseye with "dpkg-deb --control subprocess returned error exit
+# status 2". xz is understood by every release these installers target.
+dpkg-deb -Zxz --build --root-owner-group "$PKGROOT" "$REPO_ROOT/vesta-nginx${OUTPUT_SUFFIX}_amd64.deb"
 
 echo "Built $REPO_ROOT/vesta-nginx${OUTPUT_SUFFIX}_amd64.deb (nginx $NGINX_VERSION, package version $VERSION)"
