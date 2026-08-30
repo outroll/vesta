@@ -73,6 +73,10 @@ sed -e "s/^Version:.*/Version: $VERSION/" \
 cp "$REPO_ROOT/src/deb/php/postinst" "$PKGROOT/DEBIAN/postinst"
 chmod 755 "$PKGROOT/DEBIAN/postinst"
 
-dpkg-deb --build --root-owner-group "$PKGROOT" "$REPO_ROOT/vesta-php${OUTPUT_SUFFIX}_amd64.deb"
+# -Zxz because dpkg on the build host defaults to zstd, which Debian's
+# dpkg cannot read before 1.21 -- a zstd .deb fails to unpack on
+# bullseye with "dpkg-deb --control subprocess returned error exit
+# status 2". xz is understood by every release these installers target.
+dpkg-deb -Zxz --build --root-owner-group "$PKGROOT" "$REPO_ROOT/vesta-php${OUTPUT_SUFFIX}_amd64.deb"
 
 echo "Built $REPO_ROOT/vesta-php${OUTPUT_SUFFIX}_amd64.deb (php $PHP_VERSION, package version $VERSION)"
