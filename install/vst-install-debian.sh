@@ -542,6 +542,11 @@ check_result $? 'apt-get upgrade failed'
 apt=/etc/apt/sources.list.d
 echo "deb http://nginx.org/packages/debian/ $codename nginx" > $apt/nginx.list
 wget http://nginx.org/keys/nginx_signing.key -O /tmp/nginx_signing.key
+# apt-key needs gnupg, which a minimal Debian image does not ship. Without
+# it the key is never added and the nginx repo is rejected as unsigned.
+if ! command -v gpg >/dev/null 2>&1; then
+    apt-get -y install gnupg
+fi
 apt-key add /tmp/nginx_signing.key
 
 # Installing vesta repo. Skipped when the vesta packages come from GitHub
