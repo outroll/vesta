@@ -1065,3 +1065,16 @@ get_public_ip() {
     done
     return 1
 }
+
+# chpasswd follows PAM, and pam_unix defaults to yescrypt on Debian 11+ and
+# Ubuntu 22.04+. PHP's crypt() cannot verify a $y$ hash, so v-get-user-salt
+# rejects it and the panel refuses every login on those releases. Force
+# SHA-512, which both understand. -c is ignored by shadow versions that
+# predate it, hence the fallback.
+set_system_password() {
+    local account="$1" pass="$2"
+    if echo "$account:$pass" | /usr/sbin/chpasswd -c SHA512 2>/dev/null; then
+        return 0
+    fi
+    echo "$account:$pass" | /usr/sbin/chpasswd
+}
