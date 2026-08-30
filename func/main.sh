@@ -1046,3 +1046,22 @@ send_email_to_admin() {
     fi
     echo "$2" | $SENDMAIL -s "$1" "$email" 'yes'
 }
+
+# Returns the server's public IPv4 address, or nothing if no source answers
+# with one. The result is validated: vestacp.com/what-is-my-ip/ currently
+# answers with a redirect page rather than an address, and callers write
+# whatever comes back into the NAT configuration.
+get_public_ip() {
+    local url answer
+    for url in "https://vestacp.com/what-is-my-ip/"                "https://api.ipify.org"                "https://icanhazip.com"; do
+        answer=$(curl -fsS --max-time 10 "$url" 2>/dev/null | tr -d '[:space:]')
+        case "$answer" in
+            *[!0-9.]*|"") continue ;;
+        esac
+        if [ "$(echo "$answer" | awk -F. 'NF==4')" = "$answer" ]; then
+            echo "$answer"
+            return 0
+        fi
+    done
+    return 1
+}
