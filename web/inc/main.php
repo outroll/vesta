@@ -100,17 +100,20 @@ function get_favourites(){
     exec (VESTA_CMD."v-list-user-favourites ".$_SESSION['user']." json", $output, $return_var);
 //    $data = json_decode(implode('', $output).'}', true);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data,true);
     $favourites = array();
 
+    if (isset($data['Favourites']) && is_array($data['Favourites'])) {
     foreach($data['Favourites'] as $key => $favourite){
         $favourites[$key] = array();
 
-        $items = explode(',', $favourite);
+        $items = explode(',', $favourite === null ? '' : $favourite);
         foreach($items as $item){
             if($item)
                 $favourites[$key][trim($item)] = 1;
         }
+    }
     }
 
     $_SESSION['favourites'] = $favourites;
@@ -148,6 +151,7 @@ function top_panel($user, $TAB) {
     $command = VESTA_CMD."v-list-user-notifications '".$user."' 'json'";
     exec ($command, $output, $return_var);
     $notifications = json_decode(implode('', $output), true);
+    if (!is_array($notifications)) $notifications = array();
     foreach($notifications as $message){
         if($message['ACK'] == 'no'){
             $panel[$user]['NOTIFICATIONS'] = 'yes';
@@ -158,8 +162,11 @@ function top_panel($user, $TAB) {
 }
 
 function translate_date($date){
-  $date = strtotime($date);
-  return strftime("%d &nbsp;", $date).__(strftime("%b", $date)).strftime(" &nbsp;%Y", $date);
+  $timestamp = strtotime($date);
+  if ($timestamp === false) return $date;
+  // date() is available on every PHP 8 release. strftime() is deprecated
+  // as of 8.1 and must not be called here.
+  return date('d', $timestamp)." &nbsp;".__(date('M', $timestamp)).date(' &nbsp;Y', $timestamp);
 }
 
 function humanize_time($usage) {
@@ -310,11 +317,11 @@ function list_timezones() {
     foreach($timezone_offsets as $timezone => $offset){
         $offset_prefix = $offset < 0 ? '-' : '+';
         $offset_formatted = gmdate( 'H:i', abs($offset) );
-        $pretty_offset = "UTC${offset_prefix}${offset_formatted}";
+        $pretty_offset = "UTC{$offset_prefix}{$offset_formatted}";
         $t = new DateTimeZone($timezone);
-        $c = new DateTime(null, $t);
+        $c = new DateTime('now', $t);
         $current_time = $c->format('H:i:s');
-        $timezone_list[$timezone] = "$timezone [ $current_time ] ${pretty_offset}";
+        $timezone_list[$timezone] = "$timezone [ $current_time ] {$pretty_offset}";
     }
     return $timezone_list;
 }

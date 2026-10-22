@@ -24,14 +24,17 @@ if (isset($_SESSION['user'])) {
         exec (VESTA_CMD . "v-list-user ".escapeshellarg($_GET['loginas'])." json", $output, $return_var);
         if ( $return_var == 0 ) {
             $users = json_decode(implode('', $output), true);
-            reset($users);
-            $_SESSION['look'] = key($users);
-            $_SESSION['look_alert'] = 'yes';
+            if (is_array($users)) {
+                reset($users);
+                $_SESSION['look'] = key($users);
+                $_SESSION['look_alert'] = 'yes';
+            }
         }
     } else {
     	$v_user = empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'];
     	exec (VESTA_CMD . "v-list-user ".$v_user." json", $output, $return_var);
         $users = json_decode(implode('', $output), true);
+        if (!is_array($users)) $users = array();
     }
 }
 
@@ -100,7 +103,9 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
                     // Get user speciefic parameters
                     exec (VESTA_CMD . "v-list-user ".$v_user." json", $output, $return_var);
                     $users = json_decode(implode('', $output), true);
-
+                    if (!is_array($users)) {
+                        $error = __('Invalid username or password');
+                    } else {
                     // Define session user
                     $_SESSION['user'] = key($users);
                     $v_user = $_SESSION['user'];
@@ -113,7 +118,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
                     $output = '';
                     exec (VESTA_CMD."v-list-sys-languages json", $output, $return_var);
                     $languages = json_decode(implode('', $output), true);
-                    if (in_array($users[$v_user]['LANGUAGE'], $languages)){
+                    if (is_array($languages) && in_array($users[$v_user]['LANGUAGE'], $languages)){
                         $_SESSION['language'] = $users[$v_user]['LANGUAGE'];
                     } else {
                         $_SESSION['language'] = 'en';
@@ -121,6 +126,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
 
                     // Regenerate session id to prevent session fixation
                     session_regenerate_id(true);
+                    }
                 }
             }
         }
@@ -132,7 +138,7 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
 // Check system configuration
 exec (VESTA_CMD . "v-list-sys-config json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
-$sys_arr = $data['config'];
+$sys_arr = (is_array($data) && isset($data['config']) && is_array($data['config'])) ? $data['config'] : array();
 foreach ($sys_arr as $key => $value) {
     $_SESSION[$key] = $value;
 }
@@ -142,12 +148,12 @@ if (empty($_SESSION['language'])) {
     $output = '';
     exec (VESTA_CMD."v-list-sys-config json", $output, $return_var);
     $config = json_decode(implode('', $output), true);
-    $lang = $config['config']['LANGUAGE'];
+    $lang = (is_array($config) && isset($config['config']['LANGUAGE'])) ? $config['config']['LANGUAGE'] : 'en';
 
     $output = '';
     exec (VESTA_CMD."v-list-sys-languages json", $output, $return_var);
     $languages = json_decode(implode('', $output), true);
-    if(in_array($lang, $languages)){
+    if (is_array($languages) && in_array($lang, $languages)){
         $_SESSION['language'] = $lang;
     }
     else {

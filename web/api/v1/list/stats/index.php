@@ -12,12 +12,14 @@ if ($user == 'admin') {
     if (empty($_GET['user'])) {
         exec (VESTA_CMD."v-list-users-stats json", $output, $return_var);
         $data = json_decode(implode('', $output), true);
+        if (!is_array($data)) $data = array();
         $data = array_reverse($data, true);
         unset($output);
     } else {
         $v_user = escapeshellarg($_GET['user']);
         exec (VESTA_CMD."v-list-user-stats $v_user json", $output, $return_var);
         $data = json_decode(implode('', $output), true);
+        if (!is_array($data)) $data = array();
         $data = array_reverse($data, true);
         unset($output);
     }
@@ -28,6 +30,7 @@ if ($user == 'admin') {
 } else {
     exec (VESTA_CMD."v-list-user-stats $user json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data, true);
     unset($output);
 }

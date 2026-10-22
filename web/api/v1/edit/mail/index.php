@@ -55,10 +55,10 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['account'])))  {
     $v_domain = $_GET['domain'];
     $v_account = $_GET['account'];
     $v_password = "";
-    $v_aliases = str_replace(',', "\n", $data[$v_account]['ALIAS']);
-    $valiases = explode(",", $data[$v_account]['ALIAS']);
-    $v_fwd = str_replace(',', "\n", $data[$v_account]['FWD']);
-    $vfwd = explode(",", $data[$v_account]['FWD']);
+    $v_aliases = str_replace(',', "\n", isset($data[$v_account]['ALIAS']) ? $data[$v_account]['ALIAS'] : '');
+    $valiases = explode(",", isset($data[$v_account]['ALIAS']) ? $data[$v_account]['ALIAS'] : '');
+    $v_fwd = str_replace(',', "\n", isset($data[$v_account]['FWD']) ? $data[$v_account]['FWD'] : '');
+    $vfwd = explode(",", isset($data[$v_account]['FWD']) ? $data[$v_account]['FWD'] : '');
     $v_fwd_only = $data[$v_account]['FWD_ONLY'];
     $v_quota = $data[$v_account]['QUOTA'];
     $v_autoreply = $data[$v_account]['AUTOREPLY'];
@@ -79,7 +79,7 @@ if ((!empty($_GET['domain'])) && (!empty($_GET['account'])))  {
         exec (VESTA_CMD."v-list-mail-account-autoreply ".$user." ".$v_domain." ".$v_account." json", $output, $return_var);
         $autoreply_str = json_decode(implode('', $output), true);
         unset($output);
-        $v_autoreply_message = $autoreply_str[$v_account]['MSG'];
+        $v_autoreply_message = isset($autoreply_str[$v_account]['MSG']) ? $autoreply_str[$v_account]['MSG'] : '';
         $v_autoreply_message=str_replace("\\n", "\n", $v_autoreply_message);
     }
 }

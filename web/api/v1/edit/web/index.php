@@ -29,11 +29,11 @@ $v_username = $user;
 $v_domain = $_GET['domain'];
 $v_ip = $data[$v_domain]['IP'];
 $v_template = $data[$v_domain]['TPL'];
-$v_aliases = str_replace(',', "\n", $data[$v_domain]['ALIAS']);
-$valiases = explode(",", $data[$v_domain]['ALIAS']);
+$v_aliases = str_replace(',', "\n", isset($data[$v_domain]['ALIAS']) ? $data[$v_domain]['ALIAS'] : '');
+$valiases = explode(",", isset($data[$v_domain]['ALIAS']) ? $data[$v_domain]['ALIAS'] : '');
 $v_tpl = $data[$v_domain]['IP'];
 $v_cgi = $data[$v_domain]['CGI'];
-$v_elog = $data[$v_domain]['ELOG'];
+$v_elog = isset($data[$v_domain]['ELOG']) ? $data[$v_domain]['ELOG'] : '';
 $v_ssl = $data[$v_domain]['SSL'];
 if (!empty($v_ssl)) {
     exec (VESTA_CMD."v-list-web-domain-ssl ".$user." ".escapeshellarg($v_domain)." json", $output, $return_var);
@@ -56,14 +56,14 @@ $v_ssl_home = $data[$v_domain]['SSL_HOME'];
 $v_backend_template = $data[$v_domain]['BACKEND'];
 $v_proxy = $data[$v_domain]['PROXY'];
 $v_proxy_template = $data[$v_domain]['PROXY'];
-$v_proxy_ext = str_replace(',', ', ', $data[$v_domain]['PROXY_EXT']);
+$v_proxy_ext = str_replace(',', ', ', isset($data[$v_domain]['PROXY_EXT']) ? $data[$v_domain]['PROXY_EXT'] : '');
 $v_stats = $data[$v_domain]['STATS'];
 $v_stats_user = $data[$v_domain]['STATS_USER'];
 if (!empty($v_stats_user)) $v_stats_password = "";
 $v_ftp_user = $data[$v_domain]['FTP_USER'];
 $v_ftp_path = $data[$v_domain]['FTP_PATH'];
 if (!empty($v_ftp_user)) $v_ftp_password = "";
-$v_ftp_user_prepath = $data[$v_domain]['DOCUMENT_ROOT'];
+$v_ftp_user_prepath = isset($data[$v_domain]['DOCUMENT_ROOT']) ? $data[$v_domain]['DOCUMENT_ROOT'] : '';
 $v_ftp_user_prepath = str_replace('/public_html', '', $v_ftp_user_prepath);
 $v_ftp_email = $panel[$user]['CONTACT'];
 $v_suspended = $data[$v_domain]['SUSPENDED'];
@@ -699,8 +699,8 @@ if (!empty($_POST['save'])) {
 }
 
 
-$v_ftp_users_raw = explode(':', $v_ftp_user);
-$v_ftp_users_paths_raw = explode(':', $data[$v_domain]['FTP_PATH']);
+$v_ftp_users_raw = explode(':', $v_ftp_user === null ? '' : $v_ftp_user);
+$v_ftp_users_paths_raw = explode(':', isset($data[$v_domain]['FTP_PATH']) ? $data[$v_domain]['FTP_PATH'] : '');
 $v_ftp_users = array();
 foreach ($v_ftp_users_raw as $v_ftp_user_index => $v_ftp_user_val) {
     if (empty($v_ftp_user_val)) {
@@ -753,7 +753,7 @@ $result = array(
     'aliases' => $v_aliases,
     'valiases' => $valiases,
     'tpl' => $v_tpl,
-    'elog' => $$v_elog,
+    'elog' => $v_elog,
     'ssl' => $v_ssl,
     'cgi' => $v_cgi,
     'ssl_crt' => $v_ssl_crt,

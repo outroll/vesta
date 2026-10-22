@@ -13,6 +13,7 @@ $ip=$_SERVER['REMOTE_ADDR'];
 exec (VESTA_CMD."v-list-sys-ips json", $output, $return_var);
 $output=implode('', $output);
 $arr=json_decode($output, true);
+if (!is_array($arr)) $arr = array();
 foreach ($arr as $arr_key => $arr_val) {
     // search for NAT IPs and allow them
 	if ($ip==$arr_key || $ip==$arr_val['NAT']) {

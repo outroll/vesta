@@ -11,6 +11,7 @@ top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB
 // Data
 exec (VESTA_CMD."v-list-cron-jobs $user json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 $data = array_reverse($data,true);
 unset($output);
 

@@ -117,6 +117,7 @@ $db_types = explode(',', $_SESSION['DB_SYSTEM']);
 // List available database servers
 exec (VESTA_CMD."v-list-database-hosts json", $output, $return_var);
 $db_hosts_tmp1 = json_decode(implode('', $output), true);
+if (!is_array($db_hosts_tmp1)) $db_hosts_tmp1 = array();
 $db_hosts_tmp2 = array_map(function($host){return $host['HOST'];}, $db_hosts_tmp1);
 $db_hosts = array_values(array_unique($db_hosts_tmp2));
 unset($output);

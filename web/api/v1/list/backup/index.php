@@ -11,6 +11,7 @@ top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB
 if (empty($_GET['backup'])){
   exec (VESTA_CMD."v-list-user-backups $user json", $output, $return_var);
   $data = json_decode(implode('', $output), true);
+  if (!is_array($data)) $data = array();
   $data = array_reverse($data,true);
   unset($output);
 
@@ -18,6 +19,7 @@ if (empty($_GET['backup'])){
 } else {
   exec (VESTA_CMD."v-list-user-backup $user ".escapeshellarg($_GET['backup'])." json", $output, $return_var);
   $data = json_decode(implode('', $output), true);
+  if (!is_array($data)) $data = array();
   $data = array_reverse($data,true);
   unset($output);
 
@@ -51,12 +53,12 @@ foreach ($data as $key => $value) {
 			$total_amount = __('%s archives',$i);
 		}
 	} else {
-		$webAr = explode(',',$data[$backup]['WEB']);
-		$dnsAr = explode(',',$data[$backup]['DNS']);
-		$mailAr = explode(',',$data[$backup]['MAIL']);
-		$dbAr = explode(',',$data[$backup]['DB']);
-		$cronAr = explode(',',$data[$backup]['CRON']);
-		$udirAr = explode(',',$data[$backup]['UDIR']);
+		$webAr = explode(',', isset($data[$backup]['WEB']) ? $data[$backup]['WEB'] : '');
+		$dnsAr = explode(',', isset($data[$backup]['DNS']) ? $data[$backup]['DNS'] : '');
+		$mailAr = explode(',', isset($data[$backup]['MAIL']) ? $data[$backup]['MAIL'] : '');
+		$dbAr = explode(',', isset($data[$backup]['DB']) ? $data[$backup]['DB'] : '');
+		$cronAr = explode(',', isset($data[$backup]['CRON']) ? $data[$backup]['CRON'] : '');
+		$udirAr = explode(',', isset($data[$backup]['UDIR']) ? $data[$backup]['UDIR'] : '');
 
 		$totalLength = count($webAr) + count($dnsAr) + count($mailAr) + count($dbAr) + count($cronAr) + count($udirAr);
 

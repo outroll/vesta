@@ -11,6 +11,7 @@ top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB
 if (empty($_GET['domain'])){
     exec (VESTA_CMD."v-list-dns-domains $user json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data, true);
     unset($output);
 
@@ -18,6 +19,7 @@ if (empty($_GET['domain'])){
 } else {
     exec (VESTA_CMD."v-list-dns-records ".$user." ".escapeshellarg($_GET['domain'])." json", $output, $return_var);
     $data = json_decode(implode('', $output), true);
+    if (!is_array($data)) $data = array();
     $data = array_reverse($data, true);
     unset($output);
 

@@ -9,6 +9,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/main.php");
 // Data
 exec (VESTA_CMD."v-list-user-notifications $user json", $output, $return_var);
 $notifications = json_decode(implode('', $output), true);
+if (!is_array($notifications)) $notifications = array();
 $notifications = array_reverse($notifications,true);
 foreach($notifications as $key => $note){
     $note['ID'] = $key;

@@ -11,6 +11,7 @@ header('Content-Type: application/json');
 exec (VESTA_CMD."v-list-user-log $user json", $output, $return_var);
 check_error($return_var);
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 $data = array_reverse($data);
 unset($output);
 

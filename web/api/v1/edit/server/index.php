@@ -46,6 +46,7 @@ unset($output);
 exec (VESTA_CMD."v-list-remote-dns-hosts json", $output, $return_var);
 $dns_cluster = json_decode(implode('', $output), true);
 unset($output);
+if (!is_array($dns_cluster)) $dns_cluster = array();
 foreach ($dns_cluster as $key => $value) {
     $v_dns_cluster = 'yes';
 }
@@ -54,6 +55,7 @@ foreach ($dns_cluster as $key => $value) {
 exec (VESTA_CMD."v-list-database-hosts json", $output, $return_var);
 $db_hosts = json_decode(implode('', $output), true);
 unset($output);
+if (!is_array($db_hosts)) $db_hosts = array();
 $v_mysql_hosts = array_values(array_filter($db_hosts, function($host){return $host['TYPE'] === 'mysql';}));
 $v_mysql = count($v_mysql_hosts) ? 'yes' : 'no';
 $v_pgsql_hosts = array_values(array_filter($db_hosts, function($host){return $host['TYPE'] === 'pgsql';}));

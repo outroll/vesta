@@ -13,6 +13,7 @@ if ($user == 'admin') {
     exec (VESTA_CMD . "v-list-user ".$user." json", $output, $return_var);
 }
 $data = json_decode(implode('', $output), true);
+if (!is_array($data)) $data = array();
 $data = array_reverse($data,true);
 // Render page
 top_panel(empty($_SESSION['look']) ? $_SESSION['user'] : $_SESSION['look'], $TAB);
