@@ -720,7 +720,10 @@ if [ "$VESTA_SOURCE" = 'github' ]; then
     fi
     check_result $? "runtime library install failed"
 
-    # vesta-nginx/vesta-php get a separate build per release; vesta/vesta-ioncube don't need one.
+    # vesta-nginx/vesta-php/vesta-ioncube get a separate build per release
+    # (vesta-ioncube's loader is PHP-ABI-specific, and bionic/noble pin
+    # different PHP versions -- see src/deb/versions.env); vesta doesn't
+    # need one.
     github_suffix=""
     if [ "$release" = '24.04' ]; then
         github_suffix="_noble"
@@ -730,8 +733,8 @@ if [ "$VESTA_SOURCE" = 'github' ]; then
     github_debs=""
     for pkg in $github_packages; do
         case "$pkg" in
-            vesta-nginx|vesta-php) asset="${pkg}${github_suffix}_amd64.deb" ;;
-            *)                     asset="${pkg}_amd64.deb" ;;
+            vesta-nginx|vesta-php|vesta-ioncube) asset="${pkg}${github_suffix}_amd64.deb" ;;
+            *)                                   asset="${pkg}_amd64.deb" ;;
         esac
         echo "=== Downloading $pkg package from GitHub Releases"
         wget -q "https://github.com/$GITHUB_REPO/releases/latest/download/${asset}" -O "/tmp/${pkg}_amd64.deb"
