@@ -20,11 +20,13 @@ source "$REPO_ROOT/src/deb/versions.env"
 VERSION="${1:-0.0.0+$(git -C "$REPO_ROOT" rev-parse --short HEAD)}"
 OUTPUT_SUFFIX="${2:-}"
 
-# Depends: is for bionic's runtime libs; 24.04 renamed libssl1.1 -> libssl3t64.
+# Depends: is for bionic's runtime libs; later releases renamed libssl1.1
+# (22.04 -> libssl3, 24.04 -> libssl3t64). 20.04 still ships libssl1.1.
 DEPENDS='vesta, libpcre3, zlib1g, libssl1.1'
-if [ "$OUTPUT_SUFFIX" = '_noble' ]; then
-    DEPENDS='vesta, libpcre3, zlib1g, libssl3t64'
-fi
+case "$OUTPUT_SUFFIX" in
+    _jammy) DEPENDS='vesta, libpcre3, zlib1g, libssl3' ;;
+    _noble) DEPENDS='vesta, libpcre3, zlib1g, libssl3t64' ;;
+esac
 
 NGINX_URL="https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"
 
