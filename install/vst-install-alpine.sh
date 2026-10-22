@@ -35,11 +35,11 @@ ROUNDCUBE_VERSION='1.6.17'
 ROUNDCUBE_SHA256='e1f6c437959cb8dffda1a3e59f0c0a2160b3d669948db69bb02edb218c8e69a1'
 
 # Defining software pack for all distros
-software="openrc nginx php83 php83-fpm php83-cli php83-ctype php83-curl php83-dom
-    php83-fileinfo php83-gd php83-iconv php83-mbstring php83-mysqli
-    php83-opcache php83-openssl php83-pdo php83-pdo_mysql php83-phar
-    php83-session php83-simplexml php83-tokenizer php83-xml php83-xmlwriter
-    php83-zip mariadb mariadb-client shadow sudo bash coreutils findutils
+software="openrc nginx php85 php85-fpm php85-cli php85-ctype php85-curl php85-dom
+    php85-fileinfo php85-gd php85-iconv php85-mbstring php85-mysqli
+    php85-openssl php85-pdo php85-pdo_mysql php85-phar
+    php85-session php85-simplexml php85-tokenizer php85-xml php85-xmlwriter
+    php85-zip mariadb mariadb-client shadow sudo bash coreutils findutils
     grep sed gawk procps util-linux tzdata rsync curl wget git zip unzip
     openssl dcron iproute2 logrotate libidn"
 
@@ -383,12 +383,12 @@ sleep 5
 
 # Excluding MariaDB if not wanted
 if [ "$mysql" = 'no' ]; then
-    software=$(echo "$software" | sed -e 's/mariadb-client//' -e 's/mariadb//' -e 's/php83-mysqli//' -e 's/php83-pdo_mysql//')
+    software=$(echo "$software" | sed -e 's/mariadb-client//' -e 's/mariadb//' -e 's/php85-mysqli//' -e 's/php85-pdo_mysql//')
 fi
 
 # Web/FTP/DNS/mail/firewall stack, added on top of the base software list
 if [ "$apache" = 'yes' ]; then
-    software="$software apache2 apache2-ssl apache2-ctl php83-apache2"
+    software="$software apache2 apache2-ssl apache2-ctl php85-apache2"
 fi
 if [ "$vsftpd" = 'yes' ]; then
     software="$software vsftpd"
@@ -423,7 +423,7 @@ fi
 if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
     # Roundcube itself has no apk package (fetched separately below), but
     # it needs these to run.
-    software="$software php83-intl php83-ldap php83-exif"
+    software="$software php85-intl php85-ldap php85-exif"
 fi
 
 apk update
@@ -660,7 +660,7 @@ if [ "$apache" = 'yes' ]; then
     # already compiled in as commented-out LoadModule lines in httpd.conf
     # -- there's no a2enmod, so just uncomment them. mod_ssl comes from
     # the separate apache2-ssl package and self-registers via
-    # conf.d/ssl.conf; mod_php comes from php83-apache2 the same way.
+    # conf.d/ssl.conf; mod_php comes from php85-apache2 the same way.
     # Unlike Debian, Alpine has no mod_fcgid/mod_suexec/mod_ruid2 package
     # at all, so only the mod_php-based templates (default/basedir/hosting)
     # work here -- the phpcgi/phpfcgid templates are not wired up.
@@ -692,7 +692,7 @@ fi
 #                     Configure PHP-FPM                    #
 #----------------------------------------------------------#
 
-cp -f $vestacp/php-fpm/www.conf /etc/php83/php-fpm.d/www.conf
+cp -f $vestacp/php-fpm/www.conf /etc/php85/php-fpm.d/www.conf
 # Note: the "vesta" pool (php-fpm/vesta.conf) isn't dropped in here -- it
 # runs as the "admin" system user, which doesn't exist yet at this point in
 # the install. It's added later, in the "Configure Vesta Panel" section
@@ -701,20 +701,20 @@ cp -f $vestacp/php-fpm/www.conf /etc/php83/php-fpm.d/www.conf
 # A couple of Vesta's own scripts (web/inc/mail-wrapper.php,
 # bin/v-generate-password-hash) hardcode "#!/usr/local/vesta/php/bin/php"
 # as their shebang -- on Debian/Ubuntu that path comes from the vesta-php
-# package. We're using Alpine's own php83 for everything, so just point
+# package. We're using Alpine's own php85 for everything, so just point
 # that path at it.
 mkdir -p $VESTA/php/bin
-ln -sf /usr/bin/php83 $VESTA/php/bin/php
+ln -sf /usr/bin/php85 $VESTA/php/bin/php
 
-rc-update add php-fpm83 default
-rc-service php-fpm83 start
+rc-update add php-fpm85 default
+rc-service php-fpm85 start
 check_result $? "php-fpm start failed"
 
 ZONE=$(cat /etc/timezone 2>/dev/null)
 if [ -z "$ZONE" ]; then
     ZONE='UTC'
 fi
-for pconf in /etc/php83/php.ini /etc/php83/cli/php.ini /etc/php83/apache2/php.ini; do
+for pconf in /etc/php85/php.ini /etc/php85/cli/php.ini /etc/php85/apache2/php.ini; do
     [ -e "$pconf" ] || continue
     sed -i "s%;date.timezone =%date.timezone = $ZONE%g" $pconf
     sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
@@ -1042,14 +1042,14 @@ $VESTA/bin/v-change-user-language admin $lang
 # bin/v-restart-* scripts already expect to find).
 mkdir -p $VESTA/nginx/conf
 cp -f $vestacp/nginx/vesta-panel.conf $VESTA/nginx/conf/nginx.conf
-cp -f $vestacp/php-fpm/vesta.conf /etc/php83/php-fpm.d/vesta.conf
+cp -f $vestacp/php-fpm/vesta.conf /etc/php85/php-fpm.d/vesta.conf
 # Not a symlink to /etc/init.d/nginx: that script hardcodes its pidfile
 # path instead of reading it from conf.d, so a symlinked instance never
 # gets its own /run directory created by checkpath. Deploy a standalone
 # init script instead (see install/alpine/3.24/nginx/vesta.initd).
 cp -f $vestacp/nginx/vesta.initd /etc/init.d/vesta
 chmod 755 /etc/init.d/vesta
-rc-service php-fpm83 restart
+rc-service php-fpm85 restart
 check_result $? "php-fpm restart failed"
 rc-update add vesta default
 rc-service vesta start
