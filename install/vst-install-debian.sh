@@ -35,12 +35,13 @@ fi
 
 if [ "$release" -ge 12 ]; then
     # libapache2-mod-ruid2, e2fslibs and rssh no longer exist in the Debian
-    # archive as of bookworm/trixie (mod_ruid2 has no successor -- see the
-    # --apache yes block below; e2fslibs is superseded by e2fsprogs's own
-    # libs; rssh was removed archive-wide in 2019). mysql-server is gone too,
-    # default-mysql-server is the metapackage that pulls MariaDB instead.
+    # archive as of bookworm/trixie. Per-vhost user isolation uses
+    # libapache2-mpm-itk, which the Apache templates already honor.
+    # e2fslibs is superseded by e2fsprogs's own libs; rssh was removed
+    # archive-wide in 2019. mysql-server is gone too; default-mysql-server
+    # is the metapackage that pulls MariaDB instead.
     software="nginx apache2 apache2-utils apache2-suexec-custom
-        libapache2-mod-fcgid libapache2-mod-php php
+        libapache2-mpm-itk libapache2-mod-fcgid libapache2-mod-php php
         php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
         webalizer vsftpd proftpd-basic bind9 exim4 exim4-daemon-heavy
         clamav-daemon spamassassin dovecot-imapd dovecot-pop3d roundcube-core
@@ -102,9 +103,14 @@ fi
 # Defining help function
 help() {
     echo "Usage: $0 [OPTIONS]
-  -a, --apache            Install Apache           [yes|no]  default: yes
+  -a, --apache            Install Apache + PHP    [yes|no]  default: yes
+                          Debian 12+ defaults to no. Pass --apache yes for
+                          Apache + PHP there; user isolation uses mpm-itk
+                          because mod_ruid2 is not packaged.
   -n, --nginx             Install Nginx            [yes|no]  default: yes
-  -w, --phpfpm            Install PHP-FPM          [yes|no]  default: no
+  -w, --phpfpm            Install Nginx + PHP-FPM  [yes|no]  default: no
+                          Debian 12+ defaults to yes. --phpfpm yes turns
+                          Apache off.
   -v, --vsftpd            Install Vsftpd           [yes|no]  default: yes
   -j, --proftpd           Install ProFTPD          [yes|no]  default: no
   -k, --named             Install Bind             [yes|no]  default: yes
@@ -224,9 +230,9 @@ eval set -- "$args"
 # Parsing arguments
 while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:q:l:y:s:u:e:d:p:fh" Option; do
     case $Option in
-        a) apache=$OPTARG ;;            # Apache
+        a) apache=$OPTARG; apache_selected='yes' ;;  # Apache
         n) nginx=$OPTARG ;;             # Nginx
-        w) phpfpm=$OPTARG ;;            # PHP-FPM
+        w) phpfpm=$OPTARG; phpfpm_selected='yes' ;;  # PHP-FPM
         v) vsftpd=$OPTARG ;;            # Vsftpd
         j) proftpd=$OPTARG ;;           # Proftpd
         k) named=$OPTARG ;;             # Named
@@ -256,8 +262,9 @@ done
 # Defining default software stack
 set_default_value 'nginx' 'yes'
 if [ "$release" -ge 12 ]; then
-    # libapache2-mod-ruid2 has no package on bookworm/trixie, so default to
-    # Nginx+PHP-FPM (see the --apache yes rejection below).
+    # Nginx + PHP-FPM stays the default. Apache + PHP is still available
+    # with --apache yes; bookworm/trixie isolate vhosts with mpm-itk
+    # instead of mod_ruid2, which is not packaged.
     set_default_value 'apache' 'no'
     set_default_value 'phpfpm' 'yes'
 else
@@ -287,6 +294,11 @@ set_default_value 'ssl' 'no'
 set_default_lang 'en'
 
 # Checking software conflicts
+# An explicit --apache yes selects Apache + PHP even on releases whose
+# default is PHP-FPM, unless --phpfpm was passed as well.
+if [ "$apache_selected" = 'yes' ] && [ "$apache" = 'yes' ] && [ "$phpfpm_selected" != 'yes' ]; then
+    phpfpm='no'
+fi
 if [ "$phpfpm" = 'yes' ]; then
     apache='no'
     nginx='yes'
@@ -301,16 +313,6 @@ if [ "$exim" = 'no' ]; then
 fi
 if [ "$iptables" = 'no' ]; then
     fail2ban='no'
-fi
-
-# Reject --apache yes on bookworm/trixie up front instead of a confusing
-# apt-get failure.
-if [ "$release" -ge 12 ] && [ "$apache" = 'yes' ]; then
-    echo "Error: --apache yes is not supported on Debian 12+."
-    echo "libapache2-mod-ruid2 has no package on bookworm/trixie, so Apache"
-    echo "can't get per-site PHP user isolation there. Use --phpfpm yes"
-    echo "(the default here) for Nginx + PHP-FPM instead."
-    exit 1
 fi
 
 # Checking root permissions
@@ -680,6 +682,7 @@ if [ "$apache" = 'no' ]; then
     software=$(echo "$software" | sed -e "s/apache2-suexec-custom//")
     software=$(echo "$software" | sed -e "s/apache2.2-common//")
     software=$(echo "$software" | sed -e "s/libapache2-mod-ruid2//")
+    software=$(echo "$software" | sed -e "s/libapache2-mpm-itk//")
     software=$(echo "$software" | sed -e "s/libapache2-mod-fcgid//")
     software=$(echo "$software" | sed -e "s/libapache2-mod-php5//")
     software=$(echo "$software" | sed -e "s/libapache2-mod-php//")
@@ -1058,8 +1061,16 @@ if [ "$apache" = 'yes'  ]; then
     a2enmod suexec
     a2enmod ssl
     a2enmod actions
-    a2enmod ruid2
     a2enmod headers
+    if [ -e /etc/apache2/mods-available/ruid2.load ]; then
+        a2enmod ruid2
+    else
+        # mpm-itk is a prefork MPM, so the other MPMs have to be off first.
+        a2dismod mpm_event >/dev/null 2>&1 || true
+        a2dismod mpm_worker >/dev/null 2>&1 || true
+        a2dismod mpm_prefork >/dev/null 2>&1 || true
+        a2enmod mpm_itk
+    fi
     mkdir -p /etc/apache2/conf.d
     echo > /etc/apache2/conf.d/vesta.conf
     echo "# Server control panel by VESTA" > /etc/apache2/sites-available/default

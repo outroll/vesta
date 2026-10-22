@@ -63,9 +63,14 @@ fi
 # Defining help function
 help() {
     echo "Usage: $0 [OPTIONS]
-  -a, --apache            Install Apache           [yes|no]  default: yes
+  -a, --apache            Install Apache + PHP    [yes|no]  default: yes
+                          Ubuntu 24.04 defaults to no. Pass --apache yes for
+                          Apache + PHP there; user isolation uses mpm-itk
+                          because mod_ruid2 is not packaged.
   -n, --nginx             Install Nginx            [yes|no]  default: yes
-  -w, --phpfpm            Install PHP-FPM          [yes|no]  default: no
+  -w, --phpfpm            Install Nginx + PHP-FPM  [yes|no]  default: no
+                          Ubuntu 24.04 defaults to yes. --phpfpm yes turns
+                          Apache off.
   -v, --vsftpd            Install Vsftpd           [yes|no]  default: yes
   -j, --proftpd           Install ProFTPD          [yes|no]  default: no
   -k, --named             Install Bind             [yes|no]  default: yes
@@ -185,9 +190,9 @@ eval set -- "$args"
 # Parsing arguments
 while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:q:l:y:s:u:e:d:p:fh" Option; do
     case $Option in
-        a) apache=$OPTARG ;;            # Apache
+        a) apache=$OPTARG; apache_selected='yes' ;;  # Apache
         n) nginx=$OPTARG ;;             # Nginx
-        w) phpfpm=$OPTARG ;;            # PHP-FPM
+        w) phpfpm=$OPTARG; phpfpm_selected='yes' ;;  # PHP-FPM
         v) vsftpd=$OPTARG ;;            # Vsftpd
         j) proftpd=$OPTARG ;;           # Proftpd
         k) named=$OPTARG ;;             # Named
@@ -217,7 +222,9 @@ done
 # Defining default software stack
 set_default_value 'nginx' 'yes'
 if [ "$release" = '24.04' ]; then
-    # libapache2-mod-ruid2 has no package on 24.04, so default to Nginx+PHP-FPM.
+    # Nginx + PHP-FPM stays the default. Apache + PHP is still available
+    # with --apache yes; 24.04 isolates vhosts with mpm-itk instead of
+    # mod_ruid2, which is not packaged.
     set_default_value 'apache' 'no'
     set_default_value 'phpfpm' 'yes'
 else
@@ -247,6 +254,11 @@ set_default_value 'ssl' 'no'
 set_default_lang 'en'
 
 # Checking software conflicts
+# An explicit --apache yes selects Apache + PHP even on releases whose
+# default is PHP-FPM, unless --phpfpm was passed as well.
+if [ "$apache_selected" = 'yes' ] && [ "$apache" = 'yes' ] && [ "$phpfpm_selected" != 'yes' ]; then
+    phpfpm='no'
+fi
 if [ "$phpfpm" = 'yes' ]; then
     apache='no'
     nginx='yes'
@@ -261,15 +273,6 @@ if [ "$exim" = 'no' ]; then
 fi
 if [ "$iptables" = 'no' ]; then
     fail2ban='no'
-fi
-
-# Reject --apache yes on 24.04 up front instead of a confusing apt-get failure.
-if [ "$release" = '24.04' ] && [ "$apache" = 'yes' ]; then
-    echo "Error: --apache yes is not supported on Ubuntu 24.04."
-    echo "libapache2-mod-ruid2 has no package on 24.04, so Apache can't get"
-    echo "per-site PHP user isolation there. Use --phpfpm yes (the default"
-    echo "on 24.04) for Nginx + PHP-FPM instead."
-    exit 1
 fi
 
 # Checking root permissions
@@ -703,6 +706,10 @@ case "$release" in
         ;;
     24.04)
         software=$(echo "$software" | sed -e "s/e2fslibs //" -e "s/rssh//" -e "s/proftpd-basic/proftpd-core/")
+        # mod_ruid2 and mod_rpaf are not in noble. mpm-itk provides the same
+        # per-vhost user switch the Apache templates already honor, and
+        # mod_remoteip replaces rpaf when nginx proxies to Apache.
+        software=$(echo "$software" | sed -e "s/libapache2-mod-ruid2/libapache2-mpm-itk/" -e "s/libapache2-mod-rpaf//")
         ;;
 esac
 # iptables itself: these releases' default images don't ship it.
@@ -1023,7 +1030,15 @@ if [ "$apache" = 'yes'  ]; then
     a2enmod suexec
     a2enmod ssl
     a2enmod actions
-    a2enmod ruid2
+    if [ -e /etc/apache2/mods-available/ruid2.load ]; then
+        a2enmod ruid2
+    else
+        # mpm-itk is a prefork MPM, so the other MPMs have to be off first.
+        a2dismod mpm_event >/dev/null 2>&1 || true
+        a2dismod mpm_worker >/dev/null 2>&1 || true
+        a2dismod mpm_prefork >/dev/null 2>&1 || true
+        a2enmod mpm_itk
+    fi
     mkdir -p /etc/apache2/conf.d
     echo > /etc/apache2/conf.d/vesta.conf
     echo "# Server control panel by VESTA" > /etc/apache2/sites-available/default
@@ -1431,6 +1446,7 @@ $VESTA/bin/v-update-sys-ip
 
 # Get main IP
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
+local_ip=$ip
 
 # Configuring firewall
 if [ "$iptables" = 'yes' ]; then
@@ -1457,6 +1473,27 @@ if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
     echo "$VESTA/bin/v-update-sys-ip" >> /etc/rc.local
     $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
     ip=$pub_ip
+fi
+
+# nginx in front of Apache used to rely on mod_rpaf. Releases without that
+# module use mod_remoteip so Apache logs the visitor address.
+if [ "$apache" = 'yes' ] && [ "$nginx" = 'yes' ] && [ ! -e /etc/apache2/mods-available/rpaf.load ]; then
+    cd /etc/apache2/mods-available
+    echo "<IfModule mod_remoteip.c>" > remoteip.conf
+    echo "  RemoteIPHeader X-Real-IP" >> remoteip.conf
+    if [ "$local_ip" != "127.0.0.1" ] && [ "$pub_ip" != "127.0.0.1" ]; then
+        echo "  RemoteIPInternalProxy 127.0.0.1" >> remoteip.conf
+    fi
+    if [ ! -z "$local_ip" ] && [ "$local_ip" != "$pub_ip" ]; then
+        echo "  RemoteIPInternalProxy $local_ip" >> remoteip.conf
+    fi
+    if [ ! -z "$pub_ip" ]; then
+        echo "  RemoteIPInternalProxy $pub_ip" >> remoteip.conf
+    fi
+    echo "</IfModule>" >> remoteip.conf
+    sed -i "s/LogFormat \"%h/LogFormat \"%a/g" /etc/apache2/apache2.conf
+    a2enmod remoteip
+    service apache2 restart
 fi
 
 # Configuring MySQL/MariaDB host
