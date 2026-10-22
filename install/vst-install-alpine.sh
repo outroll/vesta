@@ -1097,6 +1097,16 @@ fi
 $VESTA/bin/v-add-domain admin $servername
 check_result $? "can't create $servername domain"
 
+# The certificate generated above is used by the panel on 8083. Public
+# nginx/apache only binds 443 after a domain has an SSL vhost, so without
+# this step a fresh install answers on port 80 and refuses 443. --ssl yes
+# replaces this self-signed cert with Let's Encrypt when DNS matches.
+hostname_ssl=$(mktemp -d)
+cp "$VESTA/ssl/certificate.crt" "$hostname_ssl/$servername.crt"
+cp "$VESTA/ssl/certificate.key" "$hostname_ssl/$servername.key"
+$VESTA/bin/v-add-web-domain-ssl admin "$servername" "$hostname_ssl" same
+rm -rf "$hostname_ssl"
+
 # Configuring firewall
 if [ "$iptables" = 'yes' ]; then
     rc-update add iptables default
