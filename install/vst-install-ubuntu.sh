@@ -740,9 +740,9 @@ if [ "$VESTA_SOURCE" = 'github' ]; then
     check_result $? "runtime library install failed"
 
     # vesta-nginx/vesta-php/vesta-ioncube get a separate build per release
-    # (vesta-ioncube's loader is PHP-ABI-specific, and bionic/focal/jammy/
-    # noble pin different PHP versions/library sonames -- see
-    # src/deb/versions.env); vesta doesn't need one.
+    # (vesta-ioncube's loader is PHP-ABI-specific, and bionic/noble pin
+    # different PHP versions -- see src/deb/versions.env); vesta doesn't
+    # need one.
     github_suffix=""
     case "$release" in
         20.04) github_suffix="_focal" ;;

@@ -20,10 +20,8 @@ source "$REPO_ROOT/src/deb/versions.env"
 VERSION="${1:-0.0.0+$(git -C "$REPO_ROOT" rev-parse --short HEAD)}"
 OUTPUT_SUFFIX="${2:-}"
 
-# Empty suffix (bionic) is the only target still capped below the latest
-# PHP (see versions.env) -- focal/jammy/noble all share the same ABI/loader.
 PHP_VERSION="$PHP_VERSION_BIONIC"
-if [ -n "$OUTPUT_SUFFIX" ]; then
+if [ "$OUTPUT_SUFFIX" = '_noble' ]; then
     PHP_VERSION="$PHP_VERSION_NOBLE"
 fi
 PHP_ABI="${PHP_VERSION%.*}"
