@@ -1275,7 +1275,21 @@ if [ "$iptables" = 'yes' ]; then
 fi
 
 # Get public IP
-pub_ip=$(curl -s vestacp.com/what-is-my-ip/)
+get_public_ip() {
+    local url answer
+    for url in "https://vestacp.com/what-is-my-ip/"                "https://api.ipify.org"                "https://icanhazip.com"; do
+        answer=$(curl -fsS --max-time 10 "$url" 2>/dev/null | tr -d '[:space:]')
+        case "$answer" in
+            *[!0-9.]*|"") continue ;;
+        esac
+        if [ "$(echo "$answer" | awk -F. 'NF==4')" = "$answer" ]; then
+            echo "$answer"
+            return 0
+        fi
+    done
+    return 1
+}
+pub_ip=$(get_public_ip)
 if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
     echo "$VESTA/bin/v-update-sys-ip" >> /etc/rc.local
     $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
