@@ -125,7 +125,6 @@ fi
 
 * Fri Dec 29 2017 Serghey Rodin <builder@vestacp.com> - 0.9.8-18
 - Let's Encrypt for internationalized domains (IDN)
-- Softaculous Application Installer
 - Debian 9 support sponsored by isicore.com
 - Ubuntu 16.10 and 17.04 support
 - Korean, Urdu, Thai, Brazilian Portuguese, Serbian and Bulgarian language support
